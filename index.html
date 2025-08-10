@@ -2,508 +2,627 @@
 <html lang="en">
 <head>
   <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>LedgerDaddy — Your AI Accountant on WhatsApp</title>
-  <meta name="description" content="LedgerDaddy is an AI accountant that runs on WhatsApp. Read bills, create invoices, sync with QuickBooks & Zoho, track inventory, and close books automatically."/>
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
-  <script src="https://cdn.tailwindcss.com"></script>
-  <style>
-    :root { --brand:#6C8BFF; --brand2:#9D7CFF; --ink:#0b1020; }
-    html { scroll-behavior: smooth; }
-    body { font-family: Inter, system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif; color: #0b1020; }
-    .glass { background: linear-gradient(180deg, rgba(255,255,255,.08), rgba(255,255,255,.02)); backdrop-filter: blur(12px); border: 1px solid rgba(255,255,255,.14); }
-    .grid-bg { background-image: radial-gradient(rgba(255,255,255,.08) 1px, transparent 1px); background-size: 14px 14px; }
-    .shine { position: relative; overflow: hidden; }
-    .shine:after { content:""; position:absolute; top:-120%; left:-120%; width:240%; height:240%; background: conic-gradient(from 180deg, rgba(255,255,255,.0), rgba(255,255,255,.08), rgba(255,255,255,.0) 25%); animation: spin 8s linear infinite; }
-    @keyframes spin { to { transform: rotate(360deg); }}
-    .btn { background: linear-gradient(90deg, var(--brand), var(--brand2)); color: white; }
-    .btn:hover { filter: brightness(1.05); }
-  </style>
-  <script>
-    // Simple dark gradient background painter
-    document.addEventListener('DOMContentLoaded', () => {
-      const b = document.body;
-      b.style.background = 'radial-gradient(1200px 700px at 10% -10%, #0d1228, #060913)';
-    });
-  </script>
-  <!-- JSON-LD for Organization / SoftwareApplication -->
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="description" content="LedgerDaddy reads bills on WhatsApp, creates invoices, posts to books, reconciles payments, tracks inventory, and handles US sales tax rules. One-click sync with QuickBooks and Zoho." />
+  <meta name="theme-color" content="#0B0B12" />
+
+  <!-- Open Graph -->
+  <meta property="og:title" content="LedgerDaddy — Your AI Accountant on WhatsApp" />
+  <meta property="og:description" content="As easy as WhatsApp. One-click sync with QuickBooks & Zoho. No credit card required · 7-day free trial." />
+  <meta property="og:type" content="website" />
+  <meta property="og:url" content="https://ledgerdaddy.example" />
+  <meta property="og:image" content="https://ledgerdaddy.example/og-hero.jpg" />
+
+  <!-- JSON-LD -->
   <script type="application/ld+json">
   {
     "@context": "https://schema.org",
     "@type": "SoftwareApplication",
     "name": "LedgerDaddy",
-    "applicationCategory": "AccountingApplication",
-    "operatingSystem": "Web, iOS, Android, WhatsApp",
-    "offers": {"@type":"Offer","price":"299","priceCurrency":"USD","description":"Monthly subscription"},
-    "aggregateRating": {"@type":"AggregateRating","ratingValue":"4.9","ratingCount":"1247"},
-    "publisher": {"@type":"Organization","name":"LedgerDaddy Inc."}
+    "applicationCategory": "BusinessApplication",
+    "operatingSystem": "Web",
+    "description": "AI Accountant on WhatsApp with QuickBooks and Zoho sync.",
+    "offers": {
+      "@type": "Offer",
+      "price": "49",
+      "priceCurrency": "USD"
+    },
+    "aggregateRating": {
+      "@type": "AggregateRating",
+      "ratingValue": "4.9",
+      "ratingCount": "28"
+    }
   }
   </script>
+
+  <!-- Tailwind CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            ink: '#0B0B12',
+            glass: 'rgba(255,255,255,0.08)',
+            brand: '#6A5BFF',
+            accent: '#22D3EE'
+          },
+          boxShadow: {
+            glow: '0 10px 40px rgba(34,211,238,0.25)'
+          },
+          backgroundImage: {
+            'grad': 'radial-gradient(1000px 600px at 10% -10%, rgba(106,91,255,0.35), transparent), radial-gradient(900px 500px at 90% 10%, rgba(34,211,238,0.25), transparent)'
+          }
+        }
+      }
+    }
+  </script>
+  <style>
+    .glass { background: rgba(255,255,255,0.08); border: 1px solid rgba(255,255,255,0.12); backdrop-filter: blur(10px); }
+    .btn-primary { background-image: linear-gradient(90deg,#6A5BFF,#22D3EE); color: #0B0B12; }
+    .btn-primary:hover { filter: brightness(1.1); transform: translateY(-1px); }
+    .btn-secondary:hover { background: rgba(255,255,255,0.12); }
+    .focus-ring:focus { outline: 2px solid #22D3EE; outline-offset: 2px; }
+    .sr-only-focusable:focus { position: static; width: auto; height: auto; clip: auto; }
+  </style>
 </head>
-<body class="text-white">
+<body class="bg-ink text-white bg-grad selection:bg-accent/30 selection:text-white">
+  <a href="#main" class="sr-only sr-only-focusable">Skip to content</a>
 
   <!-- Header -->
-  <header class="sticky top-0 z-40 backdrop-blur supports-[backdrop-filter]:bg-white/5">
-    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-3 flex items-center justify-between">
-      <a href="#" class="flex items-center gap-2">
-        <!-- Inline SVG Logo -->
-        <svg width="36" height="36" viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg">
-          <defs>
-            <linearGradient id="g1" x1="0" y1="0" x2="1" y2="1">
-              <stop offset="0%" stop-color="#6C8BFF"/>
-              <stop offset="100%" stop-color="#9D7CFF"/>
-            </linearGradient>
-          </defs>
-          <rect x="4" y="4" width="56" height="56" rx="14" fill="url(#g1)"/>
-          <path d="M18 40c8 4 20 4 28 0" stroke="white" stroke-width="3" stroke-linecap="round"/>
-          <path d="M22 24h20a7 7 0 0 1 7 7v0" stroke="white" stroke-width="3" stroke-linecap="round"/>
-          <circle cx="22" cy="24" r="3" fill="white"/>
-        </svg>
-        <span class="font-extrabold tracking-tight text-xl">LedgerDaddy</span>
-      </a>
-      <nav class="hidden md:flex items-center gap-6 text-sm/6">
-        <a href="#features" class="hover:opacity-90">Features</a>
-        <a href="#integrations" class="hover:opacity-90">Integrations</a>
-        <a href="#demo" class="hover:opacity-90">Live Demo</a>
-        <a href="#pricing" class="hover:opacity-90">Pricing</a>
-        <a href="#reviews" class="hover:opacity-90">Reviews</a>
-        <a href="#faq" class="hover:opacity-90">FAQ</a>
-      </nav>
-      <div class="flex items-center gap-3">
-        <a href="#signup" class="hidden md:inline-flex btn rounded-xl px-4 py-2 font-semibold">Start now</a>
-        <button id="menuBtn" class="md:hidden p-2 rounded-lg bg-white/10">☰</button>
+  <header class="sticky top-0 z-40 bg-ink/70 backdrop-blur">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="flex items-center justify-between h-16">
+        <a href="#" class="flex items-center gap-3" aria-label="LedgerDaddy home">
+          <!-- Inline SVG Logo -->
+          <svg width="28" height="28" viewBox="0 0 64 64" aria-hidden="true">
+            <defs>
+              <linearGradient id="g" x1="0" y1="0" x2="1" y2="1">
+                <stop offset="0" stop-color="#6A5BFF"/>
+                <stop offset="1" stop-color="#22D3EE"/>
+              </linearGradient>
+            </defs>
+            <!-- Geometric L mark -->
+            <rect x="6" y="6" width="52" height="52" rx="12" fill="url(#g)" opacity="0.15"/>
+            <path d="M20 16v28a4 4 0 0 0 4 4h20" fill="none" stroke="url(#g)" stroke-width="6" stroke-linecap="round"/>
+            <circle cx="44" cy="48" r="4" fill="url(#g)"/>
+          </svg>
+          <span class="text-xl font-semibold tracking-tight">LedgerDaddy</span>
+        </a>
+
+        <nav class="hidden md:flex items-center gap-8 text-sm">
+          <a class="hover:text-accent" href="#product">Product</a>
+          <a class="hover:text-accent" href="#integrations">Integrations</a>
+          <a class="hover:text-accent" href="#pricing">Pricing</a>
+          <a class="hover:text-accent" href="#reviews">Reviews</a>
+          <a class="hover:text-accent" href="#faq">FAQ</a>
+          <a class="btn-primary px-4 py-2 rounded-xl font-medium shadow-glow focus-ring" href="#signup">Start now</a>
+        </nav>
+
+        <button id="navToggle" class="md:hidden p-2 rounded-lg glass focus-ring" aria-label="Open menu" aria-controls="mobileNav" aria-expanded="false">
+          <svg width="24" height="24" fill="none" stroke="currentColor"><path stroke-linecap="round" stroke-width="2" d="M4 7h16M4 12h16M4 17h16"/></svg>
+        </button>
       </div>
+    </div>
+    <div id="mobileNav" class="md:hidden hidden border-t border-white/10">
+      <nav class="px-4 py-3 space-y-3">
+        <a class="block hover:text-accent" href="#product">Product</a>
+        <a class="block hover:text-accent" href="#integrations">Integrations</a>
+        <a class="block hover:text-accent" href="#pricing">Pricing</a>
+        <a class="block hover:text-accent" href="#reviews">Reviews</a>
+        <a class="block hover:text-accent" href="#faq">FAQ</a>
+        <a class="btn-primary inline-block px-4 py-2 rounded-xl font-medium shadow-glow focus-ring" href="#signup">Start now</a>
+      </nav>
     </div>
   </header>
 
-  <!-- Mobile menu -->
-  <div id="mobileMenu" class="hidden md:hidden glass mx-4 mt-2 rounded-2xl p-4">
-    <a class="block py-2" href="#features">Features</a>
-    <a class="block py-2" href="#integrations">Integrations</a>
-    <a class="block py-2" href="#demo">Live Demo</a>
-    <a class="block py-2" href="#pricing">Pricing</a>
-    <a class="block py-2" href="#reviews">Reviews</a>
-    <a class="block py-2" href="#faq">FAQ</a>
-    <a class="block py-2" href="#policies">Policies</a>
-  </div>
+  <main id="main">
+    <!-- Hero -->
+    <section class="relative overflow-hidden">
+      <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-20 md:py-28">
+        <div class="grid md:grid-cols-2 gap-12 items-center">
+          <div>
+            <h1 class="text-4xl md:text-5xl font-semibold leading-tight">Your AI Accountant on WhatsApp.</h1>
+            <p class="mt-4 text-lg text-gray-300">Send bills, get books. As easy as chat. One-click sync with QuickBooks & Zoho. Xero coming soon.</p>
+            <div class="mt-6 flex flex-wrap gap-3 items-center">
+              <a href="#signup" class="btn-primary px-6 py-3 rounded-xl font-medium shadow-glow focus-ring">Start now</a>
+              <a href="#integrations" class="btn-secondary glass px-6 py-3 rounded-xl font-medium focus-ring">Connect now</a>
+              <span class="text-sm text-gray-400">No credit card required · 7-day free trial</span>
+            </div>
 
-  <script>
-    document.getElementById('menuBtn').addEventListener('click', ()=>{
-      document.getElementById('mobileMenu').classList.toggle('hidden');
-    });
-  </script>
-
-  <!-- Hero -->
-  <section class="relative overflow-hidden">
-    <div class="absolute inset-0 -z-10 opacity-40">
-      <div class="w-[1200px] h-[1200px] rounded-full blur-3xl" style="background: radial-gradient(closest-side, rgba(108,139,255,.4), transparent), radial-gradient(closest-side, rgba(157,124,255,.35), transparent 60%); position:absolute; top:-30%; left:-10%;"></div>
-      <div class="w-[900px] h-[900px] rounded-full blur-3xl" style="background: radial-gradient(closest-side, rgba(89,235,195,.18), transparent), radial-gradient(closest-side, rgba(255,255,255,.1), transparent 60%); position:absolute; bottom:-20%; right:-10%;"></div>
-    </div>
-
-    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16 md:py-28">
-      <div class="grid md:grid-cols-2 gap-10 items-center">
-        <div>
-          <h1 class="text-4xl md:text-6xl font-extrabold leading-tight">Your AI Accountant on WhatsApp.</h1>
-          <p class="mt-4 text-white/80 text-lg md:text-xl">LedgerDaddy reads your bills, creates invoices, reconciles payments, updates inventory, and syncs with QuickBooks & Zoho — automatically.</p>
-          <div class="mt-8 flex flex-wrap gap-3">
-            <a href="#signup" class="btn rounded-xl px-6 py-3 font-semibold">Start now</a>
-            <a href="#demo" class="rounded-xl px-6 py-3 font-semibold bg-white/10">See live demo</a>
+            <!-- Model selector -->
+            <div class="mt-6 glass rounded-2xl p-4">
+              <label for="modelSelect" class="block text-sm text-gray-300 mb-2">AI mode</label>
+              <select id="modelSelect" class="w-full bg-transparent border border-white/10 rounded-lg p-2 focus-ring" aria-label="Select AI mode">
+                <option>Fast</option>
+                <option>Accurate</option>
+                <option>Custom</option>
+              </select>
+              <p id="modelNote" class="mt-2 text-sm text-gray-400">Fast: quick replies for day-to-day entries.</p>
+            </div>
           </div>
-          <div class="mt-6 text-white/60 text-sm">No credit card required · 7‑day free trial · Cancel anytime</div>
+
+          <!-- Hero image placeholder -->
+          <figure class="glass rounded-3xl p-6 border border-white/10">
+            <img src="" alt="Floating glass SaaS dashboard with sales and expenses chips and synced badge on a dark gradient." class="w-full h-64 md:h-80 object-cover bg-gradient-to-br from-brand/20 to-accent/20 rounded-2xl" />
+            <figcaption class="mt-3 text-xs text-gray-400">Replace with generated HERO image.</figcaption>
+          </figure>
         </div>
-        <div class="relative">
-          <!-- Futuristic dashboard mock (SVG) -->
-          <div class="glass rounded-3xl p-4 md:p-6 shine">
+      </div>
+    </section>
+
+    <!-- Logos / Trust -->
+    <section aria-labelledby="trust" class="py-8">
+      <h2 id="trust" class="sr-only">Trusted integrations</h2>
+      <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="glass rounded-2xl p-4 border border-white/10 flex flex-wrap items-center justify-center gap-6 text-gray-300">
+          <span class="text-sm">Works with</span>
+          <span class="px-3 py-1 rounded-lg bg-white/5 border border-white/10">QuickBooks</span>
+          <span class="px-3 py-1 rounded-lg bg-white/5 border border-white/10">Zoho Books</span>
+          <span class="px-3 py-1 rounded-lg bg-white/5 border border-white/10">Xero (coming soon)</span>
+          <span class="px-3 py-1 rounded-lg bg-white/5 border border-white/10">Tally (CSV export)</span>
+        </div>
+      </div>
+    </section>
+
+    <!-- Product / Features -->
+    <section id="product" class="py-16">
+      <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="max-w-2xl">
+          <h2 class="text-3xl font-semibold">As easy as WhatsApp</h2>
+          <p class="mt-2 text-gray-300">Capture bills, create invoices, reconcile, and track stock — all from chat.</p>
+        </div>
+
+        <div class="mt-10 grid sm:grid-cols-2 lg:grid-cols-3 gap-6">
+          <!-- 6 Feature cards -->
+          <article class="glass rounded-2xl p-6">
+            <h3 class="font-medium">WhatsApp capture</h3>
+            <p class="mt-2 text-sm text-gray-400">Drop a photo or PDF. We parse and post.</p>
+          </article>
+          <article class="glass rounded-2xl p-6">
+            <h3 class="font-medium">Auto invoices</h3>
+            <p class="mt-2 text-sm text-gray-400">Create and send invoices from chat.</p>
+          </article>
+          <article class="glass rounded-2xl p-6">
+            <h3 class="font-medium">Payments & reconciliation</h3>
+            <p class="mt-2 text-sm text-gray-400">Match incoming and outgoing payments fast.</p>
+          </article>
+          <article class="glass rounded-2xl p-6">
+            <h3 class="font-medium">Inventory tracking</h3>
+            <p class="mt-2 text-sm text-gray-400">Live counts and COGS-friendly flows.</p>
+          </article>
+          <article class="glass rounded-2xl p-6">
+            <h3 class="font-medium">US sales tax & IRS rules</h3>
+            <p class="mt-2 text-sm text-gray-400">We apply high-level rules per state setup.</p>
+          </article>
+          <article class="glass rounded-2xl p-6">
+            <h3 class="font-medium">Audit-ready exports</h3>
+            <p class="mt-2 text-sm text-gray-400">Clean CSV/PDFs for your records.</p>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <!-- Integrations -->
+    <section id="integrations" class="py-16">
+      <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="grid lg:grid-cols-2 gap-10 items-start">
+          <div>
+            <h2 class="text-3xl font-semibold">Plug into your books</h2>
+            <p class="mt-2 text-gray-300">One-click sync with QuickBooks and Zoho. Xero support is on the way. Export to Tally CSV.</p>
+            <ul class="mt-6 space-y-3 text-sm text-gray-300">
+              <li>• Customers, vendors, items, taxes</li>
+              <li>• Invoices, bills, payments</li>
+              <li>• Inventory adjustments</li>
+            </ul>
+            <div class="mt-6 flex gap-3">
+              <a href="#signup" class="btn-primary px-5 py-3 rounded-xl font-medium shadow-glow focus-ring">Connect now</a>
+              <a href="#pricing" class="btn-secondary glass px-5 py-3 rounded-xl font-medium focus-ring">See pricing</a>
+            </div>
+          </div>
+          <figure class="glass rounded-3xl p-6 border border-white/10">
+            <img src="" alt="Glowing pipeline of documents converting into structured entries." class="w-full h-72 object-cover bg-gradient-to-br from-brand/20 to-accent/20 rounded-2xl" />
+            <figcaption class="mt-3 text-xs text-gray-400">Replace with AUTOMATION PIPELINE image.</figcaption>
+          </figure>
+        </div>
+      </div>
+    </section>
+
+    <!-- Live Demo: Running accounts subtraction -->
+    <section class="py-16" aria-labelledby="demo">
+      <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <h2 id="demo" class="text-3xl font-semibold">Live balance demo</h2>
+        <p class="mt-2 text-gray-300">Add sales (+) and expenses (−). See your balance update in real time.</p>
+
+        <div class="mt-8 grid lg:grid-cols-2 gap-8">
+          <div class="glass rounded-2xl p-6">
+            <form id="demoForm" class="grid sm:grid-cols-2 gap-4" aria-describedby="demoHelp" onsubmit="return false;">
+              <div class="sm:col-span-2">
+                <label for="opening" class="block text-sm text-gray-300">Opening balance</label>
+                <input id="opening" type="number" step="0.01" value="0" class="w-full bg-transparent border border-white/10 rounded-lg p-2 focus-ring" aria-label="Opening balance">
+              </div>
+              <div>
+                <label for="type" class="block text-sm text-gray-300">Type</label>
+                <select id="type" class="w-full bg-transparent border border-white/10 rounded-lg p-2 focus-ring">
+                  <option value="sale">Sale (+)</option>
+                  <option value="expense">Expense (−)</option>
+                </select>
+              </div>
+              <div>
+                <label for="amount" class="block text-sm text-gray-300">Amount (USD)</label>
+                <input id="amount" type="number" step="0.01" min="0" class="w-full bg-transparent border border-white/10 rounded-lg p-2 focus-ring" required>
+              </div>
+              <div class="sm:col-span-2">
+                <label for="desc" class="block text-sm text-gray-300">Description (optional)</label>
+                <input id="desc" type="text" class="w-full bg-transparent border border-white/10 rounded-lg p-2 focus-ring" placeholder="e.g., Amazon sale, UPS shipping">
+              </div>
+              <div class="sm:col-span-2 flex gap-3">
+                <button id="addItem" class="btn-primary px-5 py-2 rounded-xl font-medium focus-ring" type="button">Add item</button>
+                <button id="clearItems" class="btn-secondary glass px-5 py-2 rounded-xl font-medium focus-ring" type="button">Clear</button>
+              </div>
+              <p id="demoHelp" class="sm:col-span-2 text-xs text-gray-400">This is a simple demo. LedgerDaddy applies more checks in product.</p>
+            </form>
+          </div>
+
+          <div class="glass rounded-2xl p-6">
             <div class="flex items-center justify-between">
-              <div class="text-sm text-white/70">Today</div>
-              <div class="text-sm text-white/70">AI Auto‑Close ⏳</div>
+              <h3 class="font-medium">Balance</h3>
+              <span id="balance" class="text-2xl font-semibold">$0.00</span>
             </div>
-            <div class="mt-4 grid grid-cols-2 md:grid-cols-3 gap-3">
-              <div class="rounded-2xl p-4 bg-white/5">
-                <div class="text-xs text-white/70">Sales</div>
-                <div class="text-2xl font-bold">$12,440</div>
-                <div class="text-xs text-emerald-300">+12% WoW</div>
-              </div>
-              <div class="rounded-2xl p-4 bg-white/5">
-                <div class="text-xs text-white/70">Expenses</div>
-                <div class="text-2xl font-bold">$8,210</div>
-                <div class="text-xs text-red-300">−4% WoW</div>
-              </div>
-              <div class="rounded-2xl p-4 bg-white/5">
-                <div class="text-xs text-white/70">Inventory</div>
-                <div class="text-2xl font-bold">3,284</div>
-                <div class="text-xs text-white/70">SKUs tracked</div>
-              </div>
-            </div>
-            <div class="mt-6 rounded-2xl bg-white/5 p-4">
-              <div class="text-xs text-white/70">WhatsApp → Invoice</div>
-              <div class="mt-2 text-sm">“Bill from Acme for 200 units at $12 — please book and pay next week.”</div>
-              <div class="mt-3 flex items-center gap-2 text-xs text-white/70">
-                <span class="px-2 py-1 bg-emerald-400/20 rounded">Parsed ✔</span>
-                <span class="px-2 py-1 bg-blue-400/20 rounded">Synced to QuickBooks</span>
-                <span class="px-2 py-1 bg-fuchsia-400/20 rounded">Vendor created</span>
-              </div>
-            </div>
-            <div class="mt-6 grid grid-cols-2 gap-3">
-              <div class="rounded-2xl bg-white/5 p-4">
-                <div class="text-xs text-white/70">Bank Reco</div>
-                <div class="text-sm">89% auto‑matched</div>
-              </div>
-              <div class="rounded-2xl bg-white/5 p-4">
-                <div class="text-xs text-white/70">Tax</div>
-                <div class="text-sm">US state rules applied</div>
-              </div>
-            </div>
-          </div>
-          <div class="absolute -bottom-6 -right-6 hidden md:block rotate-6">
-            <div class="glass rounded-2xl p-4">🤖 <span class="text-sm">GPT‑powered</span></div>
+            <ul id="items" class="mt-4 space-y-2 text-sm" aria-live="polite" aria-relevant="additions removals">
+              <!-- Items render here -->
+            </ul>
           </div>
         </div>
       </div>
-    </div>
-  </section>
+    </section>
 
-  <!-- Logos / Trust -->
-  <section class="py-10">
-    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
-      <div class="text-white/60 text-sm mb-6">Trusted by modern commerce teams</div>
-      <div class="grid grid-cols-2 md:grid-cols-6 gap-4 opacity-80">
-        <div class="glass rounded-xl py-3">D2C Brands</div>
-        <div class="glass rounded-xl py-3">Amazon Sellers</div>
-        <div class="glass rounded-xl py-3">Wholesale</div>
-        <div class="glass rounded-xl py-3">Retail</div>
-        <div class="glass rounded-xl py-3">Logistics</div>
-        <div class="glass rounded-xl py-3">Agencies</div>
-      </div>
-    </div>
-  </section>
-
-  <!-- Features -->
-  <section id="features" class="py-20">
-    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-      <h2 class="text-3xl md:text-4xl font-extrabold">Everything your accountant does — on autopilot</h2>
-      <div class="mt-10 grid md:grid-cols-3 gap-6">
-        <div class="glass rounded-2xl p-6">
-          <div class="text-2xl">📥</div>
-          <h3 class="font-bold mt-3 text-xl">Read & Understand Documents</h3>
-          <p class="text-white/80">Upload bills, invoices, receipts, or just forward via WhatsApp. LedgerDaddy extracts line items, taxes, due dates, and vendor/customer info.</p>
-        </div>
-        <div class="glass rounded-2xl p-6">
-          <div class="text-2xl">🔗</div>
-          <h3 class="font-bold mt-3 text-xl">Sync with your Books</h3>
-          <p class="text-white/80">One‑click connect to QuickBooks, Zoho, Xero, or Tally exports. Auto‑create vendors/customers, post entries, attach PDFs.</p>
-        </div>
-        <div class="glass rounded-2xl p-6">
-          <div class="text-2xl">📊</div>
-          <h3 class="font-bold mt-3 text-xl">Live P&L & Inventory</h3>
-          <p class="text-white/80">Know margin, cash, and stock in real time. Get alerts for low inventory and overdue invoices.</p>
-        </div>
-        <div class="glass rounded-2xl p-6">
-          <div class="text-2xl">💳</div>
-          <h3 class="font-bold mt-3 text-xl">Payments & Reconciliation</h3>
-          <p class="text-white/80">Record payments, auto‑match bank transactions, and close the books with confidence.</p>
-        </div>
-        <div class="glass rounded-2xl p-6">
-          <div class="text-2xl">🧾</div>
-          <h3 class="font-bold mt-3 text-xl">US Sales Tax & IRS Rules</h3>
-          <p class="text-white/80">State tax logic, nexus checks, and 1099 vendor tracking come built‑in.</p>
-        </div>
-        <div class="glass rounded-2xl p-6">
-          <div class="text-2xl">🧠</div>
-          <h3 class="font-bold mt-3 text-xl">Adaptive AI</h3>
-          <p class="text-white/80">Learns your SKUs, price lists, and typical vendors to improve accuracy over time.</p>
+    <!-- Reviews -->
+    <section id="reviews" class="py-16">
+      <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <h2 class="text-3xl font-semibold">What customers say</h2>
+        <div class="mt-8 grid md:grid-cols-3 gap-6">
+          <figure class="glass rounded-2xl p-6">
+            <img src="" alt="Professional headshot on dark gradient." class="w-full h-40 object-cover rounded-xl bg-white/5" />
+            <blockquote class="mt-4 text-sm text-gray-300">“We just drop bills in chat. Books stay current.”</blockquote>
+            <figcaption class="mt-2 text-xs text-gray-400">Maya R., D2C founder</figcaption>
+          </figure>
+          <figure class="glass rounded-2xl p-6">
+            <img src="" alt="Professional headshot on dark gradient." class="w-full h-40 object-cover rounded-xl bg-white/5" />
+            <blockquote class="mt-4 text-sm text-gray-300">“Reconciliation used to take hours. Now it’s minutes.”</blockquote>
+            <figcaption class="mt-2 text-xs text-gray-400">Ian T., Wholesale ops</figcaption>
+          </figure>
+          <figure class="glass rounded-2xl p-6">
+            <img src="" alt="Professional headshot on dark gradient." class="w-full h-40 object-cover rounded-xl bg-white/5" />
+            <blockquote class="mt-4 text-sm text-gray-300">“Sales tax got simpler across states.”</blockquote>
+            <figcaption class="mt-2 text-xs text-gray-400">Alexa P., Amazon seller</figcaption>
+          </figure>
         </div>
       </div>
-    </div>
-  </section>
+    </section>
 
-  <!-- Integrations -->
-  <section id="integrations" class="py-20">
-    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-      <div class="flex items-center justify-between flex-wrap gap-4">
-        <h2 class="text-3xl md:text-4xl font-extrabold">Plug into your stack</h2>
-        <a href="#signup" class="btn rounded-xl px-5 py-3 font-semibold">Connect now</a>
-      </div>
-      <div class="mt-8 grid grid-cols-2 md:grid-cols-4 gap-4">
-        <div class="glass rounded-2xl p-5 text-center">
-          <div class="text-2xl">🧾</div>
-          <div class="mt-2 font-semibold">QuickBooks</div>
-          <div class="text-xs text-white/70">Online & Desktop (via export)</div>
-        </div>
-        <div class="glass rounded-2xl p-5 text-center">
-          <div class="text-2xl">📘</div>
-          <div class="mt-2 font-semibold">Zoho Books</div>
-          <div class="text-xs text-white/70">Full sync</div>
-        </div>
-        <div class="glass rounded-2xl p-5 text-center">
-          <div class="text-2xl">❎</div>
-          <div class="mt-2 font-semibold">Xero</div>
-          <div class="text-xs text-white/70">Coming soon</div>
-        </div>
-        <div class="glass rounded-2xl p-5 text-center">
-          <div class="text-2xl">📦</div>
-          <div class="mt-2 font-semibold">Tally</div>
-          <div class="text-xs text-white/70">CSV/JSON import</div>
-        </div>
-      </div>
-    </div>
-  </section>
+    <!-- Pricing -->
+    <section id="pricing" class="py-16">
+      <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <h2 class="text-3xl font-semibold">Simple pricing</h2>
+        <p class="mt-2 text-gray-300">No credit card required · 7-day free trial.</p>
 
-  <!-- Live Demo: Running Accounts Subtraction -->
-  <section id="demo" class="py-20">
-    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-      <h2 class="text-3xl md:text-4xl font-extrabold">Live accounts demo</h2>
-      <p class="mt-2 text-white/80">Add sales and expenses below to see your running balance update. This simulates LedgerDaddy’s real‑time P&L view.</p>
-      <div class="mt-8 grid md:grid-cols-3 gap-6">
-        <div class="md:col-span-2 glass rounded-2xl p-6">
-          <div class="flex gap-3">
-            <input id="txName" class="w-full rounded-xl bg-white/10 px-4 py-3 outline-none" placeholder="Item description (e.g., Shopify Sales)" />
-            <input id="txAmount" type="number" class="w-40 rounded-xl bg-white/10 px-4 py-3 outline-none" placeholder="Amount" />
-            <select id="txType" class="w-36 rounded-xl bg-white/10 px-4 py-3 outline-none">
-              <option value="sale">Sale (+)</option>
-              <option value="expense">Expense (−)</option>
-            </select>
-            <button id="addTx" class="btn rounded-xl px-4">Add</button>
+        <div class="mt-8 grid md:grid-cols-3 gap-6">
+          <!-- Starter -->
+          <div class="glass rounded-2xl p-6 flex flex-col">
+            <h3 class="font-medium">Starter</h3>
+            <p class="mt-1 text-3xl font-semibold">$49<span class="text-base font-normal text-gray-400">/mo</span></p>
+            <ul class="mt-4 text-sm text-gray-300 space-y-2">
+              <li>• WhatsApp capture</li>
+              <li>• Up to 3 users</li>
+              <li>• QuickBooks or Zoho</li>
+            </ul>
+            <a href="#signup" class="mt-6 btn-primary text-center px-5 py-3 rounded-xl font-medium focus-ring">Start now</a>
           </div>
-          <div class="mt-6 max-h-64 overflow-auto" id="txList"></div>
-        </div>
-        <div class="glass rounded-2xl p-6">
-          <div class="text-sm text-white/70">Model</div>
-          <select class="mt-1 w-full rounded-xl bg-white/10 px-4 py-3 outline-none" id="modelSelect">
-            <option>Fast (Recommended)</option>
-            <option>Accurate</option>
-            <option>Custom</option>
-          </select>
-          <div class="mt-6 text-sm text-white/70">Opening cash</div>
-          <input id="opening" type="number" value="10000" class="mt-1 w-full rounded-xl bg-white/10 px-4 py-3 outline-none" />
-          <div class="mt-6 text-2xl font-extrabold">Balance: <span id="balance">$10,000.00</span></div>
-          <div class="mt-2 text-sm text-white/70">Gross margin and tax are calculated in the full app.</div>
+
+          <!-- Growth -->
+          <div class="glass rounded-2xl p-6 border border-accent/40 shadow-glow flex flex-col">
+            <h3 class="font-medium">Growth</h3>
+            <p class="mt-1 text-3xl font-semibold">$199<span class="text-base font-normal text-gray-400">/mo</span></p>
+            <ul class="mt-4 text-sm text-gray-300 space-y-2">
+              <li>• Everything in Starter</li>
+              <li>• Up to 15 users</li>
+              <li>• Inventory & multi-channel</li>
+            </ul>
+            <a href="#signup" class="mt-6 btn-primary text-center px-5 py-3 rounded-xl font-medium focus-ring">Start now</a>
+          </div>
+
+          <!-- Enterprise -->
+          <div class="glass rounded-2xl p-6 flex flex-col">
+            <h3 class="font-medium">Enterprise</h3>
+            <p class="mt-1 text-3xl font-semibold">Custom</p>
+            <ul class="mt-4 text-sm text-gray-300 space-y-2">
+              <li>• SSO & advanced controls</li>
+              <li>• Priority support</li>
+              <li>• Dedicated success</li>
+            </ul>
+            <a href="#signup" class="mt-6 btn-secondary glass text-center px-5 py-3 rounded-xl font-medium focus-ring">Talk to sales</a>
+          </div>
         </div>
       </div>
-    </div>
-  </section>
+    </section>
 
-  <script>
-    const tx = [];
-    const fmt = x=> x.toLocaleString(undefined,{style:'currency', currency:'USD'});
-    const list = document.getElementById('txList');
-    const balanceEl = document.getElementById('balance');
-    function render(){
-      list.innerHTML = '';
-      let opening = Number(document.getElementById('opening').value||0);
-      let bal = opening;
-      tx.forEach((t,i)=>{
-        bal += t.type==='sale'? t.amount : -t.amount;
-        const row = document.createElement('div');
-        row.className='flex items-center justify-between py-2 border-b border-white/10';
-        row.innerHTML = `<div class="text-sm"><span class="px-2 py-1 rounded bg-white/10 mr-2">${t.type==='sale'? 'Sale' : 'Expense'}</span>${t.name}</div><div class="text-sm">${t.type==='sale'? '+' : '−'}${fmt(t.amount)}</div>`;
-        list.appendChild(row);
-      });
-      balanceEl.textContent = fmt(bal);
-    }
-    document.getElementById('addTx').addEventListener('click',()=>{
-      const name = document.getElementById('txName').value.trim()||'Untitled';
-      const amount = Number(document.getElementById('txAmount').value||0);
-      const type = document.getElementById('txType').value;
-      if(!amount) return;
-      tx.push({name, amount, type});
-      document.getElementById('txAmount').value='';
-      render();
-    });
-    document.getElementById('opening').addEventListener('input', render);
-    render();
-  </script>
-
-  <!-- Reviews -->
-  <section id="reviews" class="py-20">
-    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-      <h2 class="text-3xl md:text-4xl font-extrabold">Loved by founders & finance teams</h2>
-      <div class="mt-8 grid md:grid-cols-3 gap-6">
-        <!-- Card 1 -->
-        <div class="glass rounded-2xl p-6">
-          <div class="flex items-center gap-3">
-            <svg width="40" height="40" viewBox="0 0 80 80" class="rounded-full">
-              <defs><linearGradient id="av1" x1="0" y1="0" x2="1" y2="1"><stop offset="0%" stop-color="#6C8BFF"/><stop offset="100%" stop-color="#59EBC3"/></linearGradient></defs>
-              <rect x="0" y="0" width="80" height="80" rx="40" fill="url(#av1)"/>
-            </svg>
+    <!-- Signup -->
+    <section id="signup" class="py-16">
+      <div class="max-w-xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="glass rounded-3xl p-6">
+          <h2 class="text-2xl font-semibold">Create your account</h2>
+          <p class="mt-2 text-gray-300">No credit card required · 7-day free trial</p>
+          <form class="mt-6 space-y-4" onsubmit="event.preventDefault(); alert('Thanks! We will email you onboarding steps.');">
             <div>
-              <div class="font-semibold">Ava Patel</div>
-              <div class="text-xs text-white/70">COO, EverGlow Skincare</div>
+              <label for="name" class="block text-sm text-gray-300">Full name</label>
+              <input id="name" name="name" class="w-full bg-transparent border border-white/10 rounded-lg p-2 focus-ring" required />
             </div>
-          </div>
-          <p class="mt-4 text-white/80">“We cut accounting costs by 68% and get daily cash insight on WhatsApp. My team literally tags @LedgerDaddy in our ops group.”</p>
-          <div class="mt-3 text-amber-300">★★★★★</div>
-        </div>
-        <!-- Card 2 -->
-        <div class="glass rounded-2xl p-6">
-          <div class="flex items-center gap-3">
-            <svg width="40" height="40" viewBox="0 0 80 80" class="rounded-full">
-              <defs><linearGradient id="av2" x1="0" y1="0" x2="1" y2="1"><stop offset="0%" stop-color="#9D7CFF"/><stop offset="100%" stop-color="#6C8BFF"/></linearGradient></defs>
-              <rect x="0" y="0" width="80" height="80" rx="40" fill="url(#av2)"/>
-            </svg>
             <div>
-              <div class="font-semibold">Marcus Lee</div>
-              <div class="text-xs text-white/70">Founder, Peak Outfitters</div>
+              <label for="email" class="block text-sm text-gray-300">Work email</label>
+              <input id="email" type="email" name="email" class="w-full bg-transparent border border-white/10 rounded-lg p-2 focus-ring" required />
             </div>
-          </div>
-          <p class="mt-4 text-white/80">“OCR + AI posting is spooky good. Bills in, vendors created, entries posted, done.”</p>
-          <div class="mt-3 text-amber-300">★★★★★</div>
-        </div>
-        <!-- Card 3 -->
-        <div class="glass rounded-2xl p-6">
-          <div class="flex items-center gap-3">
-            <svg width="40" height="40" viewBox="0 0 80 80" class="rounded-full">
-              <defs><linearGradient id="av3" x1="0" y1="0" x2="1" y2="1"><stop offset="0%" stop-color="#59EBC3"/><stop offset="100%" stop-color="#9D7CFF"/></linearGradient></defs>
-              <rect x="0" y="0" width="80" height="80" rx="40" fill="url(#av3)"/>
-            </svg>
             <div>
-              <div class="font-semibold">Sofia Nguyen</div>
-              <div class="text-xs text-white/70">Finance Lead, SwiftShip</div>
+              <label for="company" class="block text-sm text-gray-300">Company</label>
+              <input id="company" name="company" class="w-full bg-transparent border border-white/10 rounded-lg p-2 focus-ring" />
             </div>
+            <div>
+              <label for="plan" class="block text-sm text-gray-300">Plan</label>
+              <select id="plan" name="plan" class="w-full bg-transparent border border-white/10 rounded-lg p-2 focus-ring">
+                <option>Starter ($49/mo)</option>
+                <option>Growth ($199/mo)</option>
+                <option>Enterprise (custom)</option>
+              </select>
+            </div>
+            <div>
+              <label for="model" class="block text-sm text-gray-300">AI mode</label>
+              <select id="model" name="model" class="w-full bg-transparent border border-white/10 rounded-lg p-2 focus-ring">
+                <option>Fast</option>
+                <option>Accurate</option>
+                <option>Custom</option>
+              </select>
+            </div>
+            <div class="flex items-center gap-3">
+              <button class="btn-primary px-6 py-3 rounded-xl font-medium focus-ring" type="submit">Start now</button>
+              <button class="btn-secondary glass px-6 py-3 rounded-xl font-medium focus-ring" type="button" onclick="alert('Sales will contact you shortly.');">Talk to sales</button>
+            </div>
+          </form>
+        </div>
+      </div>
+    </section>
+
+    <!-- FAQ -->
+    <section id="faq" class="py-16">
+      <div class="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8">
+        <h2 class="text-3xl font-semibold">FAQ</h2>
+        <dl class="mt-8 space-y-6">
+          <div class="glass rounded-2xl p-5">
+            <dt class="font-medium">How does WhatsApp capture work?</dt>
+            <dd class="mt-2 text-sm text-gray-300">You send bills, receipts, or notes. We extract fields and post entries.</dd>
           </div>
-          <p class="mt-4 text-white/80">“Month‑end takes hours, not weeks. Our auditor loves the paper trail.”</p>
-          <div class="mt-3 text-amber-300">★★★★★</div>
-        </div>
-      </div>
-    </div>
-  </section>
-
-  <!-- Pricing -->
-  <section id="pricing" class="py-20">
-    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
-      <h2 class="text-3xl md:text-4xl font-extrabold">Simple pricing</h2>
-      <p class="mt-2 text-white/80">Start free. Upgrade when you scale.</p>
-      <div class="mt-10 grid md:grid-cols-3 gap-6 text-left">
-        <div class="glass rounded-2xl p-6">
-          <div class="text-sm text-white/70">Starter</div>
-          <div class="text-4xl font-extrabold mt-2">$49<span class="text-base text-white/70">/mo</span></div>
-          <ul class="mt-4 space-y-2 text-white/80 text-sm">
-            <li>• WhatsApp intake</li>
-            <li>• 500 documents</li>
-            <li>• Basic reconciliation</li>
-          </ul>
-          <a href="#signup" class="btn rounded-xl px-4 py-2 inline-block mt-6">Start now</a>
-        </div>
-        <div class="glass rounded-2xl p-6 ring-2 ring-white/20">
-          <div class="text-sm text-white/70">Growth</div>
-          <div class="text-4xl font-extrabold mt-2">$199<span class="text-base text-white/70">/mo</span></div>
-          <ul class="mt-4 space-y-2 text-white/80 text-sm">
-            <li>• All Starter features</li>
-            <li>• QuickBooks & Zoho sync</li>
-            <li>• Inventory tracking</li>
-            <li>• US sales tax</li>
-          </ul>
-          <a href="#signup" class="btn rounded-xl px-4 py-2 inline-block mt-6">Start now</a>
-        </div>
-        <div class="glass rounded-2xl p-6">
-          <div class="text-sm text-white/70">Enterprise</div>
-          <div class="text-4xl font-extrabold mt-2">Custom</div>
-          <ul class="mt-4 space-y-2 text-white/80 text-sm">
-            <li>• SSO & roles</li>
-            <li>• Audit & SOC2</li>
-            <li>• Priority support</li>
-          </ul>
-          <a href="#signup" class="btn rounded-xl px-4 py-2 inline-block mt-6">Talk to sales</a>
-        </div>
-      </div>
-    </div>
-  </section>
-
-  <!-- Signup -->
-  <section id="signup" class="py-20">
-    <div class="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8">
-      <div class="glass rounded-3xl p-8">
-        <h2 class="text-3xl font-extrabold">Create your account</h2>
-        <p class="text-white/80 mt-2">Connect WhatsApp, then link your accounting app. No setup calls needed.</p>
-        <form class="mt-6 grid md:grid-cols-2 gap-4" onsubmit="event.preventDefault(); alert('Demo form. Hook to your backend.');">
-          <input required placeholder="Full name" class="rounded-xl bg-white/10 px-4 py-3 outline-none" />
-          <input required type="email" placeholder="Work email" class="rounded-xl bg-white/10 px-4 py-3 outline-none" />
-          <input placeholder="Company" class="rounded-xl bg-white/10 px-4 py-3 outline-none" />
-          <select class="rounded-xl bg-white/10 px-4 py-3 outline-none">
-            <option>Plan: Growth</option>
-            <option>Plan: Starter</option>
-            <option>Plan: Enterprise</option>
-          </select>
-          <div class="md:col-span-2 flex items-center gap-2 text-sm text-white/70">
-            <input type="checkbox" required />
-            <span>I agree to the <a href="#policies" class="underline">Terms</a> and <a href="#policies" class="underline">Privacy</a>.</span>
+          <div class="glass rounded-2xl p-5">
+            <dt class="font-medium">Is setup hard?</dt>
+            <dd class="mt-2 text-sm text-gray-300">It’s quick. Connect QuickBooks or Zoho, choose AI mode, and invite your team.</dd>
           </div>
-          <button class="md:col-span-2 btn rounded-xl px-6 py-3 font-semibold">Create account</button>
-        </form>
+          <div class="glass rounded-2xl p-5">
+            <dt class="font-medium">Do you handle US sales tax?</dt>
+            <dd class="mt-2 text-sm text-gray-300">We apply high-level US sales tax and IRS rules based on your configuration.</dd>
+          </div>
+          <div class="glass rounded-2xl p-5">
+            <dt class="font-medium">Can I export data?</dt>
+            <dd class="mt-2 text-sm text-gray-300">Yes. Clean CSV/PDF exports and Tally CSV are available.</dd>
+          </div>
+        </dl>
       </div>
-    </div>
-  </section>
+    </section>
 
-  <!-- FAQ -->
-  <section id="faq" class="py-20">
-    <div class="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
-      <h2 class="text-3xl md:text-4xl font-extrabold">Frequently asked questions</h2>
-      <div class="mt-8 grid md:grid-cols-2 gap-6">
-        <div class="glass rounded-2xl p-6">
-          <div class="font-semibold">Do you replace my accountant?</div>
-          <div class="text-white/80 mt-2">We automate daily work and prepare clean books. Many customers keep an advisor for tax strategy.</div>
-        </div>
-        <div class="glass rounded-2xl p-6">
-          <div class="font-semibold">How accurate is document parsing?</div>
-          <div class="text-white/80 mt-2">Line‑item accuracy exceeds 95% on common formats. You can approve or edit any entry.</div>
-        </div>
-        <div class="glass rounded-2xl p-6">
-          <div class="font-semibold">Where is my data stored?</div>
-          <div class="text-white/80 mt-2">Encrypted at rest and in transit. Region options available for Enterprise.</div>
-        </div>
-        <div class="glass rounded-2xl p-6">
-          <div class="font-semibold">Do you support multiple entities?</div>
-          <div class="text-white/80 mt-2">Yes, switchbooks instantly and set per‑entity permissions.</div>
-        </div>
-      </div>
-    </div>
-  </section>
+    <!-- Policies directory (links to standalone pages you'll add next) -->
+    <section id="policies" class="py-16">
+      <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
+        <h2 class="text-3xl font-semibold">Policies</h2>
+        <p class="mt-2 text-gray-300">Links below point to dedicated pages you will create next.</p>
 
-  <!-- Policies -->
-  <section id="policies" class="py-20">
-    <div class="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
-      <h2 class="text-3xl md:text-4xl font-extrabold">Policies</h2>
-      <div class="mt-6 grid md:grid-cols-3 gap-6 text-sm text-white/80">
-        <div class="glass rounded-2xl p-6">
-          <div class="font-semibold text-white">Privacy Policy (Template)</div>
-          <p class="mt-2">We collect account data and documents you upload. We don’t sell your data. You can request deletion anytime. Update this section with your legal counsel.</p>
-        </div>
-        <div class="glass rounded-2xl p-6">
-          <div class="font-semibold text-white">Terms of Service (Template)</div>
-          <p class="mt-2">Use is subject to fair usage and applicable accounting/tax laws. Service is provided “as‑is”. Add jurisdiction and dispute terms.</p>
-        </div>
-        <div class="glass rounded-2xl p-6">
-          <div class="font-semibold text-white">Data Processing Addendum</div>
-          <p class="mt-2">Outlines roles of Controller/Processor, sub‑processors, retention, and breach notifications. Customize for your stack.</p>
-        </div>
-      </div>
-    </div>
-  </section>
+        <ul class="mt-6 grid sm:grid-cols-2 gap-4 text-sm text-gray-300">
+          <li class="glass rounded-xl p-4"><a class="hover:text-accent underline" href="privacy.html">Privacy Policy</a></li>
+          <li class="glass rounded-xl p-4"><a class="hover:text-accent underline" href="terms.html">Terms &amp; Conditions</a></li>
+          <li class="glass rounded-xl p-4"><a class="hover:text-accent underline" href="dpa.html">Data Processing Addendum (DPA)</a></li>
+          <li class="glass rounded-xl p-4"><a class="hover:text-accent underline" href="security.html">Security Overview</a></li>
+          <li class="glass rounded-xl p-4"><a class="hover:text-accent underline" href="cookie-policy.html">Cookie Policy</a></li>
+          <li class="glass rounded-xl p-4"><a class="hover:text-accent underline" href="acceptable-use.html">Acceptable Use</a></li>
+          <li class="glass rounded-xl p-4"><a class="hover:text-accent underline" href="sla.html">Service Level (SLA)</a></li>
+          <li class="glass rounded-xl p-4"><a class="hover:text-accent underline" href="subprocessors.html">Subprocessors</a></li>
+        </ul>
 
-  <footer class="py-12 border-t border-white/10">
-    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex flex-col md:flex-row gap-6 md:items-center md:justify-between text-white/70 text-sm">
-      <div class="flex items-center gap-2">
-        <span>© <span id="yr"></span> LedgerDaddy Inc.</span>
-        <span class="hidden md:inline">·</span>
-        <a href="#policies" class="underline">Privacy</a>
-        <span>·</span>
-        <a href="#policies" class="underline">Terms</a>
+        <p class="mt-6 text-xs text-gray-400">Draft your pages and include a “review with counsel” note before going live.</p>
       </div>
-      <div>
-        <a href="#signup" class="btn rounded-xl px-4 py-2 font-semibold">Sign up</a>
+    </section>
+  </main>
+
+  <!-- Footer -->
+  <footer class="border-t border-white/10">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10">
+      <div class="grid md:grid-cols-4 gap-8">
+        <div>
+          <div class="flex items-center gap-2">
+            <svg width="22" height="22" viewBox="0 0 64 64" aria-hidden="true">
+              <defs><linearGradient id="g2" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#6A5BFF"/><stop offset="1" stop-color="#22D3EE"/></linearGradient></defs>
+              <path d="M20 16v28a4 4 0 0 0 4 4h20" fill="none" stroke="url(#g2)" stroke-width="6" stroke-linecap="round"/>
+              <circle cx="44" cy="48" r="4" fill="url(#g2)"/>
+            </svg>
+            <span class="font-medium">LedgerDaddy</span>
+          </div>
+          <p class="mt-3 text-sm text-gray-400">Built for US SMBs, D2C, wholesale, and e-commerce.</p>
+        </div>
+        <div>
+          <h4 class="font-medium mb-3">Product</h4>
+          <ul class="space-y-2 text-sm text-gray-400">
+            <li><a class="hover:text-accent" href="#product">Features</a></li>
+            <li><a class="hover:text-accent" href="#integrations">Integrations</a></li>
+            <li><a class="hover:text-accent" href="#pricing">Pricing</a></li>
+          </ul>
+        </div>
+        <div>
+          <h4 class="font-medium mb-3">Company</h4>
+          <ul class="space-y-2 text-sm text-gray-400">
+            <li><a class="hover:text-accent" href="#reviews">Customers</a></li>
+            <li><a class="hover:text-accent" href="#policies">Policies</a></li>
+            <li><a class="hover:text-accent" href="#faq">FAQ</a></li>
+          </ul>
+        </div>
+        <div>
+          <h4 class="font-medium mb-3">Contact</h4>
+          <ul class="space-y-2 text-sm text-gray-400">
+            <li><a class="hover:text-accent" href="mailto:hello@ledgerdaddy.com">hello@ledgerdaddy.com</a></li>
+            <li><a class="hover:text-accent" href="#">@ledgerdaddy</a></li>
+          </ul>
+        </div>
       </div>
+      <p class="mt-8 text-xs text-gray-500">© <span id="year"></span> LedgerDaddy. All rights reserved.</p>
     </div>
   </footer>
 
-  <!-- Cookie / Consent minimal -->
-  <div id="cookie" class="fixed bottom-4 left-4 right-4 md:left-6 md:right-auto glass p-4 rounded-xl text-sm hidden">
-    We use cookies to improve your experience. <button class="underline" onclick="document.getElementById('cookie').classList.add('hidden')">OK</button>
+  <!-- Cookie banner -->
+  <div id="cookie" class="fixed bottom-4 inset-x-4 md:inset-x-auto md:right-6 md:bottom-6 max-w-xl glass rounded-2xl p-4 border border-white/10 shadow-glow hidden" role="dialog" aria-live="polite">
+    <p class="text-sm text-gray-300">We use cookies to improve your experience. Read our <a href="cookie-policy.html" class="underline hover:text-accent">Cookie Policy</a>.</p>
+    <div class="mt-3 flex gap-3">
+      <button id="cookieAccept" class="btn-primary px-4 py-2 rounded-xl font-medium focus-ring">Accept</button>
+      <button id="cookieDismiss" class="btn-secondary glass px-4 py-2 rounded-xl font-medium focus-ring">Dismiss</button>
+    </div>
   </div>
-  <script>
-    document.getElementById('yr').textContent = new Date().getFullYear();
-    setTimeout(()=>document.getElementById('cookie').classList.remove('hidden'), 1200);
+
+  <!-- Scripts (defer) -->
+  <script defer>
+    // Mobile nav toggle
+    const navToggle = document.getElementById('navToggle');
+    const mobileNav = document.getElementById('mobileNav');
+    if (navToggle) {
+      navToggle.addEventListener('click', () => {
+        const open = !mobileNav.classList.toggle('hidden');
+        navToggle.setAttribute('aria-expanded', String(open));
+      });
+    }
+
+    // Model selector note
+    const modelSelect = document.getElementById('modelSelect');
+    const modelNote = document.getElementById('modelNote');
+    if (modelSelect && modelNote) {
+      const notes = {
+        "Fast": "Fast: quick replies for day-to-day entries.",
+        "Accurate": "Accurate: deeper checks for month-end and tax.",
+        "Custom": "Custom: tune prompts, tax profiles, and rules."
+      };
+      modelSelect.addEventListener('change', (e) => {
+        modelNote.textContent = notes[e.target.value] || notes["Fast"];
+      });
+    }
+
+    // Live demo logic
+    const opening = document.getElementById('opening');
+    const typeEl = document.getElementById('type');
+    const amount = document.getElementById('amount');
+    const desc = document.getElementById('desc');
+    const addItem = document.getElementById('addItem');
+    const clearItems = document.getElementById('clearItems');
+    const items = document.getElementById('items');
+    const balance = document.getElementById('balance');
+
+    let ledger = [];
+
+    function toCurrency(n) {
+      const val = Number.isFinite(n) ? n : 0;
+      return '$' + val.toFixed(2);
+    }
+
+    function computeBalance() {
+      const open = parseFloat(opening.value || '0');
+      const delta = ledger.reduce((acc, row) => acc + row.amount, 0);
+      const total = open + delta;
+      balance.textContent = toCurrency(total);
+    }
+
+    function render() {
+      items.innerHTML = '';
+      ledger.forEach((row, i) => {
+        const li = document.createElement('li');
+        li.className = 'flex items-center justify-between rounded-lg bg-white/5 border border-white/10 p-3';
+        const sign = row.amount >= 0 ? '+' : '−';
+        li.innerHTML = `
+          <div class="min-w-0">
+            <div class="text-sm">${row.desc || (row.type === 'sale' ? 'Sale' : 'Expense')}</div>
+            <div class="text-xs text-gray-400">${row.type}</div>
+          </div>
+          <div class="flex items-center gap-3">
+            <span class="font-medium">${sign}${toCurrency(Math.abs(row.amount))}</span>
+            <button aria-label="Remove item" class="p-1 rounded-md hover:bg-white/10 remove-item" data-i="${i}">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                <path stroke-linecap="round" stroke-width="2" d="M6 6l12 12M18 6L6 18"/>
+              </svg>
+            </button>
+          </div>
+        `;
+        items.appendChild(li);
+      });
+      computeBalance();
+    }
+
+    if (addItem) {
+      addItem.addEventListener('click', () => {
+        const val = parseFloat(amount.value || '0');
+        if (!Number.isFinite(val) || val <= 0) return;
+        const isSale = typeEl.value === 'sale';
+        ledger.push({
+          type: isSale ? 'sale' : 'expense',
+          amount: isSale ? val : -val,
+          desc: (desc.value || '').trim()
+        });
+        amount.value = '';
+        desc.value = '';
+        render();
+      });
+    }
+
+    if (clearItems) {
+      clearItems.addEventListener('click', () => {
+        ledger = [];
+        render();
+      });
+    }
+
+    if (opening) {
+      opening.addEventListener('input', computeBalance);
+    }
+
+    if (items) {
+      items.addEventListener('click', (e) => {
+        const btn = e.target.closest('.remove-item');
+        if (!btn) return;
+        const idx = Number(btn.dataset.i);
+        if (Number.isInteger(idx)) {
+          ledger.splice(idx, 1);
+          render();
+        }
+      });
+    }
+
+    // Cookie banner
+    const cookie = document.getElementById('cookie');
+    const cookieAccept = document.getElementById('cookieAccept');
+    const cookieDismiss = document.getElementById('cookieDismiss');
+    const COOKIE_KEY = 'ld_cookie_ok';
+    if (cookie && !localStorage.getItem(COOKIE_KEY)) {
+      cookie.classList.remove('hidden');
+    }
+    function closeCookie(consented) {
+      cookie.classList.add('hidden');
+      if (consented) localStorage.setItem(COOKIE_KEY, '1');
+    }
+    cookieAccept && cookieAccept.addEventListener('click', () => closeCookie(true));
+    cookieDismiss && cookieDismiss.addEventListener('click', () => closeCookie(false));
+
+    // Year
+    const y = document.getElementById('year');
+    if (y) y.textContent = new Date().getFullYear();
   </script>
 </body>
 </html>
