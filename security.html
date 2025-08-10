@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <title>Security Overview — LedgerDaddy</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="robots" content="noindex" />
+  <style>
+    body{font-family:Inter,system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif;margin:0;background:#0B0B12;color:#E6E6F0}
+    main{max-width:900px;margin:0 auto;padding:48px 20px}
+    a{color:#22D3EE} h1{font-size:32px;margin:0 0 6px} h2{font-size:20px;margin:28px 0 8px}
+    p,li{line-height:1.6;color:#C9CBD3} .muted{color:#9CA3AF;font-size:14px}
+    .card{background:#14141d;border:1px solid #2a2a36;border-radius:14px;padding:16px}
+    header,footer{max-width:900px;margin:0 auto;padding:16px 20px;color:#9CA3AF}
+  </style>
+</head>
+<body>
+<header><a href="index.html">← Back to site</a></header>
+<main>
+  <h1>Security Overview</h1>
+  <p class="muted">This is an informational summary. Review with counsel and your security team before publishing.</p>
+  <p class="muted">Last updated: <span id="d"></span></p>
+
+  <h2>Controls</h2>
+  <ul>
+    <li>Encryption in transit (HTTPS/TLS); encryption at rest where supported by our providers.</li>
+    <li>Least-privilege access and role-based permissions.</li>
+    <li>Audit logs for key actions and access events.</li>
+    <li>Secure software development lifecycle and vulnerability management.</li>
+  </ul>
+
+  <h2>Data handling</h2>
+  <p>Production data is restricted to authorized staff. Backups are performed on a scheduled basis. Data is processed only to deliver the service.</p>
+
+  <h2>Incident response</h2>
+  <p>We investigate incidents, remediate, and notify customers as required by law and contract.</p>
+
+  <h2>Compliance</h2>
+  <p>We follow industry practices for security and privacy. Formal audit statements, if any, will be listed here.</p>
+
+  <h2>Contact security</h2>
+  <p>Email: <a href="mailto:security@ledgerdaddy.com">security@ledgerdaddy.com</a></p>
+</main>
+<footer>© <span id="y"></span> LedgerDaddy</footer>
+<script>
+  const n=new Date();document.getElementById('y').textContent=n.getFullYear();document.getElementById('d').textContent=n.toISOString().slice(0,10);
+</script>
+</body>
+</html>
