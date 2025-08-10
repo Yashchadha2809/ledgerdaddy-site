@@ -50,9 +50,12 @@
     .btn-primary:active{transform:translateY(1px)}
     .focus-ring:focus{outline:2px solid #22D3EE;outline-offset:2px}
     .tappable{min-height:44px}
-    @media (prefers-reduced-motion:no-preference){
-      .pressable:active{transform:scale(.98)}
-    }
+    .prose p,.prose li{color:#C9CBD3}
+    .prose h3{margin-top:1.25rem;font-weight:600}
+    .policy-card{background:#14141d;border:1px solid #2a2a36;border-radius:14px;padding:16px}
+    @media (prefers-reduced-motion:no-preference){ .pressable:active{transform:scale(.98)} }
+    /* Hash-section highlight */
+    :target{scroll-margin-top:96px}
   </style>
 </head>
 <body class="bg-ink text-white bg-grad selection:bg-accent/30 selection:text-white antialiased">
@@ -62,7 +65,7 @@
   <header class="fixed inset-x-0 top-0 z-50 bg-ink/80 backdrop-blur border-b border-white/10">
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
       <div class="h-14 flex items-center justify-between">
-        <a href="index.html" class="flex items-center gap-2" aria-label="LedgerDaddy home">
+        <a href="#top" class="flex items-center gap-2" aria-label="LedgerDaddy home">
           <svg width="26" height="26" viewBox="0 0 64 64" aria-hidden="true">
             <defs><linearGradient id="g" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#6A5BFF"/><stop offset="1" stop-color="#22D3EE"/></linearGradient></defs>
             <rect x="6" y="6" width="52" height="52" rx="12" fill="url(#g)" opacity="0.15"/>
@@ -86,16 +89,18 @@
               Policies
               <svg width="16" height="16" fill="none" stroke="currentColor"><path stroke-linecap="round" stroke-width="2" d="M4 6l4 4 4-4"/></svg>
             </button>
-            <div id="policiesMenu" class="absolute right-0 mt-2 w-64 glass rounded-xl border border-white/10 p-2 hidden" role="menu" aria-label="Policies">
-              <a class="block px-3 py-2 rounded hover:bg-white/10" href="privacy.html" role="menuitem">Privacy Policy</a>
-              <a class="block px-3 py-2 rounded hover:bg-white/10" href="terms.html" role="menuitem">Terms &amp; Conditions</a>
-              <a class="block px-3 py-2 rounded hover:bg-white/10" href="dpa.html" role="menuitem">Data Processing Addendum</a>
-              <a class="block px-3 py-2 rounded hover:bg-white/10" href="security.html" role="menuitem">Security Overview</a>
-              <a class="block px-3 py-2 rounded hover:bg-white/10" href="cookie-policy.html" role="menuitem">Cookie Policy</a>
-              <a class="block px-3 py-2 rounded hover:bg-white/10" href="acceptable-use.html" role="menuitem">Acceptable Use</a>
-              <a class="block px-3 py-2 rounded hover:bg-white/10" href="sla.html" role="menuitem">Service Level (SLA)</a>
-              <a class="block px-3 py-2 rounded hover:bg-white/10" href="subprocessors.html" role="menuitem">Subprocessors</a>
-              <a class="block px-3 py-2 rounded hover:bg-white/10" href="disclaimer.html" role="menuitem">Disclaimer</a>
+            <div id="policiesMenu" class="absolute right-0 mt-2 w-72 glass rounded-xl border border-white/10 p-2 hidden" role="menu" aria-label="Policies">
+              <a class="block px-3 py-2 rounded hover:bg-white/10" href="#privacy" role="menuitem">Privacy Policy</a>
+              <a class="block px-3 py-2 rounded hover:bg-white/10" href="#terms" role="menuitem">Terms &amp; Conditions</a>
+              <a class="block px-3 py-2 rounded hover:bg-white/10" href="#dpa" role="menuitem">Data Processing Addendum</a>
+              <a class="block px-3 py-2 rounded hover:bg-white/10" href="#security" role="menuitem">Security Overview</a>
+              <a class="block px-3 py-2 rounded hover:bg-white/10" href="#cookie-policy" role="menuitem">Cookie Policy</a>
+              <a class="block px-3 py-2 rounded hover:bg-white/10" href="#acceptable-use" role="menuitem">Acceptable Use</a>
+              <a class="block px-3 py-2 rounded hover:bg-white/10" href="#sla" role="menuitem">Service Level (SLA)</a>
+              <a class="block px-3 py-2 rounded hover:bg-white/10" href="#subprocessors" role="menuitem">Subprocessors</a>
+              <a class="block px-3 py-2 rounded hover:bg-white/10" href="#disclaimer" role="menuitem">Disclaimer</a>
+              <a class="block px-3 py-2 rounded hover:bg-white/10" href="#refunds" role="menuitem">Refunds &amp; Cancellations</a>
+              <a class="block px-3 py-2 rounded hover:bg-white/10" href="#ccpa" role="menuitem">California / CCPA Notice</a>
             </div>
           </div>
 
@@ -124,25 +129,25 @@
           <a class="block px-3 py-3 rounded-lg hover:bg-white/10 tappable" href="#pricing">Pricing</a>
           <a class="block px-3 py-3 rounded-lg hover:bg-white/10 tappable" href="#reviews">Reviews</a>
           <a class="block px-3 py-3 rounded-lg hover:bg-white/10 tappable" href="#faq">FAQ</a>
-
           <details class="glass rounded-lg p-3">
             <summary class="cursor-pointer select-none">Policies</summary>
             <div class="mt-2 pl-2 space-y-1 text-sm">
-              <a class="block px-3 py-2 rounded hover:bg-white/10" href="privacy.html">Privacy Policy</a>
-              <a class="block px-3 py-2 rounded hover:bg-white/10" href="terms.html">Terms &amp; Conditions</a>
-              <a class="block px-3 py-2 rounded hover:bg-white/10" href="dpa.html">Data Processing Addendum</a>
-              <a class="block px-3 py-2 rounded hover:bg-white/10" href="security.html">Security Overview</a>
-              <a class="block px-3 py-2 rounded hover:bg-white/10" href="cookie-policy.html">Cookie Policy</a>
-              <a class="block px-3 py-2 rounded hover:bg-white/10" href="acceptable-use.html">Acceptable Use</a>
-              <a class="block px-3 py-2 rounded hover:bg-white/10" href="sla.html">Service Level (SLA)</a>
-              <a class="block px-3 py-2 rounded hover:bg-white/10" href="subprocessors.html">Subprocessors</a>
-              <a class="block px-3 py-2 rounded hover:bg-white/10" href="disclaimer.html">Disclaimer</a>
+              <a class="block px-3 py-2 rounded hover:bg-white/10" href="#privacy">Privacy Policy</a>
+              <a class="block px-3 py-2 rounded hover:bg-white/10" href="#terms">Terms &amp; Conditions</a>
+              <a class="block px-3 py-2 rounded hover:bg-white/10" href="#dpa">Data Processing Addendum</a>
+              <a class="block px-3 py-2 rounded hover:bg-white/10" href="#security">Security Overview</a>
+              <a class="block px-3 py-2 rounded hover:bg-white/10" href="#cookie-policy">Cookie Policy</a>
+              <a class="block px-3 py-2 rounded hover:bg-white/10" href="#acceptable-use">Acceptable Use</a>
+              <a class="block px-3 py-2 rounded hover:bg-white/10" href="#sla">Service Level (SLA)</a>
+              <a class="block px-3 py-2 rounded hover:bg-white/10" href="#subprocessors">Subprocessors</a>
+              <a class="block px-3 py-2 rounded hover:bg-white/10" href="#disclaimer">Disclaimer</a>
+              <a class="block px-3 py-2 rounded hover:bg-white/10" href="#refunds">Refunds &amp; Cancellations</a>
+              <a class="block px-3 py-2 rounded hover:bg-white/10" href="#ccpa">California / CCPA Notice</a>
             </div>
           </details>
-
           <div class="pt-4 flex gap-3">
-            <a class="btn-primary flex-1 text-center px-4 py-3 rounded-xl font-medium shadow-glow focus-ring pressable" href="#signup">Start now</a>
-            <a class="glass flex-1 text-center px-4 py-3 rounded-xl font-medium focus-ring pressable" href="#integrations">Connect now</a>
+            <a class="btn-primary flex-1 text-center px-4 py-3 rounded-xl font-medium shadow-glow focus-ring pressable" href="#signup" onclick="closeDrawer()">Start now</a>
+            <a class="glass flex-1 text-center px-4 py-3 rounded-xl font-medium focus-ring pressable" href="#integrations" onclick="closeDrawer()">Connect now</a>
           </div>
           <p class="mt-2 text-xs text-gray-400 px-1">No credit card required · 7-day free trial</p>
         </nav>
@@ -151,7 +156,8 @@
   </header>
 
   <main id="main" class="pt-16 sm:pt-20">
-    <!-- Hero -->
+    <div id="top"></div>
+    <!-- ======= MARKETING SITE ======= -->
     <section class="relative overflow-hidden">
       <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 sm:py-16 md:py-20">
         <div class="grid md:grid-cols-2 gap-8 lg:gap-12 items-center">
@@ -173,8 +179,6 @@
               <p id="modelNote" class="mt-2 text-sm text-gray-400">Fast: quick replies for day-to-day entries.</p>
             </div>
           </div>
-
-          <!-- Hero image placeholder -->
           <figure class="order-first md:order-last glass rounded-2xl p-4 sm:p-6 border border-white/10">
             <img src="" alt="Floating glass SaaS dashboard with sales and expenses chips and synced badge on a dark gradient." class="w-full h-52 sm:h-72 md:h-80 object-cover rounded-xl bg-gradient-to-br from-brand/20 to-accent/20" />
             <figcaption class="mt-3 text-xs text-gray-400">Replace with generated HERO image.</figcaption>
@@ -183,7 +187,6 @@
       </div>
     </section>
 
-    <!-- Logos / Trust -->
     <section aria-labelledby="trust" class="py-6 sm:py-8">
       <h2 id="trust" class="sr-only">Trusted integrations</h2>
       <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -197,14 +200,12 @@
       </div>
     </section>
 
-    <!-- Product / Features -->
     <section id="product" class="py-12 sm:py-16">
       <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div class="max-w-2xl">
           <h2 class="text-2xl sm:text-3xl font-semibold">As easy as WhatsApp</h2>
           <p class="mt-2 text-gray-300 text-sm sm:text-base">Capture bills, create invoices, reconcile, and track stock — all from chat.</p>
         </div>
-
         <div class="mt-6 sm:mt-8 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
           <article class="glass rounded-xl p-4 sm:p-6"><h3 class="font-medium">WhatsApp capture</h3><p class="mt-2 text-sm text-gray-400">Drop a photo or PDF. We parse and post.</p></article>
           <article class="glass rounded-xl p-4 sm:p-6"><h3 class="font-medium">Auto invoices</h3><p class="mt-2 text-sm text-gray-400">Create and send invoices from chat.</p></article>
@@ -216,7 +217,6 @@
       </div>
     </section>
 
-    <!-- Integrations -->
     <section id="integrations" class="py-12 sm:py-16">
       <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div class="grid lg:grid-cols-2 gap-6 sm:gap-10 items-start">
@@ -241,7 +241,6 @@
       </div>
     </section>
 
-    <!-- Live Demo -->
     <section class="py-12 sm:py-16" aria-labelledby="demo">
       <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <h2 id="demo" class="text-2xl sm:text-3xl font-semibold">Live balance demo</h2>
@@ -288,7 +287,6 @@
       </div>
     </section>
 
-    <!-- Reviews -->
     <section id="reviews" class="py-12 sm:py-16">
       <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <h2 class="text-2xl sm:text-3xl font-semibold">What customers say</h2>
@@ -312,7 +310,6 @@
       </div>
     </section>
 
-    <!-- Pricing -->
     <section id="pricing" class="py-12 sm:py-16">
       <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <h2 class="text-2xl sm:text-3xl font-semibold">Simple pricing</h2>
@@ -349,7 +346,6 @@
       </div>
     </section>
 
-    <!-- Signup -->
     <section id="signup" class="py-12 sm:py-16">
       <div class="max-w-xl mx-auto px-4 sm:px-6 lg:px-8">
         <div class="glass rounded-2xl p-5 sm:p-6">
@@ -388,55 +384,228 @@
               <button class="btn-primary px-6 py-3 rounded-xl font-medium focus-ring pressable" type="submit">Start now</button>
               <button class="glass px-6 py-3 rounded-xl font-medium focus-ring pressable" type="button" onclick="alert('Sales will contact you shortly.');">Talk to sales</button>
             </div>
-            <p class="text-xs text-gray-400">By signing up you acknowledge our <a class="underline hover:text-accent" href="disclaimer.html">Disclaimer</a> and agree to the <a class="underline hover:text-accent" href="terms.html">Terms</a> & <a class="underline hover:text-accent" href="privacy.html">Privacy</a>.</p>
+            <p class="text-xs text-gray-400">By signing up you acknowledge our <a class="underline hover:text-accent" href="#disclaimer">Disclaimer</a> and agree to the <a class="underline hover:text-accent" href="#terms">Terms</a> & <a class="underline hover:text-accent" href="#privacy">Privacy</a>.</p>
           </form>
         </div>
       </div>
     </section>
 
-    <!-- FAQ -->
-    <section id="faq" class="py-12 sm:py-16">
-      <div class="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8">
-        <h2 class="text-2xl sm:text-3xl font-semibold">FAQ</h2>
-        <dl class="mt-6 sm:mt-8 space-y-4 sm:space-y-6">
-          <div class="glass rounded-xl p-4 sm:p-5">
-            <dt class="font-medium">How does WhatsApp capture work?</dt>
-            <dd class="mt-2 text-sm text-gray-300">You send bills, receipts, or notes. We extract fields and post entries.</dd>
-          </div>
-          <div class="glass rounded-xl p-4 sm:p-5">
-            <dt class="font-medium">Is setup hard?</dt>
-            <dd class="mt-2 text-sm text-gray-300">It’s quick. Connect QuickBooks or Zoho, choose AI mode, and invite your team.</dd>
-          </div>
-          <div class="glass rounded-xl p-4 sm:p-5">
-            <dt class="font-medium">Do you handle US sales tax?</dt>
-            <dd class="mt-2 text-sm text-gray-300">We apply high-level US sales tax and IRS rules based on your configuration.</dd>
-          </div>
-          <div class="glass rounded-xl p-4 sm:p-5">
-            <dt class="font-medium">Can I export data?</dt>
-            <dd class="mt-2 text-sm text-gray-300">Yes. Clean CSV/PDF exports and Tally CSV are available.</dd>
-          </div>
-        </dl>
-      </div>
-    </section>
-
-    <!-- Policies quick links -->
+    <!-- ======= POLICIES HUB ======= -->
     <section id="policies" class="py-12 sm:py-16">
       <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
         <h2 class="text-2xl sm:text-3xl font-semibold">Policies</h2>
-        <p class="mt-2 text-gray-300 text-sm">Quick links to our policy pages.</p>
+        <p class="mt-2 text-gray-300 text-sm">Quick links to our policy pages (inline on this page).</p>
         <ul class="mt-6 grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4 text-sm text-gray-300">
-          <li class="glass rounded-xl p-4"><a class="block hover:text-accent" href="privacy.html">Privacy Policy</a></li>
-          <li class="glass rounded-xl p-4"><a class="block hover:text-accent" href="terms.html">Terms &amp; Conditions</a></li>
-          <li class="glass rounded-xl p-4"><a class="block hover:text-accent" href="dpa.html">Data Processing Addendum (DPA)</a></li>
-          <li class="glass rounded-xl p-4"><a class="block hover:text-accent" href="security.html">Security Overview</a></li>
-          <li class="glass rounded-xl p-4"><a class="block hover:text-accent" href="cookie-policy.html">Cookie Policy</a></li>
-          <li class="glass rounded-xl p-4"><a class="block hover:text-accent" href="acceptable-use.html">Acceptable Use</a></li>
-          <li class="glass rounded-xl p-4"><a class="block hover:text-accent" href="sla.html">Service Level (SLA)</a></li>
-          <li class="glass rounded-xl p-4"><a class="block hover:text-accent" href="subprocessors.html">Subprocessors</a></li>
-          <li class="glass rounded-xl p-4 sm:col-span-2"><a class="block hover:text-accent" href="disclaimer.html">Disclaimer</a></li>
+          <li class="glass rounded-xl p-4"><a class="block hover:text-accent" href="#privacy">Privacy Policy</a></li>
+          <li class="glass rounded-xl p-4"><a class="block hover:text-accent" href="#terms">Terms &amp; Conditions</a></li>
+          <li class="glass rounded-xl p-4"><a class="block hover:text-accent" href="#dpa">Data Processing Addendum (DPA)</a></li>
+          <li class="glass rounded-xl p-4"><a class="block hover:text-accent" href="#security">Security Overview</a></li>
+          <li class="glass rounded-xl p-4"><a class="block hover:text-accent" href="#cookie-policy">Cookie Policy</a></li>
+          <li class="glass rounded-xl p-4"><a class="block hover:text-accent" href="#acceptable-use">Acceptable Use</a></li>
+          <li class="glass rounded-xl p-4"><a class="block hover:text-accent" href="#sla">Service Level (SLA)</a></li>
+          <li class="glass rounded-xl p-4"><a class="block hover:text-accent" href="#subprocessors">Subprocessors</a></li>
+          <li class="glass rounded-xl p-4"><a class="block hover:text-accent" href="#disclaimer">Disclaimer</a></li>
+          <li class="glass rounded-xl p-4"><a class="block hover:text-accent" href="#refunds">Refunds &amp; Cancellations</a></li>
+          <li class="glass rounded-xl p-4 sm:col-span-2"><a class="block hover:text-accent" href="#ccpa">California / CCPA Notice</a></li>
         </ul>
       </div>
     </section>
+
+    <!-- ======= POLICY SECTIONS (INLINE) ======= -->
+    <section id="privacy" class="py-12 sm:py-16">
+      <div class="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 prose">
+        <h2 class="text-2xl sm:text-3xl font-semibold">Privacy Policy</h2>
+        <p class="text-sm text-gray-400">Review with legal counsel before publishing. Last updated: <span id="pp-date"></span></p>
+        <p class="policy-card"><strong>Company:</strong> RUn leadgerdaddy Epicfash Global LLC, 293 Whitehead ROad, NJ 08619 USA</p>
+        <h3>1. What we collect</h3>
+        <p>Account info (name, email, company), usage data (feature interactions, logs), and business content you send (bills, receipts, invoices, chats). Limited technical data like IP, device, and cookies.</p>
+        <h3>2. How we use data</h3>
+        <ul><li>Provide, secure, and improve LedgerDaddy.</li><li>Process documents and create entries in your connected systems.</li><li>Support, troubleshooting, analytics, and product research.</li></ul>
+        <h3>3. Legal bases</h3>
+        <p>Performance of a contract, legitimate interests (security, product improvement), consent (where required), and legal obligations.</p>
+        <h3>4. Sharing</h3>
+        <p>Service providers under contract; integrations you connect (e.g., QuickBooks, Zoho). We do not sell personal data.</p>
+        <h3>5. Data retention</h3>
+        <p>We retain data while you have an account and as required for legal, tax, and security obligations. You can request deletion subject to limits.</p>
+        <h3>6. Security</h3>
+        <p>We use administrative, technical, and physical safeguards appropriate for the data we handle. No system is 100% secure.</p>
+        <h3>7. International transfers</h3>
+        <p>Transfers may rely on standard contractual clauses or other valid transfer tools where appropriate.</p>
+        <h3>8. Your rights</h3>
+        <p>Depending on your region, you may have rights to access, correct, delete, restrict, or port your data, and to object or withdraw consent.</p>
+        <h3>9. Cookies</h3>
+        <p>We use necessary and functional cookies. See our <a href="#cookie-policy">Cookie Policy</a> for details.</p>
+        <h3>10. Children</h3><p>For business users; not intended for children.</p>
+        <h3>11. Contact</h3>
+        <p>Email: <a href="mailto:hello@ledgerdaddy.com">hello@ledgerdaddy.com</a></p>
+      </div>
+    </section>
+
+    <section id="terms" class="py-12 sm:py-16">
+      <div class="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 prose">
+        <h2 class="text-2xl sm:text-3xl font-semibold">Terms &amp; Conditions</h2>
+        <p class="text-sm text-gray-400">Review with legal counsel before publishing. Last updated: <span id="tc-date"></span></p>
+        <p class="policy-card"><strong>Company:</strong> RUn leadgerdaddy Epicfash Global LLC, 293 Whitehead ROad, NJ 08619 USA</p>
+        <h3>1. Agreement</h3><p>By using LedgerDaddy, you agree to these Terms. If you use the service on behalf of an organization, you represent you are authorized to bind it.</p>
+        <h3>2. Services</h3><p>We provide AI-assisted accounting workflows through chat and web. Features may change. Free trial: 7 days, no credit card required.</p>
+        <h3>3. Your responsibilities</h3>
+        <ul><li>Provide accurate account info and keep credentials secure.</li><li>Use the service only for lawful business purposes.</li><li>Ensure your use complies with tax and accounting obligations.</li></ul>
+        <h3>4. Fees &amp; billing</h3><p>Paid plans renew monthly unless canceled. Taxes may apply. You can downgrade or cancel before the next billing cycle.</p>
+        <h3>5. Acceptable use</h3><p>No unlawful, infringing, harmful, or abusive content. See <a href="#acceptable-use">Acceptable Use</a>.</p>
+        <h3>6. Integrations</h3><p>Third-party integrations are optional and governed by their own terms.</p>
+        <h3>7. IP rights</h3><p>We own the services and branding. You own your data and grant us a limited license to process it to provide the services.</p>
+        <h3>8. Confidentiality</h3><p>We will safeguard your confidential information and use it only to deliver the services, except where disclosure is required by law.</p>
+        <h3>9. Disclaimers</h3><p>The service is provided “as is.” See our <a href="#disclaimer">Disclaimer</a>.</p>
+        <h3>10. Limitation of liability</h3><p>To the fullest extent allowed, our aggregate liability is limited to amounts paid by you in the 12 months before the event giving rise to the claim.</p>
+        <h3>11. Term &amp; termination</h3><p>You may stop using the service at any time. We may suspend or terminate for breach or security risk. Certain sections survive termination.</p>
+        <h3>12. Governing law</h3><p>Defined with counsel. If any term is unenforceable, the rest remains in effect.</p>
+        <h3>13. Changes</h3><p>We may update these Terms with notice by posting a new date.</p>
+      </div>
+    </section>
+
+    <section id="dpa" class="py-12 sm:py-16">
+      <div class="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 prose">
+        <h2 class="text-2xl sm:text-3xl font-semibold">Data Processing Addendum (DPA)</h2>
+        <p class="text-sm text-gray-400">Template — review with counsel. Last updated: <span id="dpa-date"></span></p>
+        <p class="policy-card"><strong>Parties:</strong> Customer (Controller) and RUn leadgerdaddy Epicfash Global LLC (Processor)</p>
+        <h3>1. Subject matter &amp; duration</h3><p>Processing business data to provide LedgerDaddy. Duration: subscription term and any legally required retention.</p>
+        <h3>2. Nature &amp; purpose</h3><p>Parsing documents, creating entries, syncing with integrations, support, security, analytics, and improvement.</p>
+        <h3>3. Categories of data &amp; subjects</h3><p>Business contacts, transaction details, documents and images you upload, chat messages and metadata.</p>
+        <h3>4. Processor obligations</h3>
+        <ul><li>Process only on Controller instructions.</li><li>Maintain appropriate technical and organizational measures.</li><li>Ensure confidentiality and train personnel.</li><li>Assist with data subject requests and security notices.</li><li>Delete or return data at termination unless law requires retention.</li></ul>
+        <h3>5. Subprocessors</h3><p>See <a href="#subprocessors">Subprocessors</a>. Controller will be notified of material changes.</p>
+        <h3>6. Transfers</h3><p>Use SCCs or other valid transfer tools where applicable.</p>
+        <h3>7. Audits</h3><p>Provide information to demonstrate compliance and allow audits as required by law.</p>
+        <h3>8. Liability</h3><p>Follows limits in the Terms to the extent permitted by law.</p>
+      </div>
+    </section>
+
+    <section id="security" class="py-12 sm:py-16">
+      <div class="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 prose">
+        <h2 class="text-2xl sm:text-3xl font-semibold">Security Overview</h2>
+        <p class="text-sm text-gray-400">Informational summary. Last updated: <span id="sec-date"></span></p>
+        <h3>Controls</h3>
+        <ul><li>Encryption in transit (HTTPS/TLS); encryption at rest where supported by providers.</li><li>Least-privilege access and role-based permissions.</li><li>Audit logs for key actions and access events.</li><li>Secure SDLC and vulnerability management.</li></ul>
+        <h3>Data handling</h3><p>Production data is restricted to authorized staff. Backups are scheduled. Data is processed only to deliver the service.</p>
+        <h3>Incident response</h3><p>We investigate, remediate, and notify customers as required by law and contract.</p>
+        <h3>Compliance</h3><p>We follow industry practices. Formal audit statements, if any, will be listed here.</p>
+      </div>
+    </section>
+
+    <section id="cookie-policy" class="py-12 sm:py-16">
+      <div class="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 prose">
+        <h2 class="text-2xl sm:text-3xl font-semibold">Cookie Policy</h2>
+        <p class="text-sm text-gray-400">Template — review with counsel. Last updated: <span id="cp-date"></span></p>
+        <h3>What are cookies?</h3><p>Small text files stored on your device to remember settings and help the site function.</p>
+        <h3>How we use cookies</h3>
+        <ul><li>Necessary: session management, security.</li><li>Preferences: remember choices such as dismissed banners.</li><li>Analytics: understand feature usage (where enabled).</li></ul>
+        <h3>Cookies we set</h3>
+        <div class="overflow-x-auto">
+          <table class="w-full text-sm">
+            <thead><tr><th class="text-left p-2 border-b border-white/10">Name</th><th class="text-left p-2 border-b border-white/10">Type</th><th class="text-left p-2 border-b border-white/10">Purpose</th><th class="text-left p-2 border-b border-white/10">Duration</th></tr></thead>
+            <tbody>
+              <tr><td class="p-2">ld_session</td><td class="p-2">Necessary</td><td class="p-2">Maintains session</td><td class="p-2">Session</td></tr>
+              <tr><td class="p-2">ld_cookie_ok</td><td class="p-2">Preferences</td><td class="p-2">Hides cookie banner</td><td class="p-2">12 months</td></tr>
+            </tbody>
+          </table>
+        </div>
+        <h3>Your choices</h3><p>You can block or delete cookies in your browser. Some features may not work without necessary cookies.</p>
+      </div>
+    </section>
+
+    <section id="acceptable-use" class="py-12 sm:py-16">
+      <div class="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 prose">
+        <h2 class="text-2xl sm:text-3xl font-semibold">Acceptable Use</h2>
+        <p class="text-sm text-gray-400">Template — review with counsel. Last updated: <span id="aup-date"></span></p>
+        <h3>Do not use LedgerDaddy to:</h3>
+        <ul><li>Break the law or violate others’ rights.</li><li>Upload illegal content or malicious code.</li><li>Harass, spam, or abuse networks and APIs.</li><li>Misrepresent identity or affiliations.</li></ul>
+        <h3>Security &amp; access</h3>
+        <ul><li>Protect credentials and restrict access to authorized users.</li><li>Report suspected abuse or vulnerabilities promptly.</li></ul>
+        <h3>Enforcement</h3><p>We may suspend or terminate accounts that violate this policy.</p>
+      </div>
+    </section>
+
+    <section id="sla" class="py-12 sm:py-16">
+      <div class="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 prose">
+        <h2 class="text-2xl sm:text-3xl font-semibold">Service Level Agreement (SLA)</h2>
+        <p class="text-sm text-gray-400">Template — review with counsel. Last updated: <span id="sla-date"></span></p>
+        <h3>Availability target</h3><p>We aim for 99.9% monthly uptime excluding scheduled maintenance and events outside our control.</p>
+        <h3>Support</h3>
+        <div class="overflow-x-auto">
+          <table class="w-full text-sm">
+            <thead><tr><th class="text-left p-2 border-b border-white/10">Plan</th><th class="text-left p-2 border-b border-white/10">Channels</th><th class="text-left p-2 border-b border-white/10">Initial Response</th></tr></thead>
+            <tbody>
+              <tr><td class="p-2">Starter</td><td class="p-2">Email</td><td class="p-2">1 business day</td></tr>
+              <tr><td class="p-2">Growth</td><td class="p-2">Email, chat</td><td class="p-2">8 business hours</td></tr>
+              <tr><td class="p-2">Enterprise</td><td class="p-2">Email, chat, phone</td><td class="p-2">4 business hours</td></tr>
+            </tbody>
+          </table>
+        </div>
+        <h3>Maintenance</h3><p>We schedule maintenance with advance notice when possible.</p>
+        <h3>Credits</h3><p>Service credits for material downtime may be offered at our discretion and require a timely request.</p>
+      </div>
+    </section>
+
+    <section id="subprocessors" class="py-12 sm:py-16">
+      <div class="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 prose">
+        <h2 class="text-2xl sm:text-3xl font-semibold">Subprocessors</h2>
+        <p class="text-sm text-gray-400">We will update this page when subprocessors change. Last updated: <span id="sp-date"></span></p>
+        <div class="overflow-x-auto">
+          <table class="w-full text-sm">
+            <thead><tr><th class="text-left p-2 border-b border-white/10">Subprocessor</th><th class="text-left p-2 border-b border-white/10">Service</th><th class="text-left p-2 border-b border-white/10">Location</th><th class="text-left p-2 border-b border-white/10">Data handled</th></tr></thead>
+            <tbody>
+              <tr><td class="p-2">Cloud hosting provider</td><td class="p-2">Compute / Storage</td><td class="p-2">USA</td><td class="p-2">Account &amp; app data</td></tr>
+              <tr><td class="p-2">Email delivery provider</td><td class="p-2">Transactional email</td><td class="p-2">USA/EU</td><td class="p-2">Contact info</td></tr>
+              <tr><td class="p-2">Analytics provider</td><td class="p-2">Product analytics</td><td class="p-2">USA/EU</td><td class="p-2">Usage data</td></tr>
+            </tbody>
+          </table>
+        </div>
+        <h3>Requests &amp; questions</h3><p>Email: <a href="mailto:privacy@ledgerdaddy.com">privacy@ledgerdaddy.com</a></p>
+      </div>
+    </section>
+
+    <section id="disclaimer" class="py-12 sm:py-16">
+      <div class="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 prose">
+        <h2 class="text-2xl sm:text-3xl font-semibold">Disclaimer</h2>
+        <p class="text-sm text-gray-400">Template — review with counsel. Last updated: <span id="disc-date"></span></p>
+        <p class="policy-card"><strong>Company:</strong> RUn leadgerdaddy Epicfash Global LLC, 293 Whitehead ROad, NJ 08619 USA</p>
+        <h3>AI-powered service</h3><p>LedgerDaddy uses artificial intelligence to assist with accounting-related tasks. While we strive for accuracy, the service may produce incorrect, incomplete, or outdated information. Do not rely solely on outputs for decisions.</p>
+        <h3>No professional advice</h3><p>We do not provide legal, tax, or accounting advice. Consult a qualified professional for guidance.</p>
+        <h3>User responsibility</h3>
+        <ul><li>Review outputs before adding to your books.</li><li>Ensure compliance with applicable tax, accounting, and legal requirements.</li><li>Keep original source documents.</li></ul>
+        <h3>Liability</h3><p>To the fullest extent permitted by law, we are not liable for losses resulting from reliance on AI-generated outputs.</p>
+      </div>
+    </section>
+
+    <section id="refunds" class="py-12 sm:py-16">
+      <div class="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 prose">
+        <h2 class="text-2xl sm:text-3xl font-semibold">Refunds &amp; Cancellations</h2>
+        <p class="text-sm text-gray-400">Template — review with counsel. Last updated: <span id="ref-date"></span></p>
+        <h3>Free trial</h3><p>We offer a 7-day free trial with no credit card required. After the trial, charges begin if you choose a paid plan.</p>
+        <h3>Monthly plans</h3><p>Cancel anytime before your next billing date to avoid future charges. We do not issue pro-rated refunds for partial months.</p>
+        <h3>Annual plans</h3><p>Annual fees are discounted and non-refundable after 14 days from purchase unless required by law. If canceled, your access continues until the end of the term.</p>
+        <h3>How to cancel</h3><p>From the app’s billing page or by emailing <a href="mailto:support@ledgerdaddy.com">support@ledgerdaddy.com</a> using your account email.</p>
+        <h3>Billing issues</h3><p>If you believe you were billed in error, contact us within 30 days and we’ll review your request.</p>
+      </div>
+    </section>
+
+    <section id="ccpa" class="py-12 sm:py-16">
+      <div class="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 prose">
+        <h2 class="text-2xl sm:text-3xl font-semibold">California / CCPA Notice</h2>
+        <p class="text-sm text-gray-400">Template — review with counsel. Last updated: <span id="ccpa-date"></span></p>
+        <h3>Scope</h3><p>This section applies to California residents and supplements our <a href="#privacy">Privacy Policy</a>.</p>
+        <h3>Categories collected</h3>
+        <ul><li>Identifiers (name, email, device identifiers).</li><li>Commercial information (transaction records).</li><li>Internet activity (usage logs).</li><li>Inferences from your use to improve features.</li></ul>
+        <h3>Purposes</h3><p>To provide and improve the service, secure the platform, support customers, and comply with law.</p>
+        <h3>Disclosure</h3><p>We disclose personal information to service providers and integration partners under contracts. We do not “sell” personal information as defined by CCPA.</p>
+        <h3>Your rights</h3>
+        <ul><li>Right to know/access and portability.</li><li>Right to delete (subject to exceptions).</li><li>Right to correct inaccurate info.</li><li>Right to non-discrimination for exercising your rights.</li></ul>
+        <h3>Exercising rights</h3><p>Email <a href="mailto:privacy@ledgerdaddy.com">privacy@ledgerdaddy.com</a>. We may request information to verify your identity.</p>
+        <h3>Authorized agents</h3><p>You may use an authorized agent; we may require proof of authorization.</p>
+        <h3>Notice of financial incentives</h3><p>We do not offer programs that qualify as financial incentives under CCPA at this time.</p>
+      </div>
+    </section>
+    <!-- ======= END POLICY SECTIONS ======= -->
   </main>
 
   <!-- Footer -->
@@ -476,14 +645,16 @@
         <div>
           <h4 class="font-medium mb-3">Legal</h4>
           <ul class="space-y-2 text-sm text-gray-400">
-            <li><a class="hover:text-accent tappable" href="privacy.html">Privacy Policy</a></li>
-            <li><a class="hover:text-accent tappable" href="terms.html">Terms &amp; Conditions</a></li>
-            <li><a class="hover:text-accent tappable" href="dpa.html">DPA</a></li>
-            <li><a class="hover:text-accent tappable" href="cookie-policy.html">Cookie Policy</a></li>
-            <li><a class="hover:text-accent tappable" href="acceptable-use.html">Acceptable Use</a></li>
-            <li><a class="hover:text-accent tappable" href="sla.html">SLA</a></li>
-            <li><a class="hover:text-accent tappable" href="subprocessors.html">Subprocessors</a></li>
-            <li><a class="hover:text-accent tappable" href="disclaimer.html">Disclaimer</a></li>
+            <li><a class="hover:text-accent tappable" href="#privacy">Privacy Policy</a></li>
+            <li><a class="hover:text-accent tappable" href="#terms">Terms &amp; Conditions</a></li>
+            <li><a class="hover:text-accent tappable" href="#dpa">DPA</a></li>
+            <li><a class="hover:text-accent tappable" href="#cookie-policy">Cookie Policy</a></li>
+            <li><a class="hover:text-accent tappable" href="#acceptable-use">Acceptable Use</a></li>
+            <li><a class="hover:text-accent tappable" href="#sla">SLA</a></li>
+            <li><a class="hover:text-accent tappable" href="#subprocessors">Subprocessors</a></li>
+            <li><a class="hover:text-accent tappable" href="#disclaimer">Disclaimer</a></li>
+            <li><a class="hover:text-accent tappable" href="#refunds">Refunds &amp; Cancellations</a></li>
+            <li><a class="hover:text-accent tappable" href="#ccpa">California / CCPA Notice</a></li>
           </ul>
         </div>
       </div>
@@ -493,7 +664,7 @@
 
   <!-- Cookie banner -->
   <div id="cookie" class="fixed bottom-4 inset-x-4 md:inset-x-auto md:right-6 md:bottom-6 max-w-xl glass rounded-2xl p-4 border border-white/10 shadow-glow hidden" role="dialog" aria-live="polite">
-    <p class="text-sm text-gray-300">We use cookies to improve your experience. Read our <a href="cookie-policy.html" class="underline hover:text-accent">Cookie Policy</a>.</p>
+    <p class="text-sm text-gray-300">We use cookies to improve your experience. Read our <a href="#cookie-policy" class="underline hover:text-accent">Cookie Policy</a>.</p>
     <div class="mt-3 flex gap-3">
       <button id="cookieAccept" class="btn-primary px-4 py-2 rounded-xl font-medium focus-ring pressable">Accept</button>
       <button id="cookieDismiss" class="glass px-4 py-2 rounded-xl font-medium focus-ring pressable">Dismiss</button>
@@ -520,6 +691,11 @@
     policiesToggle?.addEventListener('click', ()=> policiesMenu.classList.contains('hidden') ? openPolicies() : closePolicies());
     document.addEventListener('click', (e)=>{ if(policiesMenu && !policiesMenu.contains(e.target) && !policiesToggle.contains(e.target)) closePolicies(); });
     document.addEventListener('keydown', (e)=>{ if(e.key==='Escape') closePolicies(); });
+
+    // --- Smooth close menus on hash navigation (mobile & desktop) ---
+    document.querySelectorAll('a[href^="#"]').forEach(a=>{
+      a.addEventListener('click', ()=>{ closePolicies(); closeDrawer(); });
+    });
 
     // --- Model selector note ---
     const modelSelect = document.getElementById('modelSelect');
@@ -589,7 +765,10 @@
     cookieAccept?.addEventListener('click',()=>closeCookie(true));
     cookieDismiss?.addEventListener('click',()=>closeCookie(false));
 
-    // --- Year ---
+    // --- Dates & Year ---
+    const today = new Date().toISOString().slice(0,10);
+    const ids = ['pp-date','tc-date','dpa-date','sec-date','cp-date','aup-date','sla-date','sp-date','disc-date','ref-date','ccpa-date'];
+    ids.forEach(id=>{ const el=document.getElementById(id); if(el) el.textContent=today; });
     document.getElementById('year').textContent = new Date().getFullYear();
   </script>
 </body>
