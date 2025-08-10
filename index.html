@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <title>LedgerDaddy — Your AI Accountant on WhatsApp</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
   <meta name="description" content="LedgerDaddy reads bills on WhatsApp, creates invoices, posts to books, reconciles payments, tracks inventory, and handles US sales tax rules. One-click sync with QuickBooks and Zoho." />
   <meta name="theme-color" content="#0B0B12" />
 
@@ -23,16 +23,8 @@
     "applicationCategory": "BusinessApplication",
     "operatingSystem": "Web",
     "description": "AI Accountant on WhatsApp with QuickBooks and Zoho sync.",
-    "offers": {
-      "@type": "Offer",
-      "price": "49",
-      "priceCurrency": "USD"
-    },
-    "aggregateRating": {
-      "@type": "AggregateRating",
-      "ratingValue": "4.9",
-      "ratingCount": "28"
-    }
+    "offers": { "@type": "Offer", "price": "49", "priceCurrency": "USD" },
+    "aggregateRating": { "@type": "AggregateRating", "ratingValue": "4.9", "ratingCount": "28" }
   }
   </script>
 
@@ -42,65 +34,55 @@
     tailwind.config = {
       theme: {
         extend: {
-          colors: {
-            ink: '#0B0B12',
-            glass: 'rgba(255,255,255,0.08)',
-            brand: '#6A5BFF',
-            accent: '#22D3EE'
-          },
-          boxShadow: {
-            glow: '0 10px 40px rgba(34,211,238,0.25)'
-          },
+          colors: { ink:'#0B0B12', brand:'#6A5BFF', accent:'#22D3EE' },
+          boxShadow: { glow:'0 10px 40px rgba(34,211,238,0.25)' },
           backgroundImage: {
-            'grad': 'radial-gradient(1000px 600px at 10% -10%, rgba(106,91,255,0.35), transparent), radial-gradient(900px 500px at 90% 10%, rgba(34,211,238,0.25), transparent)'
+            grad:'radial-gradient(900px 600px at 0% -10%, rgba(106,91,255,.35), transparent), radial-gradient(900px 500px at 100% 0%, rgba(34,211,238,.25), transparent)'
           }
         }
       }
     }
   </script>
   <style>
-    .glass { background: rgba(255,255,255,0.08); border: 1px solid rgba(255,255,255,0.12); backdrop-filter: blur(10px); }
-    .btn-primary { background-image: linear-gradient(90deg,#6A5BFF,#22D3EE); color: #0B0B12; }
-    .btn-primary:hover { filter: brightness(1.1); transform: translateY(-1px); }
-    .btn-secondary:hover { background: rgba(255,255,255,0.12); }
-    .focus-ring:focus { outline: 2px solid #22D3EE; outline-offset: 2px; }
-    .sr-only-focusable:focus { position: static; width: auto; height: auto; clip: auto; }
+    html,body{height:100%}
+    .glass{background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.12);backdrop-filter:blur(10px)}
+    .btn-primary{background-image:linear-gradient(90deg,#6A5BFF,#22D3EE);color:#0B0B12}
+    .btn-primary:active{transform:translateY(1px)}
+    .focus-ring:focus{outline:2px solid #22D3EE;outline-offset:2px}
+    .tappable{min-height:44px}
+    @media (prefers-reduced-motion:no-preference){
+      .pressable:active{transform:scale(.98)}
+    }
   </style>
 </head>
-<body class="bg-ink text-white bg-grad selection:bg-accent/30 selection:text-white">
-  <a href="#main" class="sr-only sr-only-focusable">Skip to content</a>
+<body class="bg-ink text-white bg-grad selection:bg-accent/30 selection:text-white antialiased">
+  <a href="#main" class="sr-only focus:not-sr-only focus:p-2">Skip to content</a>
 
   <!-- Header -->
-  <header class="sticky top-0 z-40 bg-ink/70 backdrop-blur">
+  <header class="fixed inset-x-0 top-0 z-50 bg-ink/80 backdrop-blur border-b border-white/10">
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-      <div class="flex items-center justify-between h-16">
-        <a href="index.html" class="flex items-center gap-3" aria-label="LedgerDaddy home">
-          <!-- Inline SVG Logo -->
-          <svg width="28" height="28" viewBox="0 0 64 64" aria-hidden="true">
-            <defs>
-              <linearGradient id="g" x1="0" y1="0" x2="1" y2="1">
-                <stop offset="0" stop-color="#6A5BFF"/>
-                <stop offset="1" stop-color="#22D3EE"/>
-              </linearGradient>
-            </defs>
-            <!-- Geometric L mark -->
+      <div class="h-14 flex items-center justify-between">
+        <a href="index.html" class="flex items-center gap-2" aria-label="LedgerDaddy home">
+          <svg width="26" height="26" viewBox="0 0 64 64" aria-hidden="true">
+            <defs><linearGradient id="g" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#6A5BFF"/><stop offset="1" stop-color="#22D3EE"/></linearGradient></defs>
             <rect x="6" y="6" width="52" height="52" rx="12" fill="url(#g)" opacity="0.15"/>
             <path d="M20 16v28a4 4 0 0 0 4 4h20" fill="none" stroke="url(#g)" stroke-width="6" stroke-linecap="round"/>
             <circle cx="44" cy="48" r="4" fill="url(#g)"/>
           </svg>
-          <span class="text-xl font-semibold tracking-tight">LedgerDaddy</span>
+          <span class="text-lg font-semibold">LedgerDaddy</span>
         </a>
 
-        <nav class="hidden md:flex items-center gap-6 text-sm">
-          <a class="hover:text-accent" href="#product">Product</a>
-          <a class="hover:text-accent" href="#integrations">Integrations</a>
-          <a class="hover:text-accent" href="#pricing">Pricing</a>
-          <a class="hover:text-accent" href="#reviews">Reviews</a>
-          <a class="hover:text-accent" href="#faq">FAQ</a>
+        <!-- Desktop nav -->
+        <nav class="hidden md:flex items-center gap-4 lg:gap-6 text-sm">
+          <a class="hover:text-accent tappable" href="#product">Product</a>
+          <a class="hover:text-accent tappable" href="#integrations">Integrations</a>
+          <a class="hover:text-accent tappable" href="#pricing">Pricing</a>
+          <a class="hover:text-accent tappable" href="#reviews">Reviews</a>
+          <a class="hover:text-accent tappable" href="#faq">FAQ</a>
 
-          <!-- Policies dropdown (desktop) -->
+          <!-- Policies dropdown -->
           <div class="relative">
-            <button id="policiesToggle" class="glass px-3 py-2 rounded-lg focus-ring flex items-center gap-2" aria-haspopup="true" aria-expanded="false" aria-controls="policiesMenu">
+            <button id="policiesToggle" class="glass px-3 py-2 rounded-lg focus-ring flex items-center gap-2 tappable" aria-haspopup="true" aria-expanded="false" aria-controls="policiesMenu">
               Policies
               <svg width="16" height="16" fill="none" stroke="currentColor"><path stroke-linecap="round" stroke-width="2" d="M4 6l4 4 4-4"/></svg>
             </button>
@@ -117,74 +99,84 @@
             </div>
           </div>
 
-          <a class="btn-primary px-4 py-2 rounded-xl font-medium shadow-glow focus-ring" href="#signup">Start now</a>
+          <a class="btn-primary px-4 py-2 rounded-xl font-medium shadow-glow focus-ring pressable" href="#signup">Start now</a>
         </nav>
 
-        <button id="navToggle" class="md:hidden p-2 rounded-lg glass focus-ring" aria-label="Open menu" aria-controls="mobileNav" aria-expanded="false">
+        <!-- Mobile hamburger -->
+        <button id="navToggle" class="md:hidden p-2 rounded-lg glass focus-ring tappable" aria-label="Open menu" aria-controls="mobileNav" aria-expanded="false">
           <svg width="24" height="24" fill="none" stroke="currentColor"><path stroke-linecap="round" stroke-width="2" d="M4 7h16M4 12h16M4 17h16"/></svg>
         </button>
       </div>
     </div>
 
-    <!-- Mobile nav -->
-    <div id="mobileNav" class="md:hidden hidden border-t border-white/10">
-      <nav class="px-4 py-3 space-y-3">
-        <a class="block hover:text-accent" href="#product">Product</a>
-        <a class="block hover:text-accent" href="#integrations">Integrations</a>
-        <a class="block hover:text-accent" href="#pricing">Pricing</a>
-        <a class="block hover:text-accent" href="#reviews">Reviews</a>
-        <a class="block hover:text-accent" href="#faq">FAQ</a>
+    <!-- Mobile full-screen drawer -->
+    <div id="mobileNav" class="fixed inset-0 bg-ink/95 backdrop-blur hidden md:hidden">
+      <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
+        <div class="flex items-center justify-between h-12">
+          <span class="font-semibold">Menu</span>
+          <button id="navClose" class="p-2 rounded-lg glass focus-ring tappable" aria-label="Close menu">
+            <svg width="24" height="24" fill="none" stroke="currentColor"><path stroke-linecap="round" stroke-width="2" d="M6 6l12 12M18 6L6 18"/></svg>
+          </button>
+        </div>
+        <nav class="mt-4 space-y-2 text-base">
+          <a class="block px-3 py-3 rounded-lg hover:bg-white/10 tappable" href="#product">Product</a>
+          <a class="block px-3 py-3 rounded-lg hover:bg-white/10 tappable" href="#integrations">Integrations</a>
+          <a class="block px-3 py-3 rounded-lg hover:bg-white/10 tappable" href="#pricing">Pricing</a>
+          <a class="block px-3 py-3 rounded-lg hover:bg-white/10 tappable" href="#reviews">Reviews</a>
+          <a class="block px-3 py-3 rounded-lg hover:bg-white/10 tappable" href="#faq">FAQ</a>
 
-        <!-- Mobile Policies accordion -->
-        <details class="glass rounded-lg p-3">
-          <summary class="cursor-pointer select-none">Policies</summary>
-          <div class="mt-2 pl-3 space-y-1 text-sm">
-            <a class="block hover:text-accent" href="privacy.html">Privacy Policy</a>
-            <a class="block hover:text-accent" href="terms.html">Terms &amp; Conditions</a>
-            <a class="block hover:text-accent" href="dpa.html">Data Processing Addendum</a>
-            <a class="block hover:text-accent" href="security.html">Security Overview</a>
-            <a class="block hover:text-accent" href="cookie-policy.html">Cookie Policy</a>
-            <a class="block hover:text-accent" href="acceptable-use.html">Acceptable Use</a>
-            <a class="block hover:text-accent" href="sla.html">Service Level (SLA)</a>
-            <a class="block hover:text-accent" href="subprocessors.html">Subprocessors</a>
-            <a class="block hover:text-accent" href="disclaimer.html">Disclaimer</a>
+          <details class="glass rounded-lg p-3">
+            <summary class="cursor-pointer select-none">Policies</summary>
+            <div class="mt-2 pl-2 space-y-1 text-sm">
+              <a class="block px-3 py-2 rounded hover:bg-white/10" href="privacy.html">Privacy Policy</a>
+              <a class="block px-3 py-2 rounded hover:bg-white/10" href="terms.html">Terms &amp; Conditions</a>
+              <a class="block px-3 py-2 rounded hover:bg-white/10" href="dpa.html">Data Processing Addendum</a>
+              <a class="block px-3 py-2 rounded hover:bg-white/10" href="security.html">Security Overview</a>
+              <a class="block px-3 py-2 rounded hover:bg-white/10" href="cookie-policy.html">Cookie Policy</a>
+              <a class="block px-3 py-2 rounded hover:bg-white/10" href="acceptable-use.html">Acceptable Use</a>
+              <a class="block px-3 py-2 rounded hover:bg-white/10" href="sla.html">Service Level (SLA)</a>
+              <a class="block px-3 py-2 rounded hover:bg-white/10" href="subprocessors.html">Subprocessors</a>
+              <a class="block px-3 py-2 rounded hover:bg-white/10" href="disclaimer.html">Disclaimer</a>
+            </div>
+          </details>
+
+          <div class="pt-4 flex gap-3">
+            <a class="btn-primary flex-1 text-center px-4 py-3 rounded-xl font-medium shadow-glow focus-ring pressable" href="#signup">Start now</a>
+            <a class="glass flex-1 text-center px-4 py-3 rounded-xl font-medium focus-ring pressable" href="#integrations">Connect now</a>
           </div>
-        </details>
-
-        <a class="btn-primary inline-block px-4 py-2 rounded-xl font-medium shadow-glow focus-ring" href="#signup">Start now</a>
-      </nav>
+          <p class="mt-2 text-xs text-gray-400 px-1">No credit card required · 7-day free trial</p>
+        </nav>
+      </div>
     </div>
   </header>
 
-  <main id="main">
+  <main id="main" class="pt-16 sm:pt-20">
     <!-- Hero -->
     <section class="relative overflow-hidden">
-      <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-20 md:py-28">
-        <div class="grid md:grid-cols-2 gap-12 items-center">
+      <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 sm:py-16 md:py-20">
+        <div class="grid md:grid-cols-2 gap-8 lg:gap-12 items-center">
           <div>
-            <h1 class="text-4xl md:text-5xl font-semibold leading-tight">Your AI Accountant on WhatsApp.</h1>
-            <p class="mt-4 text-lg text-gray-300">Send bills, get books. As easy as chat. One-click sync with QuickBooks & Zoho. Xero coming soon.</p>
-            <div class="mt-6 flex flex-wrap gap-3 items-center">
-              <a href="#signup" class="btn-primary px-6 py-3 rounded-xl font-medium shadow-glow focus-ring">Start now</a>
-              <a href="#integrations" class="btn-secondary glass px-6 py-3 rounded-xl font-medium focus-ring">Connect now</a>
-              <span class="text-sm text-gray-400">No credit card required · 7-day free trial</span>
+            <h1 class="text-3xl sm:text-4xl md:text-5xl font-semibold leading-tight">Your AI Accountant on WhatsApp.</h1>
+            <p class="mt-3 sm:mt-4 text-base sm:text-lg text-gray-300">Send bills, get books. As easy as chat. One-click sync with QuickBooks & Zoho. Xero coming soon.</p>
+            <div class="mt-5 sm:mt-6 flex flex-col sm:flex-row gap-3 items-stretch sm:items-center">
+              <a href="#signup" class="btn-primary text-center px-5 py-3 rounded-xl font-medium shadow-glow focus-ring pressable">Start now</a>
+              <a href="#integrations" class="glass text-center px-5 py-3 rounded-xl font-medium focus-ring pressable">Connect now</a>
             </div>
+            <p class="mt-2 text-xs text-gray-400">No credit card required · 7-day free trial</p>
 
             <!-- Model selector -->
             <div class="mt-6 glass rounded-2xl p-4">
               <label for="modelSelect" class="block text-sm text-gray-300 mb-2">AI mode</label>
-              <select id="modelSelect" class="w-full bg-transparent border border-white/10 rounded-lg p-2 focus-ring" aria-label="Select AI mode">
-                <option>Fast</option>
-                <option>Accurate</option>
-                <option>Custom</option>
+              <select id="modelSelect" class="w-full bg-transparent border border-white/10 rounded-lg p-3 focus-ring tappable" aria-label="Select AI mode">
+                <option>Fast</option><option>Accurate</option><option>Custom</option>
               </select>
               <p id="modelNote" class="mt-2 text-sm text-gray-400">Fast: quick replies for day-to-day entries.</p>
             </div>
           </div>
 
           <!-- Hero image placeholder -->
-          <figure class="glass rounded-3xl p-6 border border-white/10">
-            <img src="" alt="Floating glass SaaS dashboard with sales and expenses chips and synced badge on a dark gradient." class="w-full h-64 md:h-80 object-cover bg-gradient-to-br from-brand/20 to-accent/20 rounded-2xl" />
+          <figure class="order-first md:order-last glass rounded-2xl p-4 sm:p-6 border border-white/10">
+            <img src="" alt="Floating glass SaaS dashboard with sales and expenses chips and synced badge on a dark gradient." class="w-full h-52 sm:h-72 md:h-80 object-cover rounded-xl bg-gradient-to-br from-brand/20 to-accent/20" />
             <figcaption class="mt-3 text-xs text-gray-400">Replace with generated HERO image.</figcaption>
           </figure>
         </div>
@@ -192,149 +184,128 @@
     </section>
 
     <!-- Logos / Trust -->
-    <section aria-labelledby="trust" class="py-8">
+    <section aria-labelledby="trust" class="py-6 sm:py-8">
       <h2 id="trust" class="sr-only">Trusted integrations</h2>
       <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div class="glass rounded-2xl p-4 border border-white/10 flex flex-wrap items-center justify-center gap-6 text-gray-300">
-          <span class="text-sm">Works with</span>
-          <span class="px-3 py-1 rounded-lg bg-white/5 border border-white/10">QuickBooks</span>
-          <span class="px-3 py-1 rounded-lg bg-white/5 border border-white/10">Zoho Books</span>
-          <span class="px-3 py-1 rounded-lg bg-white/5 border border-white/10">Xero (coming soon)</span>
-          <span class="px-3 py-1 rounded-lg bg-white/5 border border-white/10">Tally (CSV export)</span>
+        <div class="glass rounded-xl sm:rounded-2xl p-3 sm:p-4 border border-white/10 flex flex-wrap items-center justify-center gap-2 sm:gap-4 text-gray-300 text-xs sm:text-sm">
+          <span class="opacity-80">Works with</span>
+          <span class="px-2 py-1 rounded bg-white/5 border border-white/10">QuickBooks</span>
+          <span class="px-2 py-1 rounded bg-white/5 border border-white/10">Zoho Books</span>
+          <span class="px-2 py-1 rounded bg-white/5 border border-white/10">Xero (coming soon)</span>
+          <span class="px-2 py-1 rounded bg-white/5 border border-white/10">Tally (CSV export)</span>
         </div>
       </div>
     </section>
 
     <!-- Product / Features -->
-    <section id="product" class="py-16">
+    <section id="product" class="py-12 sm:py-16">
       <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div class="max-w-2xl">
-          <h2 class="text-3xl font-semibold">As easy as WhatsApp</h2>
-          <p class="mt-2 text-gray-300">Capture bills, create invoices, reconcile, and track stock — all from chat.</p>
+          <h2 class="text-2xl sm:text-3xl font-semibold">As easy as WhatsApp</h2>
+          <p class="mt-2 text-gray-300 text-sm sm:text-base">Capture bills, create invoices, reconcile, and track stock — all from chat.</p>
         </div>
 
-        <div class="mt-10 grid sm:grid-cols-2 lg:grid-cols-3 gap-6">
-          <!-- 6 Feature cards -->
-          <article class="glass rounded-2xl p-6">
-            <h3 class="font-medium">WhatsApp capture</h3>
-            <p class="mt-2 text-sm text-gray-400">Drop a photo or PDF. We parse and post.</p>
-          </article>
-          <article class="glass rounded-2xl p-6">
-            <h3 class="font-medium">Auto invoices</h3>
-            <p class="mt-2 text-sm text-gray-400">Create and send invoices from chat.</p>
-          </article>
-          <article class="glass rounded-2xl p-6">
-            <h3 class="font-medium">Payments & reconciliation</h3>
-            <p class="mt-2 text-sm text-gray-400">Match incoming and outgoing payments fast.</p>
-          </article>
-          <article class="glass rounded-2xl p-6">
-            <h3 class="font-medium">Inventory tracking</h3>
-            <p class="mt-2 text-sm text-gray-400">Live counts and COGS-friendly flows.</p>
-          </article>
-          <article class="glass rounded-2xl p-6">
-            <h3 class="font-medium">US sales tax & IRS rules</h3>
-            <p class="mt-2 text-sm text-gray-400">We apply high-level rules per state setup.</p>
-          </article>
-          <article class="glass rounded-2xl p-6">
-            <h3 class="font-medium">Audit-ready exports</h3>
-            <p class="mt-2 text-sm text-gray-400">Clean CSV/PDFs for your records.</p>
-          </article>
+        <div class="mt-6 sm:mt-8 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
+          <article class="glass rounded-xl p-4 sm:p-6"><h3 class="font-medium">WhatsApp capture</h3><p class="mt-2 text-sm text-gray-400">Drop a photo or PDF. We parse and post.</p></article>
+          <article class="glass rounded-xl p-4 sm:p-6"><h3 class="font-medium">Auto invoices</h3><p class="mt-2 text-sm text-gray-400">Create and send invoices from chat.</p></article>
+          <article class="glass rounded-xl p-4 sm:p-6"><h3 class="font-medium">Payments & reconciliation</h3><p class="mt-2 text-sm text-gray-400">Match incoming and outgoing payments fast.</p></article>
+          <article class="glass rounded-xl p-4 sm:p-6"><h3 class="font-medium">Inventory tracking</h3><p class="mt-2 text-sm text-gray-400">Live counts and COGS-friendly flows.</p></article>
+          <article class="glass rounded-xl p-4 sm:p-6"><h3 class="font-medium">US sales tax & IRS rules</h3><p class="mt-2 text-sm text-gray-400">We apply high-level rules per state setup.</p></article>
+          <article class="glass rounded-xl p-4 sm:p-6"><h3 class="font-medium">Audit-ready exports</h3><p class="mt-2 text-sm text-gray-400">Clean CSV/PDFs for your records.</p></article>
         </div>
       </div>
     </section>
 
     <!-- Integrations -->
-    <section id="integrations" class="py-16">
+    <section id="integrations" class="py-12 sm:py-16">
       <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div class="grid lg:grid-cols-2 gap-10 items-start">
+        <div class="grid lg:grid-cols-2 gap-6 sm:gap-10 items-start">
           <div>
-            <h2 class="text-3xl font-semibold">Plug into your books</h2>
-            <p class="mt-2 text-gray-300">One-click sync with QuickBooks and Zoho. Xero support is on the way. Export to Tally CSV.</p>
-            <ul class="mt-6 space-y-3 text-sm text-gray-300">
+            <h2 class="text-2xl sm:text-3xl font-semibold">Plug into your books</h2>
+            <p class="mt-2 text-gray-300 text-sm sm:text-base">One-click sync with QuickBooks and Zoho. Xero support is on the way. Export to Tally CSV.</p>
+            <ul class="mt-4 sm:mt-6 space-y-2 text-sm text-gray-300">
               <li>• Customers, vendors, items, taxes</li>
               <li>• Invoices, bills, payments</li>
               <li>• Inventory adjustments</li>
             </ul>
-            <div class="mt-6 flex gap-3">
-              <a href="#signup" class="btn-primary px-5 py-3 rounded-xl font-medium shadow-glow focus-ring">Connect now</a>
-              <a href="#pricing" class="btn-secondary glass px-5 py-3 rounded-xl font-medium focus-ring">See pricing</a>
+            <div class="mt-5 flex flex-col sm:flex-row gap-3">
+              <a href="#signup" class="btn-primary text-center px-5 py-3 rounded-xl font-medium shadow-glow focus-ring pressable">Connect now</a>
+              <a href="#pricing" class="glass text-center px-5 py-3 rounded-xl font-medium focus-ring pressable">See pricing</a>
             </div>
           </div>
-          <figure class="glass rounded-3xl p-6 border border-white/10">
-            <img src="" alt="Glowing pipeline of documents converting into structured entries." class="w-full h-72 object-cover bg-gradient-to-br from-brand/20 to-accent/20 rounded-2xl" />
+          <figure class="glass rounded-xl sm:rounded-2xl p-4 sm:p-6 border border-white/10">
+            <img src="" alt="Glowing pipeline of documents converting into structured entries." class="w-full h-48 sm:h-72 object-cover rounded-lg bg-gradient-to-br from-brand/20 to-accent/20" />
             <figcaption class="mt-3 text-xs text-gray-400">Replace with AUTOMATION PIPELINE image.</figcaption>
           </figure>
         </div>
       </div>
     </section>
 
-    <!-- Live Demo: Running accounts subtraction -->
-    <section class="py-16" aria-labelledby="demo">
+    <!-- Live Demo -->
+    <section class="py-12 sm:py-16" aria-labelledby="demo">
       <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <h2 id="demo" class="text-3xl font-semibold">Live balance demo</h2>
-        <p class="mt-2 text-gray-300">Add sales (+) and expenses (−). See your balance update in real time.</p>
+        <h2 id="demo" class="text-2xl sm:text-3xl font-semibold">Live balance demo</h2>
+        <p class="mt-2 text-gray-300 text-sm sm:text-base">Add sales (+) and expenses (−). See your balance update in real time.</p>
 
-        <div class="mt-8 grid lg:grid-cols-2 gap-8">
-          <div class="glass rounded-2xl p-6">
-            <form id="demoForm" class="grid sm:grid-cols-2 gap-4" aria-describedby="demoHelp" onsubmit="return false;">
+        <div class="mt-6 sm:mt-8 grid lg:grid-cols-2 gap-6 sm:gap-8">
+          <div class="glass rounded-xl sm:rounded-2xl p-4 sm:p-6">
+            <form id="demoForm" class="grid grid-cols-1 sm:grid-cols-2 gap-4" aria-describedby="demoHelp" onsubmit="return false;">
               <div class="sm:col-span-2">
                 <label for="opening" class="block text-sm text-gray-300">Opening balance</label>
-                <input id="opening" type="number" step="0.01" value="0" class="w-full bg-transparent border border-white/10 rounded-lg p-2 focus-ring" aria-label="Opening balance">
+                <input id="opening" type="number" inputmode="decimal" step="0.01" value="0" class="w-full bg-transparent border border-white/10 rounded-lg p-3 focus-ring tappable">
               </div>
               <div>
                 <label for="type" class="block text-sm text-gray-300">Type</label>
-                <select id="type" class="w-full bg-transparent border border-white/10 rounded-lg p-2 focus-ring">
+                <select id="type" class="w-full bg-transparent border border-white/10 rounded-lg p-3 focus-ring tappable">
                   <option value="sale">Sale (+)</option>
                   <option value="expense">Expense (−)</option>
                 </select>
               </div>
               <div>
                 <label for="amount" class="block text-sm text-gray-300">Amount (USD)</label>
-                <input id="amount" type="number" step="0.01" min="0" class="w-full bg-transparent border border-white/10 rounded-lg p-2 focus-ring" required>
+                <input id="amount" type="number" inputmode="decimal" step="0.01" min="0" class="w-full bg-transparent border border-white/10 rounded-lg p-3 focus-ring tappable" required>
               </div>
               <div class="sm:col-span-2">
                 <label for="desc" class="block text-sm text-gray-300">Description (optional)</label>
-                <input id="desc" type="text" class="w-full bg-transparent border border-white/10 rounded-lg p-2 focus-ring" placeholder="e.g., Amazon sale, UPS shipping">
+                <input id="desc" type="text" class="w-full bg-transparent border border-white/10 rounded-lg p-3 focus-ring tappable" placeholder="e.g., Amazon sale, UPS shipping">
               </div>
-              <div class="sm:col-span-2 flex gap-3">
-                <button id="addItem" class="btn-primary px-5 py-2 rounded-xl font-medium focus-ring" type="button">Add item</button>
-                <button id="clearItems" class="btn-secondary glass px-5 py-2 rounded-xl font-medium focus-ring" type="button">Clear</button>
+              <div class="sm:col-span-2 flex flex-col sm:flex-row gap-3">
+                <button id="addItem" class="btn-primary px-5 py-3 rounded-xl font-medium focus-ring pressable" type="button">Add item</button>
+                <button id="clearItems" class="glass px-5 py-3 rounded-xl font-medium focus-ring pressable" type="button">Clear</button>
               </div>
               <p id="demoHelp" class="sm:col-span-2 text-xs text-gray-400">This is a simple demo. LedgerDaddy applies more checks in product.</p>
             </form>
           </div>
 
-          <div class="glass rounded-2xl p-6">
+          <div class="glass rounded-xl sm:rounded-2xl p-4 sm:p-6">
             <div class="flex items-center justify-between">
               <h3 class="font-medium">Balance</h3>
-              <span id="balance" class="text-2xl font-semibold">$0.00</span>
+              <span id="balance" class="text-xl sm:text-2xl font-semibold">$0.00</span>
             </div>
-            <ul id="items" class="mt-4 space-y-2 text-sm" aria-live="polite" aria-relevant="additions removals">
-              <!-- Items render here -->
-            </ul>
+            <ul id="items" class="mt-4 space-y-2 text-sm" aria-live="polite" aria-relevant="additions removals"></ul>
           </div>
         </div>
       </div>
     </section>
 
     <!-- Reviews -->
-    <section id="reviews" class="py-16">
+    <section id="reviews" class="py-12 sm:py-16">
       <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <h2 class="text-3xl font-semibold">What customers say</h2>
-        <div class="mt-8 grid md:grid-cols-3 gap-6">
-          <figure class="glass rounded-2xl p-6">
-            <img src="" alt="Professional headshot on dark gradient." class="w-full h-40 object-cover rounded-xl bg-white/5" />
-            <blockquote class="mt-4 text-sm text-gray-300">“We just drop bills in chat. Books stay current.”</blockquote>
+        <h2 class="text-2xl sm:text-3xl font-semibold">What customers say</h2>
+        <div class="mt-6 sm:mt-8 grid md:grid-cols-3 gap-4 sm:gap-6">
+          <figure class="glass rounded-xl p-4 sm:p-6">
+            <img src="" alt="Professional headshot on dark gradient." class="w-full h-32 sm:h-40 object-cover rounded-lg bg-white/5" />
+            <blockquote class="mt-3 text-sm text-gray-300">“We just drop bills in chat. Books stay current.”</blockquote>
             <figcaption class="mt-2 text-xs text-gray-400">Maya R., D2C founder</figcaption>
           </figure>
-          <figure class="glass rounded-2xl p-6">
-            <img src="" alt="Professional headshot on dark gradient." class="w-full h-40 object-cover rounded-xl bg-white/5" />
-            <blockquote class="mt-4 text-sm text-gray-300">“Reconciliation used to take hours. Now it’s minutes.”</blockquote>
+          <figure class="glass rounded-xl p-4 sm:p-6">
+            <img src="" alt="Professional headshot on dark gradient." class="w-full h-32 sm:h-40 object-cover rounded-lg bg-white/5" />
+            <blockquote class="mt-3 text-sm text-gray-300">“Reconciliation used to take hours. Now it’s minutes.”</blockquote>
             <figcaption class="mt-2 text-xs text-gray-400">Ian T., Wholesale ops</figcaption>
           </figure>
-          <figure class="glass rounded-2xl p-6">
-            <img src="" alt="Professional headshot on dark gradient." class="w-full h-40 object-cover rounded-xl bg-white/5" />
-            <blockquote class="mt-4 text-sm text-gray-300">“Sales tax got simpler across states.”</blockquote>
+          <figure class="glass rounded-xl p-4 sm:p-6">
+            <img src="" alt="Professional headshot on dark gradient." class="w-full h-32 sm:h-40 object-cover rounded-lg bg-white/5" />
+            <blockquote class="mt-3 text-sm text-gray-300">“Sales tax got simpler across states.”</blockquote>
             <figcaption class="mt-2 text-xs text-gray-400">Alexa P., Amazon seller</figcaption>
           </figure>
         </div>
@@ -342,89 +313,80 @@
     </section>
 
     <!-- Pricing -->
-    <section id="pricing" class="py-16">
+    <section id="pricing" class="py-12 sm:py-16">
       <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <h2 class="text-3xl font-semibold">Simple pricing</h2>
-        <p class="mt-2 text-gray-300">No credit card required · 7-day free trial.</p>
+        <h2 class="text-2xl sm:text-3xl font-semibold">Simple pricing</h2>
+        <p class="mt-2 text-gray-300 text-sm sm:text-base">No credit card required · 7-day free trial.</p>
 
-        <div class="mt-8 grid md:grid-cols-3 gap-6">
-          <!-- Starter -->
-          <div class="glass rounded-2xl p-6 flex flex-col">
+        <div class="mt-6 sm:mt-8 grid md:grid-cols-3 gap-4 sm:gap-6">
+          <div class="glass rounded-xl p-5 sm:p-6 flex flex-col">
             <h3 class="font-medium">Starter</h3>
-            <p class="mt-1 text-3xl font-semibold">$49<span class="text-base font-normal text-gray-400">/mo</span></p>
-            <ul class="mt-4 text-sm text-gray-300 space-y-2">
-              <li>• WhatsApp capture</li>
-              <li>• Up to 3 users</li>
-              <li>• QuickBooks or Zoho</li>
+            <p class="mt-1 text-2xl sm:text-3xl font-semibold">$49<span class="text-sm sm:text-base font-normal text-gray-400">/mo</span></p>
+            <ul class="mt-3 text-sm text-gray-300 space-y-2">
+              <li>• WhatsApp capture</li><li>• Up to 3 users</li><li>• QuickBooks or Zoho</li>
             </ul>
-            <a href="#signup" class="mt-6 btn-primary text-center px-5 py-3 rounded-xl font-medium focus-ring">Start now</a>
+            <a href="#signup" class="mt-5 btn-primary text-center px-5 py-3 rounded-xl font-medium focus-ring pressable">Start now</a>
           </div>
 
-          <!-- Growth -->
-          <div class="glass rounded-2xl p-6 border border-accent/40 shadow-glow flex flex-col">
+          <div class="glass rounded-xl p-5 sm:p-6 border border-accent/40 shadow-glow flex flex-col">
             <h3 class="font-medium">Growth</h3>
-            <p class="mt-1 text-3xl font-semibold">$199<span class="text-base font-normal text-gray-400">/mo</span></p>
-            <ul class="mt-4 text-sm text-gray-300 space-y-2">
-              <li>• Everything in Starter</li>
-              <li>• Up to 15 users</li>
-              <li>• Inventory & multi-channel</li>
+            <p class="mt-1 text-2xl sm:text-3xl font-semibold">$199<span class="text-sm sm:text-base font-normal text-gray-400">/mo</span></p>
+            <ul class="mt-3 text-sm text-gray-300 space-y-2">
+              <li>• Everything in Starter</li><li>• Up to 15 users</li><li>• Inventory & multi-channel</li>
             </ul>
-            <a href="#signup" class="mt-6 btn-primary text-center px-5 py-3 rounded-xl font-medium focus-ring">Start now</a>
+            <a href="#signup" class="mt-5 btn-primary text-center px-5 py-3 rounded-xl font-medium focus-ring pressable">Start now</a>
           </div>
 
-          <!-- Enterprise -->
-          <div class="glass rounded-2xl p-6 flex flex-col">
+          <div class="glass rounded-xl p-5 sm:p-6 flex flex-col">
             <h3 class="font-medium">Enterprise</h3>
-            <p class="mt-1 text-3xl font-semibold">Custom</p>
-            <ul class="mt-4 text-sm text-gray-300 space-y-2">
-              <li>• SSO & advanced controls</li>
-              <li>• Priority support</li>
-              <li>• Dedicated success</li>
+            <p class="mt-1 text-2xl sm:text-3xl font-semibold">Custom</p>
+            <ul class="mt-3 text-sm text-gray-300 space-y-2">
+              <li>• SSO & advanced controls</li><li>• Priority support</li><li>• Dedicated success</li>
             </ul>
-            <a href="#signup" class="mt-6 btn-secondary glass text-center px-5 py-3 rounded-xl font-medium focus-ring">Talk to sales</a>
+            <a href="#signup" class="mt-5 glass text-center px-5 py-3 rounded-xl font-medium focus-ring pressable">Talk to sales</a>
           </div>
         </div>
       </div>
     </section>
 
     <!-- Signup -->
-    <section id="signup" class="py-16">
+    <section id="signup" class="py-12 sm:py-16">
       <div class="max-w-xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div class="glass rounded-3xl p-6">
-          <h2 class="text-2xl font-semibold">Create your account</h2>
-          <p class="mt-2 text-gray-300">No credit card required · 7-day free trial</p>
-          <form class="mt-6 space-y-4" onsubmit="event.preventDefault(); alert('Thanks! We will email you onboarding steps.');">
+        <div class="glass rounded-2xl p-5 sm:p-6">
+          <h2 class="text-xl sm:text-2xl font-semibold">Create your account</h2>
+          <p class="mt-2 text-gray-300 text-sm">No credit card required · 7-day free trial</p>
+          <form class="mt-5 space-y-4" onsubmit="event.preventDefault(); alert('Thanks! We will email you onboarding steps.');">
             <div>
               <label for="name" class="block text-sm text-gray-300">Full name</label>
-              <input id="name" name="name" class="w-full bg-transparent border border-white/10 rounded-lg p-2 focus-ring" required />
+              <input id="name" name="name" class="w-full bg-transparent border border-white/10 rounded-lg p-3 focus-ring tappable" required />
             </div>
             <div>
               <label for="email" class="block text-sm text-gray-300">Work email</label>
-              <input id="email" type="email" name="email" class="w-full bg-transparent border border-white/10 rounded-lg p-2 focus-ring" required />
+              <input id="email" type="email" name="email" class="w-full bg-transparent border border-white/10 rounded-lg p-3 focus-ring tappable" required />
             </div>
             <div>
               <label for="company" class="block text-sm text-gray-300">Company</label>
-              <input id="company" name="company" class="w-full bg-transparent border border-white/10 rounded-lg p-2 focus-ring" />
+              <input id="company" name="company" class="w-full bg-transparent border border-white/10 rounded-lg p-3 focus-ring tappable" />
             </div>
-            <div>
-              <label for="plan" class="block text-sm text-gray-300">Plan</label>
-              <select id="plan" name="plan" class="w-full bg-transparent border border-white/10 rounded-lg p-2 focus-ring">
-                <option>Starter ($49/mo)</option>
-                <option>Growth ($199/mo)</option>
-                <option>Enterprise (custom)</option>
-              </select>
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              <div>
+                <label for="plan" class="block text-sm text-gray-300">Plan</label>
+                <select id="plan" name="plan" class="w-full bg-transparent border border-white/10 rounded-lg p-3 focus-ring tappable">
+                  <option>Starter ($49/mo)</option>
+                  <option>Growth ($199/mo)</option>
+                  <option>Enterprise (custom)</option>
+                </select>
+              </div>
+              <div>
+                <label for="model" class="block text-sm text-gray-300">AI mode</label>
+                <select id="model" name="model" class="w-full bg-transparent border border-white/10 rounded-lg p-3 focus-ring tappable">
+                  <option>Fast</option><option>Accurate</option><option>Custom</option>
+                </select>
+              </div>
             </div>
-            <div>
-              <label for="model" class="block text-sm text-gray-300">AI mode</label>
-              <select id="model" name="model" class="w-full bg-transparent border border-white/10 rounded-lg p-2 focus-ring">
-                <option>Fast</option>
-                <option>Accurate</option>
-                <option>Custom</option>
-              </select>
-            </div>
-            <div class="flex items-center gap-3">
-              <button class="btn-primary px-6 py-3 rounded-xl font-medium focus-ring" type="submit">Start now</button>
-              <button class="btn-secondary glass px-6 py-3 rounded-xl font-medium focus-ring" type="button" onclick="alert('Sales will contact you shortly.');">Talk to sales</button>
+            <div class="flex flex-col sm:flex-row items-stretch sm:items-center gap-3">
+              <button class="btn-primary px-6 py-3 rounded-xl font-medium focus-ring pressable" type="submit">Start now</button>
+              <button class="glass px-6 py-3 rounded-xl font-medium focus-ring pressable" type="button" onclick="alert('Sales will contact you shortly.');">Talk to sales</button>
             </div>
             <p class="text-xs text-gray-400">By signing up you acknowledge our <a class="underline hover:text-accent" href="disclaimer.html">Disclaimer</a> and agree to the <a class="underline hover:text-accent" href="terms.html">Terms</a> & <a class="underline hover:text-accent" href="privacy.html">Privacy</a>.</p>
           </form>
@@ -433,23 +395,23 @@
     </section>
 
     <!-- FAQ -->
-    <section id="faq" class="py-16">
+    <section id="faq" class="py-12 sm:py-16">
       <div class="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8">
-        <h2 class="text-3xl font-semibold">FAQ</h2>
-        <dl class="mt-8 space-y-6">
-          <div class="glass rounded-2xl p-5">
+        <h2 class="text-2xl sm:text-3xl font-semibold">FAQ</h2>
+        <dl class="mt-6 sm:mt-8 space-y-4 sm:space-y-6">
+          <div class="glass rounded-xl p-4 sm:p-5">
             <dt class="font-medium">How does WhatsApp capture work?</dt>
             <dd class="mt-2 text-sm text-gray-300">You send bills, receipts, or notes. We extract fields and post entries.</dd>
           </div>
-          <div class="glass rounded-2xl p-5">
+          <div class="glass rounded-xl p-4 sm:p-5">
             <dt class="font-medium">Is setup hard?</dt>
             <dd class="mt-2 text-sm text-gray-300">It’s quick. Connect QuickBooks or Zoho, choose AI mode, and invite your team.</dd>
           </div>
-          <div class="glass rounded-2xl p-5">
+          <div class="glass rounded-xl p-4 sm:p-5">
             <dt class="font-medium">Do you handle US sales tax?</dt>
             <dd class="mt-2 text-sm text-gray-300">We apply high-level US sales tax and IRS rules based on your configuration.</dd>
           </div>
-          <div class="glass rounded-2xl p-5">
+          <div class="glass rounded-xl p-4 sm:p-5">
             <dt class="font-medium">Can I export data?</dt>
             <dd class="mt-2 text-sm text-gray-300">Yes. Clean CSV/PDF exports and Tally CSV are available.</dd>
           </div>
@@ -457,33 +419,30 @@
       </div>
     </section>
 
-    <!-- Policies directory -->
-    <section id="policies" class="py-16">
+    <!-- Policies quick links -->
+    <section id="policies" class="py-12 sm:py-16">
       <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
-        <h2 class="text-3xl font-semibold">Policies</h2>
-        <p class="mt-2 text-gray-300">Quick links to our policy pages.</p>
-
-        <ul class="mt-6 grid sm:grid-cols-2 gap-4 text-sm text-gray-300">
-          <li class="glass rounded-xl p-4"><a class="hover:text-accent underline" href="privacy.html">Privacy Policy</a></li>
-          <li class="glass rounded-xl p-4"><a class="hover:text-accent underline" href="terms.html">Terms &amp; Conditions</a></li>
-          <li class="glass rounded-xl p-4"><a class="hover:text-accent underline" href="dpa.html">Data Processing Addendum (DPA)</a></li>
-          <li class="glass rounded-xl p-4"><a class="hover:text-accent underline" href="security.html">Security Overview</a></li>
-          <li class="glass rounded-xl p-4"><a class="hover:text-accent underline" href="cookie-policy.html">Cookie Policy</a></li>
-          <li class="glass rounded-xl p-4"><a class="hover:text-accent underline" href="acceptable-use.html">Acceptable Use</a></li>
-          <li class="glass rounded-xl p-4"><a class="hover:text-accent underline" href="sla.html">Service Level (SLA)</a></li>
-          <li class="glass rounded-xl p-4"><a class="hover:text-accent underline" href="subprocessors.html">Subprocessors</a></li>
-          <li class="glass rounded-xl p-4"><a class="hover:text-accent underline" href="disclaimer.html">Disclaimer</a></li>
+        <h2 class="text-2xl sm:text-3xl font-semibold">Policies</h2>
+        <p class="mt-2 text-gray-300 text-sm">Quick links to our policy pages.</p>
+        <ul class="mt-6 grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4 text-sm text-gray-300">
+          <li class="glass rounded-xl p-4"><a class="block hover:text-accent" href="privacy.html">Privacy Policy</a></li>
+          <li class="glass rounded-xl p-4"><a class="block hover:text-accent" href="terms.html">Terms &amp; Conditions</a></li>
+          <li class="glass rounded-xl p-4"><a class="block hover:text-accent" href="dpa.html">Data Processing Addendum (DPA)</a></li>
+          <li class="glass rounded-xl p-4"><a class="block hover:text-accent" href="security.html">Security Overview</a></li>
+          <li class="glass rounded-xl p-4"><a class="block hover:text-accent" href="cookie-policy.html">Cookie Policy</a></li>
+          <li class="glass rounded-xl p-4"><a class="block hover:text-accent" href="acceptable-use.html">Acceptable Use</a></li>
+          <li class="glass rounded-xl p-4"><a class="block hover:text-accent" href="sla.html">Service Level (SLA)</a></li>
+          <li class="glass rounded-xl p-4"><a class="block hover:text-accent" href="subprocessors.html">Subprocessors</a></li>
+          <li class="glass rounded-xl p-4 sm:col-span-2"><a class="block hover:text-accent" href="disclaimer.html">Disclaimer</a></li>
         </ul>
-
-        <p class="mt-6 text-xs text-gray-400">Draft your pages and include a “review with counsel” note before going live.</p>
       </div>
     </section>
   </main>
 
   <!-- Footer -->
   <footer class="border-t border-white/10">
-    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10">
-      <div class="grid md:grid-cols-4 gap-8">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 sm:py-10">
+      <div class="grid gap-6 sm:gap-8 md:grid-cols-4">
         <div>
           <div class="flex items-center gap-2">
             <svg width="22" height="22" viewBox="0 0 64 64" aria-hidden="true">
@@ -499,36 +458,36 @@
         <div>
           <h4 class="font-medium mb-3">Product</h4>
           <ul class="space-y-2 text-sm text-gray-400">
-            <li><a class="hover:text-accent" href="#product">Features</a></li>
-            <li><a class="hover:text-accent" href="#integrations">Integrations</a></li>
-            <li><a class="hover:text-accent" href="#pricing">Pricing</a></li>
+            <li><a class="hover:text-accent tappable" href="#product">Features</a></li>
+            <li><a class="hover:text-accent tappable" href="#integrations">Integrations</a></li>
+            <li><a class="hover:text-accent tappable" href="#pricing">Pricing</a></li>
           </ul>
         </div>
 
         <div>
           <h4 class="font-medium mb-3">Company</h4>
           <ul class="space-y-2 text-sm text-gray-400">
-            <li><a class="hover:text-accent" href="#reviews">Customers</a></li>
-            <li><a class="hover:text-accent" href="#faq">FAQ</a></li>
-            <li><a class="hover:text-accent" href="#policies">Policies</a></li>
+            <li><a class="hover:text-accent tappable" href="#reviews">Customers</a></li>
+            <li><a class="hover:text-accent tappable" href="#faq">FAQ</a></li>
+            <li><a class="hover:text-accent tappable" href="#policies">Policies</a></li>
           </ul>
         </div>
 
         <div>
           <h4 class="font-medium mb-3">Legal</h4>
           <ul class="space-y-2 text-sm text-gray-400">
-            <li><a class="hover:text-accent" href="privacy.html">Privacy Policy</a></li>
-            <li><a class="hover:text-accent" href="terms.html">Terms &amp; Conditions</a></li>
-            <li><a class="hover:text-accent" href="dpa.html">DPA</a></li>
-            <li><a class="hover:text-accent" href="cookie-policy.html">Cookie Policy</a></li>
-            <li><a class="hover:text-accent" href="acceptable-use.html">Acceptable Use</a></li>
-            <li><a class="hover:text-accent" href="sla.html">SLA</a></li>
-            <li><a class="hover:text-accent" href="subprocessors.html">Subprocessors</a></li>
-            <li><a class="hover:text-accent" href="disclaimer.html">Disclaimer</a></li>
+            <li><a class="hover:text-accent tappable" href="privacy.html">Privacy Policy</a></li>
+            <li><a class="hover:text-accent tappable" href="terms.html">Terms &amp; Conditions</a></li>
+            <li><a class="hover:text-accent tappable" href="dpa.html">DPA</a></li>
+            <li><a class="hover:text-accent tappable" href="cookie-policy.html">Cookie Policy</a></li>
+            <li><a class="hover:text-accent tappable" href="acceptable-use.html">Acceptable Use</a></li>
+            <li><a class="hover:text-accent tappable" href="sla.html">SLA</a></li>
+            <li><a class="hover:text-accent tappable" href="subprocessors.html">Subprocessors</a></li>
+            <li><a class="hover:text-accent tappable" href="disclaimer.html">Disclaimer</a></li>
           </ul>
         </div>
       </div>
-      <p class="mt-8 text-xs text-gray-500">© <span id="year"></span> LedgerDaddy. All rights reserved.</p>
+      <p class="mt-6 sm:mt-8 text-xs text-gray-500">© <span id="year"></span> LedgerDaddy. All rights reserved.</p>
     </div>
   </footer>
 
@@ -536,55 +495,43 @@
   <div id="cookie" class="fixed bottom-4 inset-x-4 md:inset-x-auto md:right-6 md:bottom-6 max-w-xl glass rounded-2xl p-4 border border-white/10 shadow-glow hidden" role="dialog" aria-live="polite">
     <p class="text-sm text-gray-300">We use cookies to improve your experience. Read our <a href="cookie-policy.html" class="underline hover:text-accent">Cookie Policy</a>.</p>
     <div class="mt-3 flex gap-3">
-      <button id="cookieAccept" class="btn-primary px-4 py-2 rounded-xl font-medium focus-ring">Accept</button>
-      <button id="cookieDismiss" class="btn-secondary glass px-4 py-2 rounded-xl font-medium focus-ring">Dismiss</button>
+      <button id="cookieAccept" class="btn-primary px-4 py-2 rounded-xl font-medium focus-ring pressable">Accept</button>
+      <button id="cookieDismiss" class="glass px-4 py-2 rounded-xl font-medium focus-ring pressable">Dismiss</button>
     </div>
   </div>
 
   <!-- Scripts (defer) -->
   <script defer>
-    // Mobile nav toggle
+    // --- Mobile drawer ---
     const navToggle = document.getElementById('navToggle');
+    const navClose  = document.getElementById('navClose');
     const mobileNav = document.getElementById('mobileNav');
-    if (navToggle) {
-      navToggle.addEventListener('click', () => {
-        const open = !mobileNav.classList.toggle('hidden');
-        navToggle.setAttribute('aria-expanded', String(open));
-      });
-    }
+    function openDrawer(){ mobileNav.classList.remove('hidden'); navToggle?.setAttribute('aria-expanded','true'); document.body.style.overflow='hidden'; }
+    function closeDrawer(){ mobileNav.classList.add('hidden'); navToggle?.setAttribute('aria-expanded','false'); document.body.style.overflow=''; }
+    navToggle?.addEventListener('click', openDrawer);
+    navClose?.addEventListener('click', closeDrawer);
+    mobileNav?.addEventListener('click', (e)=>{ if(e.target===mobileNav) closeDrawer(); });
 
-    // Policies dropdown (desktop)
+    // --- Desktop policies dropdown ---
     const policiesToggle = document.getElementById('policiesToggle');
     const policiesMenu = document.getElementById('policiesMenu');
-    function closePolicies() { policiesMenu.classList.add('hidden'); policiesToggle?.setAttribute('aria-expanded','false'); }
-    function openPolicies()  { policiesMenu.classList.remove('hidden'); policiesToggle?.setAttribute('aria-expanded','true'); }
-    if (policiesToggle && policiesMenu) {
-      policiesToggle.addEventListener('click', () => {
-        const isHidden = policiesMenu.classList.contains('hidden');
-        isHidden ? openPolicies() : closePolicies();
-      });
-      document.addEventListener('click', (e) => {
-        if (!policiesMenu.contains(e.target) && !policiesToggle.contains(e.target)) closePolicies();
-      });
-      // Escape to close
-      document.addEventListener('keydown', (e) => { if (e.key === 'Escape') closePolicies(); });
-    }
+    function closePolicies(){ policiesMenu?.classList.add('hidden'); policiesToggle?.setAttribute('aria-expanded','false'); }
+    function openPolicies(){ policiesMenu?.classList.remove('hidden'); policiesToggle?.setAttribute('aria-expanded','true'); }
+    policiesToggle?.addEventListener('click', ()=> policiesMenu.classList.contains('hidden') ? openPolicies() : closePolicies());
+    document.addEventListener('click', (e)=>{ if(policiesMenu && !policiesMenu.contains(e.target) && !policiesToggle.contains(e.target)) closePolicies(); });
+    document.addEventListener('keydown', (e)=>{ if(e.key==='Escape') closePolicies(); });
 
-    // Model selector note
+    // --- Model selector note ---
     const modelSelect = document.getElementById('modelSelect');
     const modelNote = document.getElementById('modelNote');
-    if (modelSelect && modelNote) {
-      const notes = {
-        "Fast": "Fast: quick replies for day-to-day entries.",
-        "Accurate": "Accurate: deeper checks for month-end and tax.",
-        "Custom": "Custom: tune prompts, tax profiles, and rules."
-      };
-      modelSelect.addEventListener('change', (e) => {
-        modelNote.textContent = notes[e.target.value] || notes["Fast"];
-      });
-    }
+    const modelCopy = {
+      "Fast":"Fast: quick replies for day-to-day entries.",
+      "Accurate":"Accurate: deeper checks for month-end and tax.",
+      "Custom":"Custom: tune prompts, tax profiles, and rules."
+    };
+    modelSelect?.addEventListener('change',(e)=>{ modelNote.textContent = modelCopy[e.target.value] || modelCopy.Fast; });
 
-    // Live demo logic
+    // --- Demo ledger ---
     const opening = document.getElementById('opening');
     const typeEl = document.getElementById('type');
     const amount = document.getElementById('amount');
@@ -593,82 +540,57 @@
     const clearItems = document.getElementById('clearItems');
     const items = document.getElementById('items');
     const balance = document.getElementById('balance');
-
     let ledger = [];
-
-    function toCurrency(n) {
-      const val = Number.isFinite(n) ? n : 0;
-      return '$' + val.toFixed(2);
+    const toCurrency = (n)=> '$' + (Number.isFinite(n)?n:0).toFixed(2);
+    function computeBalance(){
+      const open = parseFloat(opening?.value || '0');
+      const delta = ledger.reduce((a,r)=>a+r.amount,0);
+      balance.textContent = toCurrency(open+delta);
     }
-
-    function computeBalance() {
-      const open = parseFloat(opening.value || '0');
-      const delta = ledger.reduce((acc, row) => acc + row.amount, 0);
-      const total = open + delta;
-      balance.textContent = toCurrency(total);
-    }
-
-    function render() {
-      items.innerHTML = '';
-      ledger.forEach((row, i) => {
-        const li = document.createElement('li');
-        li.className = 'flex items-center justify-between rounded-lg bg-white/5 border border-white/10 p-3';
-        const sign = row.amount >= 0 ? '+' : '−';
-        li.innerHTML = `
+    function render(){
+      if(!items) return;
+      items.innerHTML='';
+      ledger.forEach((row,i)=>{
+        const li=document.createElement('li');
+        li.className='flex items-center justify-between rounded-lg bg-white/5 border border-white/10 p-3';
+        const sign=row.amount>=0?'+':'−';
+        li.innerHTML=`
           <div class="min-w-0">
-            <div class="text-sm">${row.desc || (row.type === 'sale' ? 'Sale' : 'Expense')}</div>
+            <div class="text-sm">${row.desc || (row.type==='sale'?'Sale':'Expense')}</div>
             <div class="text-xs text-gray-400">${row.type}</div>
           </div>
           <div class="flex items-center gap-3">
             <span class="font-medium">${sign}${toCurrency(Math.abs(row.amount))}</span>
-            <button aria-label="Remove item" class="p-1 rounded-md hover:bg-white/10 remove-item" data-i="${i}">
-              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor">
-                <path stroke-linecap="round" stroke-width="2" d="M6 6l12 12M18 6L6 18"/>
-              </svg>
+            <button aria-label="Remove item" class="p-2 rounded-md hover:bg-white/10 remove-item" data-i="${i}">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor"><path stroke-linecap="round" stroke-width="2" d="M6 6l12 12M18 6L6 18"/></svg>
             </button>
-          </div>
-        `;
+          </div>`;
         items.appendChild(li);
       });
       computeBalance();
     }
-
-    addItem?.addEventListener('click', () => {
-      const val = parseFloat(amount.value || '0');
-      if (!Number.isFinite(val) || val <= 0) return;
-      const isSale = typeEl.value === 'sale';
-      ledger.push({
-        type: isSale ? 'sale' : 'expense',
-        amount: isSale ? val : -val,
-        desc: (desc.value || '').trim()
-      });
-      amount.value = '';
-      desc.value = '';
-      render();
+    addItem?.addEventListener('click', ()=>{
+      const val=parseFloat(amount?.value||'0'); if(!Number.isFinite(val)||val<=0) return;
+      const isSale = typeEl.value==='sale';
+      ledger.push({type:isSale?'sale':'expense', amount:isSale?val:-val, desc:(desc.value||'').trim()});
+      amount.value=''; desc.value=''; render();
     });
-
-    clearItems?.addEventListener('click', () => { ledger = []; render(); });
+    clearItems?.addEventListener('click', ()=>{ ledger=[]; render(); });
     opening?.addEventListener('input', computeBalance);
-    items?.addEventListener('click', (e) => {
-      const btn = e.target.closest('.remove-item');
-      if (!btn) return;
-      const idx = Number(btn.dataset.i);
-      if (Number.isInteger(idx)) { ledger.splice(idx, 1); render(); }
-    });
+    items?.addEventListener('click',(e)=>{ const b=e.target.closest('.remove-item'); if(!b) return; const i=Number(b.dataset.i); if(Number.isInteger(i)){ ledger.splice(i,1); render(); }});
 
-    // Cookie banner
-    const cookie = document.getElementById('cookie');
-    const cookieAccept = document.getElementById('cookieAccept');
-    const cookieDismiss = document.getElementById('cookieDismiss');
-    const COOKIE_KEY = 'ld_cookie_ok';
-    if (cookie && !localStorage.getItem(COOKIE_KEY)) cookie.classList.remove('hidden');
-    function closeCookie(consented) { cookie.classList.add('hidden'); if (consented) localStorage.setItem(COOKIE_KEY, '1'); }
-    cookieAccept?.addEventListener('click', () => closeCookie(true));
-    cookieDismiss?.addEventListener('click', () => closeCookie(false));
+    // --- Cookie banner ---
+    const cookie=document.getElementById('cookie');
+    const cookieAccept=document.getElementById('cookieAccept');
+    const cookieDismiss=document.getElementById('cookieDismiss');
+    const COOKIE_KEY='ld_cookie_ok';
+    if(cookie && !localStorage.getItem(COOKIE_KEY)) cookie.classList.remove('hidden');
+    const closeCookie=(ok)=>{ cookie.classList.add('hidden'); if(ok) localStorage.setItem(COOKIE_KEY,'1'); };
+    cookieAccept?.addEventListener('click',()=>closeCookie(true));
+    cookieDismiss?.addEventListener('click',()=>closeCookie(false));
 
-    // Year
-    const y = document.getElementById('year');
-    if (y) y.textContent = new Date().getFullYear();
+    // --- Year ---
+    document.getElementById('year').textContent = new Date().getFullYear();
   </script>
 </body>
 </html>
