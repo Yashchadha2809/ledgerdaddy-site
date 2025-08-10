@@ -74,7 +74,7 @@
   <header class="sticky top-0 z-40 bg-ink/70 backdrop-blur">
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
       <div class="flex items-center justify-between h-16">
-        <a href="#" class="flex items-center gap-3" aria-label="LedgerDaddy home">
+        <a href="index.html" class="flex items-center gap-3" aria-label="LedgerDaddy home">
           <!-- Inline SVG Logo -->
           <svg width="28" height="28" viewBox="0 0 64 64" aria-hidden="true">
             <defs>
@@ -91,12 +91,32 @@
           <span class="text-xl font-semibold tracking-tight">LedgerDaddy</span>
         </a>
 
-        <nav class="hidden md:flex items-center gap-8 text-sm">
+        <nav class="hidden md:flex items-center gap-6 text-sm">
           <a class="hover:text-accent" href="#product">Product</a>
           <a class="hover:text-accent" href="#integrations">Integrations</a>
           <a class="hover:text-accent" href="#pricing">Pricing</a>
           <a class="hover:text-accent" href="#reviews">Reviews</a>
           <a class="hover:text-accent" href="#faq">FAQ</a>
+
+          <!-- Policies dropdown (desktop) -->
+          <div class="relative">
+            <button id="policiesToggle" class="glass px-3 py-2 rounded-lg focus-ring flex items-center gap-2" aria-haspopup="true" aria-expanded="false" aria-controls="policiesMenu">
+              Policies
+              <svg width="16" height="16" fill="none" stroke="currentColor"><path stroke-linecap="round" stroke-width="2" d="M4 6l4 4 4-4"/></svg>
+            </button>
+            <div id="policiesMenu" class="absolute right-0 mt-2 w-64 glass rounded-xl border border-white/10 p-2 hidden" role="menu" aria-label="Policies">
+              <a class="block px-3 py-2 rounded hover:bg-white/10" href="privacy.html" role="menuitem">Privacy Policy</a>
+              <a class="block px-3 py-2 rounded hover:bg-white/10" href="terms.html" role="menuitem">Terms &amp; Conditions</a>
+              <a class="block px-3 py-2 rounded hover:bg-white/10" href="dpa.html" role="menuitem">Data Processing Addendum</a>
+              <a class="block px-3 py-2 rounded hover:bg-white/10" href="security.html" role="menuitem">Security Overview</a>
+              <a class="block px-3 py-2 rounded hover:bg-white/10" href="cookie-policy.html" role="menuitem">Cookie Policy</a>
+              <a class="block px-3 py-2 rounded hover:bg-white/10" href="acceptable-use.html" role="menuitem">Acceptable Use</a>
+              <a class="block px-3 py-2 rounded hover:bg-white/10" href="sla.html" role="menuitem">Service Level (SLA)</a>
+              <a class="block px-3 py-2 rounded hover:bg-white/10" href="subprocessors.html" role="menuitem">Subprocessors</a>
+              <a class="block px-3 py-2 rounded hover:bg-white/10" href="disclaimer.html" role="menuitem">Disclaimer</a>
+            </div>
+          </div>
+
           <a class="btn-primary px-4 py-2 rounded-xl font-medium shadow-glow focus-ring" href="#signup">Start now</a>
         </nav>
 
@@ -105,6 +125,8 @@
         </button>
       </div>
     </div>
+
+    <!-- Mobile nav -->
     <div id="mobileNav" class="md:hidden hidden border-t border-white/10">
       <nav class="px-4 py-3 space-y-3">
         <a class="block hover:text-accent" href="#product">Product</a>
@@ -112,6 +134,23 @@
         <a class="block hover:text-accent" href="#pricing">Pricing</a>
         <a class="block hover:text-accent" href="#reviews">Reviews</a>
         <a class="block hover:text-accent" href="#faq">FAQ</a>
+
+        <!-- Mobile Policies accordion -->
+        <details class="glass rounded-lg p-3">
+          <summary class="cursor-pointer select-none">Policies</summary>
+          <div class="mt-2 pl-3 space-y-1 text-sm">
+            <a class="block hover:text-accent" href="privacy.html">Privacy Policy</a>
+            <a class="block hover:text-accent" href="terms.html">Terms &amp; Conditions</a>
+            <a class="block hover:text-accent" href="dpa.html">Data Processing Addendum</a>
+            <a class="block hover:text-accent" href="security.html">Security Overview</a>
+            <a class="block hover:text-accent" href="cookie-policy.html">Cookie Policy</a>
+            <a class="block hover:text-accent" href="acceptable-use.html">Acceptable Use</a>
+            <a class="block hover:text-accent" href="sla.html">Service Level (SLA)</a>
+            <a class="block hover:text-accent" href="subprocessors.html">Subprocessors</a>
+            <a class="block hover:text-accent" href="disclaimer.html">Disclaimer</a>
+          </div>
+        </details>
+
         <a class="btn-primary inline-block px-4 py-2 rounded-xl font-medium shadow-glow focus-ring" href="#signup">Start now</a>
       </nav>
     </div>
@@ -387,6 +426,7 @@
               <button class="btn-primary px-6 py-3 rounded-xl font-medium focus-ring" type="submit">Start now</button>
               <button class="btn-secondary glass px-6 py-3 rounded-xl font-medium focus-ring" type="button" onclick="alert('Sales will contact you shortly.');">Talk to sales</button>
             </div>
+            <p class="text-xs text-gray-400">By signing up you acknowledge our <a class="underline hover:text-accent" href="disclaimer.html">Disclaimer</a> and agree to the <a class="underline hover:text-accent" href="terms.html">Terms</a> & <a class="underline hover:text-accent" href="privacy.html">Privacy</a>.</p>
           </form>
         </div>
       </div>
@@ -417,11 +457,11 @@
       </div>
     </section>
 
-    <!-- Policies directory (links to standalone pages you'll add next) -->
+    <!-- Policies directory -->
     <section id="policies" class="py-16">
       <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
         <h2 class="text-3xl font-semibold">Policies</h2>
-        <p class="mt-2 text-gray-300">Links below point to dedicated pages you will create next.</p>
+        <p class="mt-2 text-gray-300">Quick links to our policy pages.</p>
 
         <ul class="mt-6 grid sm:grid-cols-2 gap-4 text-sm text-gray-300">
           <li class="glass rounded-xl p-4"><a class="hover:text-accent underline" href="privacy.html">Privacy Policy</a></li>
@@ -432,6 +472,7 @@
           <li class="glass rounded-xl p-4"><a class="hover:text-accent underline" href="acceptable-use.html">Acceptable Use</a></li>
           <li class="glass rounded-xl p-4"><a class="hover:text-accent underline" href="sla.html">Service Level (SLA)</a></li>
           <li class="glass rounded-xl p-4"><a class="hover:text-accent underline" href="subprocessors.html">Subprocessors</a></li>
+          <li class="glass rounded-xl p-4"><a class="hover:text-accent underline" href="disclaimer.html">Disclaimer</a></li>
         </ul>
 
         <p class="mt-6 text-xs text-gray-400">Draft your pages and include a “review with counsel” note before going live.</p>
@@ -454,6 +495,7 @@
           </div>
           <p class="mt-3 text-sm text-gray-400">Built for US SMBs, D2C, wholesale, and e-commerce.</p>
         </div>
+
         <div>
           <h4 class="font-medium mb-3">Product</h4>
           <ul class="space-y-2 text-sm text-gray-400">
@@ -462,19 +504,27 @@
             <li><a class="hover:text-accent" href="#pricing">Pricing</a></li>
           </ul>
         </div>
+
         <div>
           <h4 class="font-medium mb-3">Company</h4>
           <ul class="space-y-2 text-sm text-gray-400">
             <li><a class="hover:text-accent" href="#reviews">Customers</a></li>
-            <li><a class="hover:text-accent" href="#policies">Policies</a></li>
             <li><a class="hover:text-accent" href="#faq">FAQ</a></li>
+            <li><a class="hover:text-accent" href="#policies">Policies</a></li>
           </ul>
         </div>
+
         <div>
-          <h4 class="font-medium mb-3">Contact</h4>
+          <h4 class="font-medium mb-3">Legal</h4>
           <ul class="space-y-2 text-sm text-gray-400">
-            <li><a class="hover:text-accent" href="mailto:hello@ledgerdaddy.com">hello@ledgerdaddy.com</a></li>
-            <li><a class="hover:text-accent" href="#">@ledgerdaddy</a></li>
+            <li><a class="hover:text-accent" href="privacy.html">Privacy Policy</a></li>
+            <li><a class="hover:text-accent" href="terms.html">Terms &amp; Conditions</a></li>
+            <li><a class="hover:text-accent" href="dpa.html">DPA</a></li>
+            <li><a class="hover:text-accent" href="cookie-policy.html">Cookie Policy</a></li>
+            <li><a class="hover:text-accent" href="acceptable-use.html">Acceptable Use</a></li>
+            <li><a class="hover:text-accent" href="sla.html">SLA</a></li>
+            <li><a class="hover:text-accent" href="subprocessors.html">Subprocessors</a></li>
+            <li><a class="hover:text-accent" href="disclaimer.html">Disclaimer</a></li>
           </ul>
         </div>
       </div>
@@ -501,6 +551,23 @@
         const open = !mobileNav.classList.toggle('hidden');
         navToggle.setAttribute('aria-expanded', String(open));
       });
+    }
+
+    // Policies dropdown (desktop)
+    const policiesToggle = document.getElementById('policiesToggle');
+    const policiesMenu = document.getElementById('policiesMenu');
+    function closePolicies() { policiesMenu.classList.add('hidden'); policiesToggle?.setAttribute('aria-expanded','false'); }
+    function openPolicies()  { policiesMenu.classList.remove('hidden'); policiesToggle?.setAttribute('aria-expanded','true'); }
+    if (policiesToggle && policiesMenu) {
+      policiesToggle.addEventListener('click', () => {
+        const isHidden = policiesMenu.classList.contains('hidden');
+        isHidden ? openPolicies() : closePolicies();
+      });
+      document.addEventListener('click', (e) => {
+        if (!policiesMenu.contains(e.target) && !policiesToggle.contains(e.target)) closePolicies();
+      });
+      // Escape to close
+      document.addEventListener('keydown', (e) => { if (e.key === 'Escape') closePolicies(); });
     }
 
     // Model selector note
@@ -566,59 +633,38 @@
       computeBalance();
     }
 
-    if (addItem) {
-      addItem.addEventListener('click', () => {
-        const val = parseFloat(amount.value || '0');
-        if (!Number.isFinite(val) || val <= 0) return;
-        const isSale = typeEl.value === 'sale';
-        ledger.push({
-          type: isSale ? 'sale' : 'expense',
-          amount: isSale ? val : -val,
-          desc: (desc.value || '').trim()
-        });
-        amount.value = '';
-        desc.value = '';
-        render();
+    addItem?.addEventListener('click', () => {
+      const val = parseFloat(amount.value || '0');
+      if (!Number.isFinite(val) || val <= 0) return;
+      const isSale = typeEl.value === 'sale';
+      ledger.push({
+        type: isSale ? 'sale' : 'expense',
+        amount: isSale ? val : -val,
+        desc: (desc.value || '').trim()
       });
-    }
+      amount.value = '';
+      desc.value = '';
+      render();
+    });
 
-    if (clearItems) {
-      clearItems.addEventListener('click', () => {
-        ledger = [];
-        render();
-      });
-    }
-
-    if (opening) {
-      opening.addEventListener('input', computeBalance);
-    }
-
-    if (items) {
-      items.addEventListener('click', (e) => {
-        const btn = e.target.closest('.remove-item');
-        if (!btn) return;
-        const idx = Number(btn.dataset.i);
-        if (Number.isInteger(idx)) {
-          ledger.splice(idx, 1);
-          render();
-        }
-      });
-    }
+    clearItems?.addEventListener('click', () => { ledger = []; render(); });
+    opening?.addEventListener('input', computeBalance);
+    items?.addEventListener('click', (e) => {
+      const btn = e.target.closest('.remove-item');
+      if (!btn) return;
+      const idx = Number(btn.dataset.i);
+      if (Number.isInteger(idx)) { ledger.splice(idx, 1); render(); }
+    });
 
     // Cookie banner
     const cookie = document.getElementById('cookie');
     const cookieAccept = document.getElementById('cookieAccept');
     const cookieDismiss = document.getElementById('cookieDismiss');
     const COOKIE_KEY = 'ld_cookie_ok';
-    if (cookie && !localStorage.getItem(COOKIE_KEY)) {
-      cookie.classList.remove('hidden');
-    }
-    function closeCookie(consented) {
-      cookie.classList.add('hidden');
-      if (consented) localStorage.setItem(COOKIE_KEY, '1');
-    }
-    cookieAccept && cookieAccept.addEventListener('click', () => closeCookie(true));
-    cookieDismiss && cookieDismiss.addEventListener('click', () => closeCookie(false));
+    if (cookie && !localStorage.getItem(COOKIE_KEY)) cookie.classList.remove('hidden');
+    function closeCookie(consented) { cookie.classList.add('hidden'); if (consented) localStorage.setItem(COOKIE_KEY, '1'); }
+    cookieAccept?.addEventListener('click', () => closeCookie(true));
+    cookieDismiss?.addEventListener('click', () => closeCookie(false));
 
     // Year
     const y = document.getElementById('year');
