@@ -1,4 +1,4 @@
-<!-- D) index.html (single-file, copy-paste) -->
+<!-- D) index.html — single-file, mobile-first, with HD image placeholders & test functions -->
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -46,15 +46,20 @@
   </script>
   <style>
     html,body{height:100%}
-    .glass { background: rgba(255,255,255,0.06); border: 1px solid rgba(255,255,255,0.12); backdrop-filter: blur(12px); }
-    .btn-primary { background-image: linear-gradient(90deg,#6A5BFF,#22D3EE); color:#0B0B12 }
-    .btn-primary:hover { filter: brightness(1.08); transform: translateY(-1px) }
-    .btn-secondary:hover { background: rgba(255,255,255,0.12) }
-    .focus-ring:focus { outline: 2px solid #22D3EE; outline-offset: 2px }
+    .glass{background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.12);backdrop-filter:blur(12px)}
+    .btn-primary{background-image:linear-gradient(90deg,#6A5BFF,#22D3EE);color:#0B0B12}
+    .btn-primary:hover{filter:brightness(1.08);transform:translateY(-1px)}
+    .btn-secondary:hover{background:rgba(255,255,255,.12)}
+    .focus-ring:focus{outline:2px solid #22D3EE;outline-offset:2px}
     .tappable{min-height:44px}
-    .hero-chip { background: linear-gradient(180deg, rgba(255,255,255,.10), rgba(255,255,255,.05)); border:1px solid rgba(255,255,255,.12) }
+    .hero-chip{background:linear-gradient(180deg,rgba(255,255,255,.10),rgba(255,255,255,.05));border:1px solid rgba(255,255,255,.12)}
     .sr-only-focusable:focus{position:static;width:auto;height:auto;clip:auto}
     :target{scroll-margin-top:96px}
+    /* Responsive image frame ratio helpers */
+    .ratio-16x9{position:relative;padding-top:56.25%}
+    .ratio-2x1{position:relative;padding-top:50%}
+    .ratio-4x3{position:relative;padding-top:75%}
+    .ratio-fill>img,.ratio-16x9>img,.ratio-2x1>img,.ratio-4x3>img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;border-radius:14px}
   </style>
 </head>
 <body class="bg-ink text-white bg-grad selection:bg-accent/30 selection:text-white antialiased">
@@ -65,7 +70,7 @@
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
       <div class="h-16 flex items-center justify-between">
         <a href="index.html" class="flex items-center gap-3" aria-label="LedgerDaddy home">
-          <!-- Inline SVG Logo -->
+          <!-- Inline SVG logo -->
           <svg width="28" height="28" viewBox="0 0 64 64" aria-hidden="true">
             <defs><linearGradient id="g" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#6A5BFF"/><stop offset="1" stop-color="#22D3EE"/></linearGradient></defs>
             <rect x="6" y="6" width="52" height="52" rx="12" fill="url(#g)" opacity="0.15"/>
@@ -155,43 +160,38 @@
   <main id="main" class="pt-20">
     <!-- Hero -->
     <section class="relative overflow-hidden">
-      <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16 md:py-24">
-        <div class="grid md:grid-cols-2 gap-12 items-center">
+      <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-14 md:py-20">
+        <div class="grid md:grid-cols-2 gap-8 md:gap-12 items-center">
           <div>
             <h1 class="text-4xl md:text-5xl font-semibold leading-tight">Your AI Accountant on WhatsApp.</h1>
             <p class="mt-4 text-lg text-slate">Send bills, get books. As easy as chat. One-click sync with QuickBooks & Zoho. Xero coming soon.</p>
-            <div class="mt-6 flex flex-wrap gap-3 items-center">
-              <a href="#signup" class="btn-primary px-6 py-3 rounded-xl font-medium shadow-glow focus-ring">Start now</a>
-              <a href="#integrations" class="btn-secondary glass px-6 py-3 rounded-xl font-medium focus-ring">Connect now</a>
-              <span class="text-sm text-gray-400">No credit card required · 7-day free trial</span>
+            <div class="mt-6 flex flex-col sm:flex-row gap-3 sm:items-center">
+              <a href="#signup" class="btn-primary px-6 py-3 rounded-xl font-medium shadow-glow focus-ring text-center">Start now</a>
+              <a href="#integrations" class="btn-secondary glass px-6 py-3 rounded-xl font-medium focus-ring text-center">Connect now</a>
             </div>
+            <p class="mt-2 text-xs text-gray-400">No credit card required · 7-day free trial</p>
 
             <!-- Model selector -->
             <div class="mt-6 glass rounded-2xl p-4">
               <label for="modelSelect" class="block text-sm text-gray-300 mb-2">AI mode</label>
-              <select id="modelSelect" class="w-full bg-transparent border border-white/10 rounded-lg p-2 focus-ring" aria-label="Select AI mode">
+              <select id="modelSelect" class="w-full bg-transparent border border-white/10 rounded-lg p-3 focus-ring" aria-label="Select AI mode">
                 <option>Fast</option><option>Accurate</option><option>Custom</option>
               </select>
               <p id="modelNote" class="mt-2 text-sm text-gray-400">Fast: quick replies for day-to-day entries.</p>
             </div>
           </div>
 
-          <!-- Hero image with chips -->
-          <figure class="glass rounded-3xl p-6 border border-white/10 shadow-soft">
-            <div class="relative w-full h-72 md:h-80 rounded-2xl bg-gradient-to-br from-brand/25 to-accent/25 overflow-hidden">
-              <!-- Replace with your generated HERO image -->
-              <img src="images/hero-dashboard.jpg" alt="Floating glass SaaS dashboard with sales and expenses chips and synced badge on a dark gradient." class="w-full h-full object-cover opacity-90" loading="lazy" />
-              <!-- Metric chips -->
-              <div class="absolute top-4 left-4 flex flex-col gap-2">
-                <div class="hero-chip text-sm px-3 py-1 rounded-lg">Sales $12,440</div>
-                <div class="hero-chip text-sm px-3 py-1 rounded-lg">Expenses $8,210</div>
-              </div>
-              <div class="absolute bottom-4 right-4 flex flex-col gap-2 items-end">
-                <div class="hero-chip text-sm px-3 py-1 rounded-lg">Parsed ✔</div>
-                <div class="hero-chip text-sm px-3 py-1 rounded-lg">Synced to QuickBooks</div>
-              </div>
+          <!-- HERO image (HD placeholder) -->
+          <figure class="glass rounded-3xl p-4 md:p-6 border border-white/10 shadow-soft">
+            <div class="ratio-16x9">
+              <img
+                src="data:image/svg+xml;charset=UTF-8,<?xml version='1.0' encoding='UTF-8'?><svg xmlns='http://www.w3.org/2000/svg' width='2400' height='1350'><defs><linearGradient id='g' x1='0' y1='0' x2='1' y2='1'><stop offset='0' stop-color='%236A5BFF'/><stop offset='1' stop-color='%2322D3EE'/></linearGradient></defs><rect width='100%' height='100%' fill='%230B0B12'/><g opacity='.25'><circle cx='300' cy='200' r='500' fill='%236A5BFF'/><circle cx='2000' cy='200' r='500' fill='%2322D3EE'/></g><rect x='120' y='160' width='2160' height='1030' rx='36' fill='rgba(255,255,255,0.06)' stroke='rgba(255,255,255,0.12)'/><text x='150' y='240' fill='white' font-size='48' font-family='Inter,Arial'>HERO — Replace with 8k render (prompt in data-prompt)</text><g font-family='Inter,Arial' font-size='40'><rect x='200' y='320' width='360' height='80' rx='20' fill='rgba(255,255,255,0.12)'/><text x='230' y='375' fill='white'>Sales $12,440</text><rect x='600' y='320' width='380' height='80' rx='20' fill='rgba(255,255,255,0.12)'/><text x='630' y='375' fill='white'>Expenses $8,210</text><rect x='1800' y='980' width='420' height='80' rx='20' fill='rgba(255,255,255,0.12)'/><text x='1830' y='1035' fill='white'>Synced to QuickBooks</text><rect x='1750' y='880' width='220' height='80' rx='20' fill='rgba(255,255,255,0.12)'/><text x='1780' y='935' fill='white'>Parsed ✔</text></g></svg>"
+                alt="Floating glass dashboard with metric chips and synced badge (placeholder)."
+                loading="eager"
+                data-prompt="Ultra-realistic 8k glossy SaaS dashboard floating on dark indigo→teal gradient; chips 'Sales $12,440', 'Expenses $8,210'; badges 'Parsed ✔', 'Synced to QuickBooks'; rim light, soft bloom."
+              />
             </div>
-            <figcaption class="mt-3 text-xs text-gray-400">Replace with generated HERO image.</figcaption>
+            <figcaption class="mt-3 text-xs text-gray-400">HD placeholder shown. Swap with your rendered HERO image.</figcaption>
           </figure>
         </div>
       </div>
@@ -219,28 +219,40 @@
           <p class="mt-2 text-gray-300">Capture bills, create invoices, reconcile, and track stock — all from chat.</p>
         </div>
 
-        <div class="mt-10 grid sm:grid-cols-2 lg:grid-cols-3 gap-6">
+        <div class="mt-10 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
           <article class="glass rounded-2xl p-6">
             <h3 class="font-medium">WhatsApp capture</h3>
             <p class="mt-2 text-sm text-gray-400">Drop a photo or PDF. We parse and post.</p>
-            <img src="images/whatsapp-capture.jpg" alt="Phone chat where a bill image is parsed to fields" class="mt-4 rounded-xl border border-white/10 object-cover h-36 w-full" loading="lazy" />
+            <div class="mt-4 ratio-4x3">
+              <img
+                src="data:image/svg+xml;charset=UTF-8,<?xml version='1.0'?><svg xmlns='http://www.w3.org/2000/svg' width='1600' height='1200'><defs><linearGradient id='g2' x1='0' y1='0' x2='1' y2='1'><stop offset='0' stop-color='%2312131B'/><stop offset='1' stop-color='%230B0B12'/></linearGradient></defs><rect width='100%' height='100%' fill='url(%23g2)'/><text x='60' y='120' font-size='40' fill='%23ffffff'>WHATSAPP CAPTURE — Replace with 8k macro render (prompt in data-prompt)</text><rect x='80' y='220' width='1440' height='760' rx='40' fill='rgba(255,255,255,0.08)' stroke='rgba(255,255,255,0.12)'/><text x='120' y='320' font-size='36' fill='%23ffffff'>Bill parsed: Date • Vendor • Total</text></svg>"
+                alt="Macro phone chat parsing a bill (placeholder)."
+                loading="lazy"
+                data-prompt="8k macro smartphone WhatsApp-like UI; user uploads bill (PII blurred); assistant replies with parsed fields chips; OLED micro-glare, shallow DoF."
+              />
+            </div>
           </article>
+
           <article class="glass rounded-2xl p-6">
             <h3 class="font-medium">Auto invoices</h3>
             <p class="mt-2 text-sm text-gray-400">Create and send invoices from chat.</p>
           </article>
+
           <article class="glass rounded-2xl p-6">
             <h3 class="font-medium">Payments & reconciliation</h3>
             <p class="mt-2 text-sm text-gray-400">Match incoming and outgoing payments fast.</p>
           </article>
+
           <article class="glass rounded-2xl p-6">
             <h3 class="font-medium">Inventory tracking</h3>
             <p class="mt-2 text-sm text-gray-400">Live counts and COGS-friendly flows.</p>
           </article>
+
           <article class="glass rounded-2xl p-6">
             <h3 class="font-medium">US sales tax & IRS rules</h3>
             <p class="mt-2 text-sm text-gray-400">We apply high-level rules per state setup.</p>
           </article>
+
           <article class="glass rounded-2xl p-6">
             <h3 class="font-medium">Audit-ready exports</h3>
             <p class="mt-2 text-sm text-gray-400">Clean CSV/PDFs for your records.</p>
@@ -252,7 +264,7 @@
     <!-- Integrations -->
     <section id="integrations" class="py-16">
       <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div class="grid lg:grid-cols-2 gap-10 items-start">
+        <div class="grid lg:grid-cols-2 gap-8 md:gap-10 items-start">
           <div>
             <h2 class="text-3xl font-semibold">Plug into your books</h2>
             <p class="mt-2 text-gray-300">One-click sync with QuickBooks and Zoho. Xero support is on the way. Export to Tally CSV.</p>
@@ -261,14 +273,22 @@
               <li>• Invoices, bills, payments</li>
               <li>• Inventory adjustments</li>
             </ul>
-            <div class="mt-6 flex gap-3">
-              <a href="#signup" class="btn-primary px-5 py-3 rounded-xl font-medium shadow-glow focus-ring">Connect now</a>
-              <a href="#pricing" class="btn-secondary glass px-5 py-3 rounded-xl font-medium focus-ring">See pricing</a>
+            <div class="mt-6 flex flex-col sm:flex-row gap-3">
+              <a href="#signup" class="btn-primary px-5 py-3 rounded-xl font-medium shadow-glow focus-ring text-center">Connect now</a>
+              <a href="#pricing" class="btn-secondary glass px-5 py-3 rounded-xl font-medium focus-ring text-center">See pricing</a>
             </div>
           </div>
-          <figure class="glass rounded-3xl p-6 border border-white/10">
-            <img src="images/automation-pipeline.jpg" alt="Glowing pipeline where documents convert into ledger entries" class="w-full h-72 object-cover rounded-2xl" loading="lazy" />
-            <figcaption class="mt-3 text-xs text-gray-400">Replace with AUTOMATION PIPELINE image.</figcaption>
+
+          <figure class="glass rounded-3xl p-4 md:p-6 border border-white/10">
+            <div class="ratio-2x1">
+              <img
+                src="data:image/svg+xml;charset=UTF-8,<?xml version='1.0'?><svg xmlns='http://www.w3.org/2000/svg' width='2200' height='1100'><rect width='100%' height='100%' fill='%230B0B12'/><g opacity='.25'><circle cx='200' cy='150' r='450' fill='%236A5BFF'/><circle cx='2000' cy='100' r='500' fill='%2322D3EE'/></g><text x='80' y='120' fill='white' font-size='44'>AUTOMATION PIPELINE — Replace with 8k render (prompt in data-prompt)</text><g fill='rgba(255,255,255,0.08)' stroke='rgba(255,255,255,0.16)'><rect x='120' y='300' width='340' height='420' rx='24'/><rect x='560' y='300' width='340' height='420' rx='24'/><rect x='1000' y='300' width='340' height='420' rx='24'/></g><g><circle cx='1450' cy='510' r='14' fill='%2322D3EE'/><circle cx='1540' cy='510' r='14' fill='%236A5BFF'/><circle cx='1630' cy='510' r='14' fill='%2322D3EE'/></g><rect x='1720' y='360' width='360' height='300' rx='24' fill='rgba(255,255,255,0.08)' stroke='rgba(255,255,255,0.16)'/><text x='1750' y='520' fill='white' font-size='40'>Structured Entries</text></svg>"
+                alt="Glowing pipeline converting docs into ledger entries (placeholder)."
+                loading="lazy"
+                data-prompt="Photoreal 8k documents morphing into structured rows through glowing cyan-violet nodes and translucent tubes; volumetric beams, glass particles."
+              />
+            </div>
+            <figcaption class="mt-3 text-xs text-gray-400">HD placeholder shown. Swap with your pipeline render.</figcaption>
           </figure>
         </div>
       </div>
@@ -285,26 +305,27 @@
             <form id="demoForm" class="grid sm:grid-cols-2 gap-4" aria-describedby="demoHelp" onsubmit="return false;">
               <div class="sm:col-span-2">
                 <label for="opening" class="block text-sm text-gray-300">Opening balance</label>
-                <input id="opening" type="number" step="0.01" value="0" class="w-full bg-transparent border border-white/10 rounded-lg p-2 focus-ring" aria-label="Opening balance">
+                <input id="opening" type="number" step="0.01" value="0" class="w-full bg-transparent border border-white/10 rounded-lg p-3 focus-ring" aria-label="Opening balance">
               </div>
               <div>
                 <label for="type" class="block text-sm text-gray-300">Type</label>
-                <select id="type" class="w-full bg-transparent border border-white/10 rounded-lg p-2 focus-ring">
+                <select id="type" class="w-full bg-transparent border border-white/10 rounded-lg p-3 focus-ring">
                   <option value="sale">Sale (+)</option>
                   <option value="expense">Expense (−)</option>
                 </select>
               </div>
               <div>
                 <label for="amount" class="block text-sm text-gray-300">Amount (USD)</label>
-                <input id="amount" type="number" step="0.01" min="0" class="w-full bg-transparent border border-white/10 rounded-lg p-2 focus-ring" required>
+                <input id="amount" type="number" step="0.01" min="0" class="w-full bg-transparent border border-white/10 rounded-lg p-3 focus-ring" required>
               </div>
               <div class="sm:col-span-2">
                 <label for="desc" class="block text-sm text-gray-300">Description (optional)</label>
-                <input id="desc" type="text" class="w-full bg-transparent border border-white/10 rounded-lg p-2 focus-ring" placeholder="e.g., Amazon sale, UPS shipping">
+                <input id="desc" type="text" class="w-full bg-transparent border border-white/10 rounded-lg p-3 focus-ring" placeholder="e.g., Amazon sale, UPS shipping">
               </div>
-              <div class="sm:col-span-2 flex gap-3">
-                <button id="addItem" class="btn-primary px-5 py-2 rounded-xl font-medium focus-ring" type="button">Add item</button>
-                <button id="clearItems" class="btn-secondary glass px-5 py-2 rounded-xl font-medium focus-ring" type="button">Clear</button>
+              <div class="sm:col-span-2 flex flex-wrap gap-3">
+                <button id="addItem" class="btn-primary px-5 py-3 rounded-xl font-medium focus-ring" type="button">Add item</button>
+                <button id="clearItems" class="btn-secondary glass px-5 py-3 rounded-xl font-medium focus-ring" type="button">Clear</button>
+                <button id="seedData" class="glass px-5 py-3 rounded-xl font-medium focus-ring" type="button" title="Fill with sample entries for testing">Seed sample</button>
               </div>
               <p id="demoHelp" class="sm:col-span-2 text-xs text-gray-400">This is a simple demo. LedgerDaddy applies more checks in product.</p>
             </form>
@@ -327,17 +348,38 @@
         <h2 class="text-3xl font-semibold">What customers say</h2>
         <div class="mt-8 grid md:grid-cols-3 gap-6">
           <figure class="glass rounded-2xl p-6">
-            <img src="images/portrait-1.jpg" alt="Professional headshot on dark gradient." class="w-full h-40 object-cover rounded-xl bg-white/5" loading="lazy" />
+            <div class="ratio-4x3">
+              <img
+                src="data:image/svg+xml;charset=UTF-8,<?xml version='1.0'?><svg xmlns='http://www.w3.org/2000/svg' width='1400' height='1050'><rect width='100%' height='100%' fill='%230B0B12'/><circle cx='700' cy='525' r='420' fill='%2312131B'/><text x='80' y='120' fill='white' font-size='40'>PORTRAIT 1 — Replace (prompt in data-prompt)</text></svg>"
+                alt="Editorial headshot on dark gradient (placeholder)."
+                loading="lazy"
+                data-prompt="Editorial 8k headshot on dark gradient, premium tech lighting, 85mm look, diverse SMB founder."
+              />
+            </div>
             <blockquote class="mt-4 text-sm text-gray-300">“We just drop bills in chat. Books stay current.”</blockquote>
             <figcaption class="mt-2 text-xs text-gray-400">Maya R., D2C founder</figcaption>
           </figure>
           <figure class="glass rounded-2xl p-6">
-            <img src="images/portrait-2.jpg" alt="Professional headshot on dark gradient." class="w-full h-40 object-cover rounded-xl bg-white/5" loading="lazy" />
+            <div class="ratio-4x3">
+              <img
+                src="data:image/svg+xml;charset=UTF-8,<?xml version='1.0'?><svg xmlns='http://www.w3.org/2000/svg' width='1400' height='1050'><rect width='100%' height='100%' fill='%230B0B12'/><circle cx='700' cy='525' r='420' fill='%2312131B'/><text x='80' y='120' fill='white' font-size='40'>PORTRAIT 2 — Replace</text></svg>"
+                alt="Editorial headshot on dark gradient (placeholder)."
+                loading="lazy"
+                data-prompt="Editorial 8k headshot on dark gradient, premium tech lighting, 85mm look, wholesale ops."
+              />
+            </div>
             <blockquote class="mt-4 text-sm text-gray-300">“Reconciliation used to take hours. Now it’s minutes.”</blockquote>
             <figcaption class="mt-2 text-xs text-gray-400">Ian T., Wholesale ops</figcaption>
           </figure>
           <figure class="glass rounded-2xl p-6">
-            <img src="images/portrait-3.jpg" alt="Professional headshot on dark gradient." class="w-full h-40 object-cover rounded-xl bg-white/5" loading="lazy" />
+            <div class="ratio-4x3">
+              <img
+                src="data:image/svg+xml;charset=UTF-8,<?xml version='1.0'?><svg xmlns='http://www.w3.org/2000/svg' width='1400' height='1050'><rect width='100%' height='100%' fill='%230B0B12'/><circle cx='700' cy='525' r='420' fill='%2312131B'/><text x='80' y='120' fill='white' font-size='40'>PORTRAIT 3 — Replace</text></svg>"
+                alt="Editorial headshot on dark gradient (placeholder)."
+                loading="lazy"
+                data-prompt="Editorial 8k headshot on dark gradient, premium tech lighting, 85mm look, Amazon seller."
+              />
+            </div>
             <blockquote class="mt-4 text-sm text-gray-300">“Sales tax got simpler across states.”</blockquote>
             <figcaption class="mt-2 text-xs text-gray-400">Alexa P., Amazon seller</figcaption>
           </figure>
@@ -356,9 +398,7 @@
             <h3 class="font-medium">Starter</h3>
             <p class="mt-1 text-3xl font-semibold">$49<span class="text-base font-normal text-gray-400">/mo</span></p>
             <ul class="mt-4 text-sm text-gray-300 space-y-2">
-              <li>• WhatsApp capture</li>
-              <li>• Up to 3 users</li>
-              <li>• QuickBooks or Zoho</li>
+              <li>• WhatsApp capture</li><li>• Up to 3 users</li><li>• QuickBooks or Zoho</li>
             </ul>
             <a href="#signup" class="mt-6 btn-primary text-center px-5 py-3 rounded-xl font-medium focus-ring">Start now</a>
           </div>
@@ -367,9 +407,7 @@
             <h3 class="font-medium">Growth</h3>
             <p class="mt-1 text-3xl font-semibold">$199<span class="text-base font-normal text-gray-400">/mo</span></p>
             <ul class="mt-4 text-sm text-gray-300 space-y-2">
-              <li>• Everything in Starter</li>
-              <li>• Up to 15 users</li>
-              <li>• Inventory & multi-channel</li>
+              <li>• Everything in Starter</li><li>• Up to 15 users</li><li>• Inventory & multi-channel</li>
             </ul>
             <a href="#signup" class="mt-6 btn-primary text-center px-5 py-3 rounded-xl font-medium focus-ring">Start now</a>
           </div>
@@ -378,9 +416,7 @@
             <h3 class="font-medium">Enterprise</h3>
             <p class="mt-1 text-3xl font-semibold">Custom</p>
             <ul class="mt-4 text-sm text-gray-300 space-y-2">
-              <li>• SSO & advanced controls</li>
-              <li>• Priority support</li>
-              <li>• Dedicated success</li>
+              <li>• SSO & advanced controls</li><li>• Priority support</li><li>• Dedicated success</li>
             </ul>
             <a href="#signup" class="mt-6 btn-secondary glass text-center px-5 py-3 rounded-xl font-medium focus-ring">Talk to sales</a>
           </div>
@@ -397,31 +433,33 @@
           <form class="mt-6 space-y-4" onsubmit="event.preventDefault(); alert('Thanks! We will email you onboarding steps.');">
             <div>
               <label for="name" class="block text-sm text-gray-300">Full name</label>
-              <input id="name" name="name" class="w-full bg-transparent border border-white/10 rounded-lg p-2 focus-ring" required />
+              <input id="name" name="name" class="w-full bg-transparent border border-white/10 rounded-lg p-3 focus-ring" required />
             </div>
             <div>
               <label for="email" class="block text-sm text-gray-300">Work email</label>
-              <input id="email" type="email" name="email" class="w-full bg-transparent border border-white/10 rounded-lg p-2 focus-ring" required />
+              <input id="email" type="email" name="email" class="w-full bg-transparent border border-white/10 rounded-lg p-3 focus-ring" required />
             </div>
             <div>
               <label for="company" class="block text-sm text-gray-300">Company</label>
-              <input id="company" name="company" class="w-full bg-transparent border border-white/10 rounded-lg p-2 focus-ring" />
+              <input id="company" name="company" class="w-full bg-transparent border border-white/10 rounded-lg p-3 focus-ring" />
             </div>
-            <div>
-              <label for="plan" class="block text-sm text-gray-300">Plan</label>
-              <select id="plan" name="plan" class="w-full bg-transparent border border-white/10 rounded-lg p-2 focus-ring">
-                <option>Starter ($49/mo)</option>
-                <option>Growth ($199/mo)</option>
-                <option>Enterprise (custom)</option>
-              </select>
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              <div>
+                <label for="plan" class="block text-sm text-gray-300">Plan</label>
+                <select id="plan" name="plan" class="w-full bg-transparent border border-white/10 rounded-lg p-3 focus-ring">
+                  <option>Starter ($49/mo)</option>
+                  <option>Growth ($199/mo)</option>
+                  <option>Enterprise (custom)</option>
+                </select>
+              </div>
+              <div>
+                <label for="model" class="block text-sm text-gray-300">AI mode</label>
+                <select id="model" name="model" class="w-full bg-transparent border border-white/10 rounded-lg p-3 focus-ring">
+                  <option>Fast</option><option>Accurate</option><option>Custom</option>
+                </select>
+              </div>
             </div>
-            <div>
-              <label for="model" class="block text-sm text-gray-300">AI mode</label>
-              <select id="model" name="model" class="w-full bg-transparent border border-white/10 rounded-lg p-2 focus-ring">
-                <option>Fast</option><option>Accurate</option><option>Custom</option>
-              </select>
-            </div>
-            <div class="flex items-center gap-3">
+            <div class="flex flex-col sm:flex-row gap-3">
               <button class="btn-primary px-6 py-3 rounded-xl font-medium focus-ring" type="submit">Start now</button>
               <button class="btn-secondary glass px-6 py-3 rounded-xl font-medium focus-ring" type="button" onclick="alert('Sales will contact you shortly.');">Talk to sales</button>
             </div>
@@ -520,7 +558,7 @@
 
   <!-- Scripts (defer) -->
   <script defer>
-    // Mobile drawer
+    // --- Mobile drawer ---
     const navToggle = document.getElementById('navToggle');
     const navClose  = document.getElementById('navClose');
     const mobileNav = document.getElementById('mobileNav');
@@ -530,7 +568,7 @@
     navClose?.addEventListener('click', closeDrawer);
     mobileNav?.addEventListener('click', (e)=>{ if(e.target===mobileNav) closeDrawer(); });
 
-    // Policies dropdown
+    // --- Policies dropdown ---
     const policiesToggle = document.getElementById('policiesToggle');
     const policiesMenu = document.getElementById('policiesMenu');
     function closePolicies(){ policiesMenu?.classList.add('hidden'); policiesToggle?.setAttribute('aria-expanded','false'); }
@@ -539,7 +577,7 @@
     document.addEventListener('click', (e)=>{ if(policiesMenu && !policiesMenu.contains(e.target) && !policiesToggle.contains(e.target)) closePolicies(); });
     document.addEventListener('keydown', (e)=>{ if(e.key==='Escape') closePolicies(); });
 
-    // Model selector note
+    // --- Model selector note ---
     const modelSelect = document.getElementById('modelSelect');
     const modelNote = document.getElementById('modelNote');
     const modelCopy = {
@@ -549,17 +587,20 @@
     };
     modelSelect?.addEventListener('change',(e)=>{ modelNote.textContent = modelCopy[e.target.value] || modelCopy.Fast; });
 
-    // Demo ledger
+    // --- Demo ledger & test helpers ---
     const opening = document.getElementById('opening');
     const typeEl = document.getElementById('type');
     const amount = document.getElementById('amount');
     const desc = document.getElementById('desc');
     const addItem = document.getElementById('addItem');
     const clearItems = document.getElementById('clearItems');
+    const seedDataBtn = document.getElementById('seedData');
     const items = document.getElementById('items');
     const balance = document.getElementById('balance');
     let ledger = [];
+
     const toCurrency = (n)=> '$' + (Number.isFinite(n)?n:0).toFixed(2);
+
     function computeBalance(){
       const open = parseFloat(opening?.value || '0');
       const delta = ledger.reduce((a,r)=>a+r.amount,0);
@@ -594,10 +635,30 @@
       amount.value=''; desc.value=''; render();
     });
     clearItems?.addEventListener('click', ()=>{ ledger=[]; render(); });
+    seedDataBtn?.addEventListener('click', ()=>{
+      ledger = [
+        {type:'sale', amount: 350.25, desc:'Shopify sale #1842'},
+        {type:'expense', amount:-42.90, desc:'UPS shipping'},
+        {type:'sale', amount: 1299.00, desc:'Wholesale PO 2209'},
+        {type:'expense', amount:-119.99, desc:'Software subscription'}
+      ];
+      opening.value = '500.00';
+      render();
+    });
     opening?.addEventListener('input', computeBalance);
     items?.addEventListener('click',(e)=>{ const b=e.target.closest('.remove-item'); if(!b) return; const i=Number(b.dataset.i); if(Number.isInteger(i)){ ledger.splice(i,1); render(); }});
 
-    // Cookie banner
+    // --- Image test helper (checks if external images exist; we use placeholders by default) ---
+    function testImages(){
+      document.querySelectorAll('img[data-prompt]').forEach((img)=>{
+        console.log('%cIMAGE PLACEHOLDER','background:#22D3EE;color:#0B0B12;padding:2px 6px;border-radius:6px',
+          {alt: img.alt, prompt: img.dataset.prompt?.slice(0,180)+'…'});
+      });
+      alert('Image placeholders detected. Open console to copy prompts for your 8k renders.');
+    }
+    window.testImages = testImages; // call in console if needed
+
+    // --- Cookie banner ---
     const cookie=document.getElementById('cookie');
     const cookieAccept=document.getElementById('cookieAccept');
     const cookieDismiss=document.getElementById('cookieDismiss');
@@ -607,7 +668,7 @@
     cookieAccept?.addEventListener('click',()=>closeCookie(true));
     cookieDismiss?.addEventListener('click',()=>closeCookie(false));
 
-    // Year
+    // --- Year ---
     const y = document.getElementById('year'); if (y) y.textContent = new Date().getFullYear();
   </script>
 </body>
