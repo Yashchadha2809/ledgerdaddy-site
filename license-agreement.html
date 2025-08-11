@@ -1,0 +1,234 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>LedgerDaddy End User License Agreement (EULA)</title>
+  <meta name="description" content="End User License Agreement for LedgerDaddy by Epicfash Global LLC.">
+  <style>
+    :root {
+      --bg: #0b0c10;
+      --card: #111317;
+      --text: #e8ecf1;
+      --muted: #aab3bd;
+      --brand: #6ae2a1;
+      --border: #1e232b;
+      --link: #7ec8ff;
+    }
+    html, body { height: 100%; }
+    body {
+      margin: 0;
+      font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, "Helvetica Neue", Arial, "Apple Color Emoji", "Segoe UI Emoji";
+      line-height: 1.65;
+      color: var(--text);
+      background: radial-gradient(1200px 600px at 20% -10%, rgba(106,226,161,.12), transparent 60%),
+                  radial-gradient(1000px 500px at 120% -20%, rgba(126,200,255,.10), transparent 60%),
+                  var(--bg);
+    }
+    .wrap { max-width: 900px; margin: 0 auto; padding: 24px; }
+
+    header {
+      position: sticky; top: 0; z-index: 10;
+      backdrop-filter: saturate(140%) blur(10px);
+      background: linear-gradient(180deg, rgba(11,12,16,.85), rgba(11,12,16,.65));
+      border-bottom: 1px solid var(--border);
+    }
+    .head-inner { display:flex; align-items:center; justify-content:space-between; gap:16px; padding: 14px 24px; max-width: 1000px; margin: 0 auto; }
+    .brand { display:flex; align-items:center; gap:12px; text-decoration:none; color: var(--text); }
+    .logo {
+      width: 36px; height: 36px; border-radius: 12px; background: linear-gradient(135deg, var(--brand), #5cc1ff);
+      display:grid; place-items:center; color:#0b0c10; font-weight:800; letter-spacing: .5px;
+      box-shadow: 0 8px 24px rgba(106,226,161,.25), inset 0 0 0 1px rgba(0,0,0,.25);
+    }
+    .brand-title { font-weight:700; font-size: 18px; }
+    .actions { display:flex; gap:10px; }
+    .btn {
+      appearance:none; border: 1px solid var(--border); background: var(--card); color: var(--text);
+      padding: 10px 14px; border-radius: 12px; cursor:pointer; font-weight:600;
+    }
+    .btn.primary { border-color: transparent; background: linear-gradient(135deg, var(--brand), #52a8ff);
+      color: #0b0c10; }
+
+    .card {
+      background: linear-gradient(180deg, rgba(255,255,255,.01), rgba(255,255,255,.00));
+      border: 1px solid var(--border); border-radius: 18px; padding: 28px; box-shadow: 0 10px 40px rgba(0,0,0,.25);
+    }
+
+    h1 { font-size: clamp(28px, 3vw, 38px); line-height: 1.2; margin: 12px 0 8px; }
+    h2 { font-size: clamp(20px, 2.2vw, 26px); margin: 28px 0 8px; }
+    h3 { font-size: 18px; margin: 18px 0 8px; }
+    p { margin: 10px 0; color: var(--text); }
+    .muted { color: var(--muted); }
+    .meta { display:flex; flex-wrap:wrap; gap:16px; margin: 10px 0 16px; }
+
+    .toc { margin: 14px 0 24px; padding: 14px; border:1px dashed var(--border); border-radius: 14px; background: rgba(17,19,23,.6); }
+    .toc a { color: var(--link); text-decoration: none; }
+    .toc ol { margin: 8px 0 0 18px; }
+
+    a.anchor { color: inherit; text-decoration: none; }
+    section { scroll-margin-top: 84px; }
+
+    footer { border-top: 1px solid var(--border); margin-top: 28px; padding: 22px 0; color: var(--muted); font-size: 14px; }
+
+    @media print {
+      header, .toc, .actions { display:none !important; }
+      body { background: #fff; color: #000; }
+      .wrap { max-width: none; padding: 0; }
+      .card { border: none; box-shadow: none; }
+      a.anchor { color: #000; }
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <div class="head-inner">
+      <a class="brand" href="#">
+        <div class="logo" aria-hidden="true">LD</div>
+        <div class="brand-title">LedgerDaddy • License</div>
+      </a>
+      <div class="actions">
+        <button class="btn" onclick="window.scrollTo({top:0, behavior:'smooth'})" title="Back to top">Top</button>
+        <button class="btn primary" onclick="window.print()" title="Print / Save PDF">Print / Save PDF</button>
+      </div>
+    </div>
+  </header>
+
+  <main class="wrap">
+    <article class="card" role="document" aria-labelledby="doc-title">
+      <header>
+        <h1 id="doc-title">LedgerDaddy End User License Agreement (EULA)</h1>
+        <div class="meta">
+          <div><strong>Effective Date:</strong> 1st August 2025</div>
+          <div><strong>Last Updated:</strong> 1st August 2025</div>
+        </div>
+        <p class="muted">
+          This End User License Agreement (“<em>Agreement</em>”) is a legal contract between you (“<em>User</em>,” “<em>you</em>,” or “<em>your</em>”) and <strong>Epicfash Global LLC</strong>, 293 Whitehead Road, 08619, Trenton, NJ, USA (“<em>Company</em>,” “<em>we</em>,” “<em>our</em>,” or “<em>us</em>”), the owner and operator of <strong>LedgerDaddy</strong> (the “<em>Software</em>”), which includes but is not limited to its WhatsApp-based AI accounting assistant, integrations with third-party accounting platforms (e.g., QuickBooks, Zoho), website, APIs, and all related services.
+        </p>
+        <p>
+          By installing, accessing, or using LedgerDaddy, you agree to be bound by the terms of this Agreement. If you do not agree, do not use LedgerDaddy.
+        </p>
+      </header>
+
+      <nav class="toc" aria-label="Table of contents">
+        <strong>Contents</strong>
+        <ol>
+          <li><a href="#license-grant">License Grant</a></li>
+          <li><a href="#restrictions">Restrictions</a></li>
+          <li><a href="#intellectual-property">Intellectual Property</a></li>
+          <li><a href="#third-party-services">Third-Party Services</a></li>
+          <li><a href="#data-privacy">Data &amp; Privacy</a></li>
+          <li><a href="#disclaimer">Disclaimer of Warranties</a></li>
+          <li><a href="#limitation">Limitation of Liability</a></li>
+          <li><a href="#termination">Termination</a></li>
+          <li><a href="#governing-law">Governing Law</a></li>
+          <li><a href="#entire-agreement">Entire Agreement</a></li>
+        </ol>
+      </nav>
+
+      <section id="license-grant">
+        <h2><a class="anchor" href="#license-grant">1. License Grant</a></h2>
+        <p>
+          Subject to your compliance with this Agreement, we grant you a limited, non-exclusive, non-transferable, revocable license to access and use LedgerDaddy solely for your own business purposes, in accordance with our Terms of Service and applicable laws.
+        </p>
+      </section>
+
+      <section id="restrictions">
+        <h2><a class="anchor" href="#restrictions">2. Restrictions</a></h2>
+        <p>You may not:</p>
+        <ul>
+          <li>Copy, modify, or create derivative works of LedgerDaddy or any part thereof.</li>
+          <li>Reverse-engineer, decompile, disassemble, or otherwise attempt to derive the source code of LedgerDaddy.</li>
+          <li>Rent, lease, sublicense, resell, or otherwise transfer rights to LedgerDaddy.</li>
+          <li>Use LedgerDaddy in any manner that violates applicable law or third-party rights.</li>
+          <li>Circumvent or disable security features or usage limitations.</li>
+        </ul>
+      </section>
+
+      <section id="intellectual-property">
+        <h2><a class="anchor" href="#intellectual-property">3. Intellectual Property</a></h2>
+        <p>
+          LedgerDaddy and all associated intellectual property, including but not limited to software code, branding, graphics, logos, designs, workflows, and proprietary AI training data, are and shall remain the exclusive property of <strong>Epicfash Global LLC</strong>.
+          Nothing in this Agreement grants you ownership rights in LedgerDaddy.
+        </p>
+      </section>
+
+      <section id="third-party-services">
+        <h2><a class="anchor" href="#third-party-services">4. Third-Party Services</a></h2>
+        <p>
+          LedgerDaddy may integrate with third-party services such as QuickBooks, Zoho, Twilio, and others.
+          Your use of such third-party services is governed by their own terms and policies, and we are not responsible for their actions or content.
+        </p>
+      </section>
+
+      <section id="data-privacy">
+        <h2><a class="anchor" href="#data-privacy">5. Data &amp; Privacy</a></h2>
+        <p>
+          Your use of LedgerDaddy is also governed by our Privacy Policy, which describes how we collect, use, and store your information.
+          You retain ownership of your accounting data but grant us the rights necessary to operate the service, including processing, storing, and transmitting data to third-party integrations.
+        </p>
+      </section>
+
+      <section id="disclaimer">
+        <h2><a class="anchor" href="#disclaimer">6. Disclaimer of Warranties</a></h2>
+        <p>
+          LedgerDaddy is provided “AS IS” and “AS AVAILABLE”, without warranties of any kind, whether express, implied, or statutory.
+          We make no guarantees that LedgerDaddy will be uninterrupted, error-free, or suitable for any particular purpose.
+          You use LedgerDaddy at your own risk.
+        </p>
+      </section>
+
+      <section id="limitation">
+        <h2><a class="anchor" href="#limitation">7. Limitation of Liability</a></h2>
+        <p>To the maximum extent permitted by law, <strong>Epicfash Global LLC</strong> shall not be liable for:</p>
+        <ul>
+          <li>Any indirect, incidental, special, or consequential damages.</li>
+          <li>Loss of data, profits, revenue, or business opportunities.</li>
+          <li>Damages exceeding the total amount paid by you for LedgerDaddy in the preceding 12 months.</li>
+        </ul>
+      </section>
+
+      <section id="termination">
+        <h2><a class="anchor" href="#termination">8. Termination</a></h2>
+        <p>
+          We may suspend or terminate your access to LedgerDaddy at any time without notice if you breach this Agreement or applicable law.
+          Upon termination, your right to use LedgerDaddy will immediately cease, and you must uninstall and destroy all copies of LedgerDaddy in your possession.
+        </p>
+      </section>
+
+      <section id="governing-law">
+        <h2><a class="anchor" href="#governing-law">9. Governing Law</a></h2>
+        <p>
+          This Agreement shall be governed by and construed in accordance with the laws of the State of New Jersey, USA, without regard to conflict of law principles.
+        </p>
+      </section>
+
+      <section id="entire-agreement">
+        <h2><a class="anchor" href="#entire-agreement">10. Entire Agreement</a></h2>
+        <p>
+          This Agreement constitutes the entire understanding between you and <strong>Epicfash Global LLC</strong> regarding LedgerDaddy and supersedes all prior agreements, written or oral.
+        </p>
+      </section>
+
+      <hr style="border: none; border-top: 1px solid var(--border); margin: 24px 0;" />
+      <p class="muted">If you have questions about this EULA, contact: <strong>legal@epicfashglobal.com</strong></p>
+    </article>
+
+    <footer>
+      © 2025 Epicfash Global LLC • 293 Whitehead Road, 08619, Trenton, NJ, USA
+    </footer>
+  </main>
+
+  <script>
+    // Smooth anchor scrolling for a nicer UX
+    document.querySelectorAll('a.anchor').forEach(a => {
+      a.addEventListener('click', (e) => {
+        const id = a.getAttribute('href');
+        if (id && id.startsWith('#')) {
+          e.preventDefault();
+          document.querySelector(id)?.scrollIntoView({ behavior: 'smooth' });
+        }
+      });
+    });
+  </script>
+</body>
+</html>
