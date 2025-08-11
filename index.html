@@ -284,55 +284,7 @@
       </div>
     </div>
   </section>
- <!-- Header -->
-  <header class="fixed inset-x-0 top-0 z-50 bg-ink/80 backdrop-blur border-b border-white/10">
-    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-      <div class="h-16 flex items-center justify-between">
-        <a href="index.html" class="flex items-center gap-3" aria-label="LedgerDaddy home">
-          <!-- Inline SVG Logo -->
-          <svg width="28" height="28" viewBox="0 0 64 64" aria-hidden="true">
-            <defs><linearGradient id="g" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#6A5BFF"/><stop offset="1" stop-color="#22D3EE"/></linearGradient></defs>
-            <rect x="6" y="6" width="52" height="52" rx="12" fill="url(#g)" opacity="0.15"/>
-            <path d="M20 16v28a4 4 0 0 0 4 4h20" fill="none" stroke="url(#g)" stroke-width="6" stroke-linecap="round"/>
-            <circle cx="44" cy="48" r="4" fill="url(#g)"/>
-          </svg>
-          <span class="text-xl font-semibold tracking-tight">LedgerDaddy</span>
-        </a>
 
-        <nav class="hidden md:flex items-center gap-6 text-sm">
-          <a class="hover:text-accent tappable" href="#product">Product</a>
-          <a class="hover:text-accent tappable" href="#integrations">Integrations</a>
-          <a class="hover:text-accent tappable" href="#pricing">Pricing</a>
-          <a class="hover:text-accent tappable" href="#reviews">Reviews</a>
-          <a class="hover:text-accent tappable" href="#faq">FAQ</a>
-          <div class="relative">
-            <button id="policiesToggle" class="glass px-3 py-2 rounded-lg focus-ring flex items-center gap-2 tappable" aria-haspopup="true" aria-expanded="false" aria-controls="policiesMenu">
-              Policies
-              <svg width="16" height="16" fill="none" stroke="currentColor"><path stroke-linecap="round" stroke-width="2" d="M4 6l4 4 4-4"/></svg>
-            </button>
-            <div id="policiesMenu" class="absolute right-0 mt-2 w-72 glass rounded-xl border border-white/10 p-2 hidden" role="menu" aria-label="Policies">
-              <a class="block px-3 py-2 rounded hover:bg-white/10" href="privacy.html" role="menuitem">Privacy Policy</a>
-              <a class="block px-3 py-2 rounded hover:bg-white/10" href="terms.html" role="menuitem">Terms &amp; Conditions</a>
-              <a class="block px-3 py-2 rounded hover:bg-white/10" href="license.html" role="menuitem">License Agreement</a>
-              <a class="block px-3 py-2 rounded hover:bg-white/10" href="dpa.html" role="menuitem">Data Processing Addendum</a>
-              <a class="block px-3 py-2 rounded hover:bg-white/10" href="security.html" role="menuitem">Security Overview</a>
-              <a class="block px-3 py-2 rounded hover:bg-white/10" href="cookie-policy.html" role="menuitem">Cookie Policy</a>
-              <a class="block px-3 py-2 rounded hover:bg-white/10" href="acceptable-use.html" role="menuitem">Acceptable Use</a>
-              <a class="block px-3 py-2 rounded hover:bg-white/10" href="sla.html" role="menuitem">SLA</a>
-              <a class="block px-3 py-2 rounded hover:bg-white/10" href="subprocessors.html" role="menuitem">Subprocessors</a>
-              <a class="block px-3 py-2 rounded hover:bg-white/10" href="disclaimer.html" role="menuitem">Disclaimer</a>
-              <a class="block px-3 py-2 rounded hover:bg-white/10" href="refunds.html" role="menuitem">Refunds &amp; Cancellations</a>
-              <a class="block px-3 py-2 rounded hover:bg-white/10" href="ccpa.html" role="menuitem">California / CCPA Notice</a>
-            </div>
-          </div>
-          <a class="btn-primary px-4 py-2 rounded-xl font-medium shadow-glow focus-ring" href="#signup">Start now</a>
-        </nav>
-
-        <button id="navToggle" class="md:hidden p-2 rounded-lg glass focus-ring" aria-label="Open menu" aria-controls="mobileNav" aria-expanded="false">
-          <svg width="24" height="24" fill="none" stroke="currentColor"><path stroke-linecap="round" stroke-width="2" d="M4 7h16M4 12h16M4 17h16"/></svg>
-        </button>
-      </div>
-    </div>
   <script>
     const tx = [];
     const fmt = x=> x.toLocaleString(undefined,{style:'currency', currency:'USD'});
@@ -417,71 +369,7 @@
       </div>
     </div>
   </section>
- <!-- Mobile drawer -->
-    <div id="mobileNav" class="fixed inset-0 bg-ink/95 backdrop-blur hidden md:hidden">
-      <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
-        <div class="flex items-center justify-between h-12">
-          <span class="font-semibold">Menu</span>
-          <button id="navClose" class="p-2 rounded-lg glass focus-ring" aria-label="Close menu">
-            <svg width="24" height="24" fill="none" stroke="currentColor"><path stroke-linecap="round" stroke-width="2" d="M6 6l12 12M18 6L6 18"/></svg>
-          </button>
-        </div>
-        <nav class="mt-4 space-y-2 text-base">
-          <a class="block px-3 py-3 rounded-lg hover:bg-white/10" href="#product">Product</a>
-          <a class="block px-3 py-3 rounded-lg hover:bg-white/10" href="#integrations">Integrations</a>
-          <a class="block px-3 py-3 rounded-lg hover:bg-white/10" href="#pricing">Pricing</a>
-          <a class="block px-3 py-3 rounded-lg hover:bg-white/10" href="#reviews">Reviews</a>
-          <a class="block px-3 py-3 rounded-lg hover:bg-white/10" href="#faq">FAQ</a>
-          <details class="glass rounded-lg p-3">
-            <summary class="cursor-pointer select-none">Policies</summary>
-            <div class="mt-2 pl-2 space-y-1 text-sm">
-              <a class="block px-3 py-2 rounded hover:bg-white/10" href="privacy.html">Privacy Policy</a>
-              <a class="block px-3 py-2 rounded hover:bg-white/10" href="terms.html">Terms &amp; Conditions</a>
-              <a class="block px-3 py-2 rounded hover:bg-white/10" href="license.html">License Agreement</a>
-              <a class="block px-3 py-2 rounded hover:bg-white/10" href="dpa.html">Data Processing Addendum</a>
-              <a class="block px-3 py-2 rounded hover:bg-white/10" href="security.html">Security Overview</a>
-              <a class="block px-3 py-2 rounded hover:bg-white/10" href="cookie-policy.html">Cookie Policy</a>
-              <a class="block px-3 py-2 rounded hover:bg-white/10" href="acceptable-use.html">Acceptable Use</a>
-              <a class="block px-3 py-2 rounded hover:bg-white/10" href="sla.html">SLA</a>
-              <a class="block px-3 py-2 rounded hover:bg-white/10" href="subprocessors.html">Subprocessors</a>
-              <a class="block px-3 py-2 rounded hover:bg-white/10" href="disclaimer.html">Disclaimer</a>
-              <a class="block px-3 py-2 rounded hover:bg-white/10" href="refunds.html">Refunds &amp; Cancellations</a>
-              <a class="block px-3 py-2 rounded hover:bg-white/10" href="ccpa.html">California / CCPA Notice</a>
-            </div>
-          </details>
-          <div class="pt-4 flex gap-3">
-            <a class="btn-primary flex-1 text-center px-4 py-3 rounded-xl font-medium shadow-glow focus-ring" href="#signup" onclick="closeDrawer()">Start now</a>
-            <a class="glass flex-1 text-center px-4 py-3 rounded-xl font-medium focus-ring" href="#integrations" onclick="closeDrawer()">Connect now</a>
-          </div>
-          <p class="mt-2 text-xs text-gray-400 px-1">No credit card required · 7-day free trial</p>
-        </nav>
-      </div>
-    </div>
-  </header>
 
-  <main id="main" class="pt-20">
-    <!-- Hero -->
-    <section class="relative overflow-hidden">
-      <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-14 md:py-20">
-        <div class="grid md:grid-cols-2 gap-8 md:gap-12 items-center">
-          <div>
-            <h1 class="text-4xl md:text-5xl font-semibold leading-tight">Your AI Accountant on WhatsApp.</h1>
-            <p class="mt-4 text-lg text-slate">Send bills, get books. As easy as chat. One-click sync with QuickBooks & Zoho. Xero coming soon.</p>
-            <div class="mt-6 flex flex-col sm:flex-row gap-3 sm:items-center">
-              <a href="#signup" class="btn-primary px-6 py-3 rounded-xl font-medium shadow-glow focus-ring text-center">Start now</a>
-              <a href="#integrations" class="btn-secondary glass px-6 py-3 rounded-xl font-medium focus-ring text-center">Connect now</a>
-            </div>
-            <p class="mt-2 text-xs text-gray-400">No credit card required · 7-day free trial</p>
-
-            <!-- Model selector -->
-            <div class="mt-6 glass rounded-2xl p-4">
-              <label for="modelSelect" class="block text-sm text-gray-300 mb-2">AI mode</label>
-              <select id="modelSelect" class="w-full bg-transparent border border-white/10 rounded-lg p-3 focus-ring" aria-label="Select AI mode">
-                <option>Fast</option><option>Accurate</option><option>Custom</option>
-              </select>
-              <p id="modelNote" class="mt-2 text-sm text-gray-400">Fast: quick replies for day-to-day entries.</p>
-            </div>
-          </div>
   <!-- Pricing -->
   <section id="pricing" class="py-20">
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
@@ -593,10 +481,6 @@
       </div>
     </div>
   </section>
-
-
-
-  
   <!-- Footer -->
   <footer class="border-t border-white/10">
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10">
