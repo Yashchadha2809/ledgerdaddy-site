@@ -1,4 +1,4 @@
-<!-- D) index.html — single-file, mobile-first, with HD image placeholders & test functions -->
+<!-- index.html — conversion-focused, mobile-first, with HD image placeholders + test helpers -->
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -7,10 +7,11 @@
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
   <meta name="description" content="LedgerDaddy reads bills on WhatsApp, creates invoices, posts to books, reconciles payments, tracks inventory, and applies US sales-tax rules. One-click sync with QuickBooks and Zoho." />
   <meta name="theme-color" content="#0B0B12" />
+  <meta name="robots" content="index,follow" />
 
   <!-- Open Graph -->
   <meta property="og:title" content="LedgerDaddy — Your AI Accountant on WhatsApp" />
-  <meta property="og:description" content="As easy as WhatsApp. One-click sync with QuickBooks & Zoho. No credit card required · 7-day free trial." />
+  <meta property="og:description" content="As easy as chat. One-click sync with QuickBooks & Zoho. No credit card required · 7-day free trial." />
   <meta property="og:type" content="website" />
   <meta property="og:url" content="https://ledgerdaddy.example" />
   <meta property="og:image" content="https://ledgerdaddy.example/og-hero.jpg" />
@@ -27,7 +28,6 @@
     "offers": { "@type": "Offer", "price": "49", "priceCurrency": "USD" },
     "aggregateRating": { "@type": "AggregateRating", "ratingValue": "4.9", "ratingCount": "28" }
   }
-    
   </script>
 
   <!-- Tailwind CDN -->
@@ -56,11 +56,11 @@
     .hero-chip{background:linear-gradient(180deg,rgba(255,255,255,.10),rgba(255,255,255,.05));border:1px solid rgba(255,255,255,.12)}
     .sr-only-focusable:focus{position:static;width:auto;height:auto;clip:auto}
     :target{scroll-margin-top:96px}
-    /* Responsive image frame ratio helpers */
+    /* Responsive ratios */
     .ratio-16x9{position:relative;padding-top:56.25%}
     .ratio-2x1{position:relative;padding-top:50%}
     .ratio-4x3{position:relative;padding-top:75%}
-    .ratio-fill>img,.ratio-16x9>img,.ratio-2x1>img,.ratio-4x3>img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;border-radius:14px}
+    .ratio-16x9>img,.ratio-2x1>img,.ratio-4x3>img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;border-radius:14px}
   </style>
 </head>
 <body class="bg-ink text-white bg-grad selection:bg-accent/30 selection:text-white antialiased">
@@ -71,7 +71,7 @@
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
       <div class="h-16 flex items-center justify-between">
         <a href="index.html" class="flex items-center gap-3" aria-label="LedgerDaddy home">
-          <!-- Inline SVG logo -->
+          <!-- Inline SVG Logo -->
           <svg width="28" height="28" viewBox="0 0 64 64" aria-hidden="true">
             <defs><linearGradient id="g" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#6A5BFF"/><stop offset="1" stop-color="#22D3EE"/></linearGradient></defs>
             <rect x="6" y="6" width="52" height="52" rx="12" fill="url(#g)" opacity="0.15"/>
@@ -182,14 +182,14 @@
             </div>
           </div>
 
-          <!-- HERO image (HD placeholder) -->
+          <!-- HERO image (ultra-HD placeholder with full prompt) -->
           <figure class="glass rounded-3xl p-4 md:p-6 border border-white/10 shadow-soft">
             <div class="ratio-16x9">
               <img
-                src="data:image/svg+xml;charset=UTF-8,<?xml version='1.0' encoding='UTF-8'?><svg xmlns='http://www.w3.org/2000/svg' width='2400' height='1350'><defs><linearGradient id='g' x1='0' y1='0' x2='1' y2='1'><stop offset='0' stop-color='%236A5BFF'/><stop offset='1' stop-color='%2322D3EE'/></linearGradient></defs><rect width='100%' height='100%' fill='%230B0B12'/><g opacity='.25'><circle cx='300' cy='200' r='500' fill='%236A5BFF'/><circle cx='2000' cy='200' r='500' fill='%2322D3EE'/></g><rect x='120' y='160' width='2160' height='1030' rx='36' fill='rgba(255,255,255,0.06)' stroke='rgba(255,255,255,0.12)'/><text x='150' y='240' fill='white' font-size='48' font-family='Inter,Arial'>HERO — Replace with 8k render (prompt in data-prompt)</text><g font-family='Inter,Arial' font-size='40'><rect x='200' y='320' width='360' height='80' rx='20' fill='rgba(255,255,255,0.12)'/><text x='230' y='375' fill='white'>Sales $12,440</text><rect x='600' y='320' width='380' height='80' rx='20' fill='rgba(255,255,255,0.12)'/><text x='630' y='375' fill='white'>Expenses $8,210</text><rect x='1800' y='980' width='420' height='80' rx='20' fill='rgba(255,255,255,0.12)'/><text x='1830' y='1035' fill='white'>Synced to QuickBooks</text><rect x='1750' y='880' width='220' height='80' rx='20' fill='rgba(255,255,255,0.12)'/><text x='1780' y='935' fill='white'>Parsed ✔</text></g></svg>"
-                alt="Floating glass dashboard with metric chips and synced badge (placeholder)."
+                alt="Floating glass dashboard with sales & expenses chips and synced badge (placeholder)."
                 loading="eager"
-                data-prompt="Ultra-realistic 8k glossy SaaS dashboard floating on dark indigo→teal gradient; chips 'Sales $12,440', 'Expenses $8,210'; badges 'Parsed ✔', 'Synced to QuickBooks'; rim light, soft bloom."
+                data-prompt="Ultra-realistic, high-resolution (8K) professional photograph of a glossy SaaS accounting dashboard UI floating on a midnight indigo→teal gradient; glassmorphism panels; metric chips “Sales $12,440”, “Expenses $8,210”; status badges “Parsed ✔”, “Synced to QuickBooks”. Shot with Canon EOS R5 + 85mm f/1.2, perfect studio lighting, soft bokeh background, cinematic depth of field, true-to-life colors, rich texture detail, natural shadows and highlights, editorial photography style, award-winning composition, hyper-detailed, magazine cover quality, shot in RAW — photorealistic, no digital artifacts."
+                src="data:image/svg+xml;charset=UTF-8,<?xml version='1.0' encoding='UTF-8'?><svg xmlns='http://www.w3.org/2000/svg' width='2400' height='1350'><defs><linearGradient id='g' x1='0' y1='0' x2='1' y2='1'><stop offset='0' stop-color='%236A5BFF'/><stop offset='1' stop-color='%2322D3EE'/></linearGradient></defs><rect width='100%' height='100%' fill='%230B0B12'/><g opacity='.25'><circle cx='300' cy='200' r='500' fill='%236A5BFF'/><circle cx='2000' cy='200' r='500' fill='%2322D3EE'/></g><rect x='120' y='160' width='2160' height='1030' rx='36' fill='rgba(255,255,255,0.06)' stroke='rgba(255,255,255,0.12)'/><text x='150' y='240' fill='white' font-size='44' font-family='Inter,Arial'>HERO — Replace with 8k photoreal render (prompt in data-prompt)</text><g font-family='Inter,Arial' font-size='38'><rect x='200' y='320' width='360' height='80' rx='20' fill='rgba(255,255,255,0.12)'/><text x='230' y='375' fill='white'>Sales $12,440</text><rect x='600' y='320' width='380' height='80' rx='20' fill='rgba(255,255,255,0.12)'/><text x='630' y='375' fill='white'>Expenses $8,210</text><rect x='1750' y='880' width='220' height='80' rx='20' fill='rgba(255,255,255,0.12)'/><text x='1780' y='935' fill='white'>Parsed ✔</text><rect x='1800' y='980' width='420' height='80' rx='20' fill='rgba(255,255,255,0.12)'/><text x='1830' y='1035' fill='white'>Synced to QuickBooks</text></g></svg>"
               />
             </div>
             <figcaption class="mt-3 text-xs text-gray-400">HD placeholder shown. Swap with your rendered HERO image.</figcaption>
@@ -226,10 +226,10 @@
             <p class="mt-2 text-sm text-gray-400">Drop a photo or PDF. We parse and post.</p>
             <div class="mt-4 ratio-4x3">
               <img
-                src="data:image/svg+xml;charset=UTF-8,<?xml version='1.0'?><svg xmlns='http://www.w3.org/2000/svg' width='1600' height='1200'><defs><linearGradient id='g2' x1='0' y1='0' x2='1' y2='1'><stop offset='0' stop-color='%2312131B'/><stop offset='1' stop-color='%230B0B12'/></linearGradient></defs><rect width='100%' height='100%' fill='url(%23g2)'/><text x='60' y='120' font-size='40' fill='%23ffffff'>WHATSAPP CAPTURE — Replace with 8k macro render (prompt in data-prompt)</text><rect x='80' y='220' width='1440' height='760' rx='40' fill='rgba(255,255,255,0.08)' stroke='rgba(255,255,255,0.12)'/><text x='120' y='320' font-size='36' fill='%23ffffff'>Bill parsed: Date • Vendor • Total</text></svg>"
                 alt="Macro phone chat parsing a bill (placeholder)."
                 loading="lazy"
-                data-prompt="8k macro smartphone WhatsApp-like UI; user uploads bill (PII blurred); assistant replies with parsed fields chips; OLED micro-glare, shallow DoF."
+                data-prompt="Ultra-realistic 8K macro photograph of a smartphone showing a WhatsApp-inspired dark chat UI; user posts vendor bill (PII blurred); assistant replies with parsed chips (Date, Vendor, Total). Canon EOS R5 + 85mm f/1.2, shallow DoF, soft bokeh, true colors, editorial studio light, hyper-detailed, RAW quality."
+                src="data:image/svg+xml;charset=UTF-8,<?xml version='1.0'?><svg xmlns='http://www.w3.org/2000/svg' width='1600' height='1200'><defs><linearGradient id='g2' x1='0' y1='0' x2='1' y2='1'><stop offset='0' stop-color='%2312131B'/><stop offset='1' stop-color='%230B0B12'/></linearGradient></defs><rect width='100%' height='100%' fill='url(%23g2)'/><text x='60' y='120' font-size='36' fill='%23ffffff'>WHATSAPP CAPTURE — Replace with 8k photoreal render (prompt in data-prompt)</text><rect x='80' y='220' width='1440' height='760' rx='40' fill='rgba(255,255,255,0.08)' stroke='rgba(255,255,255,0.12)'/><text x='120' y='320' font-size='34' fill='%23ffffff'>Bill parsed: Date • Vendor • Total</text></svg>"
               />
             </div>
           </article>
@@ -283,10 +283,10 @@
           <figure class="glass rounded-3xl p-4 md:p-6 border border-white/10">
             <div class="ratio-2x1">
               <img
-                src="data:image/svg+xml;charset=UTF-8,<?xml version='1.0'?><svg xmlns='http://www.w3.org/2000/svg' width='2200' height='1100'><rect width='100%' height='100%' fill='%230B0B12'/><g opacity='.25'><circle cx='200' cy='150' r='450' fill='%236A5BFF'/><circle cx='2000' cy='100' r='500' fill='%2322D3EE'/></g><text x='80' y='120' fill='white' font-size='44'>AUTOMATION PIPELINE — Replace with 8k render (prompt in data-prompt)</text><g fill='rgba(255,255,255,0.08)' stroke='rgba(255,255,255,0.16)'><rect x='120' y='300' width='340' height='420' rx='24'/><rect x='560' y='300' width='340' height='420' rx='24'/><rect x='1000' y='300' width='340' height='420' rx='24'/></g><g><circle cx='1450' cy='510' r='14' fill='%2322D3EE'/><circle cx='1540' cy='510' r='14' fill='%236A5BFF'/><circle cx='1630' cy='510' r='14' fill='%2322D3EE'/></g><rect x='1720' y='360' width='360' height='300' rx='24' fill='rgba(255,255,255,0.08)' stroke='rgba(255,255,255,0.16)'/><text x='1750' y='520' fill='white' font-size='40'>Structured Entries</text></svg>"
                 alt="Glowing pipeline converting docs into ledger entries (placeholder)."
                 loading="lazy"
-                data-prompt="Photoreal 8k documents morphing into structured rows through glowing cyan-violet nodes and translucent tubes; volumetric beams, glass particles."
+                data-prompt="Ultra-realistic 8K scene: paper/PDF receipts morph into structured ledger rows through glowing cyan–violet nodes and translucent tubes; volumetric beams, glass particles, deep gradient backdrop. Canon EOS R5 + 85mm f/1.2 look, cinematic DoF, RAW-grade clarity."
+                src="data:image/svg+xml;charset=UTF-8,<?xml version='1.0'?><svg xmlns='http://www.w3.org/2000/svg' width='2200' height='1100'><rect width='100%' height='100%' fill='%230B0B12'/><g opacity='.25'><circle cx='200' cy='150' r='450' fill='%236A5BFF'/><circle cx='2000' cy='100' r='500' fill='%2322D3EE'/></g><text x='80' y='120' fill='white' font-size='40'>AUTOMATION PIPELINE — Replace with 8k photoreal render (prompt in data-prompt)</text><g fill='rgba(255,255,255,0.08)' stroke='rgba(255,255,255,0.16)'><rect x='120' y='300' width='340' height='420' rx='24'/><rect x='560' y='300' width='340' height='420' rx='24'/><rect x='1000' y='300' width='340' height='420' rx='24'/></g><g><circle cx='1450' cy='510' r='14' fill='%2322D3EE'/><circle cx='1540' cy='510' r='14' fill='%236A5BFF'/><circle cx='1630' cy='510' r='14' fill='%2322D3EE'/></g><rect x='1720' y='360' width='360' height='300' rx='24' fill='rgba(255,255,255,0.08)' stroke='rgba(255,255,255,0.16)'/><text x='1750' y='520' fill='white' font-size='38'>Structured Entries</text></svg>"
               />
             </div>
             <figcaption class="mt-3 text-xs text-gray-400">HD placeholder shown. Swap with your pipeline render.</figcaption>
@@ -351,10 +351,10 @@
           <figure class="glass rounded-2xl p-6">
             <div class="ratio-4x3">
               <img
-                src="data:image/svg+xml;charset=UTF-8,<?xml version='1.0'?><svg xmlns='http://www.w3.org/2000/svg' width='1400' height='1050'><rect width='100%' height='100%' fill='%230B0B12'/><circle cx='700' cy='525' r='420' fill='%2312131B'/><text x='80' y='120' fill='white' font-size='40'>PORTRAIT 1 — Replace (prompt in data-prompt)</text></svg>"
                 alt="Editorial headshot on dark gradient (placeholder)."
                 loading="lazy"
-                data-prompt="Editorial 8k headshot on dark gradient, premium tech lighting, 85mm look, diverse SMB founder."
+                data-prompt="Ultra-realistic 8K editorial headshot on dark gradient; diverse US SMB founder; Canon EOS R5 + 85mm f/1.2; premium tech lighting; shallow DoF; magazine cover quality; RAW clarity."
+                src="data:image/svg+xml;charset=UTF-8,<?xml version='1.0'?><svg xmlns='http://www.w3.org/2000/svg' width='1400' height='1050'><rect width='100%' height='100%' fill='%230B0B12'/><circle cx='700' cy='525' r='420' fill='%2312131B'/><text x='80' y='120' fill='white' font-size='36'>PORTRAIT 1 — Replace (prompt in data-prompt)</text></svg>"
               />
             </div>
             <blockquote class="mt-4 text-sm text-gray-300">“We just drop bills in chat. Books stay current.”</blockquote>
@@ -363,10 +363,10 @@
           <figure class="glass rounded-2xl p-6">
             <div class="ratio-4x3">
               <img
-                src="data:image/svg+xml;charset=UTF-8,<?xml version='1.0'?><svg xmlns='http://www.w3.org/2000/svg' width='1400' height='1050'><rect width='100%' height='100%' fill='%230B0B12'/><circle cx='700' cy='525' r='420' fill='%2312131B'/><text x='80' y='120' fill='white' font-size='40'>PORTRAIT 2 — Replace</text></svg>"
                 alt="Editorial headshot on dark gradient (placeholder)."
                 loading="lazy"
-                data-prompt="Editorial 8k headshot on dark gradient, premium tech lighting, 85mm look, wholesale ops."
+                data-prompt="Ultra-realistic 8K editorial headshot; wholesale operations lead; Canon EOS R5 + 85mm f/1.2; soft bokeh; studio rim light; RAW detail."
+                src="data:image/svg+xml;charset=UTF-8,<?xml version='1.0'?><svg xmlns='http://www.w3.org/2000/svg' width='1400' height='1050'><rect width='100%' height='100%' fill='%230B0B12'/><circle cx='700' cy='525' r='420' fill='%2312131B'/><text x='80' y='120' fill='white' font-size='36'>PORTRAIT 2 — Replace</text></svg>"
               />
             </div>
             <blockquote class="mt-4 text-sm text-gray-300">“Reconciliation used to take hours. Now it’s minutes.”</blockquote>
@@ -375,10 +375,10 @@
           <figure class="glass rounded-2xl p-6">
             <div class="ratio-4x3">
               <img
-                src="data:image/svg+xml;charset=UTF-8,<?xml version='1.0'?><svg xmlns='http://www.w3.org/2000/svg' width='1400' height='1050'><rect width='100%' height='100%' fill='%230B0B12'/><circle cx='700' cy='525' r='420' fill='%2312131B'/><text x='80' y='120' fill='white' font-size='40'>PORTRAIT 3 — Replace</text></svg>"
                 alt="Editorial headshot on dark gradient (placeholder)."
                 loading="lazy"
-                data-prompt="Editorial 8k headshot on dark gradient, premium tech lighting, 85mm look, Amazon seller."
+                data-prompt="Ultra-realistic 8K editorial headshot; Amazon/e-com seller; Canon EOS R5 + 85mm f/1.2; cinematic DoF; natural skin tones; RAW, magazine quality."
+                src="data:image/svg+xml;charset=UTF-8,<?xml version='1.0'?><svg xmlns='http://www.w3.org/2000/svg' width='1400' height='1050'><rect width='100%' height='100%' fill='%230B0B12'/><circle cx='700' cy='525' r='420' fill='%2312131B'/><text x='80' y='120' fill='white' font-size='36'>PORTRAIT 3 — Replace</text></svg>"
               />
             </div>
             <blockquote class="mt-4 text-sm text-gray-300">“Sales tax got simpler across states.”</blockquote>
@@ -509,7 +509,7 @@
             </svg>
             <span class="font-medium">LedgerDaddy</span>
           </div>
-          <p class="mt-3 text-sm text-gray-400">RUn leadgerdaddy Epicfash Global LLC, 293 Whitehead ROad, NJ 08619 USA</p>
+          <p class="mt-3 text-sm text-gray-400">Epicfash Global LLC, 293 Whitehead Road, NJ 08619, USA</p>
         </div>
         <div>
           <h4 class="font-medium mb-3">Product</h4>
@@ -559,7 +559,7 @@
 
   <!-- Scripts (defer) -->
   <script defer>
-    // --- Mobile drawer ---
+    // Mobile drawer
     const navToggle = document.getElementById('navToggle');
     const navClose  = document.getElementById('navClose');
     const mobileNav = document.getElementById('mobileNav');
@@ -569,7 +569,7 @@
     navClose?.addEventListener('click', closeDrawer);
     mobileNav?.addEventListener('click', (e)=>{ if(e.target===mobileNav) closeDrawer(); });
 
-    // --- Policies dropdown ---
+    // Policies dropdown
     const policiesToggle = document.getElementById('policiesToggle');
     const policiesMenu = document.getElementById('policiesMenu');
     function closePolicies(){ policiesMenu?.classList.add('hidden'); policiesToggle?.setAttribute('aria-expanded','false'); }
@@ -578,7 +578,7 @@
     document.addEventListener('click', (e)=>{ if(policiesMenu && !policiesMenu.contains(e.target) && !policiesToggle.contains(e.target)) closePolicies(); });
     document.addEventListener('keydown', (e)=>{ if(e.key==='Escape') closePolicies(); });
 
-    // --- Model selector note ---
+    // Model selector note
     const modelSelect = document.getElementById('modelSelect');
     const modelNote = document.getElementById('modelNote');
     const modelCopy = {
@@ -588,7 +588,7 @@
     };
     modelSelect?.addEventListener('change',(e)=>{ modelNote.textContent = modelCopy[e.target.value] || modelCopy.Fast; });
 
-    // --- Demo ledger & test helpers ---
+    // Demo ledger & test helpers
     const opening = document.getElementById('opening');
     const typeEl = document.getElementById('type');
     const amount = document.getElementById('amount');
@@ -599,14 +599,8 @@
     const items = document.getElementById('items');
     const balance = document.getElementById('balance');
     let ledger = [];
-
     const toCurrency = (n)=> '$' + (Number.isFinite(n)?n:0).toFixed(2);
-
-    function computeBalance(){
-      const open = parseFloat(opening?.value || '0');
-      const delta = ledger.reduce((a,r)=>a+r.amount,0);
-      balance.textContent = toCurrency(open+delta);
-    }
+    function computeBalance(){ const open = parseFloat(opening?.value || '0'); const delta = ledger.reduce((a,r)=>a+r.amount,0); balance.textContent = toCurrency(open+delta); }
     function render(){
       if(!items) return;
       items.innerHTML='';
@@ -649,17 +643,17 @@
     opening?.addEventListener('input', computeBalance);
     items?.addEventListener('click',(e)=>{ const b=e.target.closest('.remove-item'); if(!b) return; const i=Number(b.dataset.i); if(Number.isInteger(i)){ ledger.splice(i,1); render(); }});
 
-    // --- Image test helper (checks if external images exist; we use placeholders by default) ---
+    // Image test helper (prints prompts to console)
     function testImages(){
       document.querySelectorAll('img[data-prompt]').forEach((img)=>{
-        console.log('%cIMAGE PLACEHOLDER','background:#22D3EE;color:#0B0B12;padding:2px 6px;border-radius:6px',
-          {alt: img.alt, prompt: img.dataset.prompt?.slice(0,180)+'…'});
+        console.log('%cIMAGE PROMPT','background:#22D3EE;color:#0B0B12;padding:2px 6px;border-radius:6px',
+          {alt: img.alt, prompt: img.dataset.prompt});
       });
-      alert('Image placeholders detected. Open console to copy prompts for your 8k renders.');
+      alert('Open console to copy 8K photo prompts for your renderer.');
     }
-    window.testImages = testImages; // call in console if needed
+    window.testImages = testImages;
 
-    // --- Cookie banner ---
+    // Cookie banner + year
     const cookie=document.getElementById('cookie');
     const cookieAccept=document.getElementById('cookieAccept');
     const cookieDismiss=document.getElementById('cookieDismiss');
@@ -668,8 +662,6 @@
     const closeCookie=(ok)=>{ cookie.classList.add('hidden'); if(ok) localStorage.setItem(COOKIE_KEY,'1'); };
     cookieAccept?.addEventListener('click',()=>closeCookie(true));
     cookieDismiss?.addEventListener('click',()=>closeCookie(false));
-
-    // --- Year ---
     const y = document.getElementById('year'); if (y) y.textContent = new Date().getFullYear();
   </script>
 </body>
