@@ -1,4 +1,3 @@
-# index.py
 import os
 from pathlib import Path
 from flask import Flask, Response, send_file
@@ -12,6 +11,7 @@ LOGIN = APP_DIR / "log_in.html"
 
 def serve_file(path: Path, not_found="File not found"):
     if path.exists():
+        # Let Flask infer the correct mimetype from the file extension
         return send_file(path)
     return Response(not_found, status=404, mimetype="text/plain")
 
@@ -31,13 +31,15 @@ def log_in():
 def health():
     return {"ok": True}
 
+# Quietly handle favicons
 @app.get("/favicon.ico")
 @app.get("/favicon.png")
 def favicon():
     return Response(status=204)
 
-# Vercel WSGI entry
-handler = app
+# --- IMPORTANT ---
+# Do NOT set `handler = app` on Vercel. Export `app` only.
 
 if __name__ == "__main__":
+    # Local dev: python index.py
     app.run("127.0.0.1", 5000, debug=True)
