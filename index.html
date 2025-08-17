@@ -3,479 +3,583 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>NovaHub — Chat • Calculator • Marketplace</title>
-  <meta name="description" content="A friendly, modern, responsive website with a chatbot, smart calculator, and a simple marketplace." />
-  <meta name="theme-color" content="#0f172a" id="meta-theme-color" />
-  <link rel="canonical" href="https://example.com/" />
+  <title>CHA.AI — The First AI-Powered CHA Marketplace (India)</title>
+  <meta name="description" content="Find verified CHAs, get instant HS code & duty estimates, and clear shipments faster at any Indian port." />
+  <meta name="theme-color" content="#0B1B3B" id="meta-theme-color" />
   <style>
-    /* -------------------- Base & Theme -------------------- */
-    *,*::before,*::after{box-sizing:border-box}
-    html,body{height:100%}
-    body{margin:0;font-family: Inter, ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Arial, "Noto Sans", sans-serif;line-height:1.55}
-    img{max-width:100%;display:block}
-    a{text-decoration:none}
+    /* ================= Brand Tokens (Navy / Teal / Sky / Warm Gray) ================= */
     :root{
-      --bg:#0b1220; --panel:#0f172a; --soft:#131b2f; --text:#e5e7eb; --muted:#94a3b8; --border:#1f2941;
-      --brand:#7c3aed; --brand-2:#22c55e; --accent:#06b6d4; --focus:#f59e0b;
-      --shadow: 0 12px 30px rgba(0,0,0,.35);
+      --navy:#0B1B3B; --teal:#1BB5A6; --sky:#C7F3F0; --warm:#F5F7FA; --ink:#0f172a;
+      --bg:#0B1B3B; --panel:#0e2452; --soft:#113062; --text:#F5F7FA; --muted:#D7E1EF; --border:#1e3a6a;
+      --accent:#1BB5A6; --badge:#C7F3F0; --focus:#f59e0b; --radius:14px; --shadow:0 14px 34px rgba(3,10,28,.35)
     }
     [data-theme="light"]{
-      --bg:#f8fafc; --panel:#ffffff; --soft:#f1f5f9; --text:#0f172a; --muted:#475569; --border:#e2e8f0;
-      --shadow: 0 12px 24px rgba(2,6,23,.08);
+      --bg:#F5F7FA; --panel:#ffffff; --soft:#eef2f7; --text:#0B1B3B; --muted:#51607a; --border:#e3e9f2; --shadow:0 14px 28px rgba(2,6,23,.06)
     }
+    /* ================= Base / Utilities ================= */
+    *,*::before,*::after{box-sizing:border-box}
+    html,body{height:100%}
+    body{margin:0;font-family:Inter,ui-sans-serif,system-ui,-apple-system,Segoe UI,Roboto,Arial,"Noto Sans",sans-serif;line-height:1.55;
+      background:
+        radial-gradient(1200px 600px at 15% -10%, rgba(27,181,166,.20), transparent 55%),
+        radial-gradient(1200px 600px at 85% -10%, rgba(199,243,240,.20), transparent 55%),
+        var(--bg);color:var(--text)}
+    img{max-width:100%;display:block}
+    a{color:inherit;text-decoration:none}
     :focus-visible{outline:2px solid var(--focus);outline-offset:3px}
-    .page{background:
-      radial-gradient(1200px 600px at 15% -10%, rgba(124,58,237,.20), transparent 55%),
-      radial-gradient(1200px 600px at 85% -10%, rgba(34,197,94,.18), transparent 55%),
-      var(--bg);color:var(--text)}
-    .container{width:min(1160px,92%);margin-inline:auto}
-    .section{padding:3.5rem 0}
-    .card{background:linear-gradient(0deg, rgba(255,255,255,.02), transparent), var(--panel);border:1px solid var(--border);border-radius:16px;box-shadow:var(--shadow);padding:1.25rem}
-    .btn{display:inline-flex;align-items:center;gap:.6rem;padding:.7rem 1rem;border-radius:12px;border:1px solid var(--border);cursor:pointer;transition:transform .05s ease, box-shadow .2s ease}
-    .btn:active{transform:translateY(1px)}
-    .btn--primary{background:linear-gradient(135deg,var(--brand),var(--brand-2));color:#fff;border-color:transparent}
+    .container{width:min(1180px,92%);margin-inline:auto}
+    .section{padding:3.2rem 0}
+    .card{background:linear-gradient(0deg, rgba(255,255,255,.03), transparent), var(--panel);border:1px solid var(--border);border-radius:var(--radius);box-shadow:var(--shadow);padding:1.2rem}
+    .btn{display:inline-flex;align-items:center;gap:.5rem;padding:.7rem 1rem;border-radius:12px;border:1px solid var(--border);cursor:pointer;transition:transform .05s,box-shadow .2s}
+    .btn:active{transform:translateY(1px)} .btn--primary{background:linear-gradient(135deg,var(--teal),#12a895);color:#043b37;border-color:transparent}
     .btn--ghost{background:var(--panel);color:var(--text)}
-    .badge{display:inline-flex;align-items:center;gap:.35rem;padding:.2rem .6rem;border:1px solid var(--border);border-radius:999px;color:var(--muted);font-size:.85rem}
+    .badge{display:inline-flex;align-items:center;gap:.35rem;padding:.22rem .55rem;border:1px solid var(--border);border-radius:999px;background:var(--soft);color:var(--muted);font-size:.85rem}
+    .chip{display:inline-flex;align-items:center;gap:.35rem;padding:.25rem .6rem;border-radius:999px;border:1px solid var(--border);background:var(--badge);color:#084b45;font-weight:600}
+    .muted{color:var(--muted)} .sr-only{position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap;border:0}
+    .grid{display:grid;gap:1rem}
+    @media (min-width: 980px){ .grid--2{grid-template-columns:1fr 1fr} .grid--3{grid-template-columns:repeat(3,1fr)} }
 
-    /* -------------------- Header -------------------- */
-    .header{position:sticky;top:0;z-index:50;backdrop-filter:blur(12px);background:rgba(0,0,0,.22);border-bottom:1px solid var(--border)}
+    /* ================= Header / Nav ================= */
+    .header{position:sticky;top:0;z-index:70;backdrop-filter:blur(12px);background:rgba(11,27,59,.6);border-bottom:1px solid var(--border)}
     [data-theme="light"] .header{background:rgba(255,255,255,.7)}
     .header__inner{display:flex;align-items:center;justify-content:space-between;padding:.75rem 0}
-    .brand{display:flex;align-items:center;gap:.65rem;color:inherit}
-    .brand__logo{width:36px;height:36px;border-radius:10px;background:conic-gradient(from 180deg,var(--brand),var(--accent),var(--brand-2),var(--brand));display:grid;place-items:center;color:#fff;font-weight:800;box-shadow:var(--shadow)}
+    .brand{display:flex;align-items:center;gap:.65rem}
+    .brand__logo{width:36px;height:36px;border-radius:10px;background:conic-gradient(from 180deg,var(--teal),var(--sky),#a8e7e2,var(--teal));display:grid;place-items:center;color:#043b37;font-weight:800;box-shadow:var(--shadow)}
     .nav{display:flex;gap:1rem;align-items:center}
     .nav__menu{display:flex;gap:1rem;list-style:none;margin:0;padding:0}
-    .nav__link{color:var(--muted)}
-    .nav__link:hover{color:var(--text)}
+    .nav__link{color:var(--muted)} .nav__link:hover{color:var(--text)}
     .nav__toggle{display:none}
-    .cart{display:flex;gap:.5rem;align-items:center}
-    .cart__count{display:grid;place-items:center;min-width:22px;height:22px;border-radius:999px;background:var(--brand);color:#fff;font-size:.8rem}
+    .auth{display:flex;gap:.6rem;align-items:center}
+    @media (max-width:980px){
+      .nav__toggle{display:inline-block;border:1px solid var(--border);background:var(--panel);color:var(--text);padding:.5rem .7rem;border-radius:.6rem}
+      .nav__menu{display:none;position:absolute;right:1rem;top:60px;background:var(--panel);padding:.75rem;border-radius:.6rem;border:1px solid var(--border)}
+      .nav__menu.is-open{display:flex;flex-direction:column}
+    }
 
-    /* -------------------- Hero -------------------- */
-    .hero{padding:3.2rem 0}
-    .hero__wrap{display:grid;gap:1.2rem;grid-template-columns: 1.2fr .8fr;align-items:center}
-    @media (max-width: 960px){.hero__wrap{grid-template-columns:1fr}}
-    .hero__title{font-size:clamp(1.8rem,3.6vw,2.6rem);margin:0}
-    .hero__tag{color:var(--muted);margin:0}
+    /* ================= Hero ================= */
+    .hero{padding:3rem 0}
+    .hero__wrap{display:grid;gap:1.2rem;grid-template-columns:1.2fr .8fr;align-items:center}
+    @media (max-width:980px){.hero__wrap{grid-template-columns:1fr}}
+    .hero__title{font-size:clamp(1.9rem,3.6vw,2.6rem);margin:0}
     .hero__img{border-radius:18px;overflow:hidden;border:1px solid var(--border)}
-    .hero__img > img{width:100%;height:100%;object-fit:cover}
+    .hero__img>img{width:100%;height:100%;object-fit:cover}
 
-    /* -------------------- Grid -------------------- */
-    .grid{display:grid;gap:1.1rem}
-    @media (min-width: 960px){ .grid--2 {grid-template-columns: 1fr 1fr;} .grid--3{grid-template-columns: repeat(3,1fr);} }
-
-    /* -------------------- Calculator -------------------- */
+    /* ================= Forms ================= */
     .form__row{display:grid;gap:.35rem;margin-bottom:.6rem}
     .form__label{font-weight:600}
-    .form__input,.form__select{background:var(--soft);color:var(--text);border:1px solid var(--border);border-radius:10px;padding:.6rem .7rem}
-    .kpi{display:flex;flex-wrap:wrap;gap:.6rem;margin-top:.5rem}
-    .kpi__pill{background:var(--soft);border:1px solid var(--border);border-radius:999px;padding:.4rem .7rem}
-    .switch{display:inline-flex;align-items:center;gap:.5rem;font-size:.92rem;color:var(--muted)}
+    .form__input,.form__select,.form__area{background:var(--soft);color:var(--text);border:1px solid var(--border);border-radius:10px;padding:.6rem .7rem}
 
-    /* -------------------- Marketplace -------------------- */
-    .market__controls{display:flex;flex-wrap:wrap;gap:.5rem;margin:.75rem 0}
-    .market__grid{display:grid;gap:1rem;grid-template-columns:repeat(auto-fit,minmax(220px,1fr))}
-    .product{display:grid;gap:.6rem;border:1px solid var(--border);border-radius:14px;background:var(--panel);padding:.8rem;transition:transform .12s ease, box-shadow .2s ease}
-    .product:hover{transform:translateY(-2px);box-shadow:var(--shadow)}
-    .product__img{height:140px;border-radius:10px;overflow:hidden;border:1px solid var(--border);background:var(--soft)}
-    .product__meta{display:flex;align-items:center;justify-content:space-between}
-    .stars{color:#fbbf24} /* amber */
-    .product__price{color:var(--brand-2);font-weight:800}
+    /* ================= Marketplace ================= */
+    .layout{display:grid;gap:1rem;grid-template-columns:280px 1fr}
+    @media (max-width:1100px){ .layout{grid-template-columns:1fr} }
+    .filters{position:sticky;top:76px}
+    .filter__drawer{display:none}
+    @media (max-width:1100px){
+      .filters{display:none}
+      .filter__drawer{display:flex;justify-content:space-between;margin-bottom:.6rem}
+      .drawer{position:fixed;inset:0;background:rgba(0,0,0,.45);display:none}
+      .drawer__panel{position:absolute;left:0;top:0;height:100%;width:85%;max-width:360px;background:var(--panel);border-right:1px solid var(--border);padding:1rem;overflow:auto}
+      .drawer.is-open{display:block}
+    }
+    .market__grid{display:grid;gap:1rem;grid-template-columns:repeat(auto-fit,minmax(260px,1fr))}
+    .card--listing:hover{transform:translateY(-2px);box-shadow:var(--shadow);transition:transform .12s,box-shadow .2s}
+    .listing__meta{display:flex;align-items:center;justify-content:space-between;gap:.6rem;flex-wrap:wrap}
+    .listing__footer{display:flex;align-items:center;justify-content:space-between;gap:.6rem;flex-wrap:wrap}
+    .stars{color:#fbbf24}
 
-    /* -------------------- Chatbot -------------------- */
-    .chat{position:fixed;right:1rem;bottom:1rem;z-index:60}
-    .chat__toggle{width:60px;height:60px;border-radius:999px;border:none;background:linear-gradient(135deg,var(--brand),var(--brand-2));color:#fff;box-shadow:var(--shadow);cursor:pointer}
+    /* ================= Tabs (Profile) ================= */
+    .tabs{display:flex;gap:.4rem;flex-wrap:wrap;border-bottom:1px solid var(--border);margin:.8rem 0}
+    .tab{padding:.45rem .75rem;border:1px solid var(--border);border-bottom:none;border-radius:10px 10px 0 0;background:var(--soft);cursor:pointer}
+    .tab[aria-selected="true"]{background:var(--badge);color:#084b45}
+
+    /* ================= Sticky CTA (mobile) ================= */
+    .sticky-cta{position:sticky;bottom:0;z-index:40;background:var(--panel);border-top:1px solid var(--border);padding:.6rem;display:none}
+    @media (max-width:700px){ .sticky-cta{display:block} }
+
+    /* ================= FAB: WhatsApp ================= */
+    .whatsapp{position:fixed;left:1rem;bottom:1rem;background:#25D366;color:white;border-radius:999px;padding:.7rem 1rem;box-shadow:var(--shadow);z-index:80}
+
+    /* ================= Chat (placeholder quick replies) ================= */
+    .chat{position:fixed;right:1rem;bottom:1rem;z-index:80}
+    .chat__toggle{width:60px;height:60px;border-radius:999px;border:none;background:linear-gradient(135deg,var(--teal),#0bd4c2);color:#043b37;box-shadow:var(--shadow);cursor:pointer}
     .chat__panel{position:fixed;right:1rem;bottom:4.8rem;width:min(380px,92vw);background:var(--panel);border:1px solid var(--border);border-radius:14px;box-shadow:var(--shadow);overflow:hidden}
     .chat__header{display:flex;justify-content:space-between;align-items:center;padding:.65rem .8rem;background:var(--soft);border-bottom:1px solid var(--border)}
     .chat__log{max-height:340px;overflow:auto;padding:.8rem;display:grid;gap:.5rem}
     .bubble{padding:.55rem .75rem;border-radius:12px;max-width:85%}
-    .bubble--me{justify-self:end;background:linear-gradient(135deg,var(--brand),var(--accent));color:#fff}
+    .bubble--me{justify-self:end;background:linear-gradient(135deg,var(--teal),#8be9e1);color:#043b37}
     .bubble--ai{background:var(--soft);border:1px solid var(--border)}
-    .chips{display:flex;gap:.4rem;flex-wrap:wrap;margin:.2rem .2rem .6rem}
-    .chip{background:var(--soft);border:1px solid var(--border);border-radius:999px;padding:.25rem .55rem;cursor:pointer}
     .chat__form{display:flex;gap:.45rem;padding:.6rem;border-top:1px solid var(--border)}
     .chat__input{flex:1;background:var(--soft);border:1px solid var(--border);border-radius:10px;padding:.55rem .7rem;color:var(--text)}
-    .chat__send{border:1px solid var(--border);background:var(--panel);color:var(--text);border-radius:10px;padding:.55rem .85rem;cursor:pointer}
-
-    /* -------------------- Footer -------------------- */
-    .footer{border-top:1px solid var(--border);padding:2rem 0;color:var(--muted)}
-    .sr-only{position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap;border:0}
   </style>
 </head>
-<body class="page">
+<body>
   <a class="sr-only" href="#main">Skip to content</a>
 
-  <!-- Header -->
+  <!-- ================= Header ================= -->
   <header class="header">
     <div class="container header__inner">
-      <a class="brand" href="#" aria-label="Home"><span class="brand__logo">◆</span><strong>NovaHub</strong></a>
+      <a class="brand" href="#/home" aria-label="Home"><span class="brand__logo">◆</span><strong>CHA.AI</strong></a>
       <nav class="nav" aria-label="Primary">
-        <ul class="nav__menu">
-          <li><a class="nav__link" href="#marketplace">Marketplace</a></li>
-          <li><a class="nav__link" href="#calculator">Calculator</a></li>
-          <li><a class="nav__link" href="#why">Why NovaHub</a></li>
+        <button class="nav__toggle" id="navToggle" aria-expanded="false" aria-controls="navMenu">Menu</button>
+        <ul class="nav__menu" id="navMenu">
+          <li><a class="nav__link" href="#/marketplace">Marketplace</a></li>
+          <li><a class="nav__link" href="#/calculator">Duty Calculator</a></li>
+          <li><a class="nav__link" href="#/learn">Learn</a></li>
+          <li><a class="nav__link" href="#/pricing">Pricing</a></li>
         </ul>
       </nav>
-      <div class="cart" aria-label="Cart"><span>🛒</span><span id="cartCount" class="cart__count" aria-live="polite">0</span></div>
-      <button id="themeToggle" class="btn btn--ghost" aria-pressed="false" aria-label="Toggle dark/light">🌗</button>
+      <div class="auth">
+        <button class="btn btn--ghost" id="themeToggle" aria-pressed="false" aria-label="Toggle dark/light">🌗</button>
+        <a class="btn" href="#/auth?mode=signin">Sign in</a>
+        <a class="btn btn--primary" href="#/auth?mode=signup">Create Account</a>
+      </div>
     </div>
   </header>
 
-  <!-- Hero -->
-  <section class="hero">
-    <div class="container hero__wrap">
-      <div class="hero__copy">
-        <h1 class="hero__title">Everything you need — in one friendly page.</h1>
-        <p class="hero__tag">Chat with the assistant, run quick calculations, and shop from a clean, image-rich marketplace. Fast, responsive, and accessible.</p>
-        <div style="display:flex;gap:.6rem;flex-wrap:wrap;margin-top:.8rem">
-          <a class="btn btn--primary" href="#marketplace">Explore Marketplace</a>
-          <a class="btn btn--ghost" href="#calculator">Open Calculator</a>
-        </div>
-        <div style="display:flex;gap:.5rem;margin-top:1rem;flex-wrap:wrap">
-          <span class="badge">No signup needed</span>
-          <span class="badge">Works great on mobile</span>
-          <span class="badge">Dark / Light</span>
-        </div>
-      </div>
-      <figure class="hero__img">
-        <!-- Free Unsplash images (can swap later) -->
-        <img src="https://images.unsplash.com/photo-1517245386807-bb43f82c33c4?q=80&w=1200&auto=format&fit=crop" width="1200" height="800" alt="Friendly modern interface preview with cards and graphs" loading="eager"/>
-      </figure>
-    </div>
-  </section>
-
   <main id="main">
-    <div class="container grid grid--2 section">
-      <!-- Calculator Card -->
-      <section id="calculator" class="card" aria-labelledby="calcTitle">
-        <h2 id="calcTitle" class="card__title">Smart Calculator</h2>
-        <p style="margin-top:-.4rem;color:var(--muted)">Switch between <strong>Basic</strong>, <strong>GST</strong>, and <strong>Discount</strong>. Instant results.</p>
+    <!-- ================= HOME ================= -->
+    <section id="home" class="section">
+      <div class="container hero">
+        <div class="hero__wrap">
+          <div>
+            <h1 class="hero__title">Clear your shipments faster at any Indian port.</h1>
+            <p class="muted">Verified CHAs + instant HS code & duty estimates.</p>
+            <div style="display:flex;gap:.6rem;flex-wrap:wrap;margin:.9rem 0">
+              <a class="btn btn--primary" href="#/marketplace">Find a CHA</a>
+              <a class="btn btn--ghost" href="#/calculator">Calculate Duty</a>
+            </div>
 
-        <div class="switch" style="margin:.3rem 0 .8rem">
-          <label><input type="radio" name="mode" value="basic" checked> Basic</label>
-          <label><input type="radio" name="mode" value="gst"> GST</label>
-          <label><input type="radio" name="mode" value="discount"> Discount</label>
+            <!-- Quick Search -->
+            <div class="card" role="search" aria-label="Quick search">
+              <div class="grid grid--2">
+                <div class="form__row">
+                  <label class="form__label" for="qsPort">Port</label>
+                  <select id="qsPort" class="form__select"></select>
+                </div>
+                <div class="form__row">
+                  <label class="form__label" for="qsService">Service type</label>
+                  <select id="qsService" class="form__select">
+                    <option>Clearance only</option><option>Clearance + Transport</option>
+                    <option>Drawback</option><option>Bonded warehousing</option>
+                    <option>License handling</option>
+                  </select>
+                </div>
+                <div class="form__row">
+                  <label class="form__label" for="qsCommodity">Commodity / HS</label>
+                  <input id="qsCommodity" class="form__input" placeholder="e.g., mobile phones / 8517" />
+                </div>
+                <div class="form__row" style="align-self:end">
+                  <button id="qsSearch" class="btn btn--primary">Search</button>
+                </div>
+              </div>
+              <div style="display:flex;gap:.5rem;flex-wrap:wrap;margin-top:.5rem">
+                <span class="badge">IEC-verified partners</span>
+                <span class="badge">PAN/KYC verified</span>
+                <span class="badge">4.9★ avg rating</span>
+                <span class="badge">ISO/ACI ready</span>
+              </div>
+            </div>
+          </div>
+          <figure class="hero__img">
+            <img src="https://images.unsplash.com/photo-1519389950473-47ba0277781c?q=80&w=1200&auto=format&fit=crop" width="1200" height="800" alt="Modern marketplace and calculator preview" />
+          </figure>
         </div>
+      </div>
 
-        <div id="calcFields">
-          <!-- Fields injected by JS based on mode -->
+      <div class="container section">
+        <h2>How it works</h2>
+        <div class="grid grid--3">
+          <div class="card"><strong>1) Tell us port & commodity</strong><p class="muted">Pick the port, mode, and share commodity/HS.</p></div>
+          <div class="card"><strong>2) Compare verified CHAs</strong><p class="muted">Profiles with licenses, reviews, and response time.</p></div>
+          <div class="card"><strong>3) Book & track clearance</strong><p class="muted">Message, accept quotes, and track SLAs.</p></div>
         </div>
+      </div>
 
-        <div class="kpi">
-          <div class="kpi__pill"><strong>Result:</strong> <span id="calcResult">0</span></div>
-          <div class="kpi__pill" id="calcExtra" hidden></div>
+      <div class="container section">
+        <div class="card grid grid--2">
+          <div>
+            <h2>Get a duty estimate in 30 seconds</h2>
+            <p class="muted">Enter HS and assessable value. See BCD, SWS, AIDC, IGST & total.</p>
+            <div class="grid grid--2">
+              <div class="form__row"><label class="form__label" for="teaserHS">HS code</label><input id="teaserHS" class="form__input" placeholder="e.g., 851713" /></div>
+              <div class="form__row"><label class="form__label" for="teaserAV">Assessable Value (₹)</label><input id="teaserAV" type="number" class="form__input" placeholder="100000" /></div>
+            </div>
+            <button id="teaserCalc" class="btn btn--primary">Estimate</button>
+            <div id="teaserOut" style="display:flex;gap:.5rem;flex-wrap:wrap;margin-top:.7rem"></div>
+            <p style="margin-top:.6rem"><a href="#/calculator" class="nav__link">Open the full duty & landed-cost calculator →</a></p>
+          </div>
+          <img class="card" alt="Calculator preview" src="https://images.unsplash.com/photo-1556157382-97eda2d62296?q=80&w=1200&auto=format&fit=crop" />
         </div>
-      </section>
+      </div>
 
-      <!-- Why card -->
-      <section id="why" class="card" aria-labelledby="whyTitle">
-        <h2 id="whyTitle" class="card__title">Why people like NovaHub</h2>
-        <ul style="margin:0;padding-left:1.1rem">
-          <li>Simple, **human** design with clear hierarchy and comfy spacing.</li>
-          <li>Image-rich marketplace with fast search, filters, and cart that persists.</li>
-          <li>Helpful chatbot with ready suggestions and inline calculation support.</li>
-          <li>Accessible (labels, focus rings, contrast) and responsive across devices.</li>
-        </ul>
-        <div style="margin-top:1rem" class="grid grid--3">
-          <img class="card" alt="UI sample 1" src="https://images.unsplash.com/photo-1556157382-97eda2d62296?q=80&w=900&auto=format&fit=crop" />
-          <img class="card" alt="UI sample 2" src="https://images.unsplash.com/photo-1519389950473-47ba0277781c?q=80&w=900&auto=format&fit=crop" />
-          <img class="card" alt="UI sample 3" src="https://images.unsplash.com/photo-1515879218367-8466d910aaa4?q=80&w=900&auto=format&fit=crop" />
+      <div class="container section">
+        <h2>Featured CHAs</h2>
+        <div id="featuredGrid" class="market__grid"></div>
+      </div>
+
+      <div class="container section">
+        <h2>Proof & Reviews</h2>
+        <div class="grid grid--3">
+          <figure class="card"><blockquote>“Found a reliable CHA at JNPT in minutes. Duty estimate matched.”</blockquote><figcaption class="muted">— Anika G., Electronics</figcaption></figure>
+          <figure class="card"><blockquote>“Qualified leads with verification. Our response-time badge helps.”</blockquote><figcaption class="muted">— S. Patel, CHA</figcaption></figure>
+          <figure class="card"><blockquote>“Transparent quotes + tracked SLAs. CFO loves the landed-cost PDF.”</blockquote><figcaption class="muted">— Raj M., Apparel</figcaption></figure>
         </div>
-      </section>
-    </div>
+      </div>
 
-    <!-- Marketplace -->
-    <section id="marketplace" class="section">
+      <div class="container section">
+        <h2>FAQs</h2>
+        <div class="grid grid--2">
+          <details class="card"><summary><strong>How do you verify CHAs?</strong></summary><p class="muted">PAN, CHA license, GSTIN, AEO status, office checks. Manual review before badges.</p></details>
+          <details class="card"><summary><strong>How accurate are HS suggestions?</strong></summary><p class="muted">We show 2–3 likely HS codes with confidence and examples. Final classification rests with customs.</p></details>
+          <details class="card"><summary><strong>Fees?</strong></summary><p class="muted">Browsing free. Platform fee displayed in quotes. Optional escrow/milestones.</p></details>
+          <details class="card"><summary><strong>Disputes?</strong></summary><p class="muted">Evidence-based moderation with refund/credit policy.</p></details>
+          <details class="card"><summary><strong>Coverage?</strong></summary><p class="muted">All major sea & air ports + ICDs across India.</p></details>
+          <details class="card"><summary><strong>Support?</strong></summary><p class="muted">Email & WhatsApp 9am–9pm IST; priority SLA on paid plans.</p></details>
+        </div>
+      </div>
+    </section>
+
+    <!-- ================= MARKETPLACE ================= -->
+    <section id="marketplace" class="section" hidden>
+      <div class="container">
+        <div class="filter__drawer">
+          <strong>Filters</strong>
+          <button class="btn" id="openFilters">Open</button>
+        </div>
+        <div class="layout">
+          <aside class="filters card" id="filters">
+            <h3>Refine search</h3>
+            <div class="form__row"><label class="form__label" for="fPort">Port</label><select id="fPort" class="form__select"></select></div>
+            <div class="form__row"><label class="form__label" for="fMode">Mode</label><select id="fMode" class="form__select"><option>Sea FCL</option><option>Sea LCL</option><option>Air</option><option>Courier</option><option>ICD</option></select></div>
+            <div class="form__row"><label class="form__label" for="fServices">Services</label><select id="fServices" class="form__select"><option>Clearance only</option><option>Clearance + Transport</option><option>Drawback</option><option>Bonded warehousing</option><option>License handling</option></select></div>
+            <div class="form__row"><label class="form__label" for="fBudget">Budget (₹ max)</label><input id="fBudget" type="number" class="form__input" placeholder="50000" /></div>
+            <div class="form__row"><label class="form__label" for="fSpeed">Quote speed</label><select id="fSpeed" class="form__select"><option>Any</option><option>Under 2h</option><option>Same day</option></select></div>
+            <div class="form__row"><label class="form__label" for="fLang">Languages</label><select id="fLang" class="form__select"><option>EN</option><option>Hindi</option><option>EN + Hindi</option></select></div>
+            <div class="form__row"><label class="form__label" for="fSLA">SLA tier</label><select id="fSLA" class="form__select"><option>Standard</option><option>Express</option></select></div>
+            <div class="form__row"><label class="form__label">Badges</label>
+              <div style="display:flex;gap:.6rem;flex-wrap:wrap">
+                <label><input type="checkbox" id="bVerified"/> Verified</label>
+                <label><input type="checkbox" id="bTopRated"/> Top Rated</label>
+                <label><input type="checkbox" id="bFast"/> Fast responder</label>
+                <label><input type="checkbox" id="bAEO"/> AEO-certified</label>
+              </div>
+            </div>
+            <button class="btn btn--primary" id="applyFilters">Apply</button>
+          </aside>
+
+          <div>
+            <div class="card" style="display:flex;gap:.6rem;align-items:center;justify-content:space-between;flex-wrap:wrap">
+              <div><strong>CHAs</strong> <span class="muted" id="countSpan">—</span></div>
+              <div style="display:flex;gap:.6rem;align-items:center">
+                <input id="fSearch" class="form__input" placeholder="Search CHA or HS/commodity..." />
+                <select id="fSort" class="form__select">
+                  <option value="featured">Featured</option>
+                  <option value="rating">Rating</option>
+                  <option value="price">Starting price</option>
+                  <option value="speed">Response time</option>
+                </select>
+              </div>
+            </div>
+            <div id="listGrid" class="market__grid" role="list"></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Mobile filter drawer -->
+      <div id="drawer" class="drawer" aria-hidden="true">
+        <div class="drawer__panel card">
+          <div style="display:flex;justify-content:space-between;align-items:center"><h3>Filters</h3><button class="btn" id="closeFilters">Close</button></div>
+          <div id="drawerFilters"></div>
+        </div>
+      </div>
+
+      <!-- Compare tray -->
+      <div id="compareTray" class="card" style="position:sticky;bottom:1rem;max-width:1180px;margin:1rem auto;display:none">
+        <div style="display:flex;justify-content:space-between;align-items:center;gap:.6rem;flex-wrap:wrap">
+          <div><strong>Compare</strong> <span id="compareNames" class="muted"></span></div>
+          <div style="display:flex;gap:.5rem">
+            <button class="btn" id="clearCompare">Clear</button>
+            <button class="btn btn--primary" id="openCompare">View</button>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ================= PROFILE ================= -->
+    <section id="profile" class="section" hidden>
+      <div class="container">
+        <div id="profileHeader" class="card"></div>
+        <div class="tabs" role="tablist" aria-label="CHA profile tabs" id="profileTabs"></div>
+        <div id="profileBody" class="card"></div>
+        <div class="sticky-cta">
+          <div style="display:flex;gap:.5rem;justify-content:space-between">
+            <a class="btn" href="#/rfp">Message</a>
+            <a class="btn btn--primary" href="#/rfp">Get Quote</a>
+            <a class="btn" href="tel:+910000000000">Call</a>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ================= CALCULATOR ================= -->
+    <section id="calculator" class="section" hidden>
       <div class="container card">
-        <div style="display:flex;align-items:center;justify-content:space-between;gap:.75rem;flex-wrap:wrap">
-          <h2 class="card__title">Marketplace</h2>
-          <span id="marketMeta" class="badge" aria-live="polite">0 items</span>
-        </div>
+        <h2>Duty & Landed Cost (India)</h2>
+        <div class="grid grid--2">
+          <div>
+            <div class="form__row"><label class="form__label" for="cPort">Destination Port/ICD</label><select id="cPort" class="form__select"></select></div>
+            <div class="form__row"><label class="form__label" for="cOrigin">Country of Origin</label><input id="cOrigin" class="form__input" placeholder="e.g., CN, VN, US" /></div>
+            <div class="form__row"><label class="form__label" for="cIncoterm">Incoterm / Valuation</label><select id="cIncoterm" class="form__select"><option value="CIF">CIF</option><option value="FOB">FOB</option><option value="EXW">EXW</option></select></div>
 
-        <div class="market__controls">
-          <label class="sr-only" for="search">Search</label>
-          <input id="search" class="form__input" type="search" placeholder="Search products…" />
-          <label class="sr-only" for="category">Category</label>
-          <select id="category" class="form__select">
-            <option value="all">All categories</option>
-            <option value="software">Software</option>
-            <option value="hardware">Hardware</option>
-            <option value="courses">Courses</option>
-          </select>
-          <label class="sr-only" for="sort">Sort</label>
-          <select id="sort" class="form__select">
-            <option value="featured">Featured</option>
-            <option value="price-asc">Price: Low → High</option>
-            <option value="price-desc">Price: High → Low</option>
-          </select>
-        </div>
+            <div class="grid grid--2">
+              <div class="form__row"><label class="form__label" for="cGoods">Goods Value (₹)</label><input id="cGoods" type="number" class="form__input" placeholder="100000" /></div>
+              <div class="form__row"><label class="form__label" for="cFreight">Freight (₹)</label><input id="cFreight" type="number" class="form__input" placeholder="10000" /></div>
+              <div class="form__row"><label class="form__label" for="cInsurance">Insurance (₹)</label><input id="cInsurance" type="number" class="form__input" placeholder="1000" /></div>
+              <div class="form__row"><label class="form__label" for="cOther">Other includable (₹)</label><input id="cOther" type="number" class="form__input" placeholder="0" /></div>
+            </div>
 
-        <div id="marketGrid" class="market__grid" role="list"></div>
+            <div class="grid grid--2">
+              <div class="form__row"><label class="form__label" for="cHS">HS code</label><input id="cHS" class="form__input" placeholder="e.g., 851713" /></div>
+              <div class="form__row"><label class="form__label" for="cQty">Quantity / UoM</label><input id="cQty" class="form__input" placeholder="100 pcs" /></div>
+            </div>
+
+            <details class="card"><summary><strong>Rates & options</strong> (enter known rates; connect tariff API later)</summary>
+              <div class="grid grid--3" style="margin-top:.6rem">
+                <div class="form__row"><label class="form__label" for="rBCD">BCD %</label><input id="rBCD" type="number" class="form__input" placeholder="10" /></div>
+                <div class="form__row"><label class="form__label" for="rIGST">IGST %</label><input id="rIGST" type="number" class="form__input" placeholder="18" /></div>
+                <div class="form__row"><label class="form__label" for="rAIDC">AIDC %</label><input id="rAIDC" type="number" class="form__input" placeholder="0" /></div>
+                <div class="form__row"><label class="form__label" for="rCess">Comp. Cess %</label><input id="rCess" type="number" class="form__input" placeholder="0" /></div>
+                <div class="form__row"><label class="form__label" for="optSWS">Apply SWS (10% of BCD)</label><select id="optSWS" class="form__select"><option>Yes</option><option>No</option></select></div>
+                <div class="form__row"><label class="form__label" for="optFTA">Preferential FTA</label><select id="optFTA" class="form__select"><option>No</option><option>Yes</option></select></div>
+              </div>
+            </details>
+
+            <div style="display:flex;gap:.6rem;margin-top:.8rem">
+              <button id="calcBtn" class="btn btn--primary">Calculate</button>
+              <button id="calcShare" class="btn">Share link</button>
+              <button id="calcPDF" class="btn">Download PDF</button>
+              <button id="calcSaveAsRFP" class="btn">Save as RFP</button>
+            </div>
+          </div>
+
+          <div>
+            <h3>Breakdown</h3>
+            <table class="card" style="width:100%;border-collapse:separate;border-spacing:.4rem">
+              <tbody id="calcTable">
+                <!-- rows injected -->
+              </tbody>
+            </table>
+            <p class="muted" id="rateStamp"></p>
+            <div id="hsSuggestions" class="card" hidden>
+              <strong>HS suggestions (beta)</strong>
+              <ul id="hsList"></ul>
+              <p class="muted">Final classification rests with customs. Review examples/risk notes.</p>
+            </div>
+          </div>
+        </div>
       </div>
     </section>
 
-    <!-- Testimonials -->
-    <section class="section">
+    <!-- ================= RFP (QUOTE REQUEST) ================= -->
+    <section id="rfp" class="section" hidden>
+      <div class="container card">
+        <h2>Request for Quote (RFP)</h2>
+        <div style="display:flex;gap:.5rem;flex-wrap:wrap;margin:.5rem 0">
+          <span class="chip" data-step="1">1) Shipment</span>
+          <span class="chip" data-step="2">2) Documents</span>
+          <span class="chip" data-step="3">3) SLA</span>
+          <span class="chip" data-step="4">4) Send</span>
+        </div>
+        <div id="rfpBody" style="margin-top:1rem"></div>
+      </div>
+    </section>
+
+    <!-- ================= AUTH ================= -->
+    <section id="auth" class="section" hidden>
+      <div class="container grid grid--2">
+        <form class="card" id="signinForm">
+          <h3>Sign in</h3>
+          <div class="form__row"><label class="form__label" for="siEmail">Email</label><input id="siEmail" class="form__input" type="email" required /></div>
+          <div class="form__row"><label class="form__label" for="siPass">Password</label><input id="siPass" class="form__input" type="password" required /></div>
+          <button class="btn btn--primary" type="submit">Sign in</button>
+        </form>
+        <form class="card" id="signupForm">
+          <h3>Create account</h3>
+          <div class="form__row"><label class="form__label" for="suRole">I am</label><select id="suRole" class="form__select"><option>Importer</option><option>CHA</option></select></div>
+          <div class="form__row"><label class="form__label" for="suName">Name</label><input id="suName" class="form__input" required /></div>
+          <div class="form__row"><label class="form__label" for="suEmail">Email</label><input id="suEmail" class="form__input" type="email" required /></div>
+          <div class="form__row"><label class="form__label" for="suPass">Password</label><input id="suPass" class="form__input" type="password" required /></div>
+          <button class="btn btn--primary" type="submit">Create account</button>
+        </form>
+      </div>
+
+      <div class="container section">
+        <form class="card" id="kycForm">
+          <h3>KYC (for CHA)</h3>
+          <div class="grid grid--3">
+            <div class="form__row"><label class="form__label">PAN</label><input class="form__input" /></div>
+            <div class="form__row"><label class="form__label">CHA License No.</label><input class="form__input" /></div>
+            <div class="form__row"><label class="form__label">GSTIN</label><input class="form__input" /></div>
+          </div>
+          <div class="form__row"><label class="form__label">AEO status</label><select class="form__select"><option>None</option><option>AEO-T1</option><option>AEO-T2</option><option>AEO-T3</option></select></div>
+          <button class="btn">Submit KYC</button>
+        </form>
+      </div>
+    </section>
+
+    <!-- ================= DASHBOARDS (placeholders) ================= -->
+    <section id="dashboard-importer" class="section" hidden>
+      <div class="container">
+        <h2>Importer Dashboard</h2>
+        <div class="grid grid--3">
+          <div class="card"><strong>Saved quotes</strong><ul id="impQuotes"></ul></div>
+          <div class="card"><strong>Chats</strong><div class="muted">Connect WhatsApp to sync</div></div>
+          <div class="card"><strong>Invoices / receipts</strong><div class="muted">No invoices yet</div></div>
+        </div>
+      </div>
+    </section>
+
+    <section id="dashboard-cha" class="section" hidden>
+      <div class="container">
+        <h2>CHA Dashboard</h2>
+        <div class="grid grid--3">
+          <div class="card"><strong>Leads</strong><ul id="chaLeads"></ul></div>
+          <div class="card"><strong>Calendar</strong><div class="muted">Sync Google Calendar</div></div>
+          <div class="card"><strong>Pricing</strong><div class="muted">Add base fees / port-wise rates</div></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ================= LEGAL / STATIC (placeholder) ================= -->
+    <section id="legal" class="section" hidden>
       <div class="container grid grid--3">
-        <figure class="card">
-          <blockquote>“The UI is clean and friendly. My mom figured it out in 2 minutes.”</blockquote>
-          <figcaption style="margin-top:.6rem;color:var(--muted)">— Arjun P.</figcaption>
-        </figure>
-        <figure class="card">
-          <blockquote>“Love the dark mode and quick chatbot answers. Super handy!”</blockquote>
-          <figcaption style="margin-top:.6rem;color:var(--muted)">— Sania K.</figcaption>
-        </figure>
-        <figure class="card">
-          <blockquote>“Cart saved between visits. Calculator is actually useful daily.”</blockquote>
-          <figcaption style="margin-top:.6rem;color:var(--muted)">— Dev M.</figcaption>
-        </figure>
+        <div class="card"><h3>Privacy</h3><p class="muted">We use data for quotes and compliance only. Encrypted at rest.</p></div>
+        <div class="card"><h3>Terms</h3><p class="muted">Platform terms incl. dispute & refund policy.</p></div>
+        <div class="card"><h3>EULA</h3><p class="muted">End-user license for apps & integrations.</p></div>
       </div>
     </section>
+
+    <!-- ================= LEARN / PRICING (placeholder) ================= -->
+    <section id="learn" class="section" hidden><div class="container"><h2>Guides</h2><p class="muted">HS classification, valuation, Incoterms, port playbooks.</p></div></section>
+    <section id="pricing" class="section" hidden><div class="container"><h2>Pricing</h2><p class="muted">Free to browse. Pro features & escrow from ₹999/mo.</p></div></section>
   </main>
 
-  <!-- Footer -->
+  <!-- ================= Footer ================= -->
   <footer class="footer">
     <div class="container" style="display:flex;justify-content:space-between;align-items:center;gap:1rem;flex-wrap:wrap">
-      <small>© <span id="year"></span> NovaHub</small>
-      <div style="display:flex;gap:.8rem">
-        <a class="nav__link" href="#">Privacy</a>
-        <a class="nav__link" href="#">Terms</a>
-      </div>
+      <small>© <span id="year"></span> CHA.AI</small>
+      <nav aria-label="Footer" style="display:flex;gap:.8rem;flex-wrap:wrap">
+        <a href="#/legal">About</a>
+        <a href="#/marketplace">Ports we cover</a>
+        <a href="#/learn">HS code index</a>
+        <a href="#/legal">Privacy</a>
+        <a href="#/legal">Terms</a>
+        <a href="#/legal">EULA</a>
+        <a href="#/legal">Refunds</a>
+        <a href="#/learn">Support</a>
+        <a href="https://wa.me/0000000000">WhatsApp</a>
+      </nav>
     </div>
   </footer>
 
-  <!-- Floating Chatbot -->
+  <!-- ================= WhatsApp + Chat (mock) ================= -->
+  <a class="whatsapp" href="https://wa.me/0000000000" target="_blank" rel="noopener">WhatsApp</a>
   <aside class="chat" aria-live="polite">
     <button id="chatToggle" class="chat__toggle" aria-expanded="false" aria-controls="chatPanel" title="Open chat">💬</button>
     <div id="chatPanel" class="chat__panel" hidden>
-      <div class="chat__header">
-        <strong>Assistant</strong>
-        <button id="chatClose" class="btn btn--ghost" aria-label="Close chat">✕</button>
-      </div>
-      <div class="chips" id="chips">
-        <button class="chip">Help</button>
-        <button class="chip">Time</button>
-        <button class="chip">Cart total</button>
-        <button class="chip">Show deals</button>
-        <button class="chip">calc 12+7</button>
-      </div>
+      <div class="chat__header"><strong>Assistant</strong><button id="chatClose" class="btn">✕</button></div>
       <div id="chatLog" class="chat__log" role="log" aria-live="polite"></div>
       <form id="chatForm" class="chat__form" autocomplete="off">
-        <label for="chatInput" class="sr-only">Type your message</label>
-        <input id="chatInput" class="chat__input" placeholder="Ask anything… e.g. 'find keyboard' or 'calc 5*9'"/>
-        <button class="chat__send" type="submit">Send</button>
+        <label for="chatInput" class="sr-only">Type message</label>
+        <input id="chatInput" class="chat__input" placeholder="Try: 'find JNPT CHA' or 'calc 8517 AV 100000'"/>
+        <button class="btn btn--ghost" type="submit">Send</button>
       </form>
     </div>
   </aside>
 
-  <!-- App Script -->
+  <!-- ================= App Script ================= -->
   <script>
-    /* -------------------- Theme -------------------- */
-    const root = document.documentElement;
-    const metaTheme = document.getElementById('meta-theme-color');
-    const themeToggle = document.getElementById('themeToggle');
-    const savedTheme = localStorage.getItem('theme');
-    function setTheme(mode){
-      root.setAttribute('data-theme', mode);
-      localStorage.setItem('theme', mode);
-      if(metaTheme) metaTheme.setAttribute('content', mode==='light' ? '#ffffff' : '#0f172a');
-      themeToggle?.setAttribute('aria-pressed', String(mode==='dark'));
-    }
-    setTheme(savedTheme || (matchMedia('(prefers-color-scheme: light)').matches ? 'light' : 'dark'));
-    themeToggle?.addEventListener('click', ()=> setTheme(root.getAttribute('data-theme')==='light' ? 'dark' : 'light'));
-    document.getElementById('year').textContent = new Date().getFullYear();
+    /* ---------------- Theme + Nav ---------------- */
+    const root=document.documentElement, metaTheme=document.getElementById('meta-theme-color'), themeToggle=document.getElementById('themeToggle');
+    const savedTheme=localStorage.getItem('theme'); function setTheme(m){root.setAttribute('data-theme',m);localStorage.setItem('theme',m);metaTheme?.setAttribute('content',m==='light'?'#ffffff':'#0B1B3B');themeToggle?.setAttribute('aria-pressed',String(m==='dark')); }
+    setTheme(savedTheme || (matchMedia('(prefers-color-scheme: light)').matches ? 'light':'dark'));
+    themeToggle?.addEventListener('click',()=>setTheme(root.getAttribute('data-theme')==='light'?'dark':'light'));
+    document.getElementById('year').textContent=new Date().getFullYear();
+    const navToggle=document.getElementById('navToggle'), navMenu=document.getElementById('navMenu');
+    navToggle?.addEventListener('click',()=>{const open=navMenu.classList.toggle('is-open');navToggle.setAttribute('aria-expanded',String(open));});
 
-    /* -------------------- Calculator -------------------- */
-    const calcFields = document.getElementById('calcFields');
-    const calcResult = document.getElementById('calcResult');
-    const calcExtra = document.getElementById('calcExtra');
-    function renderCalc(mode='basic'){
-      let html='';
-      if(mode==='basic'){
-        html = `
-          <div class="form__row">
-            <label class="form__label" for="a">Number A</label>
-            <input id="a" class="form__input" type="number" step="any" placeholder="e.g., 12.5" required />
-          </div>
-          <div class="form__row">
-            <label class="form__label" for="op">Operation</label>
-            <select id="op" class="form__select">
-              <option value="+">Add (+)</option>
-              <option value="-">Subtract (−)</option>
-              <option value="*">Multiply (×)</option>
-              <option value="/">Divide (÷)</option>
-              <option value="%">Percent (A % of B)</option>
-            </select>
-          </div>
-          <div class="form__row">
-            <label class="form__label" for="b">Number B</label>
-            <input id="b" class="form__input" type="number" step="any" placeholder="e.g., 3" required />
-          </div>`;
-      } else if(mode==='gst'){
-        html = `
-          <div class="form__row">
-            <label class="form__label" for="base">Base Amount</label>
-            <input id="base" class="form__input" type="number" step="0.01" placeholder="0.00"/>
-          </div>
-          <div class="form__row">
-            <label class="form__label" for="rate">GST Rate (%)</label>
-            <input id="rate" class="form__input" type="number" step="0.01" placeholder="18" />
-          </div>`;
-      } else {
-        html = `
-          <div class="form__row">
-            <label class="form__label" for="price">Original Price</label>
-            <input id="price" class="form__input" type="number" step="0.01" placeholder="1000.00"/>
-          </div>
-          <div class="form__row">
-            <label class="form__label" for="off">Discount (%)</label>
-            <input id="off" class="form__input" type="number" step="0.01" placeholder="10"/>
-          </div>`;
+    /* ---------------- Router (#/page[/id]) ---------------- */
+    const sections=['home','marketplace','profile','calculator','rfp','auth','dashboard-importer','dashboard-cha','legal','learn','pricing'].map(id=>({id,el:document.getElementById(id)}));
+    function route(){const hash=location.hash||'#/home'; const [_,page,param]=hash.split('/'); sections.forEach(s=>s.el&&(s.el.hidden=true));
+      const show=id=>{const x=sections.find(s=>s.id===id); x?.el&&(x.el.hidden=false);};
+      switch(page){
+        case'home':show('home');break;
+        case'marketplace':show('marketplace');renderList();break;
+        case'profile':show('profile');renderProfile(Number(param));break;
+        case'calculator':show('calculator');break;
+        case'rfp':show('rfp');renderRFP();break;
+        case'auth':show('auth');break;
+        case'dashboard-importer':show('dashboard-importer');break;
+        case'dashboard-cha':show('dashboard-cha');break;
+        case'legal':show('legal');break;
+        case'learn':show('learn');break;
+        case'pricing':show('pricing');break;
+        default:show('home');
       }
-      calcFields.innerHTML = html;
-      calcExtra.hidden = true;
-      calcResult.textContent = '0';
-    }
-    renderCalc();
+      navMenu?.classList.remove('is-open');navToggle?.setAttribute('aria-expanded','false');
+    } addEventListener('hashchange',route); route();
 
-    document.querySelectorAll('input[name="mode"]').forEach(r=>{
-      r.addEventListener('change', ()=> renderCalc(r.value));
-    });
-
-    calcFields.addEventListener('input', ()=>{
-      const mode = document.querySelector('input[name="mode"]:checked').value;
-      if(mode==='basic'){
-        const A = Number(document.getElementById('a')?.value);
-        const op = document.getElementById('op')?.value;
-        const B = Number(document.getElementById('b')?.value);
-        if(Number.isNaN(A) || Number.isNaN(B)) return calcResult.textContent='—';
-        const val = op==='+'?A+B:op==='-'?A-B:op==='*'?A*B:op==='/'?(B===0?'∞':A/B):(A/100)*B;
-        calcResult.textContent = (typeof val==='number') ? Number(val.toFixed(6)).toString() : val;
-      } else if(mode==='gst'){
-        const base = Number(document.getElementById('base')?.value);
-        const rate = Number(document.getElementById('rate')?.value);
-        if(Number.isNaN(base) || Number.isNaN(rate)) return calcResult.textContent='—';
-        const tax = base * (rate/100);
-        const total = base + tax;
-        calcResult.textContent = total.toFixed(2);
-        calcExtra.hidden = false;
-        calcExtra.textContent = `Tax: ₹ ${tax.toFixed(2)}`;
-      } else {
-        const price = Number(document.getElementById('price')?.value);
-        const off = Number(document.getElementById('off')?.value);
-        if(Number.isNaN(price) || Number.isNaN(off)) return calcResult.textContent='—';
-        const saved = price * (off/100);
-        const pay = price - saved;
-        calcResult.textContent = pay.toFixed(2);
-        calcExtra.hidden = false;
-        calcExtra.textContent = `You save: ₹ ${saved.toFixed(2)}`;
-      }
-    });
-
-    /* -------------------- Marketplace -------------------- */
-    const products = [
-      {id:1, name:'Pro Chat Widget', price:19, category:'software', rating:4.7, img:'https://images.unsplash.com/photo-1545987796-200677ee1011?q=80&w=800&auto=format&fit=crop'},
-      {id:2, name:'AI Image Credits (100)', price:12, category:'software', rating:4.5, img:'https://images.unsplash.com/photo-1531297484001-80022131f5a1?q=80&w=800&auto=format&fit=crop'},
-      {id:3, name:'USB-C Hub (8-in-1)', price:39, category:'hardware', rating:4.4, img:'https://images.unsplash.com/photo-1517336714731-489689fd1ca8?q=80&w=800&auto=format&fit=crop'},
-      {id:4, name:'Mechanical Keyboard', price:79, category:'hardware', rating:4.8, img:'https://images.unsplash.com/photo-1517336714731-489689fd1ca8?q=80&w=800&auto=format&fit=crop'},
-      {id:5, name:'Frontend Masterclass', price:59, category:'courses', rating:4.9, img:'https://images.unsplash.com/photo-1498050108023-c5249f4df085?q=80&w=800&auto=format&fit=crop'},
-      {id:6, name:'Backend Bootcamp', price:89, category:'courses', rating:4.6, img:'https://images.unsplash.com/photo-1555066931-4365d14bab8c?q=80&w=800&auto=format&fit=crop'},
+    /* ---------------- Mock Data ---------------- */
+    const PORTS=["Nhava Sheva (JNPT)","Mundra","Chennai","Kolkata","Delhi Air Cargo","Bangalore","Hyderabad","Cochin","Tuticorin","Ahmedabad ICD","Nagpur ICD","Tughlakabad ICD"];
+    const CHAS=[
+      {id:1,name:"Pacific Logistics",verified:true,aeo:"AEO-T1",rating:4.9,ratingCount:312,response:"12m",success:98,startPrice:6500,ports:["JNPT","Mundra","ICD TKD"],services:["Clearance + Transport","License handling"],langs:"EN + Hindi",badges:["Top Rated","Fast"],speed:"Under 2h", img:"https://images.unsplash.com/photo-1556761175-4b46a572b786?q=80&w=800&auto=format&fit=crop", specialties:["Electronics","Chemicals","Apparel"], licenses:["CHA 11/XXX","GSTIN 27XXXXX"], bio:"15+ yrs handling high-volume FCL/LCL & air cargo.", pricing:[{service:"Sea FCL (20ft)",range:"₹6,500–8,000"},{service:"Air (per MAWB)",range:"₹5,500–7,000"}]},
+      {id:2,name:"Astra Customs",verified:true,aeo:"AEO-T2",rating:4.7,ratingCount:201,response:"15m",success:96,startPrice:5500,ports:["Mundra","JNPT","Chennai"],services:["Clearance only","Drawback"],langs:"EN",badges:["Verified"],speed:"Same day", img:"https://images.unsplash.com/photo-1515879218367-8466d910aaa4?q=80&w=800&auto=format&fit=crop", specialties:["Apparel","Furniture"], licenses:["CHA 11/YYY"], bio:"Drawback experts. Strong apparel/furniture corridors.", pricing:[{service:"Sea LCL",range:"₹4,000–6,000"}]},
+      {id:3,name:"Metro ACI",verified:true,aeo:"",rating:4.6,ratingCount:154,response:"25m",success:95,startPrice:4800,ports:["Delhi Air Cargo","Bangalore","Hyderabad"],services:["Courier","Air","License handling"],langs:"EN + Hindi",badges:["Fast"],speed:"Under 2h", img:"https://images.unsplash.com/photo-1507679799987-c73779587ccf?q=80&w=800&auto=format&fit=crop", specialties:["Electronics","Pharma"], licenses:["CHA 11/ZZZ"], bio:"Air/courier specialists with rapid clearance.", pricing:[{service:"Air import",range:"₹5,000–7,500"}]},
     ];
-    const marketGrid = document.getElementById('marketGrid');
-    const marketMeta = document.getElementById('marketMeta');
-    const search = document.getElementById('search');
-    const category = document.getElementById('category');
-    const sort = document.getElementById('sort');
-    const cartCount = document.getElementById('cartCount');
+    function fillPorts(sel){sel.innerHTML=PORTS.map(p=>`<option>${p}</option>`).join('');}
+    fillPorts(document.getElementById('qsPort')); fillPorts(document.getElementById('fPort')); fillPorts(document.getElementById('cPort'));
 
-    const CART_KEY = 'novahub_cart_v1';
-    const loadCart = () => JSON.parse(localStorage.getItem(CART_KEY) || '[]');
-    const saveCart = v => localStorage.setItem(CART_KEY, JSON.stringify(v));
-    const setCartBadge = () => cartCount.textContent = loadCart().reduce((n,i)=>n+i.qty,0);
-
-    function stars(n){
-      const full = Math.round(n); // simple
-      return '★'.repeat(full) + '☆'.repeat(5-full);
-    }
-    function productCard(p){
-      return `
-        <article class="product" role="listitem" aria-label="${p.name}">
-          <div class="product__img"><img src="${p.img}" alt="${p.name}" loading="lazy"></div>
-          <div class="product__meta">
-            <h3 style="margin:.2rem 0">${p.name}</h3>
-            <span class="product__price">₹ ${p.price}</span>
+    /* ---------------- Home: Featured + Teaser calc + Quick search ---------------- */
+    const featuredGrid=document.getElementById('featuredGrid');
+    featuredGrid.innerHTML=CHAS.map(c=>`
+      <article class="card card--listing" role="listitem">
+        <img src="${c.img}" alt="${c.name}" style="height:140px;border-radius:10px;border:1px solid var(--border);object-fit:cover">
+        <div class="listing__meta">
+          <div><strong>${c.name}</strong> ${c.verified?'<span class="chip">Verified</span>':''} ${c.aeo?`<span class="chip">${c.aeo}</span>`:''}</div>
+          <div class="badge"><span class="stars">★</span> ${c.rating} (${c.ratingCount})</div>
+        </div>
+        <div class="muted" style="margin:.25rem 0">${c.ports.join(' • ')}</div>
+        <div class="muted">${c.specialties.join(', ')}</div>
+        <div class="listing__footer">
+          <div><span class="muted">Starts</span> <strong>₹ ${c.startPrice}</strong></div>
+          <div style="display:flex;gap:.4rem">
+            <a class="btn" href="#/profile/${c.id}">View</a>
+            <a class="btn btn--primary" href="#/rfp" data-preselect="${c.id}">Get Quote</a>
           </div>
-          <div style="display:flex;justify-content:space-between;align-items:center">
-            <span class="badge"><span class="stars" aria-hidden="true">${stars(p.rating)}</span> <span class="sr-only">Rating ${p.rating} of 5</span></span>
-            <span class="badge">${p.category}</span>
-          </div>
-          <button class="btn btn--primary" data-add="${p.id}" aria-label="Add ${p.name} to cart">Add to cart</button>
-        </article>
-      `;
-    }
-    function currentList(){
-      const q = search.value.trim().toLowerCase();
-      const cat = category.value;
-      let list = products.filter(p => (cat==='all'||p.category===cat) && p.name.toLowerCase().includes(q));
-      if (sort.value==='price-asc') list.sort((a,b)=>a.price-b.price);
-      else if (sort.value==='price-desc') list.sort((a,b)=>b.price-a.price);
-      return list;
-    }
-    function renderList(){ const list=currentList(); marketGrid.innerHTML=list.map(productCard).join(''); marketMeta.textContent=`${list.length} item${list.length!==1?'s':''}`; }
-    renderList(); setCartBadge();
+        </div>
+      </article>`).join('');
 
-    [search,category,sort].forEach(el=> el.addEventListener('input', renderList));
-    marketGrid.addEventListener('click', (e)=>{
-      const id = e.target?.dataset?.add; if(!id) return;
-      const cart = loadCart();
-      const idx = cart.findIndex(i=>i.id===Number(id));
-      if(idx>-1) cart[idx].qty += 1; else cart.push({id:Number(id), qty:1});
-      saveCart(cart); setCartBadge();
-      e.target.textContent='Added ✓'; setTimeout(()=> e.target.textContent='Add to cart', 900);
+    document.getElementById('teaserCalc').addEventListener('click',()=>{
+      const av=Number(document.getElementById('teaserAV').value||0);
+      const bcd=av*0.10, sws=bcd*0.10, sub=av+bcd+sws, igst=sub*0.18, total=sub+igst;
+      document.getElementById('teaserOut').innerHTML=`
+        <span class="badge">BCD: ₹ ${bcd.toFixed(0)}</span>
+        <span class="badge">SWS: ₹ ${sws.toFixed(0)}</span>
+        <span class="badge">IGST: ₹ ${igst.toFixed(0)}</span>
+        <span class="chip">Total: ₹ ${total.toFixed(0)}</span>`;
     });
 
-    /* -------------------- Chatbot -------------------- */
-    const chatToggle = document.getElementById('chatToggle');
-    const chatPanel = document.getElementById('chatPanel');
-    const chatClose = document.getElementById('chatClose');
-    const chatLog = document.getElementById('chatLog');
-    const chatForm = document.getElementById('chatForm');
-    const chatInput = document.getElementById('chatInput');
-    const chips = document.getElementById('chips');
+    document.getElementById('qsSearch').addEventListener('click',()=>{
+      const port=document.getElementById('qsPort').value; const svc=document.getElementById('qsService').value; const comm=document.getElementById('qsCommodity').value.trim();
+      location.hash='#/marketplace'; setTimeout(()=>{ document.getElementById('fPort').value=port; document.getElementById('fServices').value=svc; document.getElementById('fSearch').value=comm; renderList(); },0);
+    });
 
-    function openChat(){ chatPanel.hidden=false; chatToggle.setAttribute('aria-expanded','true'); chatInput.focus(); }
-    function closeChat(){ chatPanel.hidden=true; chatToggle.setAttribute('aria-expanded','false'); }
-    chatToggle.addEventListener('click', ()=> chatPanel.hidden ? openChat() : closeChat());
-    chatClose.addEventListener('click', closeChat);
-    chips.addEventListener('click', (e)=>{ if(e.target.classList.contains('chip')) { chatInput.value = e.target.textContent; chatInput.focus(); } });
-
-    function bubble(text, who='ai'){
-      const b=document.createElement('div'); b.className='bubble '+(who==='me'?'bubble--me':'bubble--ai'); b.textContent=text; chatLog.appendChild(b); chatLog.scrollTop=chatLog.scrollHeight;
-    }
-    function parseInlineCalc(s){
-      const m=s.match(/(-?\d+(?:\.\d+)?)\s*([+\-*/])\s*(-?\d+(?:\.\d+)?)/); if(!m) return null;
-      const A=parseFloat(m[1]), op=m[2], B=parseFloat(m[3]); if(op==='/'&&B===0) return '∞';
-      const v = op==='+'?A+B:op==='-'?A-B:op==='*'?A*B:A/B; return Number(v.toFixed(6)).toString();
-    }
-    function reply(msg){
-      const t=msg.trim().toLowerCase(); if(!t) return "Say 'help' to see options.";
-      if(t==='help') return "I can: (1) show time, (2) compute e.g., 'calc 12+7', (3) show 'deals', (4) 'cart total', (5) search: 'find keyboard'.";
-      if(t==='time') return "Local time: "+new Date().toLocaleString();
-      if(t==='cart total') return "Items in cart: "+loadCart().reduce((n,i)=>n+i.qty,0);
-      if(t.includes('deals')) return "Today’s picks: Pro Chat Widget ₹ 19, USB-C Hub ₹ 39, Mechanical Keyboard ₹ 79.";
-      if(t.startsWith('find ')){
-        const q=t.replace('find ','').trim();
-        const hits=products.filter(p=>p.name.toLowerCase().includes(q));
-        return hits.length?`Found ${hits.length}: `+hits.map(h=>h.name).join(', '):'No matches.';
-      }
-      if(t.startsWith('calc ')){ const r=parseInlineCalc(t.slice(5)); return r?('Result: '+r):"Try 'calc 12+7' or 'calc 9/3'."; }
-      const r2=parseInlineCalc(t); if(r2) return 'Result: '+r2;
-      return "Got it! (Demo bot) — hook me to your API for real answers.";
-    }
-    chatForm.addEventListener('submit',(e)=>{e.preventDefault(); const msg=chatInput.value; if(!msg.trim()) return; bubble(msg,'me'); chatInput.value=''; setTimeout(()=>bubble(reply(msg),'ai'),140); });
-
-    /* -------------------- Small UX helpers -------------------- */
-    document.addEventListener('keydown',(e)=>{ if(e.key==='/' && document.activeElement?.tagName!=='INPUT' && document.activeElement?.tagName!=='TEXTAREA'){ e.preventDefault(); openChat(); }});
-  </script>
-</body>
-</html>
+    /* ---------------- Marketplace: filters, list, compare/save/share ---------------- */
+    const listGrid=document.getElementById('listGrid'), countSpan=document.getElementById('countSpan'), fSearch=document.getElementById('fSearch'), fSort=document.getElementById('fSort');
+    let compareSet=new Set();
+    function passesFilters(c){
+      const port=document.getElementById('fPort').value, svc=document.getElementById('fServices').value, budget=Number(document.getElementById('fBudget').value||Infinity);
+      const speed=document.getElementById('fSpeed').value, lang=document.getElementById('fLang').value, sla=document.getElementById('fSLA').value;
+      const q=fSearch.value.trim().toLowerCase();
+      const bad={v:document.getElementById('bVerified').checked,t:document.getElementById('bTopRated').checked,f:document.getElementById('bFast').checked,a:document.getElementById('bAEO').checked};
+      const matchQ=!q||c.name
