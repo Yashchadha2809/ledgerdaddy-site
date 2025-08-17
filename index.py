@@ -1,26 +1,37 @@
 # index.py
 import os, sqlite3, secrets, time, re
+from pathlib import Path
 from flask import (
-    Flask, request, render_template, redirect,
-    url_for, session, flash, make_response
+    Flask, request, redirect, url_for, session, flash, make_response, Response
 )
 
 # -----------------------------------------------------------------------------
 # App bootstrap
 # -----------------------------------------------------------------------------
-app = Flask(__name__, template_folder="templates")  # look for HTML in /templates
-app.secret_key = os.getenv("SECRET_KEY", "dev-change-me")  # set SECRET_KEY in prod
-DB_PATH = os.getenv("DB_PATH", "db.sqlite3")
+APP_DIR = Path(__file__).resolve().parent
+HOME_FILE = APP_DIR / "home_min.html"
+
+app = Flask(__name__)
+app.secret_key = os.getenv("SECRET_KEY", "dev-change-me")
+
+# On Vercel, only /tmp is writable. Elsewhere, use DB_PATH or local file.
+if os.getenv("VERCEL"):
+    os.makedirs("/tmp", exist_ok=True)
+    DB_PATH = "/tmp/db.sqlite3"
+else:
+    DB_PATH = os.getenv("DB_PATH", str(APP_DIR / "db.sqlite3"))
 
 # -----------------------------------------------------------------------------
 # DB helpers
 # -----------------------------------------------------------------------------
 def db():
-    con = sqlite3.connect(DB_PATH)
+    # check_same_thread=False helps under multi-threaded servers
+    con = sqlite3.connect(DB_PATH, check_same_thread=False)
     con.row_factory = sqlite3.Row
     return con
 
 def init_db():
+    # Create DB file if missing (especially important on cold starts in /tmp)
     with db() as con:
         con.execute("""
         CREATE TABLE IF NOT EXISTS users (
@@ -51,16 +62,45 @@ def check_csrf(token):
 # -----------------------------------------------------------------------------
 @app.get("/")
 def home():
-    return render_template("home.html")  # the big theme page
+    if HOME_FILE.exists():
+        return Response(HOME_FILE.read_text(encoding="utf-8"), mimetype="text/html")
+    return Response("<h1>home_min.html not found</h1>", mimetype="text/html", status=404)
 
-# --- Personal Sign Up (DB + CSRF) -------------------------------------------
 @app.get("/auth/personal-sign-up")
 def personal_sign_up():
-    return render_template(
-        "personal_sign_up.html",
-        csrf=new_csrf(),
-        next=request.args.get("next", url_for("welcome"))
-    )
+    csrf = new_csrf()
+    next_url = request.args.get("next", url_for("welcome"))
+    html = f"""<!DOCTYPE html>
+<html lang="en"><head>
+  <meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Sign up • Chadaddy</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-50 text-gray-900">
+  <div class="max-w-md mx-auto mt-16 bg-white border border-gray-200 rounded-2xl p-6 shadow-sm">
+    <h1 class="text-2xl font-bold">Create your account</h1>
+    <p class="text-sm text-gray-600 mt-1">One-time sign up to unlock results across the site.</p>
+    <form method="post" action="{url_for('personal_sign_up_post')}" class="grid gap-3 mt-5">
+      <input type="hidden" name="csrf" value="{csrf}" />
+      <input type="hidden" name="next" value="{next_url}" />
+      <label class="grid gap-1 text-sm">
+        <span>Name</span>
+        <input name="name" class="border rounded-lg px-3 py-2" placeholder="Your name" required>
+      </label>
+      <label class="grid gap-1 text-sm">
+        <span>Email</span>
+        <input name="email" type="email" class="border rounded-lg px-3 py-2" placeholder="you@example.com" required>
+      </label>
+      <label class="grid gap-1 text-sm">
+        <span>Phone / WhatsApp (optional)</span>
+        <input name="phone" class="border rounded-lg px-3 py-2" placeholder="+91 9xxxx xxxxx">
+      </label>
+      <button class="bg-emerald-600 text-white py-2 rounded-lg mt-2">Create account</button>
+      <a href="/" class="text-center text-sm text-cyan-700">← Back to home</a>
+    </form>
+  </div>
+</body></html>"""
+    return Response(html, mimetype="text/html")
 
 @app.post("/auth/personal-sign-up")
 def personal_sign_up_post():
@@ -73,7 +113,6 @@ def personal_sign_up_post():
     email = (form.get("email") or "").strip().lower()
     phone = (form.get("phone") or "").strip()
 
-    # Validations
     if not name or not email:
         flash("Name and Email are required.", "error")
         return redirect(url_for("personal_sign_up"))
@@ -89,10 +128,9 @@ def personal_sign_up_post():
                 (name, email, phone, int(time.time()))
             )
     except sqlite3.IntegrityError:
-        flash("This email is already registered.", "error")
-        return redirect(url_for("personal_sign_up"))
+        # already exists — proceed as login
+        pass
 
-    # minimal session
     session["uid_email"] = email
     session["uid_name"] = name
 
@@ -103,18 +141,30 @@ def personal_sign_up_post():
 def welcome():
     name = session.get("uid_name", "there")
     email = session.get("uid_email", "")
-    return make_response(render_template("welcome.html", name=name, email=email))
+    html = f"""<!DOCTYPE html>
+<html lang="en"><head>
+  <meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Welcome • Chadaddy</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-50 text-gray-900">
+  <div class="max-w-lg mx-auto mt-20 bg-white border border-gray-200 rounded-2xl p-6 text-center">
+    <h1 class="text-3xl font-extrabold">Welcome, {name} 🎉</h1>
+    <p class="mt-2 text-gray-600">Your account (<strong>{email}</strong>) is set. You can now access calculator, HS Finder, and chat results.</p>
+    <div class="mt-6 grid gap-3">
+      <a class="bg-emerald-600 text-white px-4 py-2 rounded-lg" href="/">Go to Home</a>
+      <a class="border px-4 py-2 rounded-lg" href="/auth/personal-sign-up">Create another account</a>
+    </div>
+  </div>
+</body></html>"""
+    return Response(html, mimetype="text/html")
 
-# -----------------------------------------------------------------------------
-# Health & Vercel WSGI entry
-# -----------------------------------------------------------------------------
 @app.get("/health")
 def health():
-    return {"ok": True}
+    return {"ok": True, "db_path": DB_PATH, "vercel": bool(os.getenv("VERCEL"))}
 
-# For Vercel:
+# Vercel entry
 handler = app
 
 if __name__ == "__main__":
-    # pip install -r requirements.txt
     app.run(host="127.0.0.1", port=5000, debug=True)
