@@ -7,9 +7,9 @@
   <meta name="description" content="Your AI trade partner — learn, calculate duties globally, and book verified brokers." />
   <meta name="theme-color" content="#1A237E" />
   <link rel="preconnect" href="https://images.unsplash.com" />
-  <!-- Preload hero photo -->
+  <!-- Preload NEW hero photo -->
   <link rel="preload" as="image"
-        href="https://images.unsplash.com/photo-1541339907198-e08756dedf3f?q=80&w=1920&auto=format&fit=crop"/>
+        href="https://images.unsplash.com/photo-1586521995568-39ef16c6934d?q=80&w=1920&auto=format&fit=crop" />
   <script src="https://cdn.tailwindcss.com"></script>
   <script>
     tailwind.config = {
@@ -25,7 +25,8 @@
     .card{transition:transform .12s ease, box-shadow .2s ease}
     .card:hover{transform:translateY(-2px); box-shadow:0 14px 34px rgba(0,0,0,.14)}
     .sticky-shadow{box-shadow:0 8px 18px rgba(0,0,0,.08)}
-    .hero-img{background:url('https://images.unsplash.com/photo-1541339907198-e08756dedf3f?q=80&w=1920&auto=format&fit=crop') center/cover no-repeat;}
+    /* NEW hero image */
+    .hero-img{background:url('https://images.unsplash.com/photo-1586521995568-39ef16c6934d?q=80&w=1920&auto=format&fit=crop') center/cover no-repeat;}
   </style>
 </head>
 <body class="bg-gray-50 text-gray-900">
@@ -50,16 +51,17 @@
     </div>
   </header>
 
-  <!-- ===== Sticky Mobile CTA ===== -->
+  <!-- ===== Sticky Mobile CTA (added Learn) ===== -->
   <div class="md:hidden fixed bottom-0 inset-x-0 z-40 bg-white/95 border-t border-gray-200 backdrop-blur sticky-shadow">
-    <div class="max-w-7xl mx-auto px-3 py-2 grid grid-cols-3 gap-2">
-      <a href="#calculator" class="text-center text-xs bg-emerald text-white py-2 rounded">Get Estimate</a>
-      <a href="#marketplace" class="text-center text-xs bg-cyanBright text-black py-2 rounded">Find Broker</a>
+    <div class="max-w-7xl mx-auto px-3 py-2 grid grid-cols-4 gap-2">
+      <a href="#calculator" class="text-center text-xs bg-emerald text-white py-2 rounded">Estimate</a>
+      <a href="#marketplace" class="text-center text-xs bg-cyanBright text-black py-2 rounded">Broker</a>
       <a href="#chat" class="text-center text-xs bg-gray-900 text-white py-2 rounded">Chat</a>
+      <a href="#learn" class="text-center text-xs bg-orange-500 text-white py-2 rounded">Learn</a>
     </div>
   </div>
 
-  <!-- ===== Hero (with photo) ===== -->
+  <!-- ===== Hero (NEW photo + extra CTA: Learn Import/Export) ===== -->
   <section id="home" class="pt-28 md:pt-32 pb-12 text-white">
     <div class="hero-img">
       <div class="backdrop-brightness-90 bg-gradient-to-r from-indigoDeep/70 to-cyanBright/60">
@@ -67,10 +69,12 @@
           <div>
             <h1 class="text-4xl md:text-5xl font-extrabold leading-tight">Your AI Trade Partner — Learn, Calculate, Clear.</h1>
             <p class="mt-3 text-lg text-white/95">Ask questions like ChatGPT, find HS codes, calculate duties globally, and book verified brokers.</p>
-            <div class="mt-6 flex flex-col md:flex-row gap-3 md:gap-4">
+            <div class="mt-6 grid gap-3 md:flex md:flex-row">
               <a href="#calculator" class="bg-emerald text-white px-6 py-3 rounded-xl font-semibold">Get Duty Estimate</a>
               <a href="#marketplace" class="bg-gray-900 text-white px-6 py-3 rounded-xl font-semibold">Find Broker</a>
               <a href="#chat" class="bg-white text-indigoDeep px-6 py-3 rounded-xl font-semibold hover:bg-gray-100">Start Free Chat</a>
+              <!-- NEW Learn CTA -->
+              <a href="#learn" class="bg-orange-500 text-white px-6 py-3 rounded-xl font-semibold hover:bg-orange-600">Learn Import/Export</a>
             </div>
             <div class="mt-6 flex flex-wrap gap-4 text-sm text-white/95">
               <span class="px-3 py-1 rounded-full border border-white/40"><strong>★ 4.9</strong> avg</span>
@@ -141,7 +145,7 @@
       </div>
 
       <div id="brokGrid" class="mt-6 grid sm:grid-cols-2 lg:grid-cols-4 gap-6">
-        <!-- sample cards -->
+        <!-- two sample cards -->
         <article class="bg-white border border-gray-200 rounded-xl overflow-hidden">
           <img class="h-36 w-full object-cover" src="https://images.unsplash.com/photo-1556761175-4b46a572b786?q=80&w=800&auto=format&fit=crop" alt="Pacific Global">
           <div class="p-3">
@@ -216,7 +220,7 @@
             <button class="bg-emerald text-white py-2 px-4 rounded-lg" type="submit">Calculate</button>
             <label class="text-sm flex items-center gap-2"><input id="ftaToggle" type="checkbox"> Apply FTA savings (demo)</label>
           </div>
-          <p class="text-xs text-gray-600">Results will display after a quick name & email check (one-time).</p>
+          <p class="text-xs text-gray-600">Results show after a quick name & email check (one-time).</p>
         </form>
 
         <div>
@@ -258,12 +262,37 @@
     </div>
   </section>
 
+  <!-- ===== Learn (NEW simple section) ===== -->
+  <section id="learn" class="py-16 bg-white">
+    <div class="max-w-7xl mx-auto px-6">
+      <h2 class="text-3xl font-bold">Learn Import/Export</h2>
+      <p class="text-gray-600 mt-2 max-w-3xl">Step-by-step guides and micro-courses for students and businesses. Earn a free certificate and apply your HS knowledge directly in the calculator.</p>
+      <div class="mt-6 grid md:grid-cols-3 gap-6">
+        <div class="p-5 rounded-xl border bg-gray-50">
+          <h3 class="font-semibold">HS Basics (30 min)</h3>
+          <p class="text-sm text-gray-600">Chapters, headings, rules.</p>
+          <a href="#hsfinder" class="mt-3 inline-block text-cyanBright">Use HS Finder →</a>
+        </div>
+        <div class="p-5 rounded-xl border bg-gray-50">
+          <h3 class="font-semibold">Incoterms 2020 (20 min)</h3>
+          <p class="text-sm text-gray-600">FOB vs CIF vs EXW.</p>
+          <a href="#calculator" class="mt-3 inline-block text-cyanBright">Try Calculator →</a>
+        </div>
+        <div class="p-5 rounded-xl border bg-gray-50">
+          <h3 class="font-semibold">Valuation (25 min)</h3>
+          <p class="text-sm text-gray-600">What goes into customs value?</p>
+          <a href="#chat" class="mt-3 inline-block text-cyanBright">Ask in Chat →</a>
+        </div>
+      </div>
+    </div>
+  </section>
+
   <!-- ===== Chat (lead-gated responses) ===== -->
-  <section id="chat" class="py-16 bg-white">
+  <section id="chat" class="py-16 bg-gray-50">
     <div class="max-w-7xl mx-auto px-6">
       <div class="flex items-center justify-between">
         <h2 class="text-3xl font-bold">Chat with Chadaddy</h2>
-        <span class="text-xs text-gray-500 hidden md:inline">Tip: type “/hsfinder …” • Results show after quick access form</span>
+        <span class="text-xs text-gray-500 hidden md:inline">Type “/hsfinder …” • Responses unlock after quick access form</span>
       </div>
       <div class="mt-6 grid lg:grid-cols-[260px,1fr,280px] gap-6">
         <aside class="bg-white border border-gray-200 rounded-xl p-3">
@@ -296,7 +325,7 @@
   </section>
 
   <!-- ===== News ===== -->
-  <section id="news" class="py-16 bg-gray-50">
+  <section id="news" class="py-16 bg-white">
     <div class="max-w-7xl mx-auto px-6">
       <div class="flex flex-wrap items-end justify-between gap-3">
         <div>
@@ -314,7 +343,7 @@
   </section>
 
   <!-- ===== Pricing (stub) ===== -->
-  <section id="pricing" class="py-16 bg-white">
+  <section id="pricing" class="py-16 bg-gray-50">
     <div class="max-w-7xl mx-auto px-6">
       <h2 class="text-3xl font-bold">Pricing</h2>
       <div class="mt-6 grid md:grid-cols-3 gap-6">
@@ -375,7 +404,7 @@
     <p class="text-center text-sm mt-8">© <span id="year"></span> Chadaddy. All rights reserved.</p>
   </footer>
 
-  <!-- ===== Lead Gate Modal (name+email required, phone optional) ===== -->
+  <!-- ===== Lead Gate Modal ===== -->
   <div id="leadModal" class="hidden fixed inset-0 z-50 items-center justify-center bg-black/50 p-3">
     <div class="max-w-lg w-full bg-white border border-gray-200 rounded-xl p-4">
       <div class="flex items-center justify-between">
@@ -402,7 +431,7 @@
     const ports=['JNPT','Mundra','Chennai','Rotterdam','LA','Felixstowe','Dubai','Singapore']; let ti=0;
     setInterval(()=>{ const n=Math.floor(Math.random()*6)+3; $('#ticker').textContent = `${n} shipments cleared today at ${ports[ti++%ports.length]}`; }, 4500);
 
-    // ------- Lead gate -------
+    // Lead gate
     const GATE_KEY='chadaddy_lead';
     const hasLead = () => !!localStorage.getItem(GATE_KEY);
     function openGate(){ $('#leadModal').classList.remove('hidden'); $('#leadModal').classList.add('flex'); }
@@ -414,21 +443,12 @@
       if(!name || !email) return;
       localStorage.setItem(GATE_KEY, JSON.stringify({name,email,wa,ts:Date.now()}));
       closeGate();
-      // tiny toast
-      const t=document.createElement('div'); t.textContent='Access granted'; t.className='fixed bottom-24 right-4 bg-gray-900 text-white text-sm px-3 py-2 rounded-lg shadow';
-      document.body.appendChild(t); setTimeout(()=>t.remove(),1400);
-      // re-run pending action if any
+      const t=document.createElement('div'); t.textContent='Access granted'; t.className='fixed bottom-24 right-4 bg-gray-900 text-white text-sm px-3 py-2 rounded-lg shadow'; document.body.appendChild(t); setTimeout(()=>t.remove(),1400);
       if(window.__afterGate){ const cb=window.__afterGate; window.__afterGate=null; cb(); }
     });
+    function requireLead(cb){ if(hasLead()) cb(); else { window.__afterGate=cb; openGate(); } }
 
-    // asks for lead before running any "result" renderer
-    function requireLead(beforeShowCb){
-      if(hasLead()) { beforeShowCb(); return; }
-      window.__afterGate = beforeShowCb;
-      openGate();
-    }
-
-    // ------- Hero quick teaser (lead-gated display) -------
+    // Hero teaser
     const ccy = {IN:'₹', US:'$', EU:'€', UK:'£'};
     function runQuickTeaser(){
       const av=Number($('#tzAV').value||0), country=$('#tzCountry').value;
@@ -436,18 +456,18 @@
       const dutyMap={IN:0.10,US:0.03,EU:0.05,UK:0.05}; const igstMap={IN:0.18,US:0.009,EU:0.20,UK:0.20};
       const bcd=av*(dutyMap[country]||0.1); const sws=(country==='IN')?bcd*0.10:0; const sub=av+bcd+sws; const vat=sub*(igstMap[country]||0.18); const total=sub+vat;
       $('#tzOut').innerHTML = `<span class="inline-block mr-2 px-2 py-1 rounded bg-gray-100">Est. duties: ${ccy[country]||'₹'} ${(bcd+sws+vat).toFixed(0)}</span>
-      <span class="inline-block px-2 py-1 rounded bg-emerald/10 text-emerald">Total: ${ccy[country]||'₹'} ${Math.round(total).toLocaleString()}</span>`;
+      <span class="inline-block px-2 py-1 rounded bg-green-50 text-emerald">Total: ${ccy[country]||'₹'} ${Math.round(total).toLocaleString()}</span>`;
     }
     $('#tzBtn').addEventListener('click', ()=> requireLead(runQuickTeaser));
 
-    // ------- Calculator (lead-gated) -------
+    // Calculator
     function addRow(label,basis,rate,amount){ return `<tr><td class="px-3 py-2">${label}</td><td class="px-3 py-2 text-right">${basis?.toLocaleString?.()||'-'}</td><td class="px-3 py-2 text-right">${rate?rate+'%':'—'}</td><td class="px-3 py-2 text-right font-semibold">${Math.round(amount).toLocaleString()}</td></tr>`; }
     function runCalc(){
       const country=$('#cCountry').value, hs=$('#cHS').value.trim(), goods=+($('#cGoods').value||0), freight=+($('#cFreight').value||0), ins=+($('#cIns').value||0), other=+($('#cOther').value||0);
       const override=+($('#cDuty').value||NaN), vatIn=+($('#cVat').value||NaN), aidcIn=+($('#cAidc').value||NaN), fta=$('#ftaToggle').checked;
       let AV=goods+freight+ins+other;
       let baseDuty=isNaN(override)?({IN:10,US:3,EU:5,UK:5}[country]||10):override;
-      if(fta) baseDuty=Math.max(0, baseDuty-5); // demo savings
+      if(fta) baseDuty=Math.max(0, baseDuty-5);
       const vatRate=isNaN(vatIn)?({IN:18,US:0.9,EU:20,UK:20}[country]||18):vatIn;
       const aidcRate=isNaN(aidcIn)?({IN:0,US:0,EU:0,UK:0}[country]||0):aidcIn;
 
@@ -464,7 +484,7 @@
     }
     $('#calcForm').addEventListener('submit',(e)=>{ e.preventDefault(); requireLead(runCalc); });
 
-    // ------- HS Finder (lead-gated) -------
+    // HS Finder
     function runHsFinder(){
       const desc=$('#hsDesc').value.trim(); if(!desc) return alert('Please describe your product');
       const res=[{code:'851713',title:'Smartphones',conf:0.88,examples:['Android phone','iPhone']},{code:'851762',title:'Comm. equipment',conf:0.72,examples:['Wi-Fi router','LTE module']},{code:'851830',title:'Headphones/earbuds',conf:0.64,examples:['TWS earbuds','Headset']}];
@@ -481,7 +501,7 @@
     $('#hsRun').addEventListener('click', ()=> requireLead(runHsFinder));
     $('#hsReset').addEventListener('click',()=>{ $('#hsDesc').value=''; $('#hsResults').innerHTML=''; });
 
-    // ------- Chat (gate responses) -------
+    // Chat (lead-gated responses)
     const threadEl=$('#thread'); const savedKey='chadaddy_thread_v2';
     let messages=JSON.parse(localStorage.getItem(savedKey)||'[]');
     function renderChat(){ threadEl.innerHTML = messages.map(m=>`<div class="${m.role==='user'?'ml-auto bg-cyanBright text-black':'mr-auto bg-gray-100 text-gray-900'} px-3 py-2 rounded-xl max-w-[85%]">${m.text}</div>`).join(''); threadEl.scrollTop = threadEl.scrollHeight; }
@@ -492,14 +512,14 @@
         if(val.startsWith('/hsfinder')) reply="HS finder: 851713 (88%), 851762 (72%), 851830 (64%).";
         if(val.startsWith('/duty')) reply="Duty (demo): BCD 10%, IGST/VAT 18–20% depending on country.";
         if(val.startsWith('/marketplace')) reply="Try brokers: Pacific Global, Astra Customs, Metro ACI.";
-        if(val.startsWith('/news')) reply="Latest alerts: JNPT advisory; EU CET update; US FDA pilot.";
+        if(val.startsWith('/news')) reply="Latest: JNPT advisory; EU CET update; US FDA pilot.";
         if(val.startsWith('/products')) reply="Trending: Smartphones, LEDs, Sneakers, Coffee.";
         setTimeout(()=>addMsg('assistant',reply),250);
       });
       $('#chatInput').value=''; 
     });
 
-    // ------- News (simple) -------
+    // News
     const NEWS=[
       {id:1,country:'IN',topic:'Ports',title:'JNPT issues advisory on weekend cut-off',sev:'Medium'},
       {id:2,country:'EU',topic:'Tariff',title:'EU updates CET for electronics',sev:'High'},
