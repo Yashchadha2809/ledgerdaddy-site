@@ -1,8 +1,8 @@
-from flask import Flask, Response
+from flask import Flask, render_template_string
 
 app = Flask(__name__)
 
-HTML = r"""<!DOCTYPE html>
+homepage_html = r"""<!DOCTYPE html>
 <html lang="en" class="scroll-smooth">
 <head>
   <meta charset="UTF-8" />
@@ -77,14 +77,14 @@ HTML = r"""<!DOCTYPE html>
               <a href="#calculator" class="bg-emerald text-white px-6 py-3 rounded-xl font-semibold">Get Duty Estimate</a>
               <a href="#marketplace" class="bg-gray-900 text-white px-6 py-3 rounded-xl font-semibold">Find Broker</a>
               <a href="#chat" class="bg-white text-indigoDeep px-6 py-3 rounded-xl font-semibold hover:bg-gray-100">Start Free Chat</a>
-              <!-- NEW Learn CTA (improved gradient + icon) -->
-              <a href="#learn"
-                 class="flex items-center justify-center gap-2 bg-gradient-to-r from-cyanBright to-emerald text-white px-6 py-3 rounded-xl font-semibold shadow-md hover:shadow-lg hover:scale-[1.02] transition">
-                <!-- Book-open icon (Heroicons outline) -->
-                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none"
-                     viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" aria-hidden="true">
-                  <path stroke-linecap="round" stroke-linejoin="round"
-                        d="M12 6v12m0-12c-1.5 0-3-.5-4.5-1.5S4.5 3 3 3v18c1.5 0 3 .5 4.5 1.5S10.5 21 12 21m0-15c1.5 0 3-.5 4.5-1.5S19.5 3 21 3v18c-1.5 0-3 .5-4.5 1.5S13.5 21 12 21" />
+              <!-- Learn CTA (refined design) -->
+              <a href="#learn" class="group relative inline-flex items-center gap-2 px-6 py-3 rounded-xl font-semibold text-white
+                 bg-gradient-to-r from-purple-600 via-indigo-600 to-cyan-500 hover:opacity-95 transition">
+                <!-- icon -->
+                <svg class="h-5 w-5 opacity-90 group-hover:scale-110 transition-transform" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6">
+                  <path d="M4 19.5V7.8a1 1 0 0 1 .6-.9l6-2.6a1 1 0 0 1 .8 0l6 2.6a1 1 0 0 1 .6.9v11.7" />
+                  <path d="M12 6v13" />
+                  <path d="M6 10l-2 1m16-1l-2 1" />
                 </svg>
                 Learn Import/Export
               </a>
@@ -529,7 +529,7 @@ HTML = r"""<!DOCTYPE html>
         if(val.startsWith('/products')) reply="Trending: Smartphones, LEDs, Sneakers, Coffee.";
         setTimeout(()=>addMsg('assistant',reply),250);
       });
-      $('#chatInput').value=''; 
+      $('#chatInput').value='';
     });
 
     // News
@@ -560,13 +560,14 @@ HTML = r"""<!DOCTYPE html>
 </html>"""
 
 @app.route("/")
-def index():
-    return Response(HTML, mimetype="text/html; charset=utf-8")
+def home():
+    return render_template_string(homepage_html)
 
-@app.get("/health")
+# Optional lightweight health check
+@app.route("/api/health")
 def health():
     return {"ok": True}
 
+# Local run (Vercel ignores this, but handy for dev)
 if __name__ == "__main__":
-    # pip install flask
-    app.run(host="127.0.0.1", port=5000, debug=True)
+    app.run(host="0.0.0.0", port=3000)
