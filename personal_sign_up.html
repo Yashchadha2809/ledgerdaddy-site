@@ -46,40 +46,41 @@
     </div>
   </header>
 
-  <!-- Hero banner strip -->
-  <section class="pt-24 md:pt-28">
+  <!-- Hero -->
+  <section class="pt-28 md:pt-32">
     <div class="hero-img">
       <div class="backdrop-brightness-90 bg-gradient-to-r from-indigoDeep/70 to-cyanBright/60">
-        <div class="max-w-3xl mx-auto px-4 py-12 text-white">
+        <div class="max-w-3xl mx-auto px-4 py-12 text-white text-center">
           <h1 class="text-4xl md:text-5xl font-extrabold leading-tight">Create your free account</h1>
-          <p class="mt-3 text-white/95">Unlock calculator results, HS suggestions, and chat history — all in one place.</p>
+          <p class="mt-3 text-white/95">Unlock calculator results, HS suggestions, and chat history.</p>
         </div>
       </div>
     </div>
   </section>
 
-  <!-- Sign up card -->
-  <main class="max-w-3xl mx-auto px-4 -mt-10">
+  <!-- Centered card -->
+  <main class="max-w-2xl mx-auto px-4 -mt-12">
     <div class="bg-white border border-gray-200 rounded-2xl shadow p-6 md:p-8">
-      <form id="signupForm" class="grid gap-4">
-        <div class="grid md:grid-cols-2 gap-4">
-          <label class="grid gap-1 text-sm">
+      <form id="signupForm" class="grid gap-5">
+        <div class="grid md:grid-cols-2 gap-5">
+          <label class="grid gap-2 text-sm">
             <span class="font-medium">Full name</span>
-            <input name="name" class="border rounded-lg px-3 py-2" placeholder="Your name" required>
+            <input name="name" class="border rounded-lg px-3 py-2 w-full" placeholder="Your name" required>
           </label>
-          <label class="grid gap-1 text-sm">
+          <label class="grid gap-2 text-sm">
             <span class="font-medium">Email</span>
-            <input name="email" type="email" class="border rounded-lg px-3 py-2" placeholder="you@example.com" required>
+            <input name="email" type="email" class="border rounded-lg px-3 py-2 w-full" placeholder="you@example.com" required>
           </label>
         </div>
-        <div class="grid md:grid-cols-2 gap-4">
-          <label class="grid gap-1 text-sm">
+
+        <div class="grid md:grid-cols-2 gap-5">
+          <label class="grid gap-2 text-sm">
             <span class="font-medium">Phone / WhatsApp (optional)</span>
-            <input name="phone" class="border rounded-lg px-3 py-2" placeholder="+91 9xxxx xxxxx">
+            <input name="phone" class="border rounded-lg px-3 py-2 w-full" placeholder="+91 9xxxx xxxxx">
           </label>
-          <label class="grid gap-1 text-sm">
+          <label class="grid gap-2 text-sm">
             <span class="font-medium">Role</span>
-            <select name="role" class="border rounded-lg px-3 py-2">
+            <select name="role" class="border rounded-lg px-3 py-2 w-full">
               <option value="personal">Personal</option>
               <option value="business">Business</option>
               <option value="student">Student</option>
@@ -87,24 +88,21 @@
           </label>
         </div>
 
-        <div class="flex items-center gap-2 text-sm">
-          <input id="agree" type="checkbox" class="h-4 w-4 border rounded" required>
-          <label for="agree">I agree to the <a href="#" class="underline">Terms</a> and <a href="#" class="underline">Privacy</a>.</label>
-        </div>
+        <!-- Honeypot (spam trap) -->
+        <input type="text" name="company" class="hidden" tabindex="-1" autocomplete="off">
 
-        <button class="bg-emerald text-white px-4 py-2 rounded-lg text-base font-semibold" type="submit">
+        <button class="bg-emerald text-white px-5 py-2.5 rounded-lg text-base font-semibold" type="submit">
           Create account
         </button>
-        <p class="text-xs text-gray-500">We’ll add backend later — for now this shows a success toast.</p>
+        <p class="text-xs text-gray-500">We’ll connect full backend later. For now, this saves to Google Sheets.</p>
       </form>
 
-      <div class="mt-6 text-sm">
+      <div class="mt-6 text-sm text-center">
         <a href="/" class="text-cyanBright">← Back to home</a>
       </div>
     </div>
   </main>
 
-  <!-- Footer (short) -->
   <footer class="text-center text-xs text-gray-500 mt-10 mb-8">
     © <span id="year"></span> Ledgerdaddy
   </footer>
@@ -112,15 +110,54 @@
   <script>
     document.getElementById('year').textContent = new Date().getFullYear();
 
-    // Fake submit for now – shows success toast and goes home
-    document.getElementById('signupForm').addEventListener('submit', function(e){
+    // REPLACE THIS with your Apps Script Web App URL (step 4 below)
+    const SHEET_WEBHOOK = "https://SCRIPT-WEB-APP-URL-HERE";
+
+    const form = document.getElementById('signupForm');
+    form.addEventListener('submit', async (e) => {
       e.preventDefault();
-      const t=document.createElement('div');
-      t.textContent='Account created (demo). We will connect this later.';
-      t.className='fixed bottom-6 right-6 bg-gray-900 text-white text-sm px-3 py-2 rounded-lg shadow';
-      document.body.appendChild(t);
-      setTimeout(()=>{ t.remove(); window.location.href = "/"; }, 1200);
+
+      const fd = new FormData(form);
+      // simple bot check
+      if ((fd.get('company') || '').trim() !== '') return;
+
+      const payload = {
+        name: (fd.get('name') || '').trim(),
+        email: (fd.get('email') || '').trim(),
+        phone: (fd.get('phone') || '').trim(),
+        role:  (fd.get('role')  || 'personal'),
+        ts: Date.now(),
+        ua: navigator.userAgent
+      };
+
+      // quick inline validation
+      if (!payload.name || !payload.email) {
+        toast("Please enter name and email");
+        return;
+      }
+
+      // Send to Google Sheets webhook (no-cors; we won't read response)
+      try {
+        await fetch(SHEET_WEBHOOK, {
+          method: "POST",
+          mode: "no-cors",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(payload)
+        });
+        toast("Account created (saved to sheet). Redirecting…");
+        setTimeout(() => { window.location.href = "/"; }, 1100);
+      } catch (err) {
+        toast("Network error. Please try again.");
+      }
     });
+
+    function toast(msg){
+      const t = document.createElement('div');
+      t.textContent = msg;
+      t.className = 'fixed bottom-6 right-6 bg-gray-900 text-white text-sm px-3 py-2 rounded-lg shadow';
+      document.body.appendChild(t);
+      setTimeout(()=> t.remove(), 1400);
+    }
   </script>
 </body>
 </html>
