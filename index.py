@@ -1,55 +1,8 @@
-# index.py
-import os, sqlite3, secrets, time, re
-from flask import (
-    Flask, request, render_template_string, redirect,
-    url_for, session, flash, make_response, Response
-)
+from flask import Flask, Response
 
-# -----------------------------------------------------------------------------
-# App bootstrap
-# -----------------------------------------------------------------------------
 app = Flask(__name__)
-app.secret_key = os.getenv("SECRET_KEY", "dev-change-me")  # set SECRET_KEY in prod
-DB_PATH = os.getenv("DB_PATH", "db.sqlite3")
 
-# -----------------------------------------------------------------------------
-# DB helpers
-# -----------------------------------------------------------------------------
-def db():
-    con = sqlite3.connect(DB_PATH)
-    con.row_factory = sqlite3.Row
-    return con
-
-def init_db():
-    with db() as con:
-        con.execute("""
-        CREATE TABLE IF NOT EXISTS users (
-          id INTEGER PRIMARY KEY AUTOINCREMENT,
-          name TEXT NOT NULL,
-          email TEXT NOT NULL UNIQUE,
-          phone TEXT,
-          role TEXT DEFAULT 'personal',
-          created_at INTEGER
-        )
-        """)
-init_db()
-
-# -----------------------------------------------------------------------------
-# CSRF helpers
-# -----------------------------------------------------------------------------
-def new_csrf():
-    token = secrets.token_urlsafe(20)
-    session["csrf"] = token
-    return token
-
-def check_csrf(token):
-    s = session.get("csrf")
-    return bool(token and s and secrets.compare_digest(token, s))
-
-# -----------------------------------------------------------------------------
-# Your existing homepage HTML (served directly from Python)
-# -----------------------------------------------------------------------------
-HOME_HTML = r"""<!DOCTYPE html>
+HTML = r"""<!DOCTYPE html>
 <html lang="en" class="scroll-smooth">
 <head>
   <meta charset="UTF-8" />
@@ -58,6 +11,7 @@ HOME_HTML = r"""<!DOCTYPE html>
   <meta name="description" content="Your AI trade partner — learn, calculate duties globally, and book verified brokers." />
   <meta name="theme-color" content="#1A237E" />
   <link rel="preconnect" href="https://images.unsplash.com" />
+  <!-- Preload NEW hero photo -->
   <link rel="preload" as="image"
         href="https://images.unsplash.com/photo-1586521995568-39ef16c6934d?q=80&w=1920&auto=format&fit=crop" />
   <script src="https://cdn.tailwindcss.com"></script>
@@ -75,6 +29,7 @@ HOME_HTML = r"""<!DOCTYPE html>
     .card{transition:transform .12s ease, box-shadow .2s ease}
     .card:hover{transform:translateY(-2px); box-shadow:0 14px 34px rgba(0,0,0,.14)}
     .sticky-shadow{box-shadow:0 8px 18px rgba(0,0,0,.08)}
+    /* NEW hero image */
     .hero-img{background:url('https://images.unsplash.com/photo-1586521995568-39ef16c6934d?q=80&w=1920&auto=format&fit=crop') center/cover no-repeat;}
   </style>
 </head>
@@ -96,12 +51,11 @@ HOME_HTML = r"""<!DOCTYPE html>
         <a href="#learn" class="hover:text-cyanBright">Academy</a>
         <a href="#pricing" class="hover:text-cyanBright">Pricing</a>
       </nav>
-      <!-- Changed Sign up button to point to Flask route -->
-      <a href="/auth/personal-sign-up" class="bg-emerald text-white px-4 py-2 rounded-lg hover:opacity-95">Sign up</a>
+      <a href="#signup" class="bg-emerald text-white px-4 py-2 rounded-lg hover:opacity-95">Sign up</a>
     </div>
   </header>
 
-  <!-- ===== Sticky Mobile CTA ===== -->
+  <!-- ===== Sticky Mobile CTA (added Learn) ===== -->
   <div class="md:hidden fixed bottom-0 inset-x-0 z-40 bg-white/95 border-t border-gray-200 backdrop-blur sticky-shadow">
     <div class="max-w-7xl mx-auto px-3 py-2 grid grid-cols-4 gap-2">
       <a href="#calculator" class="text-center text-xs bg-emerald text-white py-2 rounded">Estimate</a>
@@ -111,7 +65,7 @@ HOME_HTML = r"""<!DOCTYPE html>
     </div>
   </div>
 
-  <!-- ===== Hero ===== -->
+  <!-- ===== Hero (NEW photo + extra CTA: Learn Import/Export) ===== -->
   <section id="home" class="pt-28 md:pt-32 pb-12 text-white">
     <div class="hero-img">
       <div class="backdrop-brightness-90 bg-gradient-to-r from-indigoDeep/70 to-cyanBright/60">
@@ -123,8 +77,10 @@ HOME_HTML = r"""<!DOCTYPE html>
               <a href="#calculator" class="bg-emerald text-white px-6 py-3 rounded-xl font-semibold">Get Duty Estimate</a>
               <a href="#marketplace" class="bg-gray-900 text-white px-6 py-3 rounded-xl font-semibold">Find Broker</a>
               <a href="#chat" class="bg-white text-indigoDeep px-6 py-3 rounded-xl font-semibold hover:bg-gray-100">Start Free Chat</a>
+              <!-- NEW Learn CTA (improved gradient + icon) -->
               <a href="#learn"
                  class="flex items-center justify-center gap-2 bg-gradient-to-r from-cyanBright to-emerald text-white px-6 py-3 rounded-xl font-semibold shadow-md hover:shadow-lg hover:scale-[1.02] transition">
+                <!-- Book-open icon (Heroicons outline) -->
                 <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none"
                      viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" aria-hidden="true">
                   <path stroke-linecap="round" stroke-linejoin="round"
@@ -160,7 +116,271 @@ HOME_HTML = r"""<!DOCTYPE html>
     </div>
   </section>
 
-  <!-- (Sections omitted for brevity in this snippet — keep your full page content here) -->
+  <!-- ===== How it works ===== -->
+  <section class="py-14 bg-white">
+    <div class="max-w-7xl mx-auto px-6">
+      <h2 class="text-3xl font-bold text-center">How It Works</h2>
+      <div class="mt-8 grid md:grid-cols-3 gap-6">
+        <div class="card p-6 bg-white rounded-xl border border-gray-200">
+          <h3 class="font-semibold text-lg">1) Chat</h3>
+          <p class="text-gray-600 mt-1">Ask anything about HS, duties, docs, Incoterms.</p>
+          <a href="#chat" class="mt-4 inline-block text-cyanBright">Chat with Chadaddy →</a>
+        </div>
+        <div class="card p-6 bg-white rounded-xl border border-gray-200">
+          <h3 class="font-semibold text-lg">2) Calculate</h3>
+          <p class="text-gray-600 mt-1">Enter HS & value to see line-by-line duties.</p>
+          <a href="#calculator" class="mt-4 inline-block text-cyanBright">Try Calculator →</a>
+        </div>
+        <div class="card p-6 bg-white rounded-xl border border-gray-200">
+          <h3 class="font-semibold text-lg">3) Connect</h3>
+          <p class="text-gray-600 mt-1">Book verified brokers & clear faster.</p>
+          <a href="#marketplace" class="mt-4 inline-block text-cyanBright">Find a Broker →</a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== Marketplace (sample grid) ===== -->
+  <section id="marketplace" class="py-16 bg-gray-50">
+    <div class="max-w-7xl mx-auto px-6">
+      <div class="flex items-end justify-between gap-3">
+        <h2 class="text-3xl font-bold">Find Your Broker</h2>
+        <div class="hidden md:flex items-center gap-2">
+          <input id="fSearch" class="border rounded-lg px-3 py-2" placeholder="Search broker or HS…" />
+          <select id="fSort" class="border rounded-lg px-3 py-2">
+            <option value="featured">Featured</option>
+            <option value="rating">Rating</option>
+            <option value="price">Price from</option>
+            <option value="response">Response time</option>
+          </select>
+          <button id="openFilters" class="border rounded-lg px-3 py-2">Filters</button>
+        </div>
+      </div>
+
+      <div id="brokGrid" class="mt-6 grid sm:grid-cols-2 lg:grid-cols-4 gap-6">
+        <!-- two sample cards -->
+        <article class="bg-white border border-gray-200 rounded-xl overflow-hidden">
+          <img class="h-36 w-full object-cover" src="https://images.unsplash.com/photo-1556761175-4b46a572b786?q=80&w=800&auto=format&fit=crop" alt="Pacific Global">
+          <div class="p-3">
+            <div class="flex items-center justify-between">
+              <div class="font-semibold">Pacific Global</div>
+              <div class="text-xs px-2 py-0.5 rounded-full border border-emerald text-emerald">Verified</div>
+            </div>
+            <div class="text-xs text-gray-500 mt-1">IN • JNPT • Mundra</div>
+            <div class="text-xs mt-1">Electronics, Chemicals</div>
+            <div class="flex items-center justify-between mt-2">
+              <div class="text-sm">★ 4.9 <span class="text-gray-500">(312)</span></div>
+              <div class="text-sm">From <strong>₹ 6,500</strong></div>
+            </div>
+            <div class="mt-3 grid grid-cols-2 gap-2">
+              <button class="border rounded-lg px-2 py-1">Get Quote</button>
+              <button class="bg-cyanBright text-black rounded-lg px-2 py-1">Compare</button>
+            </div>
+          </div>
+        </article>
+
+        <article class="bg-white border border-gray-200 rounded-xl overflow-hidden">
+          <img class="h-36 w-full object-cover" src="https://images.unsplash.com/photo-1515879218367-8466d910aaa4?q=80&w=800&auto=format&fit=crop" alt="Astra Customs">
+          <div class="p-3">
+            <div class="flex items-center justify-between">
+              <div class="font-semibold">Astra Customs</div>
+              <div class="text-xs px-2 py-0.5 rounded-full border border-emerald text-emerald">Verified</div>
+            </div>
+            <div class="text-xs text-gray-500 mt-1">IN • Mundra • Chennai</div>
+            <div class="text-xs mt-1">Apparel, Furniture</div>
+            <div class="flex items-center justify-between mt-2">
+              <div class="text-sm">★ 4.7 <span class="text-gray-500">(201)</span></div>
+              <div class="text-sm">From <strong>₹ 5,500</strong></div>
+            </div>
+            <div class="mt-3 grid grid-cols-2 gap-2">
+              <button class="border rounded-lg px-2 py-1">Get Quote</button>
+              <button class="bg-cyanBright text-black rounded-lg px-2 py-1">Compare</button>
+            </div>
+          </div>
+        </article>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== Calculator (lead-gated) ===== -->
+  <section id="calculator" class="py-16 bg-white">
+    <div class="max-w-7xl mx-auto px-6">
+      <h2 class="text-3xl font-bold">Global Duty & Landed Cost</h2>
+      <div class="mt-6 grid md:grid-cols-2 gap-6">
+        <form id="calcForm" class="bg-gray-50 border border-gray-200 rounded-xl p-4 grid gap-3">
+          <div class="grid grid-cols-2 gap-3">
+            <select id="cCountry" class="border rounded-lg px-3 py-2"><option>IN</option><option>US</option><option>EU</option><option>UK</option></select>
+            <select id="cIncoterm" class="border rounded-lg px-3 py-2"><option value="CIF">CIF</option><option value="FOB">FOB</option><option value="EXW">EXW</option></select>
+          </div>
+          <div class="grid grid-cols-2 gap-3">
+            <input id="cHS" class="border rounded-lg px-3 py-2" placeholder="HS code e.g. 851713" required />
+            <input id="cGoods" type="number" class="border rounded-lg px-3 py-2" placeholder="Goods Value" required />
+          </div>
+          <div class="grid grid-cols-3 gap-3">
+            <input id="cFreight" type="number" class="border rounded-lg px-3 py-2" placeholder="Freight" />
+            <input id="cIns" type="number" class="border rounded-lg px-3 py-2" placeholder="Insurance" />
+            <input id="cOther" type="number" class="border rounded-lg px-3 py-2" placeholder="Other includable" />
+          </div>
+          <details class="p-3 border rounded-lg">
+            <summary class="cursor-pointer font-medium">Advanced (optional)</summary>
+            <div class="grid grid-cols-3 gap-3 mt-3">
+              <input id="cDuty" type="number" class="border rounded-lg px-3 py-2" placeholder="Override duty %">
+              <input id="cVat" type="number" class="border rounded-lg px-3 py-2" placeholder="VAT/IGST %">
+              <input id="cAidc" type="number" class="border rounded-lg px-3 py-2" placeholder="AIDC/Cess %">
+            </div>
+          </details>
+          <div class="flex items-center gap-3">
+            <button class="bg-emerald text-white py-2 px-4 rounded-lg" type="submit">Calculate</button>
+            <label class="text-sm flex items-center gap-2"><input id="ftaToggle" type="checkbox"> Apply FTA savings (demo)</label>
+          </div>
+          <p class="text-xs text-gray-600">Results show after a quick name & email check (one-time).</p>
+        </form>
+
+        <div>
+          <h3 class="font-semibold mb-2">Breakdown</h3>
+          <div class="overflow-hidden rounded-xl border border-gray-200">
+            <table class="w-full text-sm">
+              <tbody id="cTable" class="divide-y divide-gray-200">
+                <tr><td class="px-3 py-3 text-center text-gray-500">No results yet — run a calculation.</td></tr>
+              </tbody>
+            </table>
+          </div>
+          <div id="hsSuggestBox" class="hidden mt-3 p-3 border rounded-lg">
+            <strong>HS suggestions</strong>
+            <ul id="hsSuggestList" class="list-disc ml-5 text-sm"></ul>
+            <p class="text-xs text-gray-500 mt-1">Customs makes the final decision.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== HS Finder (lead-gated) ===== -->
+  <section id="hsfinder" class="py-16 bg-gray-50">
+    <div class="max-w-7xl mx-auto px-6">
+      <h2 class="text-3xl font-bold">HS / HSN Finder</h2>
+      <div class="mt-6 grid md:grid-cols-2 gap-6">
+        <div class="bg-white border border-gray-200 rounded-xl p-4">
+          <div class="grid gap-3">
+            <select id="hsCountry" class="border rounded-lg px-3 py-2"><option>IN</option><option>US</option><option>EU</option><option>UK</option><option>AE</option><option>SG</option><option>AU</option><option>CA</option><option>MX</option><option>CN</option></select>
+            <textarea id="hsDesc" rows="5" class="border rounded-lg px-3 py-2" placeholder="Describe your product (materials, function, use)…"></textarea>
+            <div class="flex gap-3">
+              <button id="hsRun" class="bg-emerald text-white px-4 py-2 rounded-lg">Find HS codes</button>
+              <button id="hsReset" class="border px-4 py-2 rounded-lg">Reset</button>
+            </div>
+          </div>
+        </div>
+        <div id="hsResults" class="grid gap-3" aria-live="polite"></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== Learn (NEW simple section) ===== -->
+  <section id="learn" class="py-16 bg-white">
+    <div class="max-w-7xl mx-auto px-6">
+      <h2 class="text-3xl font-bold">Learn Import/Export</h2>
+      <p class="text-gray-600 mt-2 max-w-3xl">Step-by-step guides and micro-courses for students and businesses. Earn a free certificate and apply your HS knowledge directly in the calculator.</p>
+      <div class="mt-6 grid md:grid-cols-3 gap-6">
+        <div class="p-5 rounded-xl border bg-gray-50">
+          <h3 class="font-semibold">HS Basics (30 min)</h3>
+          <p class="text-sm text-gray-600">Chapters, headings, rules.</p>
+          <a href="#hsfinder" class="mt-3 inline-block text-cyanBright">Use HS Finder →</a>
+        </div>
+        <div class="p-5 rounded-xl border bg-gray-50">
+          <h3 class="font-semibold">Incoterms 2020 (20 min)</h3>
+          <p class="text-sm text-gray-600">FOB vs CIF vs EXW.</p>
+          <a href="#calculator" class="mt-3 inline-block text-cyanBright">Try Calculator →</a>
+        </div>
+        <div class="p-5 rounded-xl border bg-gray-50">
+          <h3 class="font-semibold">Valuation (25 min)</h3>
+          <p class="text-sm text-gray-600">What goes into customs value?</p>
+          <a href="#chat" class="mt-3 inline-block text-cyanBright">Ask in Chat →</a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== Chat (lead-gated responses) ===== -->
+  <section id="chat" class="py-16 bg-gray-50">
+    <div class="max-w-7xl mx-auto px-6">
+      <div class="flex items-center justify-between">
+        <h2 class="text-3xl font-bold">Chat with Chadaddy</h2>
+        <span class="text-xs text-gray-500 hidden md:inline">Type “/hsfinder …” • Responses unlock after quick access form</span>
+      </div>
+      <div class="mt-6 grid lg:grid-cols-[260px,1fr,280px] gap-6">
+        <aside class="bg-white border border-gray-200 rounded-xl p-3">
+          <div class="flex items-center justify-between"><strong>History</strong><button id="newThread" class="text-xs border rounded px-2 py-1">New</button></div>
+          <ul id="threads" class="mt-3 grid gap-2 text-sm"></ul>
+        </aside>
+
+        <section class="bg-white border border-gray-200 rounded-xl p-3">
+          <div class="flex flex-wrap gap-2 text-xs">
+            <button class="quick border rounded px-2 py-1" data-q="/hsfinder AirPods in IN">/hsfinder</button>
+            <button class="quick border rounded px-2 py-1" data-q="/duty IN 8517 CIF 100000">/duty</button>
+            <button class="quick border rounded px-2 py-1" data-q="/marketplace IN JNPT electronics">/marketplace</button>
+            <button class="quick border rounded px-2 py-1" data-q="/news IN ports">/news</button>
+            <button class="quick border rounded px-2 py-1" data-q="/products trending electronics">/products</button>
+          </div>
+          <div id="thread" class="mt-3 h-[52vh] overflow-auto grid gap-2 pr-1" aria-live="polite"></div>
+          <form id="chatForm" class="mt-3 flex gap-2" autocomplete="off">
+            <input id="chatInput" class="flex-1 border rounded-lg px-3 py-2" placeholder="Ask anything… (try: 'HS for LED bulbs in EU')" />
+            <button class="bg-emerald text-white px-4 py-2 rounded-lg">Send</button>
+          </form>
+          <p class="text-xs text-gray-500 mt-2">We keep the last 30 messages per chat in your browser.</p>
+        </section>
+
+        <aside class="bg-white border border-gray-200 rounded-xl p-3">
+          <strong>Saved calcs & docs</strong>
+          <ul id="rightRail" class="mt-3 grid gap-2 text-sm"></ul>
+        </aside>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== News ===== -->
+  <section id="news" class="py-16 bg-white">
+    <div class="max-w-7xl mx-auto px-6">
+      <div class="flex flex-wrap items-end justify-between gap-3">
+        <div>
+          <h2 class="text-3xl font-bold">News & Alerts</h2>
+          <span class="text-xs px-2 py-1 rounded-full border border-cyanBright text-cyanBright">AI summaries</span>
+        </div>
+        <div class="flex gap-2">
+          <select id="newsCountry" class="border rounded-lg px-3 py-2"><option>ALL</option><option>IN</option><option>US</option><option>EU</option></select>
+          <select id="newsTopic" class="border rounded-lg px-3 py-2"><option>All topics</option><option>Ports</option><option>Tariff</option><option>Compliance</option></select>
+          <button id="newsSub" class="bg-cyanBright text-black px-4 py-2 rounded-lg">Subscribe</button>
+        </div>
+      </div>
+      <div id="newsList" class="mt-6 grid sm:grid-cols-2 lg:grid-cols-3 gap-6"></div>
+    </div>
+  </section>
+
+  <!-- ===== Pricing (stub) ===== -->
+  <section id="pricing" class="py-16 bg-gray-50">
+    <div class="max-w-7xl mx-auto px-6">
+      <h2 class="text-3xl font-bold">Pricing</h2>
+      <div class="mt-6 grid md:grid-cols-3 gap-6">
+        <div class="p-6 rounded-2xl border bg-white">
+          <h3 class="font-semibold">Free</h3>
+          <p class="text-sm text-gray-600">Chat + HS finder (limited)</p>
+          <p class="text-3xl font-extrabold mt-2">$0</p>
+          <a href="#signup" class="mt-4 inline-block bg-emerald text-white px-4 py-2 rounded-lg">Start</a>
+        </div>
+        <div class="p-6 rounded-2xl border bg-white ring-2 ring-cyanBright">
+          <h3 class="font-semibold">Pro</h3>
+          <p class="text-sm text-gray-600">Calculator PDFs, alerts, priority</p>
+          <p class="text-3xl font-extrabold mt-2">$9<span class="text-base">/mo</span></p>
+          <a href="#signup" class="mt-4 inline-block bg-cyanBright text-black px-4 py-2 rounded-lg">Upgrade</a>
+        </div>
+        <div class="p-6 rounded-2xl border bg-white">
+          <h3 class="font-semibold">Team</h3>
+          <p class="text-sm text-gray-600">Brokers, RFP, escrow</p>
+          <p class="text-3xl font-extrabold mt-2">$49<span class="text-base">/mo</span></p>
+          <a href="#signup" class="mt-4 inline-block border px-4 py-2 rounded-lg">Contact sales</a>
+        </div>
+      </div>
+    </div>
+  </section>
 
   <!-- ===== Footer ===== -->
   <footer class="bg-gray-900 text-gray-300 py-12 mt-20">
@@ -197,164 +417,155 @@ HOME_HTML = r"""<!DOCTYPE html>
     <p class="text-center text-sm mt-8">© <span id="year"></span> Chadaddy. All rights reserved.</p>
   </footer>
 
-  <!-- ===== Lead Gate Modal, Scripts, etc. — keep your existing JS here ===== -->
-  <script>
-    const $ = s=>document.querySelector(s);
-    $('#year').textContent = new Date().getFullYear();
-    const ports=['JNPT','Mundra','Chennai','Rotterdam','LA','Felixstowe','Dubai','Singapore']; let ti=0;
-    setInterval(()=>{ const n=Math.floor(Math.random()*6)+3; const el=document.getElementById('ticker'); if(el){ el.textContent = `${n} shipments cleared today at ${ports[ti++%ports.length]}`;}}, 4500);
-    // (Keep the rest of your existing JS here unchanged)
-  </script>
-</body>
-</html>
-"""
-
-# -----------------------------------------------------------------------------
-# Routes
-# -----------------------------------------------------------------------------
-
-@app.get("/")
-def home():
-    # Serve your full homepage from Python
-    return Response(HOME_HTML, mimetype="text/html; charset=utf-8")
-
-# --- Personal Sign Up (DB + CSRF) -------------------------------------------
-
-SIGNUP_HTML = r"""<!doctype html>
-<html lang="en">
-<head>
-  <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
-  <title>Personal Sign Up – Chadaddy</title>
-  <script src="https://cdn.tailwindcss.com"></script>
-</head>
-<body class="min-h-screen bg-gray-50 text-gray-900 flex items-center justify-center py-10">
-  <div class="w-full max-w-md bg-white border border-gray-200 rounded-2xl shadow p-6">
-    <a href="/" class="inline-flex items-center gap-2 text-sm text-gray-500 hover:text-gray-700">
-      ← Back to home
-    </a>
-    <h1 class="mt-2 text-2xl font-bold">Create your account</h1>
-    <p class="text-sm text-gray-600">Unlock calculators, chat, and HS finder.</p>
-
-    {% with msgs = get_flashed_messages(with_categories=True) %}
-      {% if msgs %}
-        <div class="mt-3 space-y-2">
-          {% for cat, msg in msgs %}
-            <div class="text-sm px-3 py-2 rounded border
-                 {% if cat == 'error' %} border-red-300 text-red-700 bg-red-50
-                 {% else %} border-emerald-300 text-emerald-800 bg-emerald-50 {% endif %}">
-              {{ msg }}
-            </div>
-          {% endfor %}
-        </div>
-      {% endif %}
-    {% endwith %}
-
-    <form class="mt-4 grid gap-3" method="post" action="{{ url_for('personal_sign_up_post') }}">
-      <input type="hidden" name="csrf" value="{{ csrf }}">
-      <input type="hidden" name="next" value="{{ next }}">
-
-      <div class="grid gap-1">
-        <label class="text-sm font-medium">Full name</label>
-        <input name="name" required class="border rounded-lg px-3 py-2" placeholder="e.g., Alex Kumar">
+  <!-- ===== Lead Gate Modal ===== -->
+  <div id="leadModal" class="hidden fixed inset-0 z-50 items-center justify-center bg-black/50 p-3">
+    <div class="max-w-lg w-full bg-white border border-gray-200 rounded-xl p-4">
+      <div class="flex items-center justify-between">
+        <h3 class="font-semibold">Access your free result</h3>
+        <button id="leadClose" class="border rounded px-2 py-1">✕</button>
       </div>
-
-      <div class="grid gap-1">
-        <label class="text-sm font-medium">Email</label>
-        <input name="email" type="email" required class="border rounded-lg px-3 py-2" placeholder="you@company.com">
-      </div>
-
-      <div class="grid gap-1">
-        <label class="text-sm font-medium">Phone / WhatsApp (optional)</label>
-        <input name="phone" class="border rounded-lg px-3 py-2" placeholder="+91 98xxxxxxx">
-      </div>
-
-      <button class="mt-2 bg-emerald text-white py-2 rounded-lg">Create account</button>
-    </form>
-    <p class="mt-3 text-xs text-gray-500">By continuing, you agree to our Terms and Privacy Policy.</p>
-  </div>
-</body>
-</html>
-"""
-
-WELCOME_HTML = r"""<!doctype html>
-<html lang="en">
-<head>
-  <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
-  <title>Welcome – Chadaddy</title>
-  <script src="https://cdn.tailwindcss.com"></script>
-</head>
-<body class="min-h-screen bg-gray-50 text-gray-900 flex items-center justify-center py-10">
-  <div class="w-full max-w-lg bg-white border border-gray-200 rounded-2xl shadow p-6 text-center">
-    <h1 class="text-2xl font-bold">Welcome, {{ name }} 🎉</h1>
-    <p class="mt-2 text-gray-700">We’ve created your account with <strong>{{ email }}</strong>.</p>
-    <div class="mt-6 grid gap-3">
-      <a class="bg-emerald text-white py-2 rounded-lg" href="/">Go to Homepage</a>
-      <a class="border py-2 rounded-lg" href="/#calculator">Open Calculator</a>
-      <a class="border py-2 rounded-lg" href="/#chat">Start Chat</a>
+      <p class="text-sm text-gray-600">Enter your details once to unlock results across the site.</p>
+      <form id="leadForm" class="grid sm:grid-cols-2 gap-3 mt-3">
+        <input id="leadName" class="border rounded-lg px-3 py-2 sm:col-span-2" placeholder="Your name" required />
+        <input id="leadEmail" type="email" class="border rounded-lg px-3 py-2 sm:col-span-2" placeholder="Email" required />
+        <input id="leadWA" class="border rounded-lg px-3 py-2 sm:col-span-2" placeholder="Phone / WhatsApp (optional)" />
+        <button class="sm:col-span-2 bg-emerald text-white py-2 rounded-lg">Unlock Results</button>
+      </form>
+      <p class="text-xs text-gray-500 mt-2">By continuing you agree to receive your results via email.</p>
     </div>
   </div>
+
+  <!-- ===== App JS (lead gating + stubs) ===== -->
+  <script>
+    const $ = s=>document.querySelector(s); const $$=s=>Array.from(document.querySelectorAll(s));
+    $('#year').textContent = new Date().getFullYear();
+
+    // Activity ticker
+    const ports=['JNPT','Mundra','Chennai','Rotterdam','LA','Felixstowe','Dubai','Singapore']; let ti=0;
+    setInterval(()=>{ const n=Math.floor(Math.random()*6)+3; $('#ticker').textContent = `${n} shipments cleared today at ${ports[ti++%ports.length]}`; }, 4500);
+
+    // Lead gate
+    const GATE_KEY='chadaddy_lead';
+    const hasLead = () => !!localStorage.getItem(GATE_KEY);
+    function openGate(){ $('#leadModal').classList.remove('hidden'); $('#leadModal').classList.add('flex'); }
+    function closeGate(){ $('#leadModal').classList.add('hidden'); $('#leadModal').classList.remove('flex'); }
+    $('#leadClose').addEventListener('click', closeGate);
+    $('#leadForm').addEventListener('submit', (e)=>{
+      e.preventDefault();
+      const name=$('#leadName').value.trim(); const email=$('#leadEmail').value.trim(); const wa=$('#leadWA').value.trim();
+      if(!name || !email) return;
+      localStorage.setItem(GATE_KEY, JSON.stringify({name,email,wa,ts:Date.now()}));
+      closeGate();
+      const t=document.createElement('div'); t.textContent='Access granted'; t.className='fixed bottom-24 right-4 bg-gray-900 text-white text-sm px-3 py-2 rounded-lg shadow'; document.body.appendChild(t); setTimeout(()=>t.remove(),1400);
+      if(window.__afterGate){ const cb=window.__afterGate; window.__afterGate=null; cb(); }
+    });
+    function requireLead(cb){ if(hasLead()) cb(); else { window.__afterGate=cb; openGate(); } }
+
+    // Hero teaser
+    const ccy = {IN:'₹', US:'$', EU:'€', UK:'£'};
+    function runQuickTeaser(){
+      const av=Number($('#tzAV').value||0), country=$('#tzCountry').value;
+      if(!av){ $('#tzOut').innerHTML='<span class="text-red-600">Enter a value</span>'; return; }
+      const dutyMap={IN:0.10,US:0.03,EU:0.05,UK:0.05}; const igstMap={IN:0.18,US:0.009,EU:0.20,UK:0.20};
+      const bcd=av*(dutyMap[country]||0.1); const sws=(country==='IN')?bcd*0.10:0; const sub=av+bcd+sws; const vat=sub*(igstMap[country]||0.18); const total=sub+vat;
+      $('#tzOut').innerHTML = `<span class="inline-block mr-2 px-2 py-1 rounded bg-gray-100">Est. duties: ${ccy[country]||'₹'} ${(bcd+sws+vat).toFixed(0)}</span>
+      <span class="inline-block px-2 py-1 rounded bg-green-50 text-emerald">Total: ${ccy[country]||'₹'} ${Math.round(total).toLocaleString()}</span>`;
+    }
+    $('#tzBtn').addEventListener('click', ()=> requireLead(runQuickTeaser));
+
+    // Calculator
+    function addRow(label,basis,rate,amount){ return `<tr><td class="px-3 py-2">${label}</td><td class="px-3 py-2 text-right">${basis?.toLocaleString?.()||'-'}</td><td class="px-3 py-2 text-right">${rate?rate+'%':'—'}</td><td class="px-3 py-2 text-right font-semibold">${Math.round(amount).toLocaleString()}</td></tr>`; }
+    function runCalc(){
+      const country=$('#cCountry').value, hs=$('#cHS').value.trim(), goods=+($('#cGoods').value||0), freight=+($('#cFreight').value||0), ins=+($('#cIns').value||0), other=+($('#cOther').value||0);
+      const override=+($('#cDuty').value||NaN), vatIn=+($('#cVat').value||NaN), aidcIn=+($('#cAidc').value||NaN), fta=$('#ftaToggle').checked;
+      let AV=goods+freight+ins+other;
+      let baseDuty=isNaN(override)?({IN:10,US:3,EU:5,UK:5}[country]||10):override;
+      if(fta) baseDuty=Math.max(0, baseDuty-5);
+      const vatRate=isNaN(vatIn)?({IN:18,US:0.9,EU:20,UK:20}[country]||18):vatIn;
+      const aidcRate=isNaN(aidcIn)?({IN:0,US:0,EU:0,UK:0}[country]||0):aidcIn;
+
+      const BCD=AV*baseDuty/100, SWS=country==='IN'?BCD*0.10:0, AIDC=AV*aidcRate/100;
+      const sub=AV+BCD+SWS+AIDC, VAT=sub*(vatRate/100), total=sub+VAT;
+
+      const tb=$('#cTable'); tb.innerHTML = addRow('Assessable Value (AV)', AV, null, AV)
+        + addRow('BCD', AV, baseDuty, BCD)
+        + (SWS? addRow('SWS (10% of BCD)', BCD, 10, SWS):'')
+        + (AIDC? addRow('AIDC/Cess', AV, aidcRate, AIDC):'')
+        + addRow(country==='IN'?'IGST':'VAT', sub, vatRate, VAT)
+        + `<tr class="bg-gray-50 font-semibold"><td class="px-3 py-2" colspan="3">Total Landed Cost</td><td class="px-3 py-2 text-right">${Math.round(total).toLocaleString()}</td></tr>`;
+      if(hs.length<6){ $('#hsSuggestBox').classList.remove('hidden'); $('#hsSuggestList').innerHTML=['851713 – Phones','851762 – Comm. equip','850760 – Li-ion cells'].map((s,i)=>`<li>${s} <span class="text-xs text-gray-500">confidence ${(85-i*10)}%</span></li>`).join(''); } else { $('#hsSuggestBox').classList.add('hidden'); }
+    }
+    $('#calcForm').addEventListener('submit',(e)=>{ e.preventDefault(); requireLead(runCalc); });
+
+    // HS Finder
+    function runHsFinder(){
+      const desc=$('#hsDesc').value.trim(); if(!desc) return alert('Please describe your product');
+      const res=[{code:'851713',title:'Smartphones',conf:0.88,examples:['Android phone','iPhone']},{code:'851762',title:'Comm. equipment',conf:0.72,examples:['Wi-Fi router','LTE module']},{code:'851830',title:'Headphones/earbuds',conf:0.64,examples:['TWS earbuds','Headset']}];
+      $('#hsResults').innerHTML = res.map(r=>`
+        <div class="p-3 border rounded-lg bg-white">
+          <div class="flex items-center justify-between">
+            <div class="font-semibold">${r.code} — ${r.title}</div>
+            <div class="text-xs px-2 py-0.5 rounded-full border">${Math.round(r.conf*100)}%</div>
+          </div>
+          <div class="text-xs text-gray-500">Examples: ${r.examples.join(', ')}</div>
+          <a href="#calculator" class="mt-2 inline-block text-cyanBright text-sm">Open in calculator →</a>
+        </div>`).join('');
+    }
+    $('#hsRun').addEventListener('click', ()=> requireLead(runHsFinder));
+    $('#hsReset').addEventListener('click',()=>{ $('#hsDesc').value=''; $('#hsResults').innerHTML=''; });
+
+    // Chat (lead-gated responses)
+    const threadEl=$('#thread'); const savedKey='chadaddy_thread_v2';
+    let messages=JSON.parse(localStorage.getItem(savedKey)||'[]');
+    function renderChat(){ threadEl.innerHTML = messages.map(m=>`<div class="${m.role==='user'?'ml-auto bg-cyanBright text-black':'mr-auto bg-gray-100 text-gray-900'} px-3 py-2 rounded-xl max-w-[85%]">${m.text}</div>`).join(''); threadEl.scrollTop = threadEl.scrollHeight; }
+    function addMsg(role,text){ messages.push({role,text,t:Date.now()}); if(messages.length>30) messages=messages.slice(-30); localStorage.setItem(savedKey,JSON.stringify(messages)); renderChat(); }
+    renderChat();
+    $('#chatForm').addEventListener('submit',(e)=>{ e.preventDefault(); const val=$('#chatInput').value.trim(); if(!val) return; addMsg('user',val);
+      requireLead(()=>{ let reply="I'm a demo assistant. Connect API for live answers.";
+        if(val.startsWith('/hsfinder')) reply="HS finder: 851713 (88%), 851762 (72%), 851830 (64%).";
+        if(val.startsWith('/duty')) reply="Duty (demo): BCD 10%, IGST/VAT 18–20% depending on country.";
+        if(val.startsWith('/marketplace')) reply="Try brokers: Pacific Global, Astra Customs, Metro ACI.";
+        if(val.startsWith('/news')) reply="Latest: JNPT advisory; EU CET update; US FDA pilot.";
+        if(val.startsWith('/products')) reply="Trending: Smartphones, LEDs, Sneakers, Coffee.";
+        setTimeout(()=>addMsg('assistant',reply),250);
+      });
+      $('#chatInput').value=''; 
+    });
+
+    // News
+    const NEWS=[
+      {id:1,country:'IN',topic:'Ports',title:'JNPT issues advisory on weekend cut-off',sev:'Medium'},
+      {id:2,country:'EU',topic:'Tariff',title:'EU updates CET for electronics',sev:'High'},
+      {id:3,country:'US',topic:'Compliance',title:'New FDA prior-notice pilot',sev:'Low'}
+    ];
+    function sevBadge(sev){ const map={High:'border-accentOrange text-accentOrange',Medium:'border-yellow-500 text-yellow-600',Low:'border-emerald text-emerald'}; return map[sev]||'border'; }
+    function renderNews(list=NEWS){ $('#newsList').innerHTML = list.map(n=>`
+      <article class="bg-white border border-gray-200 rounded-xl p-4">
+        <div class="text-xs mb-2 flex items-center gap-2">
+          <span class="px-2 py-0.5 rounded-full border">${n.country}</span>
+          <span class="px-2 py-0.5 rounded-full border">${n.topic}</span>
+          <span class="px-2 py-0.5 rounded-full ${sevBadge(n.sev)} border">${n.sev}</span>
+        </div>
+        <div class="font-semibold">${n.title}</div>
+        <a class="text-cyanBright text-sm mt-2 inline-block" href="#news">Subscribe for alerts →</a>
+      </article>`).join(''); }
+    renderNews();
+    $('#newsCountry')?.addEventListener('change',e=>{ const v=e.target.value; renderNews(v==='ALL'?NEWS:NEWS.filter(n=>n.country===v)); });
+    $('#newsTopic')?.addEventListener('change',e=>{ const v=e.target.value; renderNews(v==='All topics'?NEWS:NEWS.filter(n=>n.topic===v)); });
+
+    // Newsletter toast
+    $('#nlBtn').addEventListener('click',(e)=>{ e.preventDefault(); const t=document.createElement('div'); t.textContent='Subscribed'; t.className='fixed bottom-24 right-4 bg-gray-900 text-white text-sm px-3 py-2 rounded-lg shadow'; document.body.appendChild(t); setTimeout(()=>t.remove(),1400); });
+  </script>
 </body>
-</html>
-"""
+</html>"""
 
-@app.get("/auth/personal-sign-up")
-def personal_sign_up():
-    return render_template_string(
-        SIGNUP_HTML,
-        csrf=new_csrf(),
-        next=request.args.get("next", url_for("welcome"))
-    )
+@app.route("/")
+def index():
+    return Response(HTML, mimetype="text/html; charset=utf-8")
 
-@app.post("/auth/personal-sign-up")
-def personal_sign_up_post():
-    form = request.form
-    if not check_csrf(form.get("csrf")):
-        flash("Your session expired. Please try again.", "error")
-        return redirect(url_for("personal_sign_up"))
-
-    name  = (form.get("name") or "").strip()
-    email = (form.get("email") or "").strip().lower()
-    phone = (form.get("phone") or "").strip()
-
-    if not name or not email:
-        flash("Name and Email are required.", "error")
-        return redirect(url_for("personal_sign_up"))
-
-    if not re.match(r"^[^@\s]+@[^@\s]+\.[^@\s]+$", email):
-        flash("Please enter a valid email address.", "error")
-        return redirect(url_for("personal_sign_up"))
-
-    try:
-        with db() as con:
-            con.execute(
-                "INSERT INTO users (name, email, phone, created_at) VALUES (?,?,?,?)",
-                (name, email, phone, int(time.time()))
-            )
-    except sqlite3.IntegrityError:
-        flash("This email is already registered.", "error")
-        return redirect(url_for("personal_sign_up"))
-
-    session["uid_email"] = email
-    session["uid_name"] = name
-
-    nxt = form.get("next") or url_for("welcome")
-    return redirect(nxt)
-
-@app.get("/auth/welcome")
-def welcome():
-    name = session.get("uid_name", "there")
-    email = session.get("uid_email", "")
-    return make_response(render_template_string(WELCOME_HTML, name=name, email=email))
-
-# -----------------------------------------------------------------------------
-# Health & Vercel WSGI entry
-# -----------------------------------------------------------------------------
 @app.get("/health")
 def health():
     return {"ok": True}
-
-# For Vercel:
-handler = app
 
 if __name__ == "__main__":
     # pip install flask
