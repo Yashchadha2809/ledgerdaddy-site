@@ -1,23 +1,32 @@
 # index.py
-from flask import Flask, Response
-from pathlib import Path
+import os
+from flask import Flask, send_file, Response
 
 app = Flask(__name__)
-APP_DIR = Path(__file__).resolve().parent
-HOME_FILE = APP_DIR / "home_min.html"
+
+# absolute path to your HTML beside this file
+HERE = os.path.dirname(os.path.abspath(__file__))
+HTML_PATH = os.path.join(HERE, "home_min.html")
 
 @app.get("/")
 def home():
-    if HOME_FILE.exists():
-        return Response(HOME_FILE.read_text(encoding="utf-8"), mimetype="text/html")
-    return Response("<h1>home_min.html not found</h1>", mimetype="text/html", status=404)
+    if not os.path.exists(HTML_PATH):
+        # helpful error if file missing
+        return Response("home_min.html not found next to index.py", 500, mimetype="text/plain")
+    return send_file(HTML_PATH)
 
 @app.get("/health")
 def health():
     return {"ok": True}
 
-# Vercel entrypoint
+# handle noisy favicon requests gracefully
+@app.get("/favicon.ico")
+def favicon():
+    return Response(status=204)
+
+# vercel looks for this WSGI handler
 handler = app
 
 if __name__ == "__main__":
+    # local dev (optional): python index.py
     app.run(host="127.0.0.1", port=5000, debug=True)
