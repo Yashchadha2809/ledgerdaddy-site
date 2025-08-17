@@ -3,362 +3,383 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>Starter Site — Chatbot • Calculator • Marketplace</title>
-  <meta name="description" content="A simple modern site with a chatbot, calculator, and marketplace on the main page." />
-
-  <!-- SEO basics -->
+  <title>NovaHub — Chat • Calculator • Marketplace</title>
+  <meta name="description" content="A friendly, modern, responsive website with a chatbot, smart calculator, and a simple marketplace." />
+  <meta name="theme-color" content="#0f172a" id="meta-theme-color" />
   <link rel="canonical" href="https://example.com/" />
-
   <style>
-    /* =============== CSS RESET (minimal) =============== */
+    /* -------------------- Base & Theme -------------------- */
     *,*::before,*::after{box-sizing:border-box}
     html,body{height:100%}
-    body{margin:0;line-height:1.5;-webkit-font-smoothing:antialiased}
-    img,svg,video{display:block;max-width:100%}
-    input,button,select,textarea{font:inherit}
+    body{margin:0;font-family: Inter, ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Arial, "Noto Sans", sans-serif;line-height:1.55}
+    img{max-width:100%;display:block}
+    a{text-decoration:none}
     :root{
-      --bg: #0b1220;
-      --bg-soft:#111827;
-      --panel:#0f172a;
-      --text:#e5e7eb;
-      --muted:#94a3b8;
-      --brand:#8b5cf6; /* violet-500 */
-      --brand-2:#22c55e; /* green-500 */
-      --card:#0b1220;
-      --border:#1f2937;
-      --focus:#f59e0b;
-      --shadow: 0 8px 24px rgba(0,0,0,.25);
+      --bg:#0b1220; --panel:#0f172a; --soft:#131b2f; --text:#e5e7eb; --muted:#94a3b8; --border:#1f2941;
+      --brand:#7c3aed; --brand-2:#22c55e; --accent:#06b6d4; --focus:#f59e0b;
+      --shadow: 0 12px 30px rgba(0,0,0,.35);
     }
     [data-theme="light"]{
-      --bg: #f7fafc;
-      --bg-soft:#f1f5f9;
-      --panel:#ffffff;
-      --text:#0f172a;
-      --muted:#475569;
-      --brand:#7c3aed;
-      --brand-2:#16a34a;
-      --card:#ffffff;
-      --border:#e2e8f0;
-      --shadow: 0 8px 24px rgba(2,6,23,.08);
+      --bg:#f8fafc; --panel:#ffffff; --soft:#f1f5f9; --text:#0f172a; --muted:#475569; --border:#e2e8f0;
+      --shadow: 0 12px 24px rgba(2,6,23,.08);
     }
-
-    /* =============== LAYOUT =============== */
-    body.page{
-      font-family: system-ui, -apple-system, Segoe UI, Roboto, Inter, Arial, "Noto Sans", sans-serif;
-      color:var(--text);
-      background: radial-gradient(1200px 600px at 20% -10%, rgba(124,58,237,.15), transparent 60%),
-                  radial-gradient(1200px 600px at 80% -10%, rgba(34,197,94,.15), transparent 60%),
-                  var(--bg);
-      min-height:100%;
-    }
-    .skip-link{position:absolute;left:-9999px;top:auto;width:1px;height:1px;overflow:hidden}
-    .skip-link:focus{left:1rem;top:1rem;width:auto;height:auto;background:var(--panel);color:var(--text);padding:.5rem .75rem;border-radius:.5rem;outline:2px solid var(--focus)}
-    .container{width:min(1100px, 92%);margin-inline:auto}
+    :focus-visible{outline:2px solid var(--focus);outline-offset:3px}
+    .page{background:
+      radial-gradient(1200px 600px at 15% -10%, rgba(124,58,237,.20), transparent 55%),
+      radial-gradient(1200px 600px at 85% -10%, rgba(34,197,94,.18), transparent 55%),
+      var(--bg);color:var(--text)}
+    .container{width:min(1160px,92%);margin-inline:auto}
     .section{padding:3.5rem 0}
-    .header{
-      position:sticky;top:0;z-index:50;
-      background:rgba(0,0,0,.25);
-      backdrop-filter: blur(8px);
-      border-bottom:1px solid var(--border);
-    }
-    .header__inner{display:flex;align-items:center;gap:1rem;justify-content:space-between;padding:.75rem 0}
-    .brand{display:flex;align-items:center;gap:.6rem;color:inherit;text-decoration:none}
-    .brand__logo{display:grid;place-items:center;width:32px;height:32px;border-radius:8px;background:linear-gradient(135deg,var(--brand),var(--brand-2));color:#fff;font-weight:800}
-    .nav__menu{display:flex;gap:1rem;list-style:none;margin:0;padding:0}
-    .nav__link{color:var(--muted);text-decoration:none}
-    .nav__link:focus,.nav__link:hover{color:var(--text)}
-    .theme-toggle, .nav__toggle{appearance:none;border:1px solid var(--border);background:var(--panel);color:var(--text);padding:.5rem .7rem;border-radius:.6rem;cursor:pointer}
-    .nav__toggle{display:none}
-
-    .hero{padding:3rem 0}
-    .hero__inner{display:grid;gap:1rem}
-    .hero__title{font-size:clamp(1.6rem,2.5vw,2.2rem);margin:0}
-    .hero__cta{display:flex;gap:.75rem;flex-wrap:wrap}
-    .btn{display:inline-flex;align-items:center;gap:.5rem;border:1px solid var(--border);padding:.65rem 1rem;border-radius:.7rem;cursor:pointer;text-decoration:none}
-    .btn--primary{background:linear-gradient(135deg,var(--brand),var(--brand-2));border-color:transparent;color:#fff}
+    .card{background:linear-gradient(0deg, rgba(255,255,255,.02), transparent), var(--panel);border:1px solid var(--border);border-radius:16px;box-shadow:var(--shadow);padding:1.25rem}
+    .btn{display:inline-flex;align-items:center;gap:.6rem;padding:.7rem 1rem;border-radius:12px;border:1px solid var(--border);cursor:pointer;transition:transform .05s ease, box-shadow .2s ease}
+    .btn:active{transform:translateY(1px)}
+    .btn--primary{background:linear-gradient(135deg,var(--brand),var(--brand-2));color:#fff;border-color:transparent}
     .btn--ghost{background:var(--panel);color:var(--text)}
+    .badge{display:inline-flex;align-items:center;gap:.35rem;padding:.2rem .6rem;border:1px solid var(--border);border-radius:999px;color:var(--muted);font-size:.85rem}
 
-    /* Three columns on desktop */
-    .grid{
-      display:grid;gap:1.25rem;
-      grid-template-columns: repeat(12,minmax(0,1fr));
-    }
-    .col-4{grid-column: span 4}
-    .col-8{grid-column: span 8}
-    @media (max-width: 960px){
-      .nav__toggle{display:inline-block}
-      .nav__menu{display:none;position:absolute;right:1rem;top:60px;background:var(--panel);padding:.75rem;border-radius:.5rem;border:1px solid var(--border);box-shadow:var(--shadow)}
-      .nav__menu.is-open{display:flex;flex-direction:column}
-      .col-4,.col-8{grid-column:1/-1}
-    }
+    /* -------------------- Header -------------------- */
+    .header{position:sticky;top:0;z-index:50;backdrop-filter:blur(12px);background:rgba(0,0,0,.22);border-bottom:1px solid var(--border)}
+    [data-theme="light"] .header{background:rgba(255,255,255,.7)}
+    .header__inner{display:flex;align-items:center;justify-content:space-between;padding:.75rem 0}
+    .brand{display:flex;align-items:center;gap:.65rem;color:inherit}
+    .brand__logo{width:36px;height:36px;border-radius:10px;background:conic-gradient(from 180deg,var(--brand),var(--accent),var(--brand-2),var(--brand));display:grid;place-items:center;color:#fff;font-weight:800;box-shadow:var(--shadow)}
+    .nav{display:flex;gap:1rem;align-items:center}
+    .nav__menu{display:flex;gap:1rem;list-style:none;margin:0;padding:0}
+    .nav__link{color:var(--muted)}
+    .nav__link:hover{color:var(--text)}
+    .nav__toggle{display:none}
+    .cart{display:flex;gap:.5rem;align-items:center}
+    .cart__count{display:grid;place-items:center;min-width:22px;height:22px;border-radius:999px;background:var(--brand);color:#fff;font-size:.8rem}
 
-    /* =============== CARDS / PANELS =============== */
-    .card{
-      background:linear-gradient(0deg, rgba(255,255,255,.02), rgba(255,255,255,0)) , var(--card);
-      border:1px solid var(--border);
-      border-radius:16px;
-      box-shadow: var(--shadow);
-      padding:1rem;
-    }
-    .card__title{margin-top:0;font-size:1.1rem}
+    /* -------------------- Hero -------------------- */
+    .hero{padding:3.2rem 0}
+    .hero__wrap{display:grid;gap:1.2rem;grid-template-columns: 1.2fr .8fr;align-items:center}
+    @media (max-width: 960px){.hero__wrap{grid-template-columns:1fr}}
+    .hero__title{font-size:clamp(1.8rem,3.6vw,2.6rem);margin:0}
+    .hero__tag{color:var(--muted);margin:0}
+    .hero__img{border-radius:18px;overflow:hidden;border:1px solid var(--border)}
+    .hero__img > img{width:100%;height:100%;object-fit:cover}
 
-    /* =============== CALCULATOR =============== */
-    .calc__form{display:grid;gap:.75rem}
-    .form__row{display:grid;gap:.3rem}
+    /* -------------------- Grid -------------------- */
+    .grid{display:grid;gap:1.1rem}
+    @media (min-width: 960px){ .grid--2 {grid-template-columns: 1fr 1fr;} .grid--3{grid-template-columns: repeat(3,1fr);} }
+
+    /* -------------------- Calculator -------------------- */
+    .form__row{display:grid;gap:.35rem;margin-bottom:.6rem}
     .form__label{font-weight:600}
-    .form__input,.form__select{
-      background:var(--panel);color:var(--text);border:1px solid var(--border);
-      border-radius:.6rem;padding:.6rem .7rem
-    }
-    .calc__outputs{display:flex;gap:1rem;flex-wrap:wrap;margin-top:.25rem}
-    .calc__output{background:var(--bg-soft);border:1px solid var(--border);padding:.5rem .75rem;border-radius:.5rem}
+    .form__input,.form__select{background:var(--soft);color:var(--text);border:1px solid var(--border);border-radius:10px;padding:.6rem .7rem}
+    .kpi{display:flex;flex-wrap:wrap;gap:.6rem;margin-top:.5rem}
+    .kpi__pill{background:var(--soft);border:1px solid var(--border);border-radius:999px;padding:.4rem .7rem}
+    .switch{display:inline-flex;align-items:center;gap:.5rem;font-size:.92rem;color:var(--muted)}
 
-    /* =============== MARKETPLACE =============== */
-    .market__controls{display:flex;gap:.5rem;flex-wrap:wrap;margin-bottom:.75rem}
-    .market__grid{display:grid;gap:.9rem;grid-template-columns: repeat(auto-fit,minmax(200px,1fr))}
-    .product{display:grid;gap:.5rem;border:1px solid var(--border);padding:.75rem;border-radius:.75rem;background:var(--panel)}
-    .product__img{height:130px;background:linear-gradient(135deg, var(--bg-soft), var(--panel));border-radius:.5rem;border:1px solid var(--border);display:grid;place-items:center;color:var(--muted);font-weight:700}
-    .product__name{margin:.1rem 0}
-    .product__price{color:var(--brand-2);font-weight:700}
-    .badge{display:inline-block;padding:.15rem .5rem;border-radius:999px;border:1px solid var(--border);color:var(--muted);font-size:.8rem}
+    /* -------------------- Marketplace -------------------- */
+    .market__controls{display:flex;flex-wrap:wrap;gap:.5rem;margin:.75rem 0}
+    .market__grid{display:grid;gap:1rem;grid-template-columns:repeat(auto-fit,minmax(220px,1fr))}
+    .product{display:grid;gap:.6rem;border:1px solid var(--border);border-radius:14px;background:var(--panel);padding:.8rem;transition:transform .12s ease, box-shadow .2s ease}
+    .product:hover{transform:translateY(-2px);box-shadow:var(--shadow)}
+    .product__img{height:140px;border-radius:10px;overflow:hidden;border:1px solid var(--border);background:var(--soft)}
+    .product__meta{display:flex;align-items:center;justify-content:space-between}
+    .stars{color:#fbbf24} /* amber */
+    .product__price{color:var(--brand-2);font-weight:800}
 
-    .cart{
-      display:flex;align-items:center;gap:.5rem
-    }
-    .cart__count{display:inline-grid;place-items:center;min-width:22px;height:22px;border-radius:999px;background:var(--brand);color:#fff;font-size:.8rem}
+    /* -------------------- Chatbot -------------------- */
+    .chat{position:fixed;right:1rem;bottom:1rem;z-index:60}
+    .chat__toggle{width:60px;height:60px;border-radius:999px;border:none;background:linear-gradient(135deg,var(--brand),var(--brand-2));color:#fff;box-shadow:var(--shadow);cursor:pointer}
+    .chat__panel{position:fixed;right:1rem;bottom:4.8rem;width:min(380px,92vw);background:var(--panel);border:1px solid var(--border);border-radius:14px;box-shadow:var(--shadow);overflow:hidden}
+    .chat__header{display:flex;justify-content:space-between;align-items:center;padding:.65rem .8rem;background:var(--soft);border-bottom:1px solid var(--border)}
+    .chat__log{max-height:340px;overflow:auto;padding:.8rem;display:grid;gap:.5rem}
+    .bubble{padding:.55rem .75rem;border-radius:12px;max-width:85%}
+    .bubble--me{justify-self:end;background:linear-gradient(135deg,var(--brand),var(--accent));color:#fff}
+    .bubble--ai{background:var(--soft);border:1px solid var(--border)}
+    .chips{display:flex;gap:.4rem;flex-wrap:wrap;margin:.2rem .2rem .6rem}
+    .chip{background:var(--soft);border:1px solid var(--border);border-radius:999px;padding:.25rem .55rem;cursor:pointer}
+    .chat__form{display:flex;gap:.45rem;padding:.6rem;border-top:1px solid var(--border)}
+    .chat__input{flex:1;background:var(--soft);border:1px solid var(--border);border-radius:10px;padding:.55rem .7rem;color:var(--text)}
+    .chat__send{border:1px solid var(--border);background:var(--panel);color:var(--text);border-radius:10px;padding:.55rem .85rem;cursor:pointer}
 
-    /* =============== CHATBOT (floating) =============== */
-    .chat{
-      position:fixed;right:1rem;bottom:1rem;z-index:60;
-    }
-    .chat__toggle{
-      background:linear-gradient(135deg,var(--brand),var(--brand-2));color:#fff;border:none;border-radius:999px;
-      width:56px;height:56px;display:grid;place-items:center;cursor:pointer;box-shadow:var(--shadow)
-    }
-    .chat__panel{
-      position:fixed;right:1rem;bottom:4.5rem;width:min(360px,92vw);
-      background:var(--panel);border:1px solid var(--border);border-radius:12px;box-shadow:var(--shadow);overflow:hidden
-    }
-    .chat__header{padding:.6rem .8rem;background:var(--bg-soft);border-bottom:1px solid var(--border);display:flex;justify-content:space-between;align-items:center}
-    .chat__log{max-height:320px;overflow:auto;padding:.75rem;display:grid;gap:.5rem}
-    .bubble{padding:.5rem .7rem;border-radius:.6rem;max-width:85%}
-    .bubble--ai{background:var(--bg-soft);border:1px solid var(--border)}
-    .bubble--me{background:linear-gradient(135deg,var(--brand),var(--brand-2));color:#fff;justify-self:end}
-    .chat__form{display:flex;gap:.4rem;padding:.6rem;border-top:1px solid var(--border)}
-    .chat__input{flex:1;background:var(--panel);border:1px solid var(--border);border-radius:.6rem;padding:.55rem .7rem;color:var(--text)}
-    .chat__send{border:1px solid var(--border);background:var(--bg-soft);border-radius:.6rem;padding:.5rem .7rem;color:var(--text);cursor:pointer}
-
-    /* Focus & a11y */
-    :focus-visible{outline:2px solid var(--focus);outline-offset:2px}
+    /* -------------------- Footer -------------------- */
+    .footer{border-top:1px solid var(--border);padding:2rem 0;color:var(--muted)}
     .sr-only{position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap;border:0}
   </style>
 </head>
 <body class="page">
-  <a class="skip-link" href="#main">Skip to content</a>
+  <a class="sr-only" href="#main">Skip to content</a>
 
   <!-- Header -->
-  <header class="header" role="banner">
+  <header class="header">
     <div class="container header__inner">
-      <a class="brand" href="#" aria-label="Home">
-        <span class="brand__logo" aria-hidden="true">◆</span>
-        <span class="brand__name">Starter</span>
-      </a>
-
+      <a class="brand" href="#" aria-label="Home"><span class="brand__logo">◆</span><strong>NovaHub</strong></a>
       <nav class="nav" aria-label="Primary">
-        <button class="nav__toggle" aria-expanded="false" aria-controls="navMenu">Menu</button>
-        <ul class="nav__menu" id="navMenu">
-          <li><a class="nav__link" href="#calculator">Calculator</a></li>
+        <ul class="nav__menu">
           <li><a class="nav__link" href="#marketplace">Marketplace</a></li>
-          <li><a class="nav__link" href="#about">About</a></li>
+          <li><a class="nav__link" href="#calculator">Calculator</a></li>
+          <li><a class="nav__link" href="#why">Why NovaHub</a></li>
         </ul>
       </nav>
-
-      <div class="cart" aria-label="Cart">
-        <span>🛒</span><span class="cart__count" id="cartCount" aria-live="polite">0</span>
-      </div>
-
-      <button class="theme-toggle" id="themeToggle" aria-pressed="false" aria-label="Toggle dark/light">🌗</button>
+      <div class="cart" aria-label="Cart"><span>🛒</span><span id="cartCount" class="cart__count" aria-live="polite">0</span></div>
+      <button id="themeToggle" class="btn btn--ghost" aria-pressed="false" aria-label="Toggle dark/light">🌗</button>
     </div>
   </header>
 
   <!-- Hero -->
   <section class="hero">
-    <div class="container hero__inner">
-      <h1 class="hero__title">Build. Test. Ship — all in one page.</h1>
-      <p class="hero__tagline">Chat with the bot, calculate totals, and add items from the marketplace. Mobile-friendly and accessible.</p>
-      <div class="hero__cta">
-        <a class="btn btn--primary" href="#marketplace">Explore Marketplace</a>
-        <a class="btn btn--ghost" href="#calculator">Open Calculator</a>
+    <div class="container hero__wrap">
+      <div class="hero__copy">
+        <h1 class="hero__title">Everything you need — in one friendly page.</h1>
+        <p class="hero__tag">Chat with the assistant, run quick calculations, and shop from a clean, image-rich marketplace. Fast, responsive, and accessible.</p>
+        <div style="display:flex;gap:.6rem;flex-wrap:wrap;margin-top:.8rem">
+          <a class="btn btn--primary" href="#marketplace">Explore Marketplace</a>
+          <a class="btn btn--ghost" href="#calculator">Open Calculator</a>
+        </div>
+        <div style="display:flex;gap:.5rem;margin-top:1rem;flex-wrap:wrap">
+          <span class="badge">No signup needed</span>
+          <span class="badge">Works great on mobile</span>
+          <span class="badge">Dark / Light</span>
+        </div>
       </div>
+      <figure class="hero__img">
+        <!-- Free Unsplash images (can swap later) -->
+        <img src="https://images.unsplash.com/photo-1517245386807-bb43f82c33c4?q=80&w=1200&auto=format&fit=crop" width="1200" height="800" alt="Friendly modern interface preview with cards and graphs" loading="eager"/>
+      </figure>
     </div>
   </section>
 
   <main id="main">
-    <section class="section">
-      <div class="container grid">
-        <!-- Calculator -->
-        <div class="card col-4" id="calculator" aria-labelledby="calcTitle">
-          <h2 class="card__title" id="calcTitle">Calculator</h2>
-          <form class="calc__form" id="calcForm" novalidate>
-            <div class="form__row">
-              <label class="form__label" for="numA">Number A</label>
-              <input class="form__input" id="numA" name="numA" type="number" step="any" required placeholder="e.g., 12.5" />
-            </div>
-            <div class="form__row">
-              <label class="form__label" for="op">Operation</label>
-              <select class="form__select" id="op" name="op" aria-label="Operation">
-                <option value="+">Add (+)</option>
-                <option value="-">Subtract (−)</option>
-                <option value="*">Multiply (×)</option>
-                <option value="/">Divide (÷)</option>
-                <option value="%">Percent of (A % of B)</option>
-              </select>
-            </div>
-            <div class="form__row">
-              <label class="form__label" for="numB">Number B</label>
-              <input class="form__input" id="numB" name="numB" type="number" step="any" required placeholder="e.g., 3" />
-            </div>
-            <div class="calc__outputs" aria-live="polite">
-              <div class="calc__output"><strong>Result:</strong> <span id="calcResult">0</span></div>
-            </div>
-          </form>
+    <div class="container grid grid--2 section">
+      <!-- Calculator Card -->
+      <section id="calculator" class="card" aria-labelledby="calcTitle">
+        <h2 id="calcTitle" class="card__title">Smart Calculator</h2>
+        <p style="margin-top:-.4rem;color:var(--muted)">Switch between <strong>Basic</strong>, <strong>GST</strong>, and <strong>Discount</strong>. Instant results.</p>
+
+        <div class="switch" style="margin:.3rem 0 .8rem">
+          <label><input type="radio" name="mode" value="basic" checked> Basic</label>
+          <label><input type="radio" name="mode" value="gst"> GST</label>
+          <label><input type="radio" name="mode" value="discount"> Discount</label>
         </div>
 
-        <!-- Marketplace -->
-        <div class="card col-8" id="marketplace" aria-labelledby="marketTitle">
-          <div style="display:flex;align-items:center;justify-content:space-between;gap:.75rem;flex-wrap:wrap">
-            <h2 class="card__title" id="marketTitle">Marketplace</h2>
-            <span class="badge" id="marketMeta" aria-live="polite">0 items</span>
-          </div>
-
-          <div class="market__controls">
-            <label class="sr-only" for="search">Search</label>
-            <input id="search" class="form__input" type="search" placeholder="Search products…" />
-            <label class="sr-only" for="category">Category</label>
-            <select id="category" class="form__select">
-              <option value="all">All categories</option>
-              <option value="software">Software</option>
-              <option value="hardware">Hardware</option>
-              <option value="courses">Courses</option>
-            </select>
-            <label class="sr-only" for="sort">Sort by</label>
-            <select id="sort" class="form__select">
-              <option value="featured">Featured</option>
-              <option value="price-asc">Price: Low → High</option>
-              <option value="price-desc">Price: High → Low</option>
-            </select>
-          </div>
-
-          <div class="market__grid" id="marketGrid" role="list"></div>
+        <div id="calcFields">
+          <!-- Fields injected by JS based on mode -->
         </div>
+
+        <div class="kpi">
+          <div class="kpi__pill"><strong>Result:</strong> <span id="calcResult">0</span></div>
+          <div class="kpi__pill" id="calcExtra" hidden></div>
+        </div>
+      </section>
+
+      <!-- Why card -->
+      <section id="why" class="card" aria-labelledby="whyTitle">
+        <h2 id="whyTitle" class="card__title">Why people like NovaHub</h2>
+        <ul style="margin:0;padding-left:1.1rem">
+          <li>Simple, **human** design with clear hierarchy and comfy spacing.</li>
+          <li>Image-rich marketplace with fast search, filters, and cart that persists.</li>
+          <li>Helpful chatbot with ready suggestions and inline calculation support.</li>
+          <li>Accessible (labels, focus rings, contrast) and responsive across devices.</li>
+        </ul>
+        <div style="margin-top:1rem" class="grid grid--3">
+          <img class="card" alt="UI sample 1" src="https://images.unsplash.com/photo-1556157382-97eda2d62296?q=80&w=900&auto=format&fit=crop" />
+          <img class="card" alt="UI sample 2" src="https://images.unsplash.com/photo-1519389950473-47ba0277781c?q=80&w=900&auto=format&fit=crop" />
+          <img class="card" alt="UI sample 3" src="https://images.unsplash.com/photo-1515879218367-8466d910aaa4?q=80&w=900&auto=format&fit=crop" />
+        </div>
+      </section>
+    </div>
+
+    <!-- Marketplace -->
+    <section id="marketplace" class="section">
+      <div class="container card">
+        <div style="display:flex;align-items:center;justify-content:space-between;gap:.75rem;flex-wrap:wrap">
+          <h2 class="card__title">Marketplace</h2>
+          <span id="marketMeta" class="badge" aria-live="polite">0 items</span>
+        </div>
+
+        <div class="market__controls">
+          <label class="sr-only" for="search">Search</label>
+          <input id="search" class="form__input" type="search" placeholder="Search products…" />
+          <label class="sr-only" for="category">Category</label>
+          <select id="category" class="form__select">
+            <option value="all">All categories</option>
+            <option value="software">Software</option>
+            <option value="hardware">Hardware</option>
+            <option value="courses">Courses</option>
+          </select>
+          <label class="sr-only" for="sort">Sort</label>
+          <select id="sort" class="form__select">
+            <option value="featured">Featured</option>
+            <option value="price-asc">Price: Low → High</option>
+            <option value="price-desc">Price: High → Low</option>
+          </select>
+        </div>
+
+        <div id="marketGrid" class="market__grid" role="list"></div>
       </div>
     </section>
 
-    <section id="about" class="section">
-      <div class="container card">
-        <h2 class="card__title">About</h2>
-        <p>This is a minimal, production-minded starter built with semantic HTML, accessible components, and no external dependencies. You can wire the chatbot to your API and replace the placeholder product data with your backend or a headless CMS.</p>
+    <!-- Testimonials -->
+    <section class="section">
+      <div class="container grid grid--3">
+        <figure class="card">
+          <blockquote>“The UI is clean and friendly. My mom figured it out in 2 minutes.”</blockquote>
+          <figcaption style="margin-top:.6rem;color:var(--muted)">— Arjun P.</figcaption>
+        </figure>
+        <figure class="card">
+          <blockquote>“Love the dark mode and quick chatbot answers. Super handy!”</blockquote>
+          <figcaption style="margin-top:.6rem;color:var(--muted)">— Sania K.</figcaption>
+        </figure>
+        <figure class="card">
+          <blockquote>“Cart saved between visits. Calculator is actually useful daily.”</blockquote>
+          <figcaption style="margin-top:.6rem;color:var(--muted)">— Dev M.</figcaption>
+        </figure>
       </div>
     </section>
   </main>
 
-  <!-- Floating Chatbot -->
-  <aside class="chat" aria-live="polite">
-    <button class="chat__toggle" id="chatToggle" aria-expanded="false" aria-controls="chatPanel" title="Open chat">💬</button>
-    <div class="chat__panel" id="chatPanel" hidden>
-      <div class="chat__header">
-        <strong>Assistant</strong>
-        <button class="theme-toggle" id="chatClose" aria-label="Close chat">✕</button>
-      </div>
-      <div class="chat__log" id="chatLog" role="log" aria-live="polite"></div>
-      <form class="chat__form" id="chatForm" autocomplete="off">
-        <label for="chatInput" class="sr-only">Type your message</label>
-        <input class="chat__input" id="chatInput" type="text" placeholder="Try: help, time, total, calc 12+7" />
-        <button class="chat__send" type="submit">Send</button>
-      </form>
-    </div>
-  </aside>
-
-  <footer class="section" role="contentinfo">
+  <!-- Footer -->
+  <footer class="footer">
     <div class="container" style="display:flex;justify-content:space-between;align-items:center;gap:1rem;flex-wrap:wrap">
-      <small>© <span id="year"></span> Starter</small>
-      <div style="display:flex;gap:.75rem;align-items:center">
+      <small>© <span id="year"></span> NovaHub</small>
+      <div style="display:flex;gap:.8rem">
         <a class="nav__link" href="#">Privacy</a>
         <a class="nav__link" href="#">Terms</a>
       </div>
     </div>
   </footer>
 
-  <!-- =============== SCRIPT =============== -->
+  <!-- Floating Chatbot -->
+  <aside class="chat" aria-live="polite">
+    <button id="chatToggle" class="chat__toggle" aria-expanded="false" aria-controls="chatPanel" title="Open chat">💬</button>
+    <div id="chatPanel" class="chat__panel" hidden>
+      <div class="chat__header">
+        <strong>Assistant</strong>
+        <button id="chatClose" class="btn btn--ghost" aria-label="Close chat">✕</button>
+      </div>
+      <div class="chips" id="chips">
+        <button class="chip">Help</button>
+        <button class="chip">Time</button>
+        <button class="chip">Cart total</button>
+        <button class="chip">Show deals</button>
+        <button class="chip">calc 12+7</button>
+      </div>
+      <div id="chatLog" class="chat__log" role="log" aria-live="polite"></div>
+      <form id="chatForm" class="chat__form" autocomplete="off">
+        <label for="chatInput" class="sr-only">Type your message</label>
+        <input id="chatInput" class="chat__input" placeholder="Ask anything… e.g. 'find keyboard' or 'calc 5*9'"/>
+        <button class="chat__send" type="submit">Send</button>
+      </form>
+    </div>
+  </aside>
+
+  <!-- App Script -->
   <script>
-    /* =========================================================
-       THEME TOGGLE (persisted) + header nav toggle
-    ========================================================= */
-    const themeToggle = document.getElementById('themeToggle');
-    const metaThemeColor = document.querySelector('meta[name="theme-color"]');
+    /* -------------------- Theme -------------------- */
     const root = document.documentElement;
+    const metaTheme = document.getElementById('meta-theme-color');
+    const themeToggle = document.getElementById('themeToggle');
     const savedTheme = localStorage.getItem('theme');
-    const setTheme = (mode) => {
+    function setTheme(mode){
       root.setAttribute('data-theme', mode);
       localStorage.setItem('theme', mode);
-      // update address bar color if present
-      if (metaThemeColor) {
-        metaThemeColor.setAttribute('content', mode === 'light' ? '#ffffff' : '#0f172a');
-      }
-      // reflect pressed state
-      if (themeToggle) themeToggle.setAttribute('aria-pressed', mode === 'dark' ? 'true' : 'false');
-    };
+      if(metaTheme) metaTheme.setAttribute('content', mode==='light' ? '#ffffff' : '#0f172a');
+      themeToggle?.setAttribute('aria-pressed', String(mode==='dark'));
+    }
     setTheme(savedTheme || (matchMedia('(prefers-color-scheme: light)').matches ? 'light' : 'dark'));
-    themeToggle?.addEventListener('click', () => {
-      const next = root.getAttribute('data-theme') === 'light' ? 'dark' : 'light';
-      setTheme(next);
-    });
-
-    const navToggle = document.querySelector('.nav__toggle');
-    const navMenu = document.getElementById('navMenu');
-    navToggle?.addEventListener('click', () => {
-      const open = navMenu.classList.toggle('is-open');
-      navToggle.setAttribute('aria-expanded', String(open));
-    });
-
+    themeToggle?.addEventListener('click', ()=> setTheme(root.getAttribute('data-theme')==='light' ? 'dark' : 'light'));
     document.getElementById('year').textContent = new Date().getFullYear();
 
-    /* =========================================================
-       CALCULATOR (safe operations, no eval)
-    ========================================================= */
-    const calcForm = document.getElementById('calcForm');
-    const numA = document.getElementById('numA');
-    const numB = document.getElementById('numB');
-    const op = document.getElementById('op');
+    /* -------------------- Calculator -------------------- */
+    const calcFields = document.getElementById('calcFields');
     const calcResult = document.getElementById('calcResult');
-
-    function compute(a, b, op) {
-      const A = Number(a), B = Number(b);
-      if (Number.isNaN(A) || Number.isNaN(B)) return '—';
-      switch (op) {
-        case '+': return (A + B).toFixed(4).replace(/\.?0+$/,'');
-        case '-': return (A - B).toFixed(4).replace(/\.?0+$/,'');
-        case '*': return (A * B).toFixed(4).replace(/\.?0+$/,'');
-        case '/': return B === 0 ? '∞' : (A / B).toFixed(4).replace(/\.?0+$/,'');
-        case '%': return ((A/100) * B).toFixed(4).replace(/\.?0+$/,''); // A% of B
-        default: return '—';
+    const calcExtra = document.getElementById('calcExtra');
+    function renderCalc(mode='basic'){
+      let html='';
+      if(mode==='basic'){
+        html = `
+          <div class="form__row">
+            <label class="form__label" for="a">Number A</label>
+            <input id="a" class="form__input" type="number" step="any" placeholder="e.g., 12.5" required />
+          </div>
+          <div class="form__row">
+            <label class="form__label" for="op">Operation</label>
+            <select id="op" class="form__select">
+              <option value="+">Add (+)</option>
+              <option value="-">Subtract (−)</option>
+              <option value="*">Multiply (×)</option>
+              <option value="/">Divide (÷)</option>
+              <option value="%">Percent (A % of B)</option>
+            </select>
+          </div>
+          <div class="form__row">
+            <label class="form__label" for="b">Number B</label>
+            <input id="b" class="form__input" type="number" step="any" placeholder="e.g., 3" required />
+          </div>`;
+      } else if(mode==='gst'){
+        html = `
+          <div class="form__row">
+            <label class="form__label" for="base">Base Amount</label>
+            <input id="base" class="form__input" type="number" step="0.01" placeholder="0.00"/>
+          </div>
+          <div class="form__row">
+            <label class="form__label" for="rate">GST Rate (%)</label>
+            <input id="rate" class="form__input" type="number" step="0.01" placeholder="18" />
+          </div>`;
+      } else {
+        html = `
+          <div class="form__row">
+            <label class="form__label" for="price">Original Price</label>
+            <input id="price" class="form__input" type="number" step="0.01" placeholder="1000.00"/>
+          </div>
+          <div class="form__row">
+            <label class="form__label" for="off">Discount (%)</label>
+            <input id="off" class="form__input" type="number" step="0.01" placeholder="10"/>
+          </div>`;
       }
+      calcFields.innerHTML = html;
+      calcExtra.hidden = true;
+      calcResult.textContent = '0';
     }
-    function updateCalc() {
-      calcResult.textContent = compute(numA.value, numB.value, op.value);
-    }
-    calcForm?.addEventListener('input', updateCalc);
+    renderCalc();
 
-    /* =========================================================
-       MARKETPLACE (search/filter/sort + cart with localStorage)
-    ========================================================= */
+    document.querySelectorAll('input[name="mode"]').forEach(r=>{
+      r.addEventListener('change', ()=> renderCalc(r.value));
+    });
+
+    calcFields.addEventListener('input', ()=>{
+      const mode = document.querySelector('input[name="mode"]:checked').value;
+      if(mode==='basic'){
+        const A = Number(document.getElementById('a')?.value);
+        const op = document.getElementById('op')?.value;
+        const B = Number(document.getElementById('b')?.value);
+        if(Number.isNaN(A) || Number.isNaN(B)) return calcResult.textContent='—';
+        const val = op==='+'?A+B:op==='-'?A-B:op==='*'?A*B:op==='/'?(B===0?'∞':A/B):(A/100)*B;
+        calcResult.textContent = (typeof val==='number') ? Number(val.toFixed(6)).toString() : val;
+      } else if(mode==='gst'){
+        const base = Number(document.getElementById('base')?.value);
+        const rate = Number(document.getElementById('rate')?.value);
+        if(Number.isNaN(base) || Number.isNaN(rate)) return calcResult.textContent='—';
+        const tax = base * (rate/100);
+        const total = base + tax;
+        calcResult.textContent = total.toFixed(2);
+        calcExtra.hidden = false;
+        calcExtra.textContent = `Tax: ₹ ${tax.toFixed(2)}`;
+      } else {
+        const price = Number(document.getElementById('price')?.value);
+        const off = Number(document.getElementById('off')?.value);
+        if(Number.isNaN(price) || Number.isNaN(off)) return calcResult.textContent='—';
+        const saved = price * (off/100);
+        const pay = price - saved;
+        calcResult.textContent = pay.toFixed(2);
+        calcExtra.hidden = false;
+        calcExtra.textContent = `You save: ₹ ${saved.toFixed(2)}`;
+      }
+    });
+
+    /* -------------------- Marketplace -------------------- */
     const products = [
-      {id:1, name:'Pro Chat Widget', price:19, category:'software'},
-      {id:2, name:'AI Image Credits (100)', price:12, category:'software'},
-      {id:3, name:'USB-C Hub (8-in-1)', price:39, category:'hardware'},
-      {id:4, name:'Mechanical Keyboard', price:79, category:'hardware'},
-      {id:5, name:'Frontend Masterclass', price:59, category:'courses'},
-      {id:6, name:'Backend Bootcamp', price:89, category:'courses'},
+      {id:1, name:'Pro Chat Widget', price:19, category:'software', rating:4.7, img:'https://images.unsplash.com/photo-1545987796-200677ee1011?q=80&w=800&auto=format&fit=crop'},
+      {id:2, name:'AI Image Credits (100)', price:12, category:'software', rating:4.5, img:'https://images.unsplash.com/photo-1531297484001-80022131f5a1?q=80&w=800&auto=format&fit=crop'},
+      {id:3, name:'USB-C Hub (8-in-1)', price:39, category:'hardware', rating:4.4, img:'https://images.unsplash.com/photo-1517336714731-489689fd1ca8?q=80&w=800&auto=format&fit=crop'},
+      {id:4, name:'Mechanical Keyboard', price:79, category:'hardware', rating:4.8, img:'https://images.unsplash.com/photo-1517336714731-489689fd1ca8?q=80&w=800&auto=format&fit=crop'},
+      {id:5, name:'Frontend Masterclass', price:59, category:'courses', rating:4.9, img:'https://images.unsplash.com/photo-1498050108023-c5249f4df085?q=80&w=800&auto=format&fit=crop'},
+      {id:6, name:'Backend Bootcamp', price:89, category:'courses', rating:4.6, img:'https://images.unsplash.com/photo-1555066931-4365d14bab8c?q=80&w=800&auto=format&fit=crop'},
     ];
     const marketGrid = document.getElementById('marketGrid');
     const marketMeta = document.getElementById('marketMeta');
@@ -367,124 +388,94 @@
     const sort = document.getElementById('sort');
     const cartCount = document.getElementById('cartCount');
 
-    const CART_KEY = 'starter_cart_v1';
+    const CART_KEY = 'novahub_cart_v1';
     const loadCart = () => JSON.parse(localStorage.getItem(CART_KEY) || '[]');
-    const saveCart = (items) => localStorage.setItem(CART_KEY, JSON.stringify(items));
-    const setCartBadge = () => { cartCount.textContent = loadCart().reduce((n,i)=>n+i.qty,0); };
+    const saveCart = v => localStorage.setItem(CART_KEY, JSON.stringify(v));
+    const setCartBadge = () => cartCount.textContent = loadCart().reduce((n,i)=>n+i.qty,0);
 
+    function stars(n){
+      const full = Math.round(n); // simple
+      return '★'.repeat(full) + '☆'.repeat(5-full);
+    }
     function productCard(p){
       return `
         <article class="product" role="listitem" aria-label="${p.name}">
-          <div class="product__img" aria-hidden="true">IMG</div>
-          <div>
-            <h3 class="product__name">${p.name}</h3>
-            <div style="display:flex;align-items:center;justify-content:space-between">
-              <span class="product__price">₹ ${p.price}</span>
-              <span class="badge">${p.category}</span>
-            </div>
+          <div class="product__img"><img src="${p.img}" alt="${p.name}" loading="lazy"></div>
+          <div class="product__meta">
+            <h3 style="margin:.2rem 0">${p.name}</h3>
+            <span class="product__price">₹ ${p.price}</span>
+          </div>
+          <div style="display:flex;justify-content:space-between;align-items:center">
+            <span class="badge"><span class="stars" aria-hidden="true">${stars(p.rating)}</span> <span class="sr-only">Rating ${p.rating} of 5</span></span>
+            <span class="badge">${p.category}</span>
           </div>
           <button class="btn btn--primary" data-add="${p.id}" aria-label="Add ${p.name} to cart">Add to cart</button>
         </article>
       `;
     }
-    function renderList(list){
-      marketGrid.innerHTML = list.map(productCard).join('');
-      marketMeta.textContent = `${list.length} item${list.length!==1?'s':''}`;
-    }
     function currentList(){
-      let q = search.value.trim().toLowerCase();
-      let cat = category.value;
-      let filtered = products.filter(p => (cat==='all' || p.category===cat) && p.name.toLowerCase().includes(q));
-      if (sort.value==='price-asc') filtered.sort((a,b)=>a.price-b.price);
-      else if (sort.value==='price-desc') filtered.sort((a,b)=>b.price-a.price);
-      return filtered;
+      const q = search.value.trim().toLowerCase();
+      const cat = category.value;
+      let list = products.filter(p => (cat==='all'||p.category===cat) && p.name.toLowerCase().includes(q));
+      if (sort.value==='price-asc') list.sort((a,b)=>a.price-b.price);
+      else if (sort.value==='price-desc') list.sort((a,b)=>b.price-a.price);
+      return list;
     }
-    renderList(currentList());
-    setCartBadge();
+    function renderList(){ const list=currentList(); marketGrid.innerHTML=list.map(productCard).join(''); marketMeta.textContent=`${list.length} item${list.length!==1?'s':''}`; }
+    renderList(); setCartBadge();
 
-    [search, category, sort].forEach(el => el.addEventListener('input', ()=>renderList(currentList())));
+    [search,category,sort].forEach(el=> el.addEventListener('input', renderList));
     marketGrid.addEventListener('click', (e)=>{
-      const id = e.target?.dataset?.add;
-      if(!id) return;
+      const id = e.target?.dataset?.add; if(!id) return;
       const cart = loadCart();
       const idx = cart.findIndex(i=>i.id===Number(id));
       if(idx>-1) cart[idx].qty += 1; else cart.push({id:Number(id), qty:1});
       saveCart(cart); setCartBadge();
-      e.target.textContent = 'Added ✓'; setTimeout(()=> e.target.textContent='Add to cart', 900);
+      e.target.textContent='Added ✓'; setTimeout(()=> e.target.textContent='Add to cart', 900);
     });
 
-    /* =========================================================
-       CHATBOT (simple scripted intents; safe DOM updates)
-       Replace `mockReply` with your API call later.
-    ========================================================= */
+    /* -------------------- Chatbot -------------------- */
     const chatToggle = document.getElementById('chatToggle');
     const chatPanel = document.getElementById('chatPanel');
     const chatClose = document.getElementById('chatClose');
     const chatLog = document.getElementById('chatLog');
     const chatForm = document.getElementById('chatForm');
     const chatInput = document.getElementById('chatInput');
+    const chips = document.getElementById('chips');
 
-    function openChat(){ chatPanel.hidden = false; chatToggle.setAttribute('aria-expanded','true'); chatInput.focus(); }
-    function closeChat(){ chatPanel.hidden = true; chatToggle.setAttribute('aria-expanded','false'); }
-
+    function openChat(){ chatPanel.hidden=false; chatToggle.setAttribute('aria-expanded','true'); chatInput.focus(); }
+    function closeChat(){ chatPanel.hidden=true; chatToggle.setAttribute('aria-expanded','false'); }
     chatToggle.addEventListener('click', ()=> chatPanel.hidden ? openChat() : closeChat());
     chatClose.addEventListener('click', closeChat);
+    chips.addEventListener('click', (e)=>{ if(e.target.classList.contains('chip')) { chatInput.value = e.target.textContent; chatInput.focus(); } });
 
     function bubble(text, who='ai'){
-      const b = document.createElement('div');
-      b.className = 'bubble ' + (who==='me' ? 'bubble--me' : 'bubble--ai');
-      b.textContent = text; // safe: no HTML injection
-      chatLog.appendChild(b);
-      chatLog.scrollTop = chatLog.scrollHeight;
+      const b=document.createElement('div'); b.className='bubble '+(who==='me'?'bubble--me':'bubble--ai'); b.textContent=text; chatLog.appendChild(b); chatLog.scrollTop=chatLog.scrollHeight;
     }
     function parseInlineCalc(s){
-      const m = s.match(/(-?\d+(?:\.\d+)?)\s*([+\-*/])\s*(-?\d+(?:\.\d+)?)/);
-      if(!m) return null;
-      const A = parseFloat(m[1]); const op = m[2]; const B = parseFloat(m[3]);
-      if(op==='/' && B===0) return '∞';
-      const val = op==='+'?A+B:op==='-'?A-B:op==='*'?A*B:A/B;
-      return Number(val.toFixed(6)).toString();
+      const m=s.match(/(-?\d+(?:\.\d+)?)\s*([+\-*/])\s*(-?\d+(?:\.\d+)?)/); if(!m) return null;
+      const A=parseFloat(m[1]), op=m[2], B=parseFloat(m[3]); if(op==='/'&&B===0) return '∞';
+      const v = op==='+'?A+B:op==='-'?A-B:op==='*'?A*B:A/B; return Number(v.toFixed(6)).toString();
     }
-    function mockReply(msg){
-      const text = msg.trim().toLowerCase();
-      if (!text) return "Say 'help' to see what I can do.";
-      if (text === 'help') return "I can: (1) answer time with 'time', (2) show cart total with 'total', (3) quick math: 'calc 12+7' or type an expression like '5*9', (4) type 'market' to get a link to products, (5) 'clear' to reset chat.";
-      if (text === 'time') return "Local time: " + new Date().toLocaleString();
-      if (text === 'total') return "Items in cart: " + (loadCart().reduce((n,i)=>n+i.qty,0));
-      if (text === 'market') return "Use the Marketplace section on this page. Try search, filter, and sort!";
-      if (text === 'clear') { chatLog.innerHTML=''; return "Chat cleared. ✨"; }
-      if (text.startsWith('calc ')) {
-        const res = parseInlineCalc(text.slice(5));
-        return res ? ("Result: " + res) : "Please use e.g. 'calc 12+7', 'calc 9/3', 'calc 5*2'.";
+    function reply(msg){
+      const t=msg.trim().toLowerCase(); if(!t) return "Say 'help' to see options.";
+      if(t==='help') return "I can: (1) show time, (2) compute e.g., 'calc 12+7', (3) show 'deals', (4) 'cart total', (5) search: 'find keyboard'.";
+      if(t==='time') return "Local time: "+new Date().toLocaleString();
+      if(t==='cart total') return "Items in cart: "+loadCart().reduce((n,i)=>n+i.qty,0);
+      if(t.includes('deals')) return "Today’s picks: Pro Chat Widget ₹ 19, USB-C Hub ₹ 39, Mechanical Keyboard ₹ 79.";
+      if(t.startsWith('find ')){
+        const q=t.replace('find ','').trim();
+        const hits=products.filter(p=>p.name.toLowerCase().includes(q));
+        return hits.length?`Found ${hits.length}: `+hits.map(h=>h.name).join(', '):'No matches.';
       }
-      const res2 = parseInlineCalc(text);
-      if (res2) return "Result: " + res2;
-      return "Got it! (This is a demo bot.) Wire me to your API for real answers.";
+      if(t.startsWith('calc ')){ const r=parseInlineCalc(t.slice(5)); return r?('Result: '+r):"Try 'calc 12+7' or 'calc 9/3'."; }
+      const r2=parseInlineCalc(t); if(r2) return 'Result: '+r2;
+      return "Got it! (Demo bot) — hook me to your API for real answers.";
     }
+    chatForm.addEventListener('submit',(e)=>{e.preventDefault(); const msg=chatInput.value; if(!msg.trim()) return; bubble(msg,'me'); chatInput.value=''; setTimeout(()=>bubble(reply(msg),'ai'),140); });
 
-    chatForm.addEventListener('submit', (e)=>{
-      e.preventDefault();
-      const msg = chatInput.value;
-      if(!msg.trim()) return;
-      bubble(msg, 'me');
-      chatInput.value='';
-      setTimeout(()=> bubble(mockReply(msg), 'ai'), 150);
-    });
-
-    /* =========================================================
-       SMALL ENHANCEMENTS
-    ========================================================= */
-    // close menu after clicking a link (mobile)
-    navMenu?.addEventListener('click', (e)=>{
-      if(e.target.matches('a')) { navMenu.classList.remove('is-open'); navToggle?.setAttribute('aria-expanded','false'); }
-    });
-
-    // keyboard open chat with "/" (except in inputs)
-    document.addEventListener('keydown', (e)=>{
-      if (e.key === '/' && document.activeElement?.tagName !== 'INPUT' && document.activeElement?.tagName !== 'TEXTAREA'){
-        e.preventDefault(); openChat();
-      }
-    });
+    /* -------------------- Small UX helpers -------------------- */
+    document.addEventListener('keydown',(e)=>{ if(e.key==='/' && document.activeElement?.tagName!=='INPUT' && document.activeElement?.tagName!=='TEXTAREA'){ e.preventDefault(); openChat(); }});
   </script>
 </body>
 </html>
