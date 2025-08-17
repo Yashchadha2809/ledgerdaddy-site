@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html lang="en" class="scroll-smooth">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Log in – Ledgerdaddy</title>
+  <meta name="theme-color" content="#1A237E" />
+  <link rel="preconnect" href="https://images.unsplash.com" />
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors:{ indigoDeep:"#1A237E", emerald:"#2E7D32", cyanBright:"#00BCD4", accentOrange:"#FF7043" },
+          boxShadow:{ lift:"0 14px 34px rgba(0,0,0,.12)" }
+        }
+      }
+    }
+  </script>
+  <style>
+    .card{transition:transform .12s ease, box-shadow .2s ease}
+    .card:hover{transform:translateY(-2px); box-shadow:0 14px 34px rgba(0,0,0,.14)}
+    .hero-img{background:url('https://images.unsplash.com/photo-1586521995568-39ef16c6934d?q=80&w=1920&auto=format&fit=crop') center/cover no-repeat;}
+  </style>
+</head>
+<body class="bg-gray-50 text-gray-900">
+
+  <!-- Topbar -->
+  <header class="fixed top-0 inset-x-0 z-50 border-b border-gray-200 bg-white/90 backdrop-blur">
+    <div class="max-w-7xl mx-auto px-4 py-3 flex items-center justify-between">
+      <a href="/" class="flex items-center gap-2" aria-label="Home">
+        <span class="grid h-9 w-9 place-items-center rounded-xl bg-gradient-to-tr from-cyanBright to-emerald text-white font-extrabold shadow">◆</span>
+        <span class="text-xl font-bold text-indigoDeep">Ledgerdaddy</span>
+        <span class="ml-2 hidden sm:inline-flex text-[11px] px-2 py-0.5 rounded-full border border-cyanBright/40 text-cyanBright">AI Customs</span>
+      </a>
+      <nav class="hidden md:flex items-center gap-6 text-sm font-medium" aria-label="Main">
+        <a href="/#marketplace" class="hover:text-cyanBright">Marketplace</a>
+        <a href="/#calculator" class="hover:text-cyanBright">Calculator</a>
+        <a href="/#hsfinder" class="hover:text-cyanBright">HS Finder</a>
+        <a href="/#chat" class="hover:text-cyanBright">Chat</a>
+        <a href="/#news" class="hover:text-cyanBright">News</a>
+        <a href="/#learn" class="hover:text-cyanBright">Academy</a>
+        <a href="/#pricing" class="hover:text-cyanBright">Pricing</a>
+      </nav>
+      <div class="hidden md:flex items-center gap-2">
+        <a href="/log-in" class="border px-4 py-2 rounded-lg">Log in</a>
+        <a href="/personal-sign-up" class="bg-emerald text-white px-4 py-2 rounded-lg hover:opacity-95">Sign up</a>
+      </div>
+      <a href="/personal-sign-up" class="md:hidden bg-emerald text-white px-3 py-1.5 rounded-lg">Start</a>
+    </div>
+  </header>
+
+  <!-- Hero -->
+  <section class="pt-24 md:pt-28">
+    <div class="hero-img">
+      <div class="backdrop-brightness-90 bg-gradient-to-r from-indigoDeep/70 to-cyanBright/60">
+        <div class="max-w-3xl mx-auto px-4 py-12 text-white">
+          <h1 class="text-4xl md:text-5xl font-extrabold leading-tight">Welcome back</h1>
+          <p class="mt-3 text-white/95">Log in to view your saved calcs, HS suggestions, and chat history.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Login card -->
+  <main class="max-w-3xl mx-auto px-4 -mt-10">
+    <div class="bg-white border border-gray-200 rounded-2xl shadow p-6 md:p-8">
+      <form id="loginForm" class="grid gap-5">
+        <div class="grid md:grid-cols-2 gap-4">
+          <label class="grid gap-1 text-sm">
+            <span class="font-medium">Email</span>
+            <input name="email" type="email" class="border rounded-lg px-3 py-2" placeholder="you@example.com" required>
+          </label>
+          <label class="grid gap-1 text-sm">
+            <span class="font-medium">Password</span>
+            <input name="password" type="password" class="border rounded-lg px-3 py-2" placeholder="••••••••" required>
+          </label>
+        </div>
+
+        <div class="flex items-center justify-between text-sm">
+          <label class="inline-flex items-center gap-2">
+            <input type="checkbox" class="h-4 w-4 border rounded">
+            <span>Remember me</span>
+          </label>
+          <a href="#" class="text-cyanBright hover:underline">Forgot password?</a>
+        </div>
+
+        <button class="bg-emerald text-white px-4 py-2 rounded-lg text-base font-semibold" type="submit">
+          Log in
+        </button>
+
+        <p class="text-sm text-gray-600">
+          Don’t have an account?
+          <a href="/personal-sign-up" class="text-cyanBright hover:underline">Create one</a>.
+        </p>
+      </form>
+
+      <div class="mt-6 text-sm">
+        <a href="/" class="text-cyanBright">← Back to home</a>
+      </div>
+    </div>
+  </main>
+
+  <!-- Footer -->
+  <footer class="text-center text-xs text-gray-500 mt-10 mb-8">
+    © <span id="year"></span> Ledgerdaddy
+  </footer>
+
+  <script>
+    document.getElementById('year').textContent = new Date().getFullYear();
+
+    // Demo submit: toast + go home
+    document.getElementById('loginForm').addEventListener('submit', function(e){
+      e.preventDefault();
+      const t=document.createElement('div');
+      t.textContent='Logged in (demo). Backend will be added later.';
+      t.className='fixed bottom-6 right-6 bg-gray-900 text-white text-sm px-3 py-2 rounded-lg shadow';
+      document.body.appendChild(t);
+      setTimeout(()=>{ t.remove(); window.location.href = "/"; }, 1200);
+    });
+  </script>
+</body>
+</html>
