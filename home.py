@@ -1,4 +1,8 @@
-<!DOCTYPE html>
+from flask import Flask, Response
+
+app = Flask(__name__)
+
+HTML = r"""<!DOCTYPE html>
 <html lang="en" class="scroll-smooth">
 <head>
   <meta charset="UTF-8" />
@@ -553,4 +557,16 @@
     $('#nlBtn').addEventListener('click',(e)=>{ e.preventDefault(); const t=document.createElement('div'); t.textContent='Subscribed'; t.className='fixed bottom-24 right-4 bg-gray-900 text-white text-sm px-3 py-2 rounded-lg shadow'; document.body.appendChild(t); setTimeout(()=>t.remove(),1400); });
   </script>
 </body>
-</html>
+</html>"""
+
+@app.route("/")
+def index():
+    return Response(HTML, mimetype="text/html; charset=utf-8")
+
+@app.get("/health")
+def health():
+    return {"ok": True}
+
+if __name__ == "__main__":
+    # pip install flask
+    app.run(host="127.0.0.1", port=5000, debug=True)
