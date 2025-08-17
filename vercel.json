@@ -1,5 +1,11 @@
 {
   "version": 2,
+  "functions": {
+    "index.py": {
+      "runtime": "python3.11",
+      "maxDuration": 10
+    }
+  },
   "builds": [
     { "src": "index.py", "use": "@vercel/python" }
   ],
