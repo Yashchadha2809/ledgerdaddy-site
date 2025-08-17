@@ -1,76 +1,677 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" class="scroll-smooth">
 <head>
-  <meta charset="utf-8" />
-  <title>Terms & Conditions — LedgerDaddy</title>
+  <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <meta name="robots" content="noindex" />
+  <title>Chadaddy – Global AI Customs Platform</title>
+  <meta name="description" content="Your AI trade partner — chat to learn, find HS codes, calculate duties globally, and book verified brokers." />
+  <meta name="theme-color" content="#1A237E" id="metaTheme" />
+  <link rel="preconnect" href="https://images.unsplash.com" />
+  <link rel="preload" as="image" href="https://images.unsplash.com/photo-1586521995568-39ef16c6934d?q=80&w=1600&auto=format&fit=crop" fetchpriority="high" />
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    // Tailwind config for brand tokens
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            indigoDeep: "#1A237E",
+            emerald: "#2E7D32",
+            cyanBright: "#00BCD4",
+            warmGray: "#FAFAFA",
+            accentOrange: "#FF7043"
+          },
+          boxShadow: {
+            lift: "0 12px 28px rgba(0,0,0,.12)"
+          },
+          borderRadius: {
+            xl2: "1rem"
+          }
+        }
+      },
+      darkMode: "class"
+    };
+  </script>
   <style>
-    body{font-family:Inter,system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif;margin:0;background:#0B0B12;color:#E6E6F0}
-    main{max-width:900px;margin:0 auto;padding:48px 20px}
-    a{color:#22D3EE} h1{font-size:32px;margin:0 0 6px} h2{font-size:20px;margin:28px 0 8px}
-    p,li{line-height:1.6;color:#C9CBD3} .muted{color:#9CA3AF;font-size:14px}
-    .card{background:#14141d;border:1px solid #2a2a36;border-radius:14px;padding:16px}
-    header,footer{max-width:900px;margin:0 auto;padding:16px 20px;color:#9CA3AF}
+    /* light glass header */
+    .glass {
+      backdrop-filter: blur(12px);
+      background: linear-gradient(180deg, rgba(26,35,126,.08), rgba(26,35,126,.03));
+    }
+    .glass-dark {
+      backdrop-filter: blur(12px);
+      background: linear-gradient(180deg, rgba(26,35,126,.55), rgba(26,35,126,.22));
+    }
+    /* simple scroll shadows for sticky bars */
+    .sticky-shadow{box-shadow:0 8px 18px rgba(0,0,0,.08)}
+    .card { transition: transform .12s ease, box-shadow .2s ease; }
+    .card:hover { transform: translateY(-2px); box-shadow: 0 14px 34px rgba(0,0,0,.14); }
   </style>
 </head>
-<body>
-<header><a href="index.html">← Back to site</a></header>
-<main>
-  <h1>Terms &amp; Conditions</h1>
-  <p class="muted">Review with legal counsel before publishing. This is a template.</p>
-  <div class="card"><strong>Company:</strong> RUn leadgerdaddy Epicfash Global LLC, 293 Whitehead ROad, NJ 08619 USA</div>
-  <p class="muted">Last updated: <span id="d"></span></p>
+<body class="bg-warmGray dark:bg-gray-950 text-gray-900 dark:text-gray-100">
+  <!-- ===== Sticky Navbar ===== -->
+  <header id="topbar" class="fixed top-0 inset-x-0 z-50 border-b border-gray-200/70 dark:border-white/10 glass dark:glass-dark">
+    <div class="max-w-7xl mx-auto flex items-center justify-between px-4 py-3">
+      <a href="#home" class="flex items-center space-x-2">
+        <span class="grid h-9 w-9 place-items-center rounded-xl bg-gradient-to-tr from-cyanBright to-emerald text-white font-extrabold shadow-lift">◆</span>
+        <span class="text-xl font-bold text-indigoDeep dark:text-white">Chadaddy</span>
+        <span class="ml-2 hidden sm:inline-flex text-xs px-2 py-0.5 rounded-full border border-cyanBright/40 text-cyanBright">AI Customs</span>
+      </a>
+      <nav class="hidden md:flex items-center gap-6 text-sm font-medium">
+        <a href="#marketplace" class="hover:text-cyanBright">Marketplace</a>
+        <a href="#calculator" class="hover:text-cyanBright">Duty Calculator</a>
+        <a href="#hsfinder" class="hover:text-cyanBright">HS Finder</a>
+        <a href="#chat" class="hover:text-cyanBright">Chat</a>
+        <a href="#news" class="hover:text-cyanBright">News</a>
+        <a href="#learn" class="hover:text-cyanBright">Academy</a>
+        <a href="#pricing" class="hover:text-cyanBright">Pricing</a>
+      </nav>
+      <div class="flex items-center gap-2">
+        <button id="themeBtn" class="rounded-lg border px-3 py-2 hover:bg-gray-100 dark:hover:bg-white/10" aria-pressed="false" title="Toggle dark mode">🌗</button>
+        <a href="#signup" class="bg-emerald text-white px-4 py-2 rounded-lg hover:opacity-95">Sign up</a>
+      </div>
+    </div>
+  </header>
 
-  <h2>1. Agreement</h2>
-  <p>By using LedgerDaddy, you agree to these Terms. If you use the service on behalf of an organization, you represent you are authorized to bind it.</p>
+  <!-- ===== Sticky Mobile CTA (bottom) ===== -->
+  <div class="md:hidden fixed bottom-0 inset-x-0 z-40 bg-white/90 dark:bg-gray-900/90 border-t border-gray-200 dark:border-white/10 backdrop-blur sticky-shadow">
+    <div class="max-w-7xl mx-auto px-3 py-2 grid grid-cols-3 gap-2">
+      <a href="#calculator" class="text-center text-xs bg-emerald text-white py-2 rounded">Get Estimate</a>
+      <a href="#marketplace" class="text-center text-xs bg-cyanBright text-black py-2 rounded">Find Broker</a>
+      <a href="#chat" class="text-center text-xs bg-gray-900 text-white py-2 rounded dark:bg-white dark:text-black">Chat</a>
+    </div>
+  </div>
 
-  <h2>2. Services</h2>
-  <p>We provide AI-assisted accounting workflows through chat and web. Features may change. Free trial: 7 days, no credit card required.</p>
+  <!-- ===== Hero ===== -->
+  <section id="home" class="pt-28 md:pt-32 pb-12 bg-gradient-to-r from-indigoDeep to-cyanBright text-white">
+    <div class="max-w-7xl mx-auto px-4 text-center md:text-left grid md:grid-cols-2 gap-8 items-center">
+      <div>
+        <h1 class="text-4xl md:text-5xl font-extrabold leading-tight">Your AI Trade Partner — Learn, Calculate, Clear.</h1>
+        <p class="mt-3 text-lg text-white/90">Ask questions like ChatGPT, find HS codes, calculate duties globally, and book verified brokers.</p>
+        <div class="mt-6 flex flex-col md:flex-row gap-3 md:gap-4">
+          <a href="#calculator" class="bg-emerald text-white px-6 py-3 rounded-xl font-semibold">Get Duty Estimate</a>
+          <a href="#marketplace" class="bg-gray-900 text-white px-6 py-3 rounded-xl font-semibold dark:bg-white dark:text-black">Find Broker</a>
+          <a href="#chat" class="bg-white text-indigoDeep px-6 py-3 rounded-xl font-semibold hover:bg-gray-100">Start Free Chat</a>
+        </div>
+        <div class="mt-6 flex flex-wrap gap-4 text-sm text-white/90">
+          <span class="px-3 py-1 rounded-full border border-white/30">★ 4.9 avg rating</span>
+          <span class="px-3 py-1 rounded-full border border-white/30">10,000+ duty estimates</span>
+          <span class="px-3 py-1 rounded-full border border-white/30">2,000+ verified CHAs</span>
+          <span id="ticker" class="px-3 py-1 rounded-full border border-white/30">5 shipments cleared today at JNPT</span>
+        </div>
+      </div>
+      <div class="bg-white/10 rounded-2xl p-4 shadow-lift">
+        <!-- Calculator Teaser Widget -->
+        <div class="rounded-xl overflow-hidden">
+          <img class="aspect-video object-cover" src="https://images.unsplash.com/photo-1586521995568-39ef16c6934d?q=80&w=1600&auto=format&fit=crop" alt="Global logistics hero" />
+        </div>
+        <div class="bg-white text-gray-900 rounded-xl p-4 mt-4">
+          <p class="font-semibold">Quick Duty Teaser</p>
+          <div class="grid grid-cols-1 sm:grid-cols-3 gap-3 mt-3">
+            <select id="tzCountry" class="border rounded-lg px-3 py-2">
+              <option>IN</option><option>US</option><option>EU</option><option>UK</option>
+            </select>
+            <input id="tzHS" class="border rounded-lg px-3 py-2" placeholder="HS e.g. 8517" />
+            <input id="tzAV" type="number" class="border rounded-lg px-3 py-2" placeholder="Value e.g. 100000" />
+          </div>
+          <button id="tzBtn" class="mt-3 w-full bg-emerald text-white py-2 rounded-lg">Quick Estimate</button>
+          <div id="tzOut" class="mt-3 text-sm"></div>
+          <p class="text-xs text-gray-500 mt-1">See full breakdown in the calculator.</p>
+        </div>
+      </div>
+    </div>
+  </section>
 
-  <h2>3. Your responsibilities</h2>
-  <ul>
-    <li>Provide accurate account information and keep credentials secure.</li>
-    <li>Use the service only for lawful business purposes.</li>
-    <li>Ensure your use complies with tax and accounting obligations.</li>
-  </ul>
+  <!-- ===== Persona / How it works ===== -->
+  <section id="how-it-works" class="py-14 bg-white dark:bg-gray-950">
+    <div class="max-w-7xl mx-auto px-6">
+      <h2 class="text-3xl font-bold text-gray-900 dark:text-white text-center">How It Works</h2>
+      <div class="mt-8 grid md:grid-cols-3 gap-6">
+        <div class="card p-6 bg-white dark:bg-gray-900 rounded-xl2 border border-gray-200 dark:border-white/10">
+          <h3 class="font-semibold text-lg">1) Chat</h3>
+          <p class="text-gray-600 dark:text-gray-300 mt-1">Ask anything about HS, duties, docs, Incoterms.</p>
+          <a href="#chat" class="mt-4 inline-block text-cyanBright">Chat with Chadaddy →</a>
+        </div>
+        <div class="card p-6 bg-white dark:bg-gray-900 rounded-xl2 border border-gray-200 dark:border-white/10">
+          <h3 class="font-semibold text-lg">2) Calculate</h3>
+          <p class="text-gray-600 dark:text-gray-300 mt-1">Enter HS & value to see line-by-line duties.</p>
+          <a href="#calculator" class="mt-4 inline-block text-cyanBright">Try Calculator →</a>
+        </div>
+        <div class="card p-6 bg-white dark:bg-gray-900 rounded-xl2 border border-gray-200 dark:border-white/10">
+          <h3 class="font-semibold text-lg">3) Connect</h3>
+          <p class="text-gray-600 dark:text-gray-300 mt-1">Book verified brokers & clear faster.</p>
+          <a href="#marketplace" class="mt-4 inline-block text-cyanBright">Find a Broker →</a>
+        </div>
+      </div>
+    </div>
+  </section>
 
-  <h2>4. Fees & billing</h2>
-  <p>Paid plans renew monthly unless canceled. Taxes may apply. You can downgrade or cancel before the next billing cycle.</p>
+  <!-- ===== Featured Brokers (Spotlight) ===== -->
+  <section id="marketplace" class="py-16 bg-gray-50 dark:bg-gray-900">
+    <div class="max-w-7xl mx-auto px-6">
+      <div class="flex items-end justify-between gap-3">
+        <h2 class="text-3xl font-bold">Find Your Broker</h2>
+        <div class="hidden md:flex items-center gap-2">
+          <input id="fSearch" class="border rounded-lg px-3 py-2 dark:bg-gray-950" placeholder="Search broker or HS…" />
+          <select id="fSort" class="border rounded-lg px-3 py-2 dark:bg-gray-950">
+            <option value="featured">Featured</option>
+            <option value="rating">Rating</option>
+            <option value="price">Price from</option>
+            <option value="response">Response time</option>
+          </select>
+          <button id="openFilters" class="border rounded-lg px-3 py-2">Filters</button>
+        </div>
+      </div>
 
-  <h2>5. Acceptable use</h2>
-  <p>No unlawful, infringing, harmful, or abusive content. See <a href="acceptable-use.html">Acceptable Use</a>.</p>
+      <!-- Filters drawer (mobile) -->
+      <div id="drawer" class="fixed inset-0 z-40 hidden">
+        <div class="absolute inset-0 bg-black/40"></div>
+        <aside class="absolute left-0 top-0 h-full w-80 bg-white dark:bg-gray-900 p-4 border-r border-gray-200 dark:border-white/10">
+          <div class="flex items-center justify-between mb-3">
+            <h3 class="font-semibold">Filters</h3>
+            <button id="closeFilters" class="border rounded-lg px-3 py-1">Close</button>
+          </div>
+          <div class="grid gap-3">
+            <select id="fCountry" class="border rounded-lg px-3 py-2"><option>IN</option><option>US</option><option>EU</option><option>UK</option></select>
+            <input id="fPort" class="border rounded-lg px-3 py-2" placeholder="Port e.g. JNPT" />
+            <select id="fMode" class="border rounded-lg px-3 py-2"><option>Sea FCL</option><option>Sea LCL</option><option>Air</option><option>Courier</option><option>ICD</option></select>
+            <input id="fHS" class="border rounded-lg px-3 py-2" placeholder="Commodity / HS" />
+            <select id="fSvc" class="border rounded-lg px-3 py-2"><option>Clearance only</option><option>Clearance + Transport</option><option>Drawback</option><option>Bonded warehousing</option><option>License handling</option></select>
+            <input id="fBudget" type="number" class="border rounded-lg px-3 py-2" placeholder="Budget max" />
+            <select id="fSla" class="border rounded-lg px-3 py-2"><option>Any SLA</option><option>Standard</option><option>Express</option></select>
+            <label class="text-sm"><input id="bVerified" type="checkbox" class="mr-2">Verified only</label>
+            <button id="applyFilters" class="bg-emerald text-white py-2 rounded-lg">Apply</button>
+          </div>
+        </aside>
+      </div>
 
-  <h2>6. Integrations</h2>
-  <p>Third-party integrations are optional and governed by their own terms and privacy policies.</p>
+      <div id="brokGrid" class="mt-6 grid sm:grid-cols-2 lg:grid-cols-4 gap-6"></div>
 
-  <h2>7. IP rights</h2>
-  <p>We own the services and branding. You own your data and grant us a limited license to process it to provide the services.</p>
+      <!-- Compare tray -->
+      <div id="compareTray" class="hidden fixed bottom-16 md:bottom-6 inset-x-0 z-30">
+        <div class="max-w-3xl mx-auto bg-white dark:bg-gray-900 border border-gray-200 dark:border-white/10 rounded-xl shadow-lift px-4 py-3 flex items-center justify-between">
+          <div class="text-sm"><strong>Compare:</strong> <span id="cmpNames" class="text-gray-600 dark:text-gray-300"></span></div>
+          <div class="flex items-center gap-2">
+            <button id="cmpClear" class="border rounded-lg px-3 py-2">Clear</button>
+            <button id="cmpRfp" class="bg-cyanBright text-black px-3 py-2 rounded-lg">Request quotes</button>
+          </div>
+        </div>
+      </div>
 
-  <h2>8. Confidentiality</h2>
-  <p>We will safeguard your confidential information and use it only to deliver the services, except where disclosure is required by law.</p>
+      <div class="mt-6 text-center">
+        <a href="#marketplace" class="inline-block bg-emerald text-white px-6 py-3 rounded-lg">Browse All Brokers</a>
+      </div>
+    </div>
+  </section>
 
-  <h2>9. Warranties & disclaimers</h2>
-  <p>The service is provided “as is.” We disclaim implied warranties to the maximum extent permitted by law.</p>
+  <!-- ===== Global Duty Calculator ===== -->
+  <section id="calculator" class="py-16 bg-white dark:bg-gray-950">
+    <div class="max-w-7xl mx-auto px-6">
+      <h2 class="text-3xl font-bold">Global Duty & Landed Cost</h2>
+      <div class="mt-6 grid md:grid-cols-2 gap-6">
+        <form id="calcForm" class="bg-gray-50 dark:bg-gray-900 border border-gray-200 dark:border-white/10 rounded-xl p-4 grid gap-3">
+          <div class="grid grid-cols-2 gap-3">
+            <select id="cCountry" class="border rounded-lg px-3 py-2"><option>IN</option><option>US</option><option>EU</option><option>UK</option></select>
+            <select id="cIncoterm" class="border rounded-lg px-3 py-2"><option value="CIF">CIF</option><option value="FOB">FOB</option><option value="EXW">EXW</option></select>
+          </div>
+          <div class="grid grid-cols-2 gap-3">
+            <input id="cHS" class="border rounded-lg px-3 py-2" placeholder="HS code e.g. 851713" required />
+            <input id="cGoods" type="number" class="border rounded-lg px-3 py-2" placeholder="Goods Value" required />
+          </div>
+          <div class="grid grid-cols-3 gap-3">
+            <input id="cFreight" type="number" class="border rounded-lg px-3 py-2" placeholder="Freight" />
+            <input id="cIns" type="number" class="border rounded-lg px-3 py-2" placeholder="Insurance" />
+            <input id="cOther" type="number" class="border rounded-lg px-3 py-2" placeholder="Other includable" />
+          </div>
+          <details class="p-3 border rounded-lg">
+            <summary class="cursor-pointer font-medium">Advanced (optional)</summary>
+            <div class="grid grid-cols-3 gap-3 mt-3">
+              <input id="cDuty" type="number" class="border rounded-lg px-3 py-2" placeholder="Override duty %">
+              <input id="cVat" type="number" class="border rounded-lg px-3 py-2" placeholder="VAT/IGST %">
+              <input id="cAidc" type="number" class="border rounded-lg px-3 py-2" placeholder="AIDC/Cess %">
+            </div>
+          </details>
+          <div class="grid grid-cols-2 gap-3">
+            <button class="bg-emerald text-white py-2 rounded-lg" type="submit">Calculate</button>
+            <button id="cShare" class="border rounded-lg" type="button">Share</button>
+          </div>
+          <div class="grid grid-cols-2 gap-3">
+            <button id="cPDF" class="border rounded-lg" type="button">Download PDF</button>
+            <button id="cRFP" class="bg-cyanBright text-black py-2 rounded-lg" type="button">Request Broker Quotes</button>
+          </div>
+          <p id="rateStamp" class="text-xs text-gray-500"></p>
+        </form>
 
-  <h2>10. Limitation of liability</h2>
-  <p>To the fullest extent allowed, our aggregate liability is limited to amounts paid by you in the 12 months before the event giving rise to the claim.</p>
+        <div class="">
+          <h3 class="font-semibold mb-2">Breakdown</h3>
+          <div class="overflow-hidden rounded-xl border border-gray-200 dark:border-white/10">
+            <table class="w-full text-sm">
+              <tbody id="cTable" class="divide-y divide-gray-200 dark:divide-white/10"></tbody>
+            </table>
+          </div>
+          <div id="hsSuggestBox" class="hidden mt-3 p-3 border rounded-lg">
+            <strong>HS suggestions</strong>
+            <ul id="hsSuggestList" class="list-disc ml-5 text-sm"></ul>
+            <p class="text-xs text-gray-500 mt-1">Customs makes the final decision.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
 
-  <h2>11. Term & termination</h2>
-  <p>You may stop using the service at any time. We may suspend or terminate for breach or security risk. Certain sections survive termination.</p>
+  <!-- ===== HS / HSN Finder (Global) ===== -->
+  <section id="hsfinder" class="py-16 bg-gray-50 dark:bg-gray-900">
+    <div class="max-w-7xl mx-auto px-6">
+      <h2 class="text-3xl font-bold">HS / HSN Finder</h2>
+      <div class="mt-6 grid md:grid-cols-2 gap-6">
+        <div class="bg-white dark:bg-gray-950 border border-gray-200 dark:border-white/10 rounded-xl p-4">
+          <div class="grid gap-3">
+            <select id="hsCountry" class="border rounded-lg px-3 py-2"><option>IN</option><option>US</option><option>EU</option><option>UK</option><option>AE</option><option>SG</option><option>AU</option><option>CA</option><option>MX</option><option>CN</option></select>
+            <textarea id="hsDesc" rows="5" class="border rounded-lg px-3 py-2" placeholder="Describe your product (materials, function, use)..."></textarea>
+            <div class="flex gap-3">
+              <button id="hsRun" class="bg-emerald text-white px-4 py-2 rounded-lg">Find HS codes</button>
+              <button id="hsReset" class="border px-4 py-2 rounded-lg">Reset</button>
+            </div>
+          </div>
+        </div>
+        <div id="hsResults" class="grid gap-3"></div>
+      </div>
+    </div>
+  </section>
 
-  <h2>12. Governing law</h2>
-  <p>Governing law and venue will be defined with counsel. If any term is unenforceable, the rest remains in effect.</p>
+  <!-- ===== Products & Trends ===== -->
+  <section id="products" class="py-16 bg-white dark:bg-gray-950">
+    <div class="max-w-7xl mx-auto px-6">
+      <h2 class="text-3xl font-bold">Products & Trends</h2>
+      <div id="trendGrid" class="mt-6 grid sm:grid-cols-2 lg:grid-cols-4 gap-6"></div>
+      <p class="mt-6"><a href="#products" class="inline-block border rounded-lg px-4 py-2">See more products</a></p>
+    </div>
+  </section>
 
-  <h2>13. Changes</h2>
-  <p>We may update these Terms. We will post the updated version with a new date.</p>
+  <!-- ===== Chat (GPT-style) ===== -->
+  <section id="chat" class="py-16 bg-gray-50 dark:bg-gray-900">
+    <div class="max-w-7xl mx-auto px-6">
+      <h2 class="text-3xl font-bold">Chat with Chadaddy</h2>
+      <div class="mt-6 grid lg:grid-cols-[260px,1fr,280px] gap-6">
+        <aside class="bg-white dark:bg-gray-950 border border-gray-200 dark:border-white/10 rounded-xl p-3">
+          <div class="flex items-center justify-between"><strong>History</strong><button id="newThread" class="text-xs border rounded px-2 py-1">New</button></div>
+          <ul id="threads" class="mt-3 grid gap-2 text-sm"></ul>
+        </aside>
 
-  <h2>14. Contact</h2>
-  <p>Email: <a href="mailto:hello@ledgerdaddy.com">hello@ledgerdaddy.com</a><br/>Address: RUn leadgerdaddy Epicfash Global LLC, 293 Whitehead ROad, NJ 08619 USA</p>
-</main>
-<footer>© <span id="y"></span> LedgerDaddy</footer>
-<script>
-  const n=new Date();document.getElementById('y').textContent=n.getFullYear();document.getElementById('d').textContent=n.toISOString().slice(0,10);
-</script>
-</body>
-</html>
+        <section class="bg-white dark:bg-gray-950 border border-gray-200 dark:border-white/10 rounded-xl p-3">
+          <div class="flex flex-wrap gap-2 text-xs">
+            <button class="quick border rounded px-2 py-1" data-q="/hsfinder AirPods in IN">/hsfinder</button>
+            <button class="quick border rounded px-2 py-1" data-q="/duty IN 8517 CIF 100000">/duty</button>
+            <button class="quick border rounded px-2 py-1" data-q="/marketplace IN JNPT electronics">/marketplace</button>
+            <button class="quick border rounded px-2 py-1" data-q="/news IN ports">/news</button>
+            <button class="quick border rounded px-2 py-1" data-q="/products trending electronics">/products</button>
+          </div>
+          <div id="thread" class="mt-3 h-[52vh] overflow-auto grid gap-2 pr-1" aria-live="polite"></div>
+          <form id="chatForm" class="mt-3 flex gap-2" autocomplete="off">
+            <input id="chatInput" class="flex-1 border rounded-lg px-3 py-2" placeholder="Ask anything… (try: 'HS for LED bulbs in EU')" />
+            <button class="bg-emerald text-white px-4 py-2 rounded-lg">Send</button>
+            <button id="exportChat" type="button" class="border rounded-lg px-3">🖨️ PDF</button>
+          </form>
+          <p class="text-xs text-gray-500 mt-2">We keep the last 30 messages per chat in your browser.</p>
+        </section>
+
+        <aside class="bg-white dark:bg-gray-950 border border-gray-200 dark:border-white/10 rounded-xl p-3">
+          <strong>Saved calcs & docs</strong>
+          <ul id="rightRail" class="mt-3 grid gap-2 text-sm"></ul>
+          <div class="mt-2 text-xs text-gray-500">Exporting prompts lead capture.</div>
+        </aside>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== News & Alerts ===== -->
+  <section id="news" class="py-16 bg-white dark:bg-gray-950">
+    <div class="max-w-7xl mx-auto px-6">
+      <div class="flex flex-wrap items-end justify-between gap-3">
+        <div>
+          <h2 class="text-3xl font-bold">News & Alerts</h2>
+          <span class="text-xs px-2 py-1 rounded-full border border-cyanBright text-cyanBright">AI summaries</span>
+        </div>
+        <div class="flex gap-2">
+          <select id="newsCountry" class="border rounded-lg px-3 py-2"><option>ALL</option><option>IN</option><option>US</option><option>EU</option></select>
+          <select id="newsTopic" class="border rounded-lg px-3 py-2"><option>All topics</option><option>Ports</option><option>Tariff</option><option>Compliance</option></select>
+          <button id="newsSub" class="bg-cyanBright text-black px-4 py-2 rounded-lg">Subscribe</button>
+        </div>
+      </div>
+      <div id="newsList" class="mt-6 grid sm:grid-cols-2 lg:grid-cols-3 gap-6"></div>
+    </div>
+  </section>
+
+  <!-- ===== Learn / Academy ===== -->
+  <section id="learn" class="py-16 bg-gray-50 dark:bg-gray-900">
+    <div class="max-w-7xl mx-auto px-6">
+      <h2 class="text-3xl font-bold">Academy</h2>
+      <div class="mt-6 grid md:grid-cols-3 gap-6">
+        <div class="card p-5 bg-white dark:bg-gray-950 border border-gray-200 dark:border-white/10 rounded-xl">
+          <strong>HS Basics (30 min)</strong><p class="text-gray-600 dark:text-gray-300">Chapters, headings, rules.</p><button class="mt-3 border rounded-lg px-3 py-2">Start</button>
+        </div>
+        <div class="card p-5 bg-white dark:bg-gray-950 border border-gray-200 dark:border-white/10 rounded-xl">
+          <strong>Incoterms 2020 (20 min)</strong><p class="text-gray-600 dark:text-gray-300">FOB vs CIF vs EXW.</p><button class="mt-3 border rounded-lg px-3 py-2">Start</button>
+        </div>
+        <div class="card p-5 bg-white dark:bg-gray-950 border border-gray-200 dark:border-white/10 rounded-xl">
+          <strong>Valuation (25 min)</strong><p class="text-gray-600 dark:text-gray-300">What goes into customs value?</p><button class="mt-3 border rounded-lg px-3 py-2">Start</button>
+        </div>
+      </div>
+      <div class="bg-white dark:bg-gray-950 border border-gray-200 dark:border-white/10 rounded-xl p-5 mt-6">
+        <strong>Quick quiz</strong>
+        <div class="mt-2 text-sm">Q1: CIF includes freight & insurance?</div>
+        <div class="mt-2 flex gap-4 text-sm">
+          <label><input type="radio" name="q1"> Yes</label>
+          <label><input type="radio" name="q1"> No</label>
+        </div>
+        <button class="mt-3 bg-emerald text-white px-4 py-2 rounded-lg">Submit</button>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== Pricing ===== -->
+  <section id="pricing" class="py-16 bg-white dark:bg-gray-950">
+    <div class="max-w-7xl mx-auto px-6">
+      <h2 class="text-3xl font-bold">Pricing</h2>
+      <div class="mt-6 grid md:grid-cols-3 gap-6">
+        <div class="p-6 rounded-2xl border bg-white dark:bg-gray-950">
+          <h3 class="font-semibold">Free</h3>
+          <p class="text-sm text-gray-600 dark:text-gray-300">Chat + HS finder (limited)</p>
+          <p class="text-3xl font-extrabold mt-2">$0</p>
+          <a href="#signup" class="mt-4 inline-block bg-emerald text-white px-4 py-2 rounded-lg">Start</a>
+        </div>
+        <div class="p-6 rounded-2xl border bg-white dark:bg-gray-950 ring-2 ring-cyanBright">
+          <h3 class="font-semibold">Pro</h3>
+          <p class="text-sm text-gray-600 dark:text-gray-300">Calculator PDFs, alerts, priority</p>
+          <p class="text-3xl font-extrabold mt-2">$9<span class="text-base">/mo</span></p>
+          <a href="#signup" class="mt-4 inline-block bg-cyanBright text-black px-4 py-2 rounded-lg">Upgrade</a>
+        </div>
+        <div class="p-6 rounded-2xl border bg-white dark:bg-gray-950">
+          <h3 class="font-semibold">Team</h3>
+          <p class="text-sm text-gray-600 dark:text-gray-300">Brokers, RFP, escrow</p>
+          <p class="text-3xl font-extrabold mt-2">$49<span class="text-base">/mo</span></p>
+          <a href="#signup" class="mt-4 inline-block border px-4 py-2 rounded-lg">Contact sales</a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== Footer ===== -->
+  <footer class="bg-gray-900 text-gray-300 py-12 mt-20">
+    <div class="max-w-7xl mx-auto px-6 grid md:grid-cols-4 gap-6">
+      <div>
+        <h4 class="font-semibold text-white mb-3">Chadaddy</h4>
+        <p>AI-powered customs platform to ship smarter worldwide.</p>
+      </div>
+      <div>
+        <h4 class="font-semibold text-white mb-3">Quick Links</h4>
+        <ul class="space-y-2 text-sm">
+          <li><a href="#learn">Academy</a></li>
+          <li><a href="#marketplace">Ports we cover</a></li>
+          <li><a href="#hsfinder">HS code index</a></li>
+        </ul>
+      </div>
+      <div>
+        <h4 class="font-semibold text-white mb-3">Legal</h4>
+        <ul class="space-y-2 text-sm">
+          <li><a href="#">Privacy</a></li>
+          <li><a href="#">Terms</a></li>
+          <li><a href="#">Refunds</a></li>
+        </ul>
+      </div>
+      <div>
+        <h4 class="font-semibold text-white mb-3">Stay Updated</h4>
+        <form class="flex">
+          <input id="nlEmail" type="email" placeholder="Your email" class="p-2 rounded-l w-full text-gray-900" />
+          <button id="nlBtn" class="bg-emerald px-4 rounded-r">→</button>
+        </form>
+        <a href="https://wa.me/0000000000" class="inline-block mt-3 text-sm underline">WhatsApp</a>
+      </div>
+    </div>
+    <p class="text-center text-sm mt-8">© <span id="year"></span> Chadaddy. All rights reserved.</p>
+  </footer>
+
+  <!-- ===== Exit Intent Lead Modal ===== -->
+  <div id="leadModal" class="hidden fixed inset-0 z-50 items-center justify-center bg-black/50 p-3">
+    <div class="max-w-lg w-full bg-white dark:bg-gray-900 border border-gray-200 dark:border-white/10 rounded-xl p-4">
+      <div class="flex items-center justify-between">
+        <h3 class="font-semibold">Don’t leave without your duty estimate</h3>
+        <button id="leadClose" class="border rounded px-2 py-1">✕</button>
+      </div>
+      <p class="text-sm text-gray-600 dark:text-gray-300">Get a free, printable breakdown in your inbox.</p>
+      <form id="leadForm" class="grid sm:grid-cols-2 gap-3 mt-3">
+        <input id="leadName" class="border rounded-lg px-3 py-2" placeholder="Your name" required />
+        <input id="leadEmail" type="email" class="border rounded-lg px-3 py-2" placeholder="Email" required />
+        <input id="leadWA" class="sm:col-span-2 border rounded-lg px-3 py-2" placeholder="WhatsApp (optional)" />
+        <button class="sm:col-span-2 bg-emerald text-white py-2 rounded-lg">Send my free estimate</button>
+      </form>
+    </div>
+  </div>
+
+  <!-- ===== WhatsApp FAB ===== -->
+  <a href="https://wa.me/0000000000" target="_blank" rel="noopener" id="waFab"
+     class="fixed left-3 bottom-20 md:bottom-6 z-40 bg-[#25D366] text-white px-4 py-2 rounded-full shadow-lift">WhatsApp</a>
+
+  <!-- ===== App JS (mock flows) ===== -->
+  <script>
+    // ---------- Theme ----------
+    const html = document.documentElement;
+    const metaTheme = document.getElementById('metaTheme');
+    const savedTheme = localStorage.getItem('theme');
+    if (savedTheme) html.classList.toggle('dark', savedTheme === 'dark');
+    metaTheme.content = html.classList.contains('dark') ? '#0B1027' : '#1A237E';
+    document.getElementById('themeBtn').addEventListener('click', () => {
+      const isDark = html.classList.toggle('dark');
+      localStorage.setItem('theme', isDark ? 'dark' : 'light');
+      metaTheme.content = isDark ? '#0B1027' : '#1A237E';
+      document.getElementById('themeBtn').setAttribute('aria-pressed', String(isDark));
+    });
+    document.getElementById('year').textContent = new Date().getFullYear();
+
+    // ---------- Activity ticker ----------
+    const ports = ['JNPT','Mundra','Chennai','Rotterdam','LA','Felixstowe','Dubai','Singapore'];
+    let ti = 0;
+    setInterval(()=>{ document.getElementById('ticker').textContent =
+      `${Math.floor(Math.random()*6)+3} shipments cleared today at ${ports[ti++%ports.length]}`;}, 4500);
+
+    // ---------- Quick teaser calc ----------
+    const ccy = {IN:'₹', US:'$', EU:'€', UK:'£'};
+    document.getElementById('tzBtn').addEventListener('click', ()=>{
+      const av = Number(document.getElementById('tzAV').value||0);
+      const country = document.getElementById('tzCountry').value;
+      if(!av){ document.getElementById('tzOut').innerHTML = '<span class="text-red-600">Enter value</span>'; return;}
+      // very rough demo logic
+      const dutyMap = {IN:0.10, US:0.03, EU:0.05, UK:0.05};
+      const igstMap = {IN:0.18, US:0.009, EU:0.20, UK:0.20};
+      const bcd = av * (dutyMap[country]||0.1);
+      const sws = (country==='IN') ? bcd*0.10 : 0;
+      const sub = av + bcd + sws;
+      const vat = sub * (igstMap[country]||0.18);
+      const total = sub + vat;
+      document.getElementById('tzOut').innerHTML =
+        `<span class="inline-block mr-2 px-2 py-1 rounded bg-gray-100">Est. duties: ${ccy[country]||'₹'} ${Math.round(bcd+sws+vat).toLocaleString()}</span>
+         <span class="inline-block px-2 py-1 rounded bg-emerald/10 text-emerald">Total: ${ccy[country]||'₹'} ${Math.round(total).toLocaleString()}</span>`;
+    });
+
+    // ---------- Demo data ----------
+    const BROKERS = [
+      {id:1,name:'Pacific Global',verified:true,country:'IN',ports:['JNPT','Mundra'],rating:4.9,reviews:312,response:12,priceFrom:6500,badges:['Top Rated','Fast'],img:'https://images.unsplash.com/photo-1556761175-4b46a572b786?q=80&w=800&auto=format&fit=crop',specialties:['Electronics','Chemicals']},
+      {id:2,name:'Astra Customs',verified:true,country:'IN',ports:['Mundra','Chennai'],rating:4.7,reviews:201,response:15,priceFrom:5500,badges:['Verified'],img:'https://images.unsplash.com/photo-1515879218367-8466d910aaa4?q=80&w=800&auto=format&fit=crop',specialties:['Apparel','Furniture']},
+      {id:3,name:'Metro ACI',verified:true,country:'IN',ports:['Delhi Air','BLR'],rating:4.6,reviews:154,response:25,priceFrom:4800,badges:['Fast'],img:'https://images.unsplash.com/photo-1507679799987-c73779587ccf?q=80&w=800&auto=format&fit=crop',specialties:['Pharma','Electronics']},
+      {id:4,name:'OceanBridge EU',verified:true,country:'EU',ports:['Rotterdam','Antwerp'],rating:4.8,reviews:188,response:20,priceFrom:120,badges:['Top Rated'],img:'https://images.unsplash.com/photo-1586521995568-39ef16c6934d?q=80&w=800&auto=format&fit=crop',specialties:['Machinery','Food']}
+    ];
+    const TRENDS = [
+      {name:'Smartphones',fob:'$110–$240',duty:'IN ~20% IGST 18%',img:'https://images.unsplash.com/photo-1511707171634-5f897ff02aa9?q=80&w=800&auto=format&fit=crop'},
+      {name:'LED bulbs',fob:'$0.2–$0.6',duty:'EU ~4% VAT 20%',img:'https://images.unsplash.com/photo-1481277542470-605612bd2d61?q=80&w=800&auto=format&fit=crop'},
+      {name:'Sneakers',fob:'$12–$35',duty:'US ~20% + fees',img:'https://images.unsplash.com/photo-1542291026-7eec264c27ff?q=80&w=800&auto=format&fit=crop'},
+      {name:'Coffee beans',fob:'$2–$4/kg',duty:'IN ~100% IGST 5%',img:'https://images.unsplash.com/photo-1509042239860-f550ce710b93?q=80&w=800&auto=format&fit=crop'}
+    ];
+    const NEWS = [
+      {id:1,country:'IN',topic:'Ports',title:'JNPT issues advisory on weekend cut-off',sev:'Medium'},
+      {id:2,country:'EU',topic:'Tariff',title:'EU updates CET for electronics',sev:'High'},
+      {id:3,country:'US',topic:'Compliance',title:'New FDA prior-notice pilot',sev:'Low'}
+    ];
+
+    // ---------- Render brokers + compare ----------
+    const brokGrid = document.getElementById('brokGrid');
+    const cmpSet = new Set();
+    function renderBrokers(items = BROKERS){
+      brokGrid.innerHTML = items.map(b=>`
+        <article class="bg-white dark:bg-gray-950 border border-gray-200 dark:border-white/10 rounded-xl overflow-hidden">
+          <img class="h-36 w-full object-cover" src="${b.img}" alt="${b.name}">
+          <div class="p-3">
+            <div class="flex items-center justify-between">
+              <div class="font-semibold">${b.name}</div>
+              <div class="text-xs px-2 py-0.5 rounded-full border ${b.verified?'border-emerald text-emerald':'border-gray-300'}">${b.verified?'Verified':'—'}</div>
+            </div>
+            <div class="text-xs text-gray-500 mt-1">${b.country} • ${b.ports.join(' • ')}</div>
+            <div class="text-xs mt-1">${b.specialties.join(', ')}</div>
+            <div class="flex items-center justify-between mt-2">
+              <div class="text-sm">★ ${b.rating} <span class="text-gray-500">(${b.reviews})</span></div>
+              <div class="text-sm">From <strong>${b.priceFrom}</strong></div>
+            </div>
+            <div class="mt-3 grid grid-cols-2 gap-2">
+              <a href="#marketplace" class="border rounded-lg px-2 py-1 text-center">Get Quote</a>
+              <button data-id="${b.id}" class="cmpBtn bg-cyanBright text-black rounded-lg px-2 py-1">Compare</button>
+            </div>
+          </div>
+        </article>`).join('');
+      document.querySelectorAll('.cmpBtn').forEach(btn=>{
+        btn.addEventListener('click',()=>{
+          const id = Number(btn.dataset.id);
+          if(cmpSet.has(id)) cmpSet.delete(id); else { if(cmpSet.size<3) cmpSet.add(id); }
+          updateCompare();
+        });
+      });
+    }
+    function updateCompare(){
+      const tray = document.getElementById('compareTray');
+      const names = [...cmpSet].map(id => BROKERS.find(b=>b.id===id)?.name).filter(Boolean);
+      document.getElementById('cmpNames').textContent = names.join(' • ');
+      tray.classList.toggle('hidden', cmpSet.size===0);
+    }
+    document.getElementById('cmpClear').addEventListener('click',()=>{cmpSet.clear();updateCompare();});
+    document.getElementById('cmpRfp').addEventListener('click',()=>alert('RFP sent to selected brokers (demo).'));
+    renderBrokers();
+    // simple filters drawer
+    const drawer = document.getElementById('drawer');
+    document.getElementById('openFilters').addEventListener('click',()=>drawer.classList.remove('hidden'));
+    document.getElementById('closeFilters').addEventListener('click',()=>drawer.classList.add('hidden'));
+    document.getElementById('applyFilters').addEventListener('click',()=>drawer.classList.add('hidden'));
+
+    // ---------- Trends ----------
+    document.getElementById('trendGrid').innerHTML = TRENDS.map(t=>`
+      <article class="bg-white dark:bg-gray-950 border border-gray-200 dark:border-white/10 rounded-xl overflow-hidden">
+        <img class="h-36 w-full object-cover" src="${t.img}" alt="${t.name}">
+        <div class="p-3">
+          <div class="font-semibold">${t.name}</div>
+          <div class="text-xs text-gray-500">FOB: ${t.fob}</div>
+          <div class="text-xs mt-1">${t.duty}</div>
+          <a href="#calculator" class="mt-2 inline-block text-cyanBright text-sm">Calculate Duty for this →</a>
+        </div>
+      </article>`).join('');
+
+    // ---------- News ----------
+    function renderNews(list = NEWS){
+      document.getElementById('newsList').innerHTML = list.map(n=>`
+        <article class="bg-white dark:bg-gray-950 border border-gray-200 dark:border-white/10 rounded-xl p-4">
+          <div class="text-xs mb-2 flex items-center gap-2">
+            <span class="px-2 py-0.5 rounded-full border">${n.country}</span>
+            <span class="px-2 py-0.5 rounded-full border">${n.topic}</span>
+            <span class="px-2 py-0.5 rounded-full border ${n.sev==='High'?'border-accentOrange text-accentOrange':''}">${n.sev}</span>
+          </div>
+          <div class="font-semibold">${n.title}</div>
+          <a class="text-cyanBright text-sm mt-2 inline-block" href="#news">Subscribe for alerts →</a>
+        </article>`).join('');
+    }
+    renderNews();
+    document.getElementById('newsCountry').addEventListener('change',e=>{
+      const v = e.target.value;
+      renderNews(v==='ALL'?NEWS:NEWS.filter(n=>n.country===v));
+    });
+    document.getElementById('newsTopic').addEventListener('change',e=>{
+      const v = e.target.value;
+      renderNews(v==='All topics'?NEWS:NEWS.filter(n=>n.topic===v));
+    });
+    document.getElementById('newsSub').addEventListener('click',()=>alert('Subscribed (demo).'));
+
+    // ---------- Calculator (demo breakdown) ----------
+    function addRow(label, basis, rate, amount){
+      return `<tr><td class="px-3 py-2">${label}</td><td class="px-3 py-2 text-right">${basis?.toLocaleString?.()||'-'}</td><td class="px-3 py-2 text-right">${rate?rate+'%':'—'}</td><td class="px-3 py-2 text-right font-semibold">${Math.round(amount).toLocaleString()}</td></tr>`;
+    }
+    document.getElementById('calcForm').addEventListener('submit', (e)=>{
+      e.preventDefault();
+      const country = document.getElementById('cCountry').value;
+      const hs = document.getElementById('cHS').value.trim();
+      const goods = Number(document.getElementById('cGoods').value||0);
+      const freight = Number(document.getElementById('cFreight').value||0);
+      const ins = Number(document.getElementById('cIns').value||0);
+      const other = Number(document.getElementById('cOther').value||0);
+      const override = Number(document.getElementById('cDuty').value||NaN);
+      const vatIn = Number(document.getElementById('cVat').value||NaN);
+      const aidcIn = Number(document.getElementById('cAidc').value||NaN);
+
+      const AV = goods + freight + ins + other;
+      const baseDuty = isNaN(override) ? ({IN:10,US:3,EU:5,UK:5}[country]||10) : override;
+      const vatRate = isNaN(vatIn) ? ({IN:18,US:0.9,EU:20,UK:20}[country]||18) : vatIn;
+      const aidcRate = isNaN(aidcIn) ? ({IN:0,US:0,EU:0,UK:0}[country]||0) : aidcIn;
+
+      const BCD = AV * baseDuty/100;
+      const SWS = country==='IN' ? BCD*0.10 : 0;
+      const AIDC = AV * aidcRate/100;
+      const sub = AV + BCD + SWS + AIDC;
+      const VAT = sub * (vatRate/100);
+      const total = sub + VAT;
+
+      const tb = document.getElementById('cTable');
+      tb.innerHTML = addRow('Assessable Value (AV)', AV, null, AV)
+        + addRow('BCD', AV, baseDuty, BCD)
+        + (SWS? addRow('SWS (10% of BCD)', BCD, 10, SWS) : '')
+        + (AIDC? addRow('AIDC/Cess', AV, aidcRate, AIDC) : '')
+        + addRow(country==='IN'?'IGST':'VAT', sub, vatRate, VAT)
+        + `<tr class="bg-gray-50 dark:bg-white/5 font-semibold"><td class="px-3 py-2" colspan="3">Total Landed Cost</td><td class="px-3 py-2 text-right">${Math.round(total).toLocaleString()}</td></tr>`;
+      document.getElementById('rateStamp').textContent = `Version demo-1 • ${new Date().toLocaleString()}`;
+      // mock HS suggestions
+      const sugBox = document.getElementById('hsSuggestBox'); const list = document.getElementById('hsSuggestList');
+      if(hs.length<6){
+        sugBox.classList.remove('hidden');
+        list.innerHTML = ['851713 – Phones','851762 – Comm. equip','850760 – Li-ion cells'].map((s,i)=>`<li>${s} <span class="text-xs text-gray-500">confidence ${(85-i*10)}%</span></li>`).join('');
+      } else { sugBox.classList.add('hidden'); list.innerHTML = ''; }
+    });
+    document.getElementById('cShare').addEventListener('click', ()=>{ navigator.clipboard.writeText(location.href+'#calculator'); alert('Share link copied'); });
+    // PDF / RFP gates lead modal
+    const leadModal = document.getElementById('leadModal');
+    document.getElementById('cPDF').addEventListener('click', ()=> leadModal.classList.remove('hidden'));
+    document.getElementById('cRFP').addEventListener('click', ()=> alert('RFP flow stub (demo). Fill lead form to proceed.'));
+
+    // ---------- HS Finder ----------
+    document.getElementById('hsRun').addEventListener('click', ()=>{
+      const desc = document.getElementById('hsDesc').value.trim();
+      if(!desc) return alert('Please describe your product');
+      const res = [
+        {code:'851713',title:'Smartphones',conf:0.88,examples:['Android phone','iPhone']},
+        {code:'851762',title:'Comm. equipment',conf:0.72,examples:['Wi-Fi router','LTE module']},
+        {code:'851830',title:'Headphones/earbuds',conf:0.64,examples:['TWS earbuds','Headset']}
+      ];
+      document.getElementById('hsResults').innerHTML = res.map(r=>`
+        <div class="p-3 border rounded-lg">
+          <div class="flex items-center justify-between">
+            <div class="font-semibold">${r.code} — ${r.title}</div>
+            <div class="text-xs px-2 py-0.5 rounded-full border">${Math.round(r.conf*100)}%</div>
+          </div>
+          <div class="text-xs text-gray-500">Examples: ${r.examples.join(', ')}</div>
+          <a href="#calculator" class="mt-2 inline-block text-cyanBright text-sm">Open in calculator →</a>
+        </div>`).join('');
+    });
+    document.getElementById('hsReset').addEventListener('click', ()=>{
+      document.getElementById('hsDesc').value=''; document.getElementById('hsResults').innerHTML='';
+    });
+
+    // ---------- Chat (local) ----------
+    const threadsEl = document.getElementById('threads');
+    const threadEl = document.getElementById('thread');
+    const savedKey='chadaddy_thread';
+    let messages = JSON.parse(localStorage.getItem(savedKey)||'[]');
+    function renderChat(){
+      threadEl.innerHTML = messages.map(m=>`
+        <div class="${m.role==='user'?'ml-auto bg-cyanBright text-black':'mr-auto bg-gray-100 dark:bg-white/10 text-gray-900 dark:text-gray-100'}
