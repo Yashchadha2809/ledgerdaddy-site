@@ -6,6 +6,7 @@
   <title>Chadaddy — Global AI Customs & Trade Platform</title>
   <meta name="description" content="Your AI trade partner — chat to learn, find HS codes, calculate duties globally, and book verified brokers." />
   <meta name="theme-color" content="#0B1B3B" id="metaTheme" />
+  <!-- Performance hints for hero imagery -->
   <link rel="preconnect" href="https://images.unsplash.com" />
   <link rel="preload" as="image" href="https://images.unsplash.com/photo-1642790551042-5b78c2d5f85f?q=80&w=1600&auto=format&fit=crop" imagesrcset="https://images.unsplash.com/photo-1642790551042-5b78c2d5f85f?q=80&w=900&auto=format&fit=crop 900w, https://images.unsplash.com/photo-1642790551042-5b78c2d5f85f?q=80&w=1600&auto=format&fit=crop 1600w" fetchpriority="high">
   <style>
@@ -117,7 +118,6 @@
     .modal{position:fixed;inset:0;background:rgba(0,0,0,.55);display:none;z-index:120;align-items:center;justify-content:center}
     .modal.is-open{display:flex}
     .modal__card{width:min(560px,92%);background:var(--panel);border:1px solid var(--border);border-radius:16px;box-shadow:var(--shadow);padding:1rem}
-
   </style>
 </head>
 <body>
@@ -315,7 +315,7 @@
       <h2>Global Duty & Landed Cost</h2>
       <div class="grid grid--2">
         <form id="calcForm">
-          <div class="row"><label class="label">Country</label><select id="cCountry" class="select"><option>IN</option><option>US</option><option>EU</option><option>UK</option></select></div>
+          <div class="row"><label class="label">Country</label><select id="cCountry" class="select"><option>IN</option><option>US</option><option>EU</option><option>UK</option><option>AE</option><option>SG</option><option>AU</option><option>CA</option><option>MX</option><option>CN</option></select></div>
           <div class="grid grid--2" style="grid-template-columns:1fr 1fr">
             <div class="row"><label class="label">HS code</label><input id="cHS" class="input" placeholder="e.g., 851713" required /></div>
             <div class="row"><label class="label">Incoterm</label><select id="cIncoterm" class="select"><option value="CIF">CIF</option><option value="FOB">FOB</option><option value="EXW">EXW</option></select></div>
@@ -557,9 +557,9 @@ const pages=['home','chat','hs','calc','marketplace','profile','products','news'
 function route(){const [hash,sub] = (location.hash||'#/home').slice(2).split('/'); pages.forEach(id=>{const el=document.getElementById(id); if(el) el.hidden = id!==hash;});
   if(hash==='marketplace'){renderMarketplace();}
   if(hash==='profile'){renderProfile(Number(sub||1));}
-  if(hash==='calc'){/* nothing */ }
+  if(hash==='calc'){/* noop */}
   if(hash==='chat'){bootChat();}
-  if(hash==='home'){logEvent('view_hero');}
+  if(hash==='home'){logEvent('view_hero');renderFeatured();renderTrends();renderNewsTeaser();}
 }
 addEventListener('hashchange',route); route();
 
@@ -569,14 +569,15 @@ $('#ccySel').value=CCY; $$('.ccy').forEach(n=>n.textContent=currencySymbols[CCY]
 $('#ccySel').addEventListener('change',e=>{CCY=e.target.value;localStorage.setItem('ccy',CCY); $$('.ccy').forEach(n=>n.textContent=currencySymbols[CCY]||'₹'); $('#ccyTz').textContent=currencySymbols[CCY]||'₹';});
 
 /* ---------- Activity Ticker ---------- */
-const ports=['JNPT','Mundra','Chennai','Rotterdam','LA','Felixstowe','Dubai','Singapore'];
+const ports=['JNPT','Mundra','Chennai','Rotterdam','Los Angeles','Felixstowe','Dubai','Singapore'];
 let tickI=0; setInterval(()=>{$('#ticker').textContent=`${Math.floor(Math.random()*6)+3} shipments cleared today at ${ports[tickI++%ports.length]}`;},4500);
 
 /* ---------- Home: Quick Teaser ---------- */
 $('#tzBtn').addEventListener('click',()=>{
   const av=Number($('#tzAV').value||0), country=$('#tzCountry').value.toUpperCase();
   if(!av){$('#tzOut').innerHTML='<span class="badge">Enter a value</span>';return;}
-  const quick = (country==='IN')? av*0.10 + (av*0.10*0.10) + (av*0.18) : (country==='US')? av*0.03 + av*0.009 : (country==='EU'||country==='UK')? av*0.05 + av*0.20 : av*0.1;
+  // Simple country heuristics for teaser (not legal advice)
+  const quick = (country==='IN')? av*0.10 + (av*0.10*0.10) + (av*0.18) : (country==='US')? av*0.03 + av*0.01 : (country==='EU'||country==='UK')? av*0.05 + av*0.20 : av*0.1;
   $('#tzOut').innerHTML=`<span class="badge">Est. duties: ${currencySymbols[CCY]||'₹'} ${fmtCcy(quick)}</span><span class="chip">Total: ${currencySymbols[CCY]||'₹'} ${fmtCcy(av+quick)}</span>`;
   logEvent('calculator_result_shown',{context:'teaser',country});
 });
@@ -589,12 +590,16 @@ const BROKERS=[
  {id:4,name:'OceanBridge EU',verified:true,country:'EU',ports:['Rotterdam','Antwerp'],rating:4.8,reviews:188,response:20,priceFrom:120, badges:['Top Rated'],img:'https://images.unsplash.com/photo-1586521995568-39ef16c6934d?q=80&w=800&auto=format&fit=crop',specialties:['Machinery','Food']}
 ];
 const TRENDS=[
- {name:'Smartphones',fob:'$110–$240',duty:'IN ~20% IGST 18%',img:'https://images.unsplash.com/photo-1511707171634-5f897ff02aa9?q=80&w=800&auto=format&fit=crop'},
- {name:'LED bulbs',fob:'$0.2–$0.6',duty:'EU ~4% VAT 20%',img:'https://images.unsplash.com/photo-1481277542470-605612bd2d61?q=80&w=800&auto=format&fit=crop'},
+ {name:'Smartphones',fob:'$110–$240',duty:'IN ~20% • IGST 18%',img:'https://images.unsplash.com/photo-1511707171634-5f897ff02aa9?q=80&w=800&auto=format&fit=crop'},
+ {name:'LED bulbs',fob:'$0.2–$0.6',duty:'EU ~4% • VAT 20%',img:'https://images.unsplash.com/photo-1481277542470-605612bd2d61?q=80&w=800&auto=format&fit=crop'},
  {name:'Sneakers',fob:'$12–$35',duty:'US ~20% + fees',img:'https://images.unsplash.com/photo-1542291026-7eec264c27ff?q=80&w=800&auto=format&fit=crop'},
- {name:'Coffee beans',fob:'$2–$4/kg',duty:'IN ~100% IGST 5%',img:'https://images.unsplash.com/photo-1509042239860-f550ce710b93?q=80&w=800&auto=format&fit=crop'}
+ {name:'Coffee beans',fob:'$2–$4/kg',duty:'IN ~100% • IGST 5%',img:'https://images.unsplash.com/photo-1509042239860-f550ce710b93?q=80&w=800&auto=format&fit=crop'}
 ];
-const NEWS=[{id:1,country:'IN',topic:'Ports',title:'JNPT issues advisory on weekend cut-off',sev:'medium'},{id:2,country:'EU',topic:'Tariff',title:'EU updates CET for electronics',sev:'high'},{id:3,country:'US',topic:'Compliance',title:'New FDA prior-notice pilot',sev:'low'}];
+const NEWS=[
+ {id:1,country:'IN',topic:'Ports',title:'JNPT issues advisory on weekend cut-off',sev:'medium'},
+ {id:2,country:'EU',topic:'Tariff',title:'EU updates CET for electronics',sev:'high'},
+ {id:3,country:'US',topic:'Compliance',title:'New FDA prior-notice pilot',sev:'low'}
+];
 
 /* ---------- Render Home sections ---------- */
 function renderFeatured(){
@@ -616,4 +621,293 @@ function renderFeatured(){
 function renderTrends(){
   $('#trendGrid').innerHTML= TRENDS.map(t=>`
     <article class="card">
-      <img loading="lazy
+      <img loading="lazy" alt="${t.name}" src="${t.img}" style="height:140px;border-radius:12px;border:1px solid var(--border);object-fit:cover">
+      <div style="margin-top:.5rem">
+        <strong>${t.name}</strong>
+        <p class="muted">FOB: ${t.fob}</p>
+        <p class="muted">${t.duty}</p>
+        <a class="btn btn--primary" href="#/calc" data-product="${t.name}">Calculate duty for this</a>
+      </div>
+    </article>`).join('');
+}
+function renderNewsTeaser(){
+  $('#newsTeaser').innerHTML = NEWS.map(n=>{
+    const color = n.sev==='high'?'#ef4444':n.sev==='medium'?'#f59e0b':'#10b981';
+    return `<article class="card"><span class="badge" style="border-color:${color};color:${color}">${n.sev.toUpperCase()}</span><p style="margin-top:.4rem"><strong>${n.title}</strong></p><p class="muted">${n.country} • ${n.topic}</p></article>`;
+  }).join('');
+}
+
+/* ---------- Marketplace: filters, list, compare tray ---------- */
+const brokGrid=$('#brokGrid'); let compare=new Set();
+function passesFilters(b){
+  const q=($('#fSearch')?.value||'').toLowerCase();
+  const country=$('#fCountry')?.value||'IN', port=$('#fPort')?.value||'';
+  const svc=$('#fSvc')?.value||'';
+  const badges={ver:$('#bVerified')?.checked, top:$('#bTop')?.checked, fast:$('#bFast')?.checked};
+  const budget=Number($('#fBudget')?.value||Infinity);
+  const txt=[b.name,b.ports.join(' '),b.specialties.join(' ')].join(' ').toLowerCase();
+  const okQ = !q || txt.includes(q);
+  const okCountry = !country || b.country===country;
+  const okPort = !port || b.ports.join('|').toLowerCase().includes(port.toLowerCase());
+  const okBadges = (!badges.ver || b.verified) && (!badges.top || b.badges.includes('Top Rated')) && (!badges.fast || b.badges.includes('Fast'));
+  const okBudget = !b.priceFrom || b.priceFrom<=budget;
+  const okSvc = !svc || true; // demo only
+  return okQ && okCountry && okPort && okBadges && okBudget && okSvc;
+}
+function renderMarketplace(){
+  // clone filter panel into drawer on mobile
+  const drawerFilters=$('#drawerFilters'); if(drawerFilters && !drawerFilters.childElementCount){drawerFilters.append($('#filters').cloneNode(true));}
+  const list = BROKERS.filter(passesFilters);
+  $('#brokCount').textContent = `${list.length} of ${BROKERS.length}`;
+  brokGrid.innerHTML = list.map(b=>`
+    <article class="card listing" role="listitem">
+      <img alt="${b.name}" src="${b.img}" style="height:140px;border-radius:12px;border:1px solid var(--border);object-fit:cover">
+      <div class="listing__meta" style="margin-top:.4rem">
+        <div><strong>${b.name}</strong> ${b.verified?'<span class="chip">Verified</span>':''}</div>
+        <div class="badge"><span class="stars">★</span> ${b.rating} (${b.reviews})</div>
+      </div>
+      <div class="muted">${b.country} • ${b.ports.join(' • ')}</div>
+      <div class="muted">Response ~ ${b.response}m • From ${currencySymbols[CCY]||'₹'} ${fmtCcy(b.priceFrom||0)}</div>
+      <div class="inline" style="margin-top:.5rem">
+        <button class="btn" onclick="location.hash='#/profile/${b.id}'">View</button>
+        <button class="btn btn--primary">Get Quote</button>
+        <label class="btn"><input type="checkbox" data-cmp="${b.id}"> Compare</label>
+        <button class="btn" onclick="navigator.share?.({title:'Broker',text:'${b.name}',url:location.href})">Share</button>
+      </div>
+    </article>`).join('');
+  // Compare handlers
+  $$('#brokGrid [data-cmp]').forEach(cb=>cb.addEventListener('change',e=>{
+    const id=Number(e.target.getAttribute('data-cmp')); if(e.target.checked){compare.add(id);} else {compare.delete(id);}
+    if(compare.size>3){ e.target.checked=false; compare.delete(id); alert('Select up to 3 to compare.');}
+    updateCompareTray();
+  }));
+}
+function updateCompareTray(){
+  const tray=$('#compareTray'); const names=[...compare].map(id=>BROKERS.find(b=>b.id===id)?.name).filter(Boolean);
+  $('#cmpNames').textContent = names.join(' • ');
+  tray.style.display = compare.size? 'block':'none';
+}
+$('#applyFilters')?.addEventListener('click',()=>renderMarketplace());
+$('#openFilters')?.addEventListener('click',()=>$('#drawer').classList.add('is-open'));
+$('#closeFilters')?.addEventListener('click',()=>$('#drawer').classList.remove('is-open'));
+$('#cmpClear')?.addEventListener('click',()=>{compare.clear();renderMarketplace();updateCompareTray();});
+$('#cmpRfp')?.addEventListener('click',()=>{alert('RFP sent to selected brokers (demo).'); logEvent('rfp_created');});
+
+/* ---------- Profile page ---------- */
+function renderProfile(id){
+  const b=BROKERS.find(x=>x.id===id)||BROKERS[0];
+  $('#profileHero').innerHTML = `
+    <div class="inline" style="gap:1rem">
+      <img alt="${b.name}" src="${b.img}" style="width:88px;height:88px;border-radius:16px;object-fit:cover;border:1px solid var(--border)">
+      <div>
+        <h3 style="margin:0">${b.name} ${b.verified?'<span class="chip">Verified</span>':''}</h3>
+        <div class="muted">${b.country} • ${b.ports.join(' • ')} • <span class="stars">★</span> ${b.rating} (${b.reviews})</div>
+        <div class="inline"><span class="badge">Response ~ ${b.response}m</span><span class="badge">From ${currencySymbols[CCY]||'₹'} ${fmtCcy(b.priceFrom||0)}</span></div>
+      </div>
+      <div style="margin-left:auto" class="inline"><a class="btn" href="#/marketplace">Message</a><a class="btn btn--primary" href="#/marketplace">Get Quote</a></div>
+    </div>`;
+  const tabs=['Overview','Pricing','Licenses & KYC','Ports','Commodities','Reviews','FAQs'];
+  $('#profileTabs').innerHTML = tabs.map((t,i)=>`<button class="tab" role="tab" aria-selected="${i===0}" data-tab="${i}">${t}</button>`).join('');
+  const setBody=(i)=>$('#profileBody').innerHTML = [
+    `<p>${b.name} handles ${b.specialties.join(', ')} across ${b.ports.join(', ')} with ${b.rating}★ rating.</p>`,
+    `<ul>${['Sea FCL 20ft — from '+(b.priceFrom||0),'Air per MAWB — from 5500'].map(x=>`<li>${x}</li>`).join('')}</ul>`,
+    `<p>Licensed CHA. Documents on file (private).</p>`,
+    `<p>Ports served: ${b.ports.join(', ')}</p>`,
+    `<p>Commodities: ${b.specialties.join(', ')}</p>`,
+    `<p>Recent reviews: “Fast & transparent.”</p>`,
+    `<p>FAQs: Response time, escalation, refunds.</p>`
+  ][i];
+  setBody(0);
+  $$('#profileTabs .tab').forEach(btn=>btn.addEventListener('click',e=>{
+    $$('#profileTabs .tab').forEach(x=>x.setAttribute('aria-selected','false'));
+    btn.setAttribute('aria-selected','true'); setBody(Number(btn.dataset.tab));
+  }));
+}
+
+/* ---------- HS Finder ---------- */
+function mockHS(country,desc){
+  const text=desc.toLowerCase();
+  const picks=[
+    {code:'8517.12',title:'Phones / wireless devices',kw:['phone','smart','earbud','airpods','bluetooth'],ex:['Smartphone','Bluetooth earbuds']},
+    {code:'9403.60',title:'Wooden furniture',kw:['furniture','chair','table','sofa','wood'],ex:['Dining table','Office desk']},
+    {code:'8407.34',title:'Spark-ignition engines',kw:['engine','motor','generator'],ex:['Car engine','Genset']}
+  ];
+  let out=[];
+  picks.forEach(p=>{ if(p.kw.some(k=>text.includes(k))) out.push(p);});
+  if(!out.length) out=picks.slice(0,2);
+  return out.slice(0,3).map((p,i)=>({code:p.code,title:p.title,confidence: Math.max(0.62, 0.93 - i*0.15), examples:p.ex}));
+}
+$('#hsRun')?.addEventListener('click',()=>{
+  const c=$('#hsCountry').value, d=$('#hsDesc').value.trim(); if(!d){alert('Describe your product.'); return;}
+  const res=mockHS(c,d);
+  $('#hsResults').innerHTML = res.map(r=>`
+    <article class="card">
+      <div class="inline" style="justify-content:space-between"><strong>${r.code}</strong><span class="badge">${Math.round(r.confidence*100)}% match</span></div>
+      <p class="muted">${r.title}</p>
+      <p class="muted">Examples: ${r.examples.join(', ')}</p>
+      <div class="inline"><button class="btn btn--primary" onclick="openCalc('${r.code}')">Open in calculator</button></div>
+    </article>`).join('');
+  logEvent('chat_tool_used',{tool:'hsfinder'});
+});
+$('#hsReset')?.addEventListener('click',()=>{$('#hsDesc').value='';$('#hsResults').innerHTML='';});
+function openCalc(code){ location.hash='#/calc'; setTimeout(()=>{$('#cHS').value=code;},0); }
+
+/* ---------- Calculator (plugin-style, simplified) ---------- */
+function calcCountry(input){
+  const {country, hs, incoterm, goods, freight=0, insurance=0, other=0, dutyOverride, vatOverride, aidcOverride}=input;
+  // Normalize to CIF basis for the demo
+  let av = goods + freight + insurance + other;
+  if(incoterm==='FOB'){ av = goods + freight*0.9 + insurance*0.9 + other; }
+  if(incoterm==='EXW'){ av = goods*1.05 + freight + insurance + other; }
+  // Rates by country (demo defaults)
+  const rates = {
+    IN: {BCD: dutyOverride ?? 10, SWS: 10, IGST: vatOverride ?? 18, AIDC: aidcOverride ?? 0},
+    US: {BCD: dutyOverride ?? 3,  MPF: 0.3464, HMF: 0.125, VAT: 0},
+    EU: {BCD: dutyOverride ?? 5,  VAT: vatOverride ?? 20},
+    UK: {BCD: dutyOverride ?? 5,  VAT: vatOverride ?? 20},
+    AE: {BCD: dutyOverride ?? 5,  VAT: 5},
+    SG: {BCD: dutyOverride ?? 0,  GST: 9},
+    AU: {BCD: dutyOverride ?? 5,  GST: 10},
+    CA: {BCD: dutyOverride ?? 6,  GST: 5},
+    MX: {BCD: dutyOverride ?? 5,  VAT: 16},
+    CN: {BCD: dutyOverride ?? 8,  VAT: 13}
+  }[country] || {BCD:10, VAT:18};
+  const lines=[]; const push=(code,label,basis,rate,amount,ref)=>lines.push({code,label,basis,rate,amount,ref});
+
+  if(['IN','EU','UK','AE','AU','CA','MX','CN'].includes(country)){
+    const bcd = av*(rates.BCD/100); push('BCD','Basic customs duty',av,rates.BCD,bcd,'HS schedule');
+    if(country==='IN'){ const sws=bcd*(rates.SWS/100); push('SWS','Social welfare surcharge',bcd,rates.SWS,sws,'SWS=10% of BCD'); var aidc=av*(rates.AIDC/100)||0; if(aidc) push('AIDC','AIDC/Cess',av,rates.AIDC,aidc,'HS-specific'); }
+    const sub = av + (lines.find(x=>x.code==='BCD')?.amount||0) + (lines.find(x=>x.code==='SWS')?.amount||0) + (aidc||0);
+    const vatRate = rates.IGST ?? rates.VAT ?? rates.GST ?? 0;
+    const vat = sub*(vatRate/100); push('VAT','IGST/VAT/GST',sub,vatRate,vat,'Tax on AV + duties');
+    var total = sub + vat;
+  } else if(country==='US'){
+    const duty = av*(rates.BCD/100); push('CVD','Customs duty',av,rates.BCD,duty,'HTSUS');
+    const mpf = Math.max(27.23, Math.min(av*(rates.MPF/100), 528.33)); push('MPF','Merch. Processing Fee',av,rates.MPF,mpf,'Min/Max apply');
+    const hmf = av*(rates.HMF/100); push('HMF','Harbor Maintenance Fee (ocean)',av,rates.HMF,hmf,'Ocean only');
+    var total = av + duty + mpf + hmf;
+  } else {
+    const duty = av*(rates.BCD/100); push('DUTY','Import duty',av,rates.BCD,duty,'Default');
+    var total = av + duty;
+  }
+  return {lines, total, av, version:'demo-1.0', timestamp:new Date().toISOString()};
+}
+$('#calcForm')?.addEventListener('submit',(e)=>{
+  e.preventDefault();
+  const input={
+    country: $('#cCountry').value,
+    hs: $('#cHS').value.trim(),
+    incoterm: $('#cIncoterm').value,
+    goods: Number($('#cGoods').value||0),
+    freight: Number($('#cFreight').value||0),
+    insurance: Number($('#cIns').value||0),
+    other: Number($('#cOther').value||0),
+    dutyOverride: $('#cDuty').value? Number($('#cDuty').value):undefined,
+    vatOverride: $('#cVat').value? Number($('#cVat').value):undefined,
+    aidcOverride: $('#cAidc').value? Number($('#cAidc').value):undefined
+  };
+  const out=calcCountry(input);
+  $('#cTable').innerHTML = `
+    <tr><td class="muted">Assessable Value</td><td style="text-align:right"><strong>${currencySymbols[CCY]||'₹'} ${fmtCcy(out.av)}</strong></td></tr>
+    ${out.lines.map(l=>`<tr title="${l.ref||''}"><td>${l.label} ${l.rate!=null?`<span class="muted">(${l.rate}%)</span>`:''}</td><td style="text-align:right">${currencySymbols[CCY]||'₹'} ${fmtCcy(l.amount)}</td></tr>`).join('')}
+    <tr><td><strong>Total Landed Cost</strong></td><td style="text-align:right"><strong>${currencySymbols[CCY]||'₹'} ${fmtCcy(out.total)}</strong></td></tr>`;
+  $('#rateStamp').textContent = `v${out.version} • ${new Date(out.timestamp).toLocaleString()} • Not legal advice; confirm with tariff.`;
+  logEvent('calculator_result_shown',{context:'full',country:input.country});
+});
+$('#cPDF')?.addEventListener('click',()=>{ openLeadOr(()=>window.print()); logEvent('pdf_export');});
+$('#cShare')?.addEventListener('click',()=>{ openLeadOr(()=>navigator.share?.({title:'Duty result',text:'Landed cost result',url:location.href})||alert('Share not supported.')); });
+$('#cRFP')?.addEventListener('click',()=>{ location.hash='#/marketplace'; alert('Attach your result to an RFP (demo).'); logEvent('rfp_created');});
+
+/* ---------- Products page ---------- */
+function renderProducts(){
+  $('#productsGrid').innerHTML = TRENDS.concat(TRENDS).map(t=>`
+    <article class="card">
+      <img loading="lazy" alt="${t.name}" src="${t.img}" style="height:140px;border-radius:12px;border:1px solid var(--border);object-fit:cover">
+      <div style="margin-top:.5rem">
+        <strong>${t.name}</strong><p class="muted">FOB: ${t.fob}</p><p class="muted">${t.duty}</p>
+        <div class="inline"><a class="btn btn--primary" href="#/calc">Calculate</a><button class="btn">See suppliers (soon)</button></div>
+      </div>
+    </article>`).join('');
+}
+addEventListener('hashchange',()=>{ if(location.hash==="#/products") renderProducts(); });
+
+/* ---------- News page ---------- */
+function renderNews(){
+  const c=$('#newsCountry')?.value||'ALL', t=$('#newsTopic')?.value||'All topics';
+  const list = NEWS.filter(n=>(c==='ALL'||n.country===c) && (t==='All topics'||n.topic===t));
+  const sevColor = (s)=> s==='high'?'#ef4444':s==='medium'?'#f59e0b':'#10b981';
+  $('#newsList').innerHTML = list.map(n=>`
+    <article class="card">
+      <span class="badge" style="border-color:${sevColor(n.sev)};color:${sevColor(n.sev)}">${n.sev.toUpperCase()}</span>
+      <h4 style="margin:.4rem 0 0 0">${n.title}</h4>
+      <p class="muted">${n.country} • ${n.topic}</p>
+      <div class="inline"><button class="btn">Read</button></div>
+    </article>`).join('');
+}
+$('#newsCountry')?.addEventListener('change',renderNews);
+$('#newsTopic')?.addEventListener('change',renderNews);
+$('#newsSub')?.addEventListener('click',()=>{ openLeadOr(()=>alert('Subscribed (demo)')); });
+
+/* ---------- Chat (history + slash tools) ---------- */
+let THREADS = JSON.parse(localStorage.getItem('threads')||'[]'); let active = 0;
+function saveThreads(){ localStorage.setItem('threads', JSON.stringify(THREADS.slice(-5))); } // keep last 5 threads
+function bootChat(){
+  if(!THREADS.length){ THREADS=[{title:'New chat', msgs:[]}]; active=0; saveThreads(); }
+  renderThreads(); renderThread();
+  logEvent('chat_opened');
+}
+function renderThreads(){
+  $('#threads').innerHTML = THREADS.map((t,i)=>`<li><button class="btn ${i===active?'btn--primary':''}" data-idx="${i}">${t.title||'Chat '+(i+1)}</button></li>`).join('');
+  $$('#threads [data-idx]').forEach(btn=>btn.addEventListener('click',e=>{active=Number(btn.dataset.idx); renderThreads(); renderThread();}));
+}
+function renderThread(){
+  const t=THREADS[active]; const log=$('#thread'); log.innerHTML='';
+  t.msgs.slice(-30).forEach(m=>{ const b=document.createElement('div'); b.className=`bubble ${m.role==='user'?'me':'ai'}`; b.textContent=m.text; log.appendChild(b); });
+  log.scrollTop=log.scrollHeight;
+}
+function addMsg(role,text){ THREADS[active].msgs.push({role,text,ts:Date.now()}); saveThreads(); renderThread(); }
+function handleTool(cmd){
+  const parts=cmd.trim().split(/\s+/); const tool=parts.shift().toLowerCase();
+  if(tool==='/hsfinder'){ addMsg('assistant','Top HS candidates:\n• 8517.12 (Phones/wireless)\n• 8527.19 (Receivers)\nOpen in /calc with one click.'); }
+  else if(tool==='/duty'){ addMsg('assistant','Estimating duties... open the Calculator for the full breakdown.'); }
+  else if(tool==='/marketplace'){ addMsg('assistant','Here are brokers matching your query. Opening Marketplace…'); location.hash='#/marketplace'; }
+  else if(tool==='/news'){ addMsg('assistant','Showing latest news for your filter…'); location.hash='#/news'; }
+  else if(tool==='/products'){ addMsg('assistant','Trending products opened.'); location.hash='#/products'; }
+  else { addMsg('assistant','Unknown tool. Try /hsfinder or /duty.'); }
+  logEvent('chat_tool_used',{tool});
+}
+$('#chatForm')?.addEventListener('submit',(e)=>{
+  e.preventDefault();
+  const v=$('#chatInput').value.trim(); if(!v) return;
+  addMsg('user',v);
+  if(v.startsWith('/')){ handleTool(v); } else { addMsg('assistant','(demo) I can help with HS codes, duties, brokers, and news. Try /hsfinder AirPods in India'); }
+  $('#chatInput').value='';
+});
+$('.toolchips')?.addEventListener('click',e=>{ if(e.target.closest('.quick')){ addMsg('user',e.target.dataset.q); handleTool(e.target.dataset.q); } });
+$('#newThread')?.addEventListener('click',()=>{ THREADS.push({title:'New chat',msgs:[]}); active=THREADS.length-1; saveThreads(); renderThreads(); renderThread(); });
+$('#exportChat')?.addEventListener('click',()=>{ openLeadOr(()=>window.print()); });
+
+/* ---------- Products grid (page) ---------- */
+if(location.hash==="#/products") renderProducts();
+
+/* ---------- News initial render ---------- */
+if(location.hash==="#/news"){ renderNews(); }
+
+/* ---------- Featured brokers/trends/news on load ---------- */
+renderFeatured(); renderTrends(); renderNewsTeaser();
+
+/* ---------- Exit Intent & Lead Capture ---------- */
+let exitShown = sessionStorage.getItem('exit')==='1';
+function openLead(){ $('#exitModal').classList.add('is-open'); }
+function closeLead(){ $('#exitModal').classList.remove('is-open'); }
+function openLeadOr(action){ const lead=localStorage.getItem('lead_ok')==='1'; if(lead){ action(); } else { openLead(); } }
+document.addEventListener('mouseleave',(e)=>{ if(e.clientY<=0 && !exitShown){ openLead(); sessionStorage.setItem('exit','1'); exitShown=true; }});
+$('#exitClose')?.addEventListener('click',closeLead);
+$('#leadForm')?.addEventListener('submit',(e)=>{ e.preventDefault(); localStorage.setItem('lead_ok','1'); closeLead(); alert('Check your inbox for your estimate (demo).'); logEvent('lead_submitted');});
+
+/* ---------- Accessibility niceties ---------- */
+document.addEventListener('keydown',e=>{ if(e.key==='Escape') closeLead(); });
+
+</script>
+</body>
+</html>
