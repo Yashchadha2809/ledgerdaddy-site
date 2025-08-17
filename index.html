@@ -583,3 +583,819 @@
       const q=fSearch.value.trim().toLowerCase();
       const bad={v:document.getElementById('bVerified').checked,t:document.getElementById('bTopRated').checked,f:document.getElementById('bFast').checked,a:document.getElementById('bAEO').checked};
       const matchQ=!q||c.name
+<!doctype html> 
+<html lang="en" data-theme="auto">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>CHA.AI — The First AI-Powered CHA Marketplace (India)</title>
+  <meta name="description" content="Find verified CHAs, get instant HS code & duty estimates, and clear shipments faster at any Indian port." />
+  <meta name="theme-color" content="#0B1B3B" id="meta-theme-color" />
+  <style>
+    /* ================= Brand Tokens (Navy / Teal / Sky / Warm Gray) ================= */
+    :root{
+      --navy:#0B1B3B; --teal:#1BB5A6; --sky:#C7F3F0; --warm:#F5F7FA; --ink:#0f172a;
+      --bg:#0B1B3B; --panel:#0e2452; --soft:#113062; --text:#F5F7FA; --muted:#D7E1EF; --border:#1e3a6a;
+      --accent:#1BB5A6; --badge:#C7F3F0; --focus:#f59e0b; --radius:14px; --shadow:0 14px 34px rgba(3,10,28,.35)
+    }
+    [data-theme="light"]{
+      --bg:#F5F7FA; --panel:#ffffff; --soft:#eef2f7; --text:#0B1B3B; --muted:#51607a; --border:#e3e9f2; --shadow:0 14px 28px rgba(2,6,23,.06)
+    }
+    /* ================= Base / Utilities ================= */
+    *,*::before,*::after{box-sizing:border-box}
+    html,body{height:100%}
+    body{margin:0;font-family:Inter,ui-sans-serif,system-ui,-apple-system,Segoe UI,Roboto,Arial,"Noto Sans",sans-serif;line-height:1.55;
+      background:
+        radial-gradient(1200px 600px at 15% -10%, rgba(27,181,166,.20), transparent 55%),
+        radial-gradient(1200px 600px at 85% -10%, rgba(199,243,240,.20), transparent 55%),
+        var(--bg);color:var(--text)}
+    img{max-width:100%;display:block}
+    a{color:inherit;text-decoration:none}
+    :focus-visible{outline:2px solid var(--focus);outline-offset:3px}
+    .container{width:min(1180px,92%);margin-inline:auto}
+    .section{padding:3.2rem 0}
+    .card{background:linear-gradient(0deg, rgba(255,255,255,.03), transparent), var(--panel);border:1px solid var(--border);border-radius:var(--radius);box-shadow:var(--shadow);padding:1.2rem}
+    .btn{display:inline-flex;align-items:center;gap:.5rem;padding:.7rem 1rem;border-radius:12px;border:1px solid var(--border);cursor:pointer;transition:transform .05s,box-shadow .2s}
+    .btn:active{transform:translateY(1px)} .btn--primary{background:linear-gradient(135deg,var(--teal),#12a895);color:#043b37;border-color:transparent}
+    .btn--ghost{background:var(--panel);color:var(--text)}
+    .badge{display:inline-flex;align-items:center;gap:.35rem;padding:.22rem .55rem;border:1px solid var(--border);border-radius:999px;background:var(--soft);color:var(--muted);font-size:.85rem}
+    .chip{display:inline-flex;align-items:center;gap:.35rem;padding:.25rem .6rem;border-radius:999px;border:1px solid var(--border);background:var(--badge);color:#084b45;font-weight:600}
+    .muted{color:var(--muted)} .sr-only{position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap;border:0}
+    .grid{display:grid;gap:1rem}
+    @media (min-width: 980px){ .grid--2{grid-template-columns:1fr 1fr} .grid--3{grid-template-columns:repeat(3,1fr)} }
+
+    /* ================= Header / Nav ================= */
+    .header{position:sticky;top:0;z-index:70;backdrop-filter:blur(12px);background:rgba(11,27,59,.6);border-bottom:1px solid var(--border)}
+    [data-theme="light"] .header{background:rgba(255,255,255,.7)}
+    .header__inner{display:flex;align-items:center;justify-content:space-between;padding:.75rem 0}
+    .brand{display:flex;align-items:center;gap:.65rem}
+    .brand__logo{width:36px;height:36px;border-radius:10px;background:conic-gradient(from 180deg,var(--teal),var(--sky),#a8e7e2,var(--teal));display:grid;place-items:center;color:#043b37;font-weight:800;box-shadow:var(--shadow)}
+    .nav{display:flex;gap:1rem;align-items:center}
+    .nav__menu{display:flex;gap:1rem;list-style:none;margin:0;padding:0}
+    .nav__link{color:var(--muted)} .nav__link:hover{color:var(--text)}
+    .nav__toggle{display:none}
+    .auth{display:flex;gap:.6rem;align-items:center}
+    @media (max-width:980px){
+      .nav__toggle{display:inline-block;border:1px solid var(--border);background:var(--panel);color:var(--text);padding:.5rem .7rem;border-radius:.6rem}
+      .nav__menu{display:none;position:absolute;right:1rem;top:60px;background:var(--panel);padding:.75rem;border-radius:.6rem;border:1px solid var(--border)}
+      .nav__menu.is-open{display:flex;flex-direction:column}
+    }
+
+    /* ================= Hero ================= */
+    .hero{padding:3rem 0}
+    .hero__wrap{display:grid;gap:1.2rem;grid-template-columns:1.2fr .8fr;align-items:center}
+    @media (max-width:980px){.hero__wrap{grid-template-columns:1fr}}
+    .hero__title{font-size:clamp(1.9rem,3.6vw,2.6rem);margin:0}
+    .hero__img{border-radius:18px;overflow:hidden;border:1px solid var(--border)}
+    .hero__img>img{width:100%;height:100%;object-fit:cover}
+
+    /* ================= Forms ================= */
+    .form__row{display:grid;gap:.35rem;margin-bottom:.6rem}
+    .form__label{font-weight:600}
+    .form__input,.form__select,.form__area{background:var(--soft);color:var(--text);border:1px solid var(--border);border-radius:10px;padding:.6rem .7rem}
+
+    /* ================= Marketplace ================= */
+    .layout{display:grid;gap:1rem;grid-template-columns:280px 1fr}
+    @media (max-width:1100px){ .layout{grid-template-columns:1fr} }
+    .filters{position:sticky;top:76px}
+    .filter__drawer{display:none}
+    @media (max-width:1100px){
+      .filters{display:none}
+      .filter__drawer{display:flex;justify-content:space-between;margin-bottom:.6rem}
+      .drawer{position:fixed;inset:0;background:rgba(0,0,0,.45);display:none}
+      .drawer__panel{position:absolute;left:0;top:0;height:100%;width:85%;max-width:360px;background:var(--panel);border-right:1px solid var(--border);padding:1rem;overflow:auto}
+      .drawer.is-open{display:block}
+    }
+    .market__grid{display:grid;gap:1rem;grid-template-columns:repeat(auto-fit,minmax(260px,1fr))}
+    .card--listing:hover{transform:translateY(-2px);box-shadow:var(--shadow);transition:transform .12s,box-shadow .2s}
+    .listing__meta{display:flex;align-items:center;justify-content:space-between;gap:.6rem;flex-wrap:wrap}
+    .listing__footer{display:flex;align-items:center;justify-content:space-between;gap:.6rem;flex-wrap:wrap}
+    .stars{color:#fbbf24}
+
+    /* ================= Tabs (Profile) ================= */
+    .tabs{display:flex;gap:.4rem;flex-wrap:wrap;border-bottom:1px solid var(--border);margin:.8rem 0}
+    .tab{padding:.45rem .75rem;border:1px solid var(--border);border-bottom:none;border-radius:10px 10px 0 0;background:var(--soft);cursor:pointer}
+    .tab[aria-selected="true"]{background:var(--badge);color:#084b45}
+
+    /* ================= Sticky CTA (mobile) ================= */
+    .sticky-cta{position:sticky;bottom:0;z-index:40;background:var(--panel);border-top:1px solid var(--border);padding:.6rem;display:none}
+    @media (max-width:700px){ .sticky-cta{display:block} }
+
+    /* ================= FAB: WhatsApp ================= */
+    .whatsapp{position:fixed;left:1rem;bottom:1rem;background:#25D366;color:white;border-radius:999px;padding:.7rem 1rem;box-shadow:var(--shadow);z-index:80}
+
+    /* ================= Chat (placeholder quick replies) ================= */
+    .chat{position:fixed;right:1rem;bottom:1rem;z-index:80}
+    .chat__toggle{width:60px;height:60px;border-radius:999px;border:none;background:linear-gradient(135deg,var(--teal),#0bd4c2);color:#043b37;box-shadow:var(--shadow);cursor:pointer}
+    .chat__panel{position:fixed;right:1rem;bottom:4.8rem;width:min(380px,92vw);background:var(--panel);border:1px solid var(--border);border-radius:14px;box-shadow:var(--shadow);overflow:hidden}
+    .chat__header{display:flex;justify-content:space-between;align-items:center;padding:.65rem .8rem;background:var(--soft);border-bottom:1px solid var(--border)}
+    .chat__log{max-height:340px;overflow:auto;padding:.8rem;display:grid;gap:.5rem}
+    .bubble{padding:.55rem .75rem;border-radius:12px;max-width:85%}
+    .bubble--me{justify-self:end;background:linear-gradient(135deg,var(--teal),#8be9e1);color:#043b37}
+    .bubble--ai{background:var(--soft);border:1px solid var(--border)}
+    .chat__form{display:flex;gap:.45rem;padding:.6rem;border-top:1px solid var(--border)}
+    .chat__input{flex:1;background:var(--soft);border:1px solid var(--border);border-radius:10px;padding:.55rem .7rem;color:var(--text)}
+  </style>
+</head>
+<body>
+  <a class="sr-only" href="#main">Skip to content</a>
+
+  <!-- ================= Header ================= -->
+  <header class="header">
+    <div class="container header__inner">
+      <a class="brand" href="#/home" aria-label="Home"><span class="brand__logo">◆</span><strong>CHA.AI</strong></a>
+      <nav class="nav" aria-label="Primary">
+        <button class="nav__toggle" id="navToggle" aria-expanded="false" aria-controls="navMenu">Menu</button>
+        <ul class="nav__menu" id="navMenu">
+          <li><a class="nav__link" href="#/marketplace">Marketplace</a></li>
+          <li><a class="nav__link" href="#/calculator">Duty Calculator</a></li>
+          <li><a class="nav__link" href="#/learn">Learn</a></li>
+          <li><a class="nav__link" href="#/pricing">Pricing</a></li>
+        </ul>
+      </nav>
+      <div class="auth">
+        <button class="btn btn--ghost" id="themeToggle" aria-pressed="false" aria-label="Toggle dark/light">🌗</button>
+        <a class="btn" href="#/auth?mode=signin">Sign in</a>
+        <a class="btn btn--primary" href="#/auth?mode=signup">Create Account</a>
+      </div>
+    </div>
+  </header>
+
+  <main id="main">
+    <!-- ================= HOME ================= -->
+    <section id="home" class="section">
+      <div class="container hero">
+        <div class="hero__wrap">
+          <div>
+            <h1 class="hero__title">Clear your shipments faster at any Indian port.</h1>
+            <p class="muted">Verified CHAs + instant HS code & duty estimates.</p>
+            <div style="display:flex;gap:.6rem;flex-wrap:wrap;margin:.9rem 0">
+              <a class="btn btn--primary" href="#/marketplace">Find a CHA</a>
+              <a class="btn btn--ghost" href="#/calculator">Calculate Duty</a>
+            </div>
+
+            <!-- Quick Search -->
+            <div class="card" role="search" aria-label="Quick search">
+              <div class="grid grid--2">
+                <div class="form__row">
+                  <label class="form__label" for="qsPort">Port</label>
+                  <select id="qsPort" class="form__select"></select>
+                </div>
+                <div class="form__row">
+                  <label class="form__label" for="qsService">Service type</label>
+                  <select id="qsService" class="form__select">
+                    <option>Clearance only</option><option>Clearance + Transport</option>
+                    <option>Drawback</option><option>Bonded warehousing</option>
+                    <option>License handling</option>
+                  </select>
+                </div>
+                <div class="form__row">
+                  <label class="form__label" for="qsCommodity">Commodity / HS</label>
+                  <input id="qsCommodity" class="form__input" placeholder="e.g., mobile phones / 8517" />
+                </div>
+                <div class="form__row" style="align-self:end">
+                  <button id="qsSearch" class="btn btn--primary">Search</button>
+                </div>
+              </div>
+              <div style="display:flex;gap:.5rem;flex-wrap:wrap;margin-top:.5rem">
+                <span class="badge">IEC-verified partners</span>
+                <span class="badge">PAN/KYC verified</span>
+                <span class="badge">4.9★ avg rating</span>
+                <span class="badge">ISO/ACI ready</span>
+              </div>
+            </div>
+          </div>
+          <figure class="hero__img">
+            <img src="https://images.unsplash.com/photo-1519389950473-47ba0277781c?q=80&w=1200&auto=format&fit=crop" width="1200" height="800" alt="Modern marketplace and calculator preview" />
+          </figure>
+        </div>
+      </div>
+
+      <div class="container section">
+        <h2>How it works</h2>
+        <div class="grid grid--3">
+          <div class="card"><strong>1) Tell us port & commodity</strong><p class="muted">Pick the port, mode, and share commodity/HS.</p></div>
+          <div class="card"><strong>2) Compare verified CHAs</strong><p class="muted">Profiles with licenses, reviews, and response time.</p></div>
+          <div class="card"><strong>3) Book & track clearance</strong><p class="muted">Message, accept quotes, and track SLAs.</p></div>
+        </div>
+      </div>
+
+      <div class="container section">
+        <div class="card grid grid--2">
+          <div>
+            <h2>Get a duty estimate in 30 seconds</h2>
+            <p class="muted">Enter HS and assessable value. See BCD, SWS, AIDC, IGST & total.</p>
+            <div class="grid grid--2">
+              <div class="form__row"><label class="form__label" for="teaserHS">HS code</label><input id="teaserHS" class="form__input" placeholder="e.g., 851713" /></div>
+              <div class="form__row"><label class="form__label" for="teaserAV">Assessable Value (₹)</label><input id="teaserAV" type="number" class="form__input" placeholder="100000" /></div>
+            </div>
+            <button id="teaserCalc" class="btn btn--primary">Estimate</button>
+            <div id="teaserOut" style="display:flex;gap:.5rem;flex-wrap:wrap;margin-top:.7rem"></div>
+            <p style="margin-top:.6rem"><a href="#/calculator" class="nav__link">Open the full duty & landed-cost calculator →</a></p>
+          </div>
+          <img class="card" alt="Calculator preview" src="https://images.unsplash.com/photo-1556157382-97eda2d62296?q=80&w=1200&auto=format&fit=crop" />
+        </div>
+      </div>
+
+      <div class="container section">
+        <h2>Featured CHAs</h2>
+        <div id="featuredGrid" class="market__grid"></div>
+      </div>
+
+      <div class="container section">
+        <h2>Proof & Reviews</h2>
+        <div class="grid grid--3">
+          <figure class="card"><blockquote>“Found a reliable CHA at JNPT in minutes. Duty estimate matched.”</blockquote><figcaption class="muted">— Anika G., Electronics</figcaption></figure>
+          <figure class="card"><blockquote>“Qualified leads with verification. Our response-time badge helps.”</blockquote><figcaption class="muted">— S. Patel, CHA</figcaption></figure>
+          <figure class="card"><blockquote>“Transparent quotes + tracked SLAs. CFO loves the landed-cost PDF.”</blockquote><figcaption class="muted">— Raj M., Apparel</figcaption></figure>
+        </div>
+      </div>
+
+      <div class="container section">
+        <h2>FAQs</h2>
+        <div class="grid grid--2">
+          <details class="card"><summary><strong>How do you verify CHAs?</strong></summary><p class="muted">PAN, CHA license, GSTIN, AEO status, office checks. Manual review before badges.</p></details>
+          <details class="card"><summary><strong>How accurate are HS suggestions?</strong></summary><p class="muted">We show 2–3 likely HS codes with confidence and examples. Final classification rests with customs.</p></details>
+          <details class="card"><summary><strong>Fees?</strong></summary><p class="muted">Browsing free. Platform fee displayed in quotes. Optional escrow/milestones.</p></details>
+          <details class="card"><summary><strong>Disputes?</strong></summary><p class="muted">Evidence-based moderation with refund/credit policy.</p></details>
+          <details class="card"><summary><strong>Coverage?</strong></summary><p class="muted">All major sea & air ports + ICDs across India.</p></details>
+          <details class="card"><summary><strong>Support?</strong></summary><p class="muted">Email & WhatsApp 9am–9pm IST; priority SLA on paid plans.</p></details>
+        </div>
+      </div>
+    </section>
+
+    <!-- ================= MARKETPLACE ================= -->
+    <section id="marketplace" class="section" hidden>
+      <div class="container">
+        <div class="filter__drawer">
+          <strong>Filters</strong>
+          <button class="btn" id="openFilters">Open</button>
+        </div>
+        <div class="layout">
+          <aside class="filters card" id="filters">
+            <h3>Refine search</h3>
+            <div class="form__row"><label class="form__label" for="fPort">Port</label><select id="fPort" class="form__select"></select></div>
+            <div class="form__row"><label class="form__label" for="fMode">Mode</label><select id="fMode" class="form__select"><option>Sea FCL</option><option>Sea LCL</option><option>Air</option><option>Courier</option><option>ICD</option></select></div>
+            <div class="form__row"><label class="form__label" for="fServices">Services</label><select id="fServices" class="form__select"><option>Clearance only</option><option>Clearance + Transport</option><option>Drawback</option><option>Bonded warehousing</option><option>License handling</option></select></div>
+            <div class="form__row"><label class="form__label" for="fBudget">Budget (₹ max)</label><input id="fBudget" type="number" class="form__input" placeholder="50000" /></div>
+            <div class="form__row"><label class="form__label" for="fSpeed">Quote speed</label><select id="fSpeed" class="form__select"><option>Any</option><option>Under 2h</option><option>Same day</option></select></div>
+            <div class="form__row"><label class="form__label" for="fLang">Languages</label><select id="fLang" class="form__select"><option>EN</option><option>Hindi</option><option>EN + Hindi</option></select></div>
+            <div class="form__row"><label class="form__label" for="fSLA">SLA tier</label><select id="fSLA" class="form__select"><option>Standard</option><option>Express</option></select></div>
+            <div class="form__row"><label class="form__label">Badges</label>
+              <div style="display:flex;gap:.6rem;flex-wrap:wrap">
+                <label><input type="checkbox" id="bVerified"/> Verified</label>
+                <label><input type="checkbox" id="bTopRated"/> Top Rated</label>
+                <label><input type="checkbox" id="bFast"/> Fast responder</label>
+                <label><input type="checkbox" id="bAEO"/> AEO-certified</label>
+              </div>
+            </div>
+            <button class="btn btn--primary" id="applyFilters">Apply</button>
+          </aside>
+
+          <div>
+            <div class="card" style="display:flex;gap:.6rem;align-items:center;justify-content:space-between;flex-wrap:wrap">
+              <div><strong>CHAs</strong> <span class="muted" id="countSpan">—</span></div>
+              <div style="display:flex;gap:.6rem;align-items:center">
+                <input id="fSearch" class="form__input" placeholder="Search CHA or HS/commodity..." />
+                <select id="fSort" class="form__select">
+                  <option value="featured">Featured</option>
+                  <option value="rating">Rating</option>
+                  <option value="price">Starting price</option>
+                  <option value="speed">Response time</option>
+                </select>
+              </div>
+            </div>
+            <div id="listGrid" class="market__grid" role="list"></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Mobile filter drawer -->
+      <div id="drawer" class="drawer" aria-hidden="true">
+        <div class="drawer__panel card">
+          <div style="display:flex;justify-content:space-between;align-items:center"><h3>Filters</h3><button class="btn" id="closeFilters">Close</button></div>
+          <div id="drawerFilters"></div>
+        </div>
+      </div>
+
+      <!-- Compare tray -->
+      <div id="compareTray" class="card" style="position:sticky;bottom:1rem;max-width:1180px;margin:1rem auto;display:none">
+        <div style="display:flex;justify-content:space-between;align-items:center;gap:.6rem;flex-wrap:wrap">
+          <div><strong>Compare</strong> <span id="compareNames" class="muted"></span></div>
+          <div style="display:flex;gap:.5rem">
+            <button class="btn" id="clearCompare">Clear</button>
+            <button class="btn btn--primary" id="openCompare">View</button>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ================= PROFILE ================= -->
+    <section id="profile" class="section" hidden>
+      <div class="container">
+        <div id="profileHeader" class="card"></div>
+        <div class="tabs" role="tablist" aria-label="CHA profile tabs" id="profileTabs"></div>
+        <div id="profileBody" class="card"></div>
+        <div class="sticky-cta">
+          <div style="display:flex;gap:.5rem;justify-content:space-between">
+            <a class="btn" href="#/rfp">Message</a>
+            <a class="btn btn--primary" href="#/rfp">Get Quote</a>
+            <a class="btn" href="tel:+910000000000">Call</a>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ================= CALCULATOR ================= -->
+    <section id="calculator" class="section" hidden>
+      <div class="container card">
+        <h2>Duty & Landed Cost (India)</h2>
+        <div class="grid grid--2">
+          <div>
+            <div class="form__row"><label class="form__label" for="cPort">Destination Port/ICD</label><select id="cPort" class="form__select"></select></div>
+            <div class="form__row"><label class="form__label" for="cOrigin">Country of Origin</label><input id="cOrigin" class="form__input" placeholder="e.g., CN, VN, US" /></div>
+            <div class="form__row"><label class="form__label" for="cIncoterm">Incoterm / Valuation</label><select id="cIncoterm" class="form__select"><option value="CIF">CIF</option><option value="FOB">FOB</option><option value="EXW">EXW</option></select></div>
+
+            <div class="grid grid--2">
+              <div class="form__row"><label class="form__label" for="cGoods">Goods Value (₹)</label><input id="cGoods" type="number" class="form__input" placeholder="100000" /></div>
+              <div class="form__row"><label class="form__label" for="cFreight">Freight (₹)</label><input id="cFreight" type="number" class="form__input" placeholder="10000" /></div>
+              <div class="form__row"><label class="form__label" for="cInsurance">Insurance (₹)</label><input id="cInsurance" type="number" class="form__input" placeholder="1000" /></div>
+              <div class="form__row"><label class="form__label" for="cOther">Other includable (₹)</label><input id="cOther" type="number" class="form__input" placeholder="0" /></div>
+            </div>
+
+            <div class="grid grid--2">
+              <div class="form__row"><label class="form__label" for="cHS">HS code</label><input id="cHS" class="form__input" placeholder="e.g., 851713" /></div>
+              <div class="form__row"><label class="form__label" for="cQty">Quantity / UoM</label><input id="cQty" class="form__input" placeholder="100 pcs" /></div>
+            </div>
+
+            <details class="card"><summary><strong>Rates & options</strong> (enter known rates; connect tariff API later)</summary>
+              <div class="grid grid--3" style="margin-top:.6rem">
+                <div class="form__row"><label class="form__label" for="rBCD">BCD %</label><input id="rBCD" type="number" class="form__input" placeholder="10" /></div>
+                <div class="form__row"><label class="form__label" for="rIGST">IGST %</label><input id="rIGST" type="number" class="form__input" placeholder="18" /></div>
+                <div class="form__row"><label class="form__label" for="rAIDC">AIDC %</label><input id="rAIDC" type="number" class="form__input" placeholder="0" /></div>
+                <div class="form__row"><label class="form__label" for="rCess">Comp. Cess %</label><input id="rCess" type="number" class="form__input" placeholder="0" /></div>
+                <div class="form__row"><label class="form__label" for="optSWS">Apply SWS (10% of BCD)</label><select id="optSWS" class="form__select"><option>Yes</option><option>No</option></select></div>
+                <div class="form__row"><label class="form__label" for="optFTA">Preferential FTA</label><select id="optFTA" class="form__select"><option>No</option><option>Yes</option></select></div>
+              </div>
+            </details>
+
+            <div style="display:flex;gap:.6rem;margin-top:.8rem">
+              <button id="calcBtn" class="btn btn--primary">Calculate</button>
+              <button id="calcShare" class="btn">Share link</button>
+              <button id="calcPDF" class="btn">Download PDF</button>
+              <button id="calcSaveAsRFP" class="btn">Save as RFP</button>
+            </div>
+          </div>
+
+          <div>
+            <h3>Breakdown</h3>
+            <table class="card" style="width:100%;border-collapse:separate;border-spacing:.4rem">
+              <tbody id="calcTable">
+                <!-- rows injected -->
+              </tbody>
+            </table>
+            <p class="muted" id="rateStamp"></p>
+            <div id="hsSuggestions" class="card" hidden>
+              <strong>HS suggestions (beta)</strong>
+              <ul id="hsList"></ul>
+              <p class="muted">Final classification rests with customs. Review examples/risk notes.</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ================= RFP (QUOTE REQUEST) ================= -->
+    <section id="rfp" class="section" hidden>
+      <div class="container card">
+        <h2>Request for Quote (RFP)</h2>
+        <div style="display:flex;gap:.5rem;flex-wrap:wrap;margin:.5rem 0">
+          <span class="chip" data-step="1">1) Shipment</span>
+          <span class="chip" data-step="2">2) Documents</span>
+          <span class="chip" data-step="3">3) SLA</span>
+          <span class="chip" data-step="4">4) Send</span>
+        </div>
+        <div id="rfpBody" style="margin-top:1rem"></div>
+      </div>
+    </section>
+
+    <!-- ================= AUTH ================= -->
+    <section id="auth" class="section" hidden>
+      <div class="container grid grid--2">
+        <form class="card" id="signinForm">
+          <h3>Sign in</h3>
+          <div class="form__row"><label class="form__label" for="siEmail">Email</label><input id="siEmail" class="form__input" type="email" required /></div>
+          <div class="form__row"><label class="form__label" for="siPass">Password</label><input id="siPass" class="form__input" type="password" required /></div>
+          <button class="btn btn--primary" type="submit">Sign in</button>
+        </form>
+        <form class="card" id="signupForm">
+          <h3>Create account</h3>
+          <div class="form__row"><label class="form__label" for="suRole">I am</label><select id="suRole" class="form__select"><option>Importer</option><option>CHA</option></select></div>
+          <div class="form__row"><label class="form__label" for="suName">Name</label><input id="suName" class="form__input" required /></div>
+          <div class="form__row"><label class="form__label" for="suEmail">Email</label><input id="suEmail" class="form__input" type="email" required /></div>
+          <div class="form__row"><label class="form__label" for="suPass">Password</label><input id="suPass" class="form__input" type="password" required /></div>
+          <button class="btn btn--primary" type="submit">Create account</button>
+        </form>
+      </div>
+
+      <div class="container section">
+        <form class="card" id="kycForm">
+          <h3>KYC (for CHA)</h3>
+          <div class="grid grid--3">
+            <div class="form__row"><label class="form__label">PAN</label><input class="form__input" /></div>
+            <div class="form__row"><label class="form__label">CHA License No.</label><input class="form__input" /></div>
+            <div class="form__row"><label class="form__label">GSTIN</label><input class="form__input" /></div>
+          </div>
+          <div class="form__row"><label class="form__label">AEO status</label><select class="form__select"><option>None</option><option>AEO-T1</option><option>AEO-T2</option><option>AEO-T3</option></select></div>
+          <button class="btn">Submit KYC</button>
+        </form>
+      </div>
+    </section>
+
+    <!-- ================= DASHBOARDS (placeholders) ================= -->
+    <section id="dashboard-importer" class="section" hidden>
+      <div class="container">
+        <h2>Importer Dashboard</h2>
+        <div class="grid grid--3">
+          <div class="card"><strong>Saved quotes</strong><ul id="impQuotes"></ul></div>
+          <div class="card"><strong>Chats</strong><div class="muted">Connect WhatsApp to sync</div></div>
+          <div class="card"><strong>Invoices / receipts</strong><div class="muted">No invoices yet</div></div>
+        </div>
+      </div>
+    </section>
+
+    <section id="dashboard-cha" class="section" hidden>
+      <div class="container">
+        <h2>CHA Dashboard</h2>
+        <div class="grid grid--3">
+          <div class="card"><strong>Leads</strong><ul id="chaLeads"></ul></div>
+          <div class="card"><strong>Calendar</strong><div class="muted">Sync Google Calendar</div></div>
+          <div class="card"><strong>Pricing</strong><div class="muted">Add base fees / port-wise rates</div></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ================= LEGAL / STATIC (placeholder) ================= -->
+    <section id="legal" class="section" hidden>
+      <div class="container grid grid--3">
+        <div class="card"><h3>Privacy</h3><p class="muted">We use data for quotes and compliance only. Encrypted at rest.</p></div>
+        <div class="card"><h3>Terms</h3><p class="muted">Platform terms incl. dispute & refund policy.</p></div>
+        <div class="card"><h3>EULA</h3><p class="muted">End-user license for apps & integrations.</p></div>
+      </div>
+    </section>
+
+    <!-- ================= LEARN / PRICING (placeholder) ================= -->
+    <section id="learn" class="section" hidden><div class="container"><h2>Guides</h2><p class="muted">HS classification, valuation, Incoterms, port playbooks.</p></div></section>
+    <section id="pricing" class="section" hidden><div class="container"><h2>Pricing</h2><p class="muted">Free to browse. Pro features & escrow from ₹999/mo.</p></div></section>
+  </main>
+
+  <!-- ================= Footer ================= -->
+  <footer class="footer">
+    <div class="container" style="display:flex;justify-content:space-between;align-items:center;gap:1rem;flex-wrap:wrap">
+      <small>© <span id="year"></span> CHA.AI</small>
+      <nav aria-label="Footer" style="display:flex;gap:.8rem;flex-wrap:wrap">
+        <a href="#/legal">About</a>
+        <a href="#/marketplace">Ports we cover</a>
+        <a href="#/learn">HS code index</a>
+        <a href="#/legal">Privacy</a>
+        <a href="#/legal">Terms</a>
+        <a href="#/legal">EULA</a>
+        <a href="#/legal">Refunds</a>
+        <a href="#/learn">Support</a>
+        <a href="https://wa.me/0000000000">WhatsApp</a>
+      </nav>
+    </div>
+  </footer>
+
+  <!-- ================= WhatsApp + Chat (mock) ================= -->
+  <a class="whatsapp" href="https://wa.me/0000000000" target="_blank" rel="noopener">WhatsApp</a>
+  <aside class="chat" aria-live="polite">
+    <button id="chatToggle" class="chat__toggle" aria-expanded="false" aria-controls="chatPanel" title="Open chat">💬</button>
+    <div id="chatPanel" class="chat__panel" hidden>
+      <div class="chat__header"><strong>Assistant</strong><button id="chatClose" class="btn">✕</button></div>
+      <div id="chatLog" class="chat__log" role="log" aria-live="polite"></div>
+      <form id="chatForm" class="chat__form" autocomplete="off">
+        <label for="chatInput" class="sr-only">Type message</label>
+        <input id="chatInput" class="chat__input" placeholder="Try: 'find JNPT CHA' or 'calc 8517 AV 100000'"/>
+        <button class="btn btn--ghost" type="submit">Send</button>
+      </form>
+    </div>
+  </aside>
+
+  <!-- ================= App Script ================= -->
+  <script>
+    /* ---------------- Theme + Nav ---------------- */
+    const root=document.documentElement, metaTheme=document.getElementById('meta-theme-color'), themeToggle=document.getElementById('themeToggle');
+    const savedTheme=localStorage.getItem('theme'); function setTheme(m){root.setAttribute('data-theme',m);localStorage.setItem('theme',m);metaTheme?.setAttribute('content',m==='light'?'#ffffff':'#0B1B3B');themeToggle?.setAttribute('aria-pressed',String(m==='dark')); }
+    setTheme(savedTheme || (matchMedia('(prefers-color-scheme: light)').matches ? 'light':'dark'));
+    themeToggle?.addEventListener('click',()=>setTheme(root.getAttribute('data-theme')==='light'?'dark':'light'));
+    document.getElementById('year').textContent=new Date().getFullYear();
+    const navToggle=document.getElementById('navToggle'), navMenu=document.getElementById('navMenu');
+    navToggle?.addEventListener('click',()=>{const open=navMenu.classList.toggle('is-open');navToggle.setAttribute('aria-expanded',String(open));});
+
+    /* ---------------- Router (#/page[/id]) ---------------- */
+    const sections=['home','marketplace','profile','calculator','rfp','auth','dashboard-importer','dashboard-cha','legal','learn','pricing'].map(id=>({id,el:document.getElementById(id)}));
+    function route(){const hash=location.hash||'#/home'; const [_,page,param]=hash.split('/'); sections.forEach(s=>s.el&&(s.el.hidden=true));
+      const show=id=>{const x=sections.find(s=>s.id===id); x?.el&&(x.el.hidden=false);};
+      switch(page){
+        case'home':show('home');break;
+        case'marketplace':show('marketplace');renderList();break;
+        case'profile':show('profile');renderProfile(Number(param));break;
+        case'calculator':show('calculator');break;
+        case'rfp':show('rfp');renderRFP();break;
+        case'auth':show('auth');break;
+        case'dashboard-importer':show('dashboard-importer');break;
+        case'dashboard-cha':show('dashboard-cha');break;
+        case'legal':show('legal');break;
+        case'learn':show('learn');break;
+        case'pricing':show('pricing');break;
+        default:show('home');
+      }
+      navMenu?.classList.remove('is-open');navToggle?.setAttribute('aria-expanded','false');
+    } addEventListener('hashchange',route); route();
+
+    /* ---------------- Mock Data ---------------- */
+    const PORTS=["Nhava Sheva (JNPT)","Mundra","Chennai","Kolkata","Delhi Air Cargo","Bangalore","Hyderabad","Cochin","Tuticorin","Ahmedabad ICD","Nagpur ICD","Tughlakabad ICD"];
+    const CHAS=[
+      {id:1,name:"Pacific Logistics",verified:true,aeo:"AEO-T1",rating:4.9,ratingCount:312,response:"12m",success:98,startPrice:6500,ports:["JNPT","Mundra","ICD TKD"],services:["Clearance + Transport","License handling"],langs:"EN + Hindi",badges:["Top Rated","Fast"],speed:"Under 2h", img:"https://images.unsplash.com/photo-1556761175-4b46a572b786?q=80&w=800&auto=format&fit=crop", specialties:["Electronics","Chemicals","Apparel"], licenses:["CHA 11/XXX","GSTIN 27XXXXX"], bio:"15+ yrs handling high-volume FCL/LCL & air cargo.", pricing:[{service:"Sea FCL (20ft)",range:"₹6,500–8,000"},{service:"Air (per MAWB)",range:"₹5,500–7,000"}]},
+      {id:2,name:"Astra Customs",verified:true,aeo:"AEO-T2",rating:4.7,ratingCount:201,response:"15m",success:96,startPrice:5500,ports:["Mundra","JNPT","Chennai"],services:["Clearance only","Drawback"],langs:"EN",badges:["Verified"],speed:"Same day", img:"https://images.unsplash.com/photo-1515879218367-8466d910aaa4?q=80&w=800&auto=format&fit=crop", specialties:["Apparel","Furniture"], licenses:["CHA 11/YYY"], bio:"Drawback experts. Strong apparel/furniture corridors.", pricing:[{service:"Sea LCL",range:"₹4,000–6,000"}]},
+      {id:3,name:"Metro ACI",verified:true,aeo:"",rating:4.6,ratingCount:154,response:"25m",success:95,startPrice:4800,ports:["Delhi Air Cargo","Bangalore","Hyderabad"],services:["Courier","Air","License handling"],langs:"EN + Hindi",badges:["Fast"],speed:"Under 2h", img:"https://images.unsplash.com/photo-1507679799987-c73779587ccf?q=80&w=800&auto=format&fit=crop", specialties:["Electronics","Pharma"], licenses:["CHA 11/ZZZ"], bio:"Air/courier specialists with rapid clearance.", pricing:[{service:"Air import",range:"₹5,000–7,500"}]},
+    ];
+    function fillPorts(sel){sel.innerHTML=PORTS.map(p=>`<option>${p}</option>`).join('');}
+    fillPorts(document.getElementById('qsPort')); fillPorts(document.getElementById('fPort')); fillPorts(document.getElementById('cPort'));
+
+    /* ---------------- Home: Featured + Teaser calc + Quick search ---------------- */
+    const featuredGrid=document.getElementById('featuredGrid');
+    featuredGrid.innerHTML=CHAS.map(c=>`
+      <article class="card card--listing" role="listitem">
+        <img src="${c.img}" alt="${c.name}" style="height:140px;border-radius:10px;border:1px solid var(--border);object-fit:cover">
+        <div class="listing__meta">
+          <div><strong>${c.name}</strong> ${c.verified?'<span class="chip">Verified</span>':''} ${c.aeo?`<span class="chip">${c.aeo}</span>`:''}</div>
+          <div class="badge"><span class="stars">★</span> ${c.rating} (${c.ratingCount})</div>
+        </div>
+        <div class="muted" style="margin:.25rem 0">${c.ports.join(' • ')}</div>
+        <div class="muted">${c.specialties.join(', ')}</div>
+        <div class="listing__footer">
+          <div><span class="muted">Starts</span> <strong>₹ ${c.startPrice}</strong></div>
+          <div style="display:flex;gap:.4rem">
+            <a class="btn" href="#/profile/${c.id}">View</a>
+            <a class="btn btn--primary" href="#/rfp" data-preselect="${c.id}">Get Quote</a>
+          </div>
+        </div>
+      </article>`).join('');
+
+    document.getElementById('teaserCalc').addEventListener('click',()=>{
+      const av=Number(document.getElementById('teaserAV').value||0);
+      if(!av){document.getElementById('teaserOut').innerHTML='<span class="badge">Enter Assessable Value</span>';return;}
+      const bcd=av*0.10, sws=bcd*0.10, sub=av+bcd+sws, igst=sub*0.18, total=sub+igst;
+      document.getElementById('teaserOut').innerHTML=`
+        <span class="badge">BCD: ₹ ${bcd.toFixed(0)}</span>
+        <span class="badge">SWS: ₹ ${sws.toFixed(0)}</span>
+        <span class="badge">IGST: ₹ ${igst.toFixed(0)}</span>
+        <span class="chip">Total: ₹ ${total.toFixed(0)}</span>`;
+    });
+
+    document.getElementById('qsSearch').addEventListener('click',()=>{
+      const port=document.getElementById('qsPort').value; const svc=document.getElementById('qsService').value; const comm=document.getElementById('qsCommodity').value.trim();
+      location.hash='#/marketplace'; setTimeout(()=>{ document.getElementById('fPort').value=port; document.getElementById('fServices').value=svc; document.getElementById('fSearch').value=comm; renderList(); },0);
+    });
+
+    /* ---------------- Marketplace: filters, list, compare/save/share ---------------- */
+    const listGrid=document.getElementById('listGrid'), countSpan=document.getElementById('countSpan'), fSearch=document.getElementById('fSearch'), fSort=document.getElementById('fSort');
+    let compareSet=new Set();
+
+    function passesFilters(c){
+      const port=document.getElementById('fPort').value;
+      const svc=document.getElementById('fServices').value;
+      const budget=Number(document.getElementById('fBudget').value||Infinity);
+      const speed=document.getElementById('fSpeed').value;
+      const lang=document.getElementById('fLang').value;
+      const sla=document.getElementById('fSLA').value; // demo: not applied
+      const q=fSearch.value.trim().toLowerCase();
+      const bad={v:document.getElementById('bVerified').checked,t:document.getElementById('bTopRated').checked,f:document.getElementById('bFast').checked,a:document.getElementById('bAEO').checked};
+
+      const matchQ = !q || c.name.toLowerCase().includes(q) || c.specialties.join(' ').toLowerCase().includes(q);
+      const matchPort = !port || c.ports.join(' ').toLowerCase().includes(port.split(' ')[0].toLowerCase());
+      const matchSvc = !svc || c.services.includes(svc);
+      const matchBudget = !budget || c.startPrice <= budget;
+      const matchSpeed = speed==='Any' || c.speed===speed;
+      const matchLang = !lang || c.langs===lang;
+      const matchBadges = (!bad.v || c.verified) && (!bad.t || c.badges.includes('Top Rated')) && (!bad.f || c.badges.includes('Fast')) && (!bad.a || c.aeo);
+      return matchQ && matchPort && matchSvc && matchBudget && matchSpeed && matchLang && matchBadges;
+    }
+
+    function renderList(){
+      let arr = CHAS.filter(passesFilters);
+      if (fSort.value==='rating') arr.sort((a,b)=>b.rating - a.rating);
+      if (fSort.value==='price') arr.sort((a,b)=>a.startPrice - b.startPrice);
+      if (fSort.value==='speed') arr.sort((a,b)=> parseInt(a.response) - parseInt(b.response));
+      countSpan.textContent = `${arr.length} result${arr.length!==1?'s':''}`;
+      listGrid.innerHTML = arr.map(c => `
+        <article class="card card--listing" role="listitem" aria-label="${c.name}">
+          <img src="${c.img}" alt="${c.name}" style="height:160px;border-radius:10px;border:1px solid var(--border);object-fit:cover">
+          <div class="listing__meta">
+            <div><a href="#/profile/${c.id}"><strong>${c.name}</strong></a> ${c.verified?'<span class="chip">Verified</span>':''} ${c.aeo?`<span class="chip">${c.aeo}</span>`:''}</div>
+            <div class="badge"><span class="stars">★</span> ${c.rating} (${c.ratingCount})</div>
+          </div>
+          <div class="muted" style="margin:.25rem 0">${c.ports.join(' • ')}</div>
+          <div class="muted">${c.specialties.map(s=>`<span class="chip">${s}</span>`).join(' ')}</div>
+          <div class="listing__footer">
+            <div><span class="muted">Starts</span> <strong>₹ ${c.startPrice}</strong> • <span class="muted">${c.response} avg response</span></div>
+            <div style="display:flex;gap:.4rem;flex-wrap:wrap">
+              <button class="btn" data-act="save" data-id="${c.id}">Save</button>
+              <button class="btn" data-act="compare" data-id="${c.id}">Compare</button>
+              <button class="btn btn--primary" data-act="quote" data-id="${c.id}">Get Quote</button>
+              <button class="btn" data-act="share" data-id="${c.id}">Share</button>
+            </div>
+          </div>
+        </article>
+      `).join('');
+    }
+    ['applyFilters','fPort','fMode','fServices','fBudget','fSpeed','fLang','fSLA'].forEach(id => document.getElementById(id)?.addEventListener('input', renderList));
+    fSearch.addEventListener('input', renderList); fSort.addEventListener('input', renderList);
+
+    listGrid.addEventListener('click', (e)=>{
+      const act = e.target?.dataset?.act; const id = Number(e.target?.dataset?.id); if(!act) return;
+      if(act==='save'){ alert('Saved to your dashboard (demo)'); }
+      if(act==='compare'){ if(compareSet.has(id)) compareSet.delete(id); else { if(compareSet.size>=3) return alert('Compare up to 3'); compareSet.add(id); } updateCompareTray(); }
+      if(act==='quote'){ location.hash = '#/rfp'; setTimeout(()=> preselectRFP(id), 0); }
+      if(act==='share'){ navigator.clipboard?.writeText(location.origin + location.pathname + '#/profile/'+id); alert('Profile link copied'); }
+    });
+    const compareTray=document.getElementById('compareTray'), compareNames=document.getElementById('compareNames');
+    function updateCompareTray(){ const arr=[...compareSet].map(id=>CHAS.find(c=>c.id===id)?.name).filter(Boolean); compareNames.textContent=arr.join(' vs '); compareTray.style.display=arr.length?'block':'none'; }
+    document.getElementById('clearCompare').addEventListener('click', ()=>{ compareSet.clear(); updateCompareTray(); });
+    document.getElementById('openCompare').addEventListener('click', ()=>{
+      const items=[...compareSet].map(id=>CHAS.find(c=>c.id===id));
+      alert('Compare (demo):\n\n'+items.map(c=>`${c.name} | ₹${c.startPrice} | ★${c.rating} | Ports: ${c.ports.join(', ')}`).join('\n'));
+    });
+
+    /* Mobile filter drawer clone */
+    const drawer = document.getElementById('drawer');
+    const openFilters=document.getElementById('openFilters'), closeFilters=document.getElementById('closeFilters');
+    openFilters?.addEventListener('click', ()=>{ document.getElementById('drawerFilters').innerHTML = document.getElementById('filters').innerHTML; drawer.classList.add('is-open'); drawer.setAttribute('aria-hidden','false'); });
+    closeFilters?.addEventListener('click', ()=>{ drawer.classList.remove('is-open'); drawer.setAttribute('aria-hidden','true'); });
+
+    /* ---------------- Profile page ---------------- */
+    function profileTabsHTML(tabs){ return tabs.map((t,i)=>`<button class="tab" role="tab" aria-selected="${i===0?'true':'false'}" data-tab="${t}">${t}</button>`).join(''); }
+    function renderProfile(id){
+      const c = CHAS.find(x=>x.id===id) || CHAS[0];
+      document.getElementById('profileHeader').innerHTML = `
+        <div class="grid grid--2" style="align-items:center">
+          <div style="display:flex;gap:1rem;align-items:center">
+            <img src="${c.img}" alt="${c.name}" style="width:88px;height:88px;border-radius:12px;object-fit:cover;border:1px solid var(--border)">
+            <div>
+              <h2 style="margin:0">${c.name} ${c.verified?'<span class="chip">Verified</span>':''} ${c.aeo?`<span class="chip">${c.aeo}</span>`:''}</h2>
+              <div class="muted">★ ${c.rating} (${c.ratingCount}) • Avg response ${c.response} • Success ${c.success}%</div>
+              <div class="muted">${c.ports.join(' • ')}</div>
+            </div>
+          </div>
+          <div style="display:flex;gap:.5rem;justify-content:flex-end;flex-wrap:wrap">
+            <a class="btn" href="#/rfp" data-preselect="${c.id}">Message</a>
+            <a class="btn btn--primary" href="#/rfp" data-preselect="${c.id}">Get Quote</a>
+            <a class="btn" href="tel:+910000000000">Book call</a>
+          </div>
+        </div>`;
+      const tabs = ["Overview","Pricing","Licenses & KYC","Ports","Commodities","Reviews","FAQs"];
+      const tabsEl = document.getElementById('profileTabs');
+      tabsEl.innerHTML = profileTabsHTML(tabs);
+      const body = document.getElementById('profileBody');
+      function setTab(name){
+        [...tabsEl.children].forEach(btn=>btn.setAttribute('aria-selected', String(btn.dataset.tab===name)));
+        if(name==="Overview"){
+          body.innerHTML = `<p>${c.bio}</p>
+            <div class="grid grid--3" style="margin-top:.6rem">
+              <img class="card" src="${c.img}" alt="Team photo 1">
+              <img class="card" src="https://images.unsplash.com/photo-1519389950473-47ba0277781c?q=80&w=800&auto=format&fit=crop" alt="Ops 2">
+              <img class="card" src="https://images.unsplash.com/photo-1498050108023-c5249f4df085?q=80&w=800&auto=format&fit=crop" alt="Warehouse 3">
+            </div>`;
+        } else if(name==="Pricing"){
+          body.innerHTML = `<ul>${c.pricing.map(p=>`<li class="card" style="margin:.4rem 0"><strong>${p.service}</strong> — ${p.range}</li>`).join('')}</ul>`;
+        } else if(name==="Licenses & KYC"){
+          body.innerHTML = `<ul>${c.licenses.map(l=>`<li class="badge">${l}</li>`).join('')}</ul><p class="muted">Full docs visible to verified importers.</p>`;
+        } else if(name==="Ports"){
+          body.innerHTML = `<p>Ports & corridors:</p><div>${c.ports.map(p=>`<span class="chip">${p}</span>`).join(' ')}</div>`;
+        } else if(name==="Commodities"){
+          body.innerHTML = `<p>Specialties:</p><div>${c.specialties.map(s=>`<span class="chip">${s}</span>`).join(' ')}</div>`;
+        } else if(name==="Reviews"){
+          body.innerHTML = `<div class="card"><strong>Recent</strong><p class="muted">★ ${c.rating} average across ${c.ratingCount} reviews.</p></div>`;
+        } else if(name==="FAQs"){
+          body.innerHTML = `<details class="card"><summary>Do you cover Express SLA?</summary><p>Yes, request Express in RFP.</p></details>
+          <details class="card"><summary>Billing & payments</summary><p>Milestone billing supported.</p></details>`;
+        }
+      }
+      setTab("Overview");
+      tabsEl.addEventListener('click', e=>{ if(e.target.classList.contains('tab')) setTab(e.target.dataset.tab); });
+    }
+
+    /* ---------------- Calculator (demo logic) ---------------- */
+    function calcDuty(){
+      const goods=+document.getElementById('cGoods').value||0;
+      const freight=+document.getElementById('cFreight').value||0;
+      const insurance=+document.getElementById('cInsurance').value||0;
+      const other=+document.getElementById('cOther').value||0;
+      const inc=document.getElementById('cIncoterm').value;
+      // Normalize to CIF-ish assessable value (simple demo)
+      let AV = goods + freight + insurance + other;
+      if(inc==='FOB'){ AV = goods + freight*1.1 + insurance + other; }
+      if(inc==='EXW'){ AV = goods*1.02 + freight*1.1 + insurance + other; }
+      const bcdRate=(+document.getElementById('rBCD').value||0)/100;
+      const igstRate=(+document.getElementById('rIGST').value||0)/100;
+      const aidcRate=(+document.getElementById('rAIDC').value||0)/100;
+      const cessRate=(+document.getElementById('rCess').value||0)/100;
+      const swsOn = document.getElementById('optSWS').value==='Yes';
+
+      const BCD = AV*bcdRate;
+      const SWS = swsOn ? BCD*0.10 : 0;
+      const AIDC = AV*aidcRate;
+      const CompCess = AV*cessRate;
+      const subTotal = AV + BCD + SWS + AIDC + CompCess;
+      const IGST = subTotal*igstRate;
+      const Total = subTotal + IGST;
+
+      const rows = [
+        {k:'Assessable Value (AV)', v:AV, why:'AV = Goods + Freight + Insurance + Other (normalized for Incoterm)'},
+        {k:'Basic Customs Duty (BCD)', v:BCD, why:'BCD = AV × BCD%'},
+        {k:'Social Welfare Surcharge (SWS)', v:SWS, why:'SWS = 10% of BCD (if applicable)'},
+        {k:'AIDC', v:AIDC, why:'AIDC = AV × AIDC% (HS-specific)'},
+        {k:'Compensation Cess', v:CompCess, why:'Cess = AV × Cess% (if applicable)'},
+        {k:'IGST', v:IGST, why:'IGST = (AV + BCD + SWS + AIDC + Cess) × IGST%'},
+        {k:'Total Landed Cost', v:Total, why:'Total = Subtotal + IGST (+ any ADD/SD if applicable)'},
+      ];
+      const tbody=document.getElementById('calcTable');
+      tbody.innerHTML = rows.map(r=>`<tr><td>${r.k}</td><td title="${r.why}">₹ ${r.v.toFixed(2)}</td><td><small class="muted">Why?</small></td></tr>`).join('');
+      document.getElementById('rateStamp').textContent = 'Demo rates — add tariff API + date stamp later.';
+      // HS suggestions (very simple mock)
+      const hs = (document.getElementById('cHS').value||'').trim();
+      const hsBox=document.getElementById('hsSuggestions'); const hsList=document.getElementById('hsList');
+      if(!/^\d{6}$/.test(hs)){ hsBox.hidden=false; hsList.innerHTML = '<li>851713 (Phones) — 82% confidence</li><li>851779 (Other comms) — 61%</li>'; } else { hsBox.hidden=true; }
+    }
+    document.getElementById('calcBtn').addEventListener('click', calcDuty);
+    document.getElementById('calcShare').addEventListener('click', ()=>{
+      const params=new URLSearchParams({
+        port:document.getElementById('cPort').value,
+        inc:document.getElementById('cIncoterm').value,
+        av:(+document.getElementById('cGoods').value||0)+(+document.getElementById('cFreight').value||0)+(+document.getElementById('cInsurance').value||0)+(+document.getElementById('cOther').value||0),
+        hs:document.getElementById('cHS').value
+      });
+      const link=location.origin+location.pathname+'#/calculator?'+params.toString();
+      navigator.clipboard?.writeText(link); alert('Share link copied!');
+    });
+    document.getElementById('calcPDF').addEventListener('click', ()=>{ window.print(); });
+    document.getElementById('calcSaveAsRFP').addEventListener('click', ()=>{ alert('Saved to RFP (demo). Open RFP to continue.'); location.hash='#/rfp'; });
+
+    /* ---------------- RFP flow ---------------- */
+    let rfpState={ step:1, chaIds:[], form:{} };
+    function preselectRFP(id){ rfpState.chaIds=[id]; renderRFP(); }
+    function renderRFP(){
+      const el=document.getElementById('rfpBody'); const s=rfpState.step;
+      if(s===1){
+        el.innerHTML=`<div class="grid grid--2">
+          <div class="form__row"><label class="form__label">Commodity / HS</label><input id="rfpComm" class="form__input" placeholder="e.g., 8517 phones"/></div>
+          <div class="form__row"><label class="form__label">Port</label><select id="rfpPort" class="form__select">${PORTS.map(p=>`<option>${p}</option>`).join('')}</select></div>
+          <div class="form__row"><label class="form__label">ETA</label><input id="rfpETA" type="date" class="form__input"/></div>
+          <div class="form__row"><label class="form__label">Mode</label><select id="rfpMode" class="form__select"><option>Sea FCL</option><option>Sea LCL</option><option>Air</option><option>Courier</option><option>ICD</option></select></div>
+        </div>
+        <button class="btn btn--primary" id="rfpNext">Next</button>`;
+      } else if(s===2){
+        el.innerHTML=`<div class="form__row"><label class="form__label">Attach docs</label><input type="file" class="form__input" multiple/></div>
+        <button class="btn" id="rfpBack">Back</button> <button class="btn btn--primary" id="rfpNext">Next</button>`;
+      } else if(s===3){
+        el.innerHTML=`<div class="grid grid--3">
+          <div class="form__row"><label class="form__label">SLA</label><select id="rfpSLA" class="form__select"><option>Standard</option><option>Express</option></select></div>
+          <div class="form__row"><label class="form__label">Special services</label><input id="rfpSvc" class="form__input" placeholder="Transport, license…"/></div>
+          <div class="form__row"><label class="form__label">Send to</label><input id="rfpTo" class="form__input" placeholder="Up to 5 CHAs"/></div>
+        </div>
+        <button class="btn" id="rfpBack">Back</button> <button class="btn btn--primary" id="rfpNext">Next</button>`;
+      } else {
+        const chosen = rfpState.chaIds.map(id=>CHAS.find(c=>c.id===id)?.name).join(', ') || 'Public RFP';
+        el.innerHTML=`<p>Ready to send to: <strong>${chosen}</strong></p>
+        <button class="btn" id="rfpBack">Back</button> <button class="btn btn--primary" id="rfpSend">Send RFP</button>`;
+      }
+      el.onclick=(e)=>{
+        if(e.target.id==='rfpNext'){ rfpState.step = Math.min(4, rfpState.step+1); renderRFP(); }
+        if(e.target.id==='rfpBack'){ rfpState.step = Math.max(1, rfpState.step-1); renderRFP(); }
+        if(e.target.id==='rfpSend'){ alert('RFP sent! (demo)'); location.hash='#/dashboard-importer'; }
+      };
+    }
+
+    /* ---------------- Chat (demo) ---------------- */
+    const chatToggle=document.getElementById('chatToggle'), chatPanel=document.getElementById('chatPanel'), chatClose=document.getElementById('chatClose');
+    const chatLog=document.getElementById('chatLog'), chatForm=document.getElementById('chatForm'), chatInput=document.getElementById('chatInput');
+    function bubble(text, who='ai'){ const b=document.createElement('div'); b.className='bubble '+(who==='me'?'bubble--me':'bubble--ai'); b.textContent=text; chatLog.appendChild(b); chatLog.scrollTop=chatLog.scrollHeight; }
+    chatToggle.addEventListener('click', ()=>{ const open=chatPanel.hidden; chatPanel.hidden=!open; chatToggle.setAttribute('aria-expanded',String(open)); if(open) chatInput.focus(); });
+    chatClose.addEventListener('click', ()=>{ chatPanel.hidden=true; chatToggle.setAttribute('aria-expanded','false'); });
+    function parseCalc(s){ const m=s.match(/calc\s+(\d+(?:\.\d+)?)\s*([+\-*/])\s*(\d+(?:\.\d+)?)/i); if(!m) return null; const A=+m[1],op=m[2],B=+m[3]; if(op==='/'&&B===0) return '∞'; const v=op==='+'?A+B:op==='-'?A-B:op==='*'?A*B:A/B; return v.toFixed(2); }
+    chatForm.addEventListener('submit', (e)=>{ e.preventDefault(); const msg=chatInput.value.trim(); if(!msg) return; bubble(msg,'me'); chatInput.value=''; setTimeout(()=> {
+      const lower=msg.toLowerCase();
+      if(lower.startsWith('find ')){ const q=lower.replace('find ',''); const hits=CHAS.filter(c=>c.name.toLowerCase().includes(q)||c.ports.join(' ').toLowerCase().includes(q)); bubble(hits.length?`Found ${hits.length}: `+hits.map(h=>h.name).join(', '):'No matches.','ai'); return; }
+      const c=parseCalc(lower); if(c){ bubble('Result: '+c,'ai'); return; }
+      if(lower.startsWith('quote')){ location.hash='#/rfp'; bubble('Opening quote request…','ai'); return; }
+      bubble("Try: 'find JNPT', 'calc 12*8', or 'quote'. (Demo bot)",'ai');
+    }, 150); });
+
+    /* ---------------- Init ---------------- */
+    // Initial render of Marketplace list in case user deep-links
+    if(location.hash.startsWith('#/marketplace')) renderList();
+  </script>
+</body>
+</html>
