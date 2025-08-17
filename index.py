@@ -3,23 +3,29 @@ import os
 from pathlib import Path
 from flask import Flask, Response, send_file
 
-APP_DIR = Path(__file__).resolve().parent
-HOME_PATH = APP_DIR / "home_min.html"
-SIGNUP_PATH = APP_DIR / "personal_sign_up.html"
-
 app = Flask(__name__)
+
+APP_DIR = Path(__file__).resolve().parent
+HOME = APP_DIR / "home_min.html"
+SIGNUP = APP_DIR / "personal_sign_up.html"
+LOGIN = APP_DIR / "log_in.html"
+
+def serve_file(path: Path, not_found="File not found"):
+    if path.exists():
+        return send_file(path)
+    return Response(not_found, status=404, mimetype="text/plain")
 
 @app.get("/")
 def home():
-    if not HOME_PATH.exists():
-        return Response("home_min.html not found next to index.py", 500, mimetype="text/plain")
-    return send_file(HOME_PATH, mimetype="text/html")
+    return serve_file(HOME, "home_min.html not found")
 
 @app.get("/personal-sign-up")
 def personal_sign_up():
-    if not SIGNUP_PATH.exists():
-        return Response("personal_sign_up.html not found next to index.py", 500, mimetype="text/plain")
-    return send_file(SIGNUP_PATH, mimetype="text/html")
+    return serve_file(SIGNUP, "personal_sign_up.html not found")
+
+@app.get("/log-in")
+def log_in():
+    return serve_file(LOGIN, "log_in.html not found")
 
 @app.get("/health")
 def health():
@@ -30,7 +36,8 @@ def health():
 def favicon():
     return Response(status=204)
 
-# Do NOT export `handler`; Vercel finds `app` automatically.
+# Vercel WSGI entry
+handler = app
 
 if __name__ == "__main__":
-    app.run(host="127.0.0.1", port=5000, debug=True)
+    app.run("127.0.0.1", 5000, debug=True)
