@@ -1,136 +1,619 @@
-<!DOCTYPE html>
-<html lang="en">
+<!doctype html>
+<html lang="en" data-theme="dark">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Chadaddy – Global AI Customs Platform</title>
-  <script src="https://cdn.tailwindcss.com"></script>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Chadaddy — Global AI Customs & Trade Platform</title>
+  <meta name="description" content="Your AI trade partner — chat to learn, find HS codes, calculate duties globally, and book verified brokers." />
+  <meta name="theme-color" content="#0B1B3B" id="metaTheme" />
+  <link rel="preconnect" href="https://images.unsplash.com" />
+  <link rel="preload" as="image" href="https://images.unsplash.com/photo-1642790551042-5b78c2d5f85f?q=80&w=1600&auto=format&fit=crop" imagesrcset="https://images.unsplash.com/photo-1642790551042-5b78c2d5f85f?q=80&w=900&auto=format&fit=crop 900w, https://images.unsplash.com/photo-1642790551042-5b78c2d5f85f?q=80&w=1600&auto=format&fit=crop 1600w" fetchpriority="high">
+  <style>
+    /* ===================== Brand Tokens & Base ===================== */
+    :root{
+      --navy:#0B1B3B; --teal:#1BB5A6; --sky:#C7F3F0; --warm:#F5F7FA; --green:#00b894;
+      --ink:#0f172a; --muted:#8aa0bf; --panel:#0f223f; --bg:#08142b; --soft:#0e213f; --border:#18345f;
+      --radius:16px; --shadow:0 14px 36px rgba(2,10,30,.35); --shadow-sm:0 6px 16px rgba(2,10,30,.2);
+    }
+    [data-theme="light"]{ --bg:#F5F7FA; --panel:#ffffff; --soft:#f0f3f9; --ink:#0B1B3B; --muted:#51607a; --border:#e1eaf6; --shadow:0 14px 32px rgba(2,6,23,.1); --shadow-sm:0 6px 14px rgba(2,6,23,.08); }
+    *{box-sizing:border-box} html,body{height:100%}
+    body{
+      margin:0;font-family:Inter,ui-sans-serif,system-ui,-apple-system,Segoe UI,Roboto,Arial,"Noto Sans",sans-serif;line-height:1.55;color:#eaf2ff;background:
+      radial-gradient(1200px 600px at 15% -10%, rgba(27,181,166,.18), transparent 55%),
+      radial-gradient(1000px 600px at 85% -10%, rgba(199,243,240,.18), transparent 55%),
+      var(--bg);
+    }
+    h1,h2,h3{font-family:"Work Sans",Inter,ui-sans-serif,sans-serif;color:#fff;margin:.25rem 0}
+    p{margin:.35rem 0}
+    a{color:inherit;text-decoration:none}
+    img{max-width:100%;display:block}
+    :focus-visible{outline:2px solid #f59e0b;outline-offset:3px}
+    .container{width:min(1200px,92%);margin-inline:auto}
+    .section{padding:3rem 0}
+    .card{background:linear-gradient(0deg,rgba(255,255,255,.03),transparent),var(--panel);border:1px solid var(--border);border-radius:var(--radius);box-shadow:var(--shadow);padding:1rem}
+    .chip{display:inline-flex;align-items:center;gap:.4rem;background:var(--sky);color:#084b45;border-radius:999px;padding:.25rem .6rem;border:1px solid #a5e9e3;font-weight:700}
+    .badge{display:inline-flex;align-items:center;gap:.35rem;border:1px solid var(--border);border-radius:999px;padding:.2rem .55rem;background:var(--soft);color:var(--muted);font-size:.85rem}
+    .btn{display:inline-flex;align-items:center;gap:.5rem;border:1px solid var(--border);border-radius:12px;padding:.7rem 1rem;background:var(--panel);color:#eaf2ff;cursor:pointer;box-shadow:var(--shadow-sm);transition:transform .06s,box-shadow .2s}
+    .btn:hover{box-shadow:var(--shadow)}
+    .btn:active{transform:translateY(1px)}
+    .btn--primary{background:linear-gradient(135deg,var(--teal),#0bd4c2);color:#053a36;border-color:transparent}
+    .btn--ghost{background:var(--soft)}
+    .btn--green{background:linear-gradient(135deg,#00e0b8,#00b894);color:#053a36;border-color:transparent}
+    .muted{color:var(--muted)}
+    .grid{display:grid;gap:1rem}
+    .grid--2{grid-template-columns:1fr} .grid--3{grid-template-columns:1fr} .grid--4{grid-template-columns:1fr}
+    @media (min-width:980px){ .grid--2{grid-template-columns:1.1fr .9fr} .grid--3{grid-template-columns:repeat(3,1fr)} .grid--4{grid-template-columns:repeat(4,1fr)} }
+    .sr-only{position:absolute;clip:rect(0,0,0,0);clip-path:inset(50%);width:1px;height:1px;overflow:hidden;white-space:nowrap}
+    .pill{display:inline-block;border:1px solid var(--border);padding:.3rem .5rem;border-radius:999px;background:var(--soft);color:#cfe1ff}
+
+    /* ===================== Header / Nav ===================== */
+    .header{position:sticky;top:0;z-index:80;backdrop-filter:blur(12px);background:rgba(11,27,59,.65);border-bottom:1px solid var(--border)}
+    [data-theme="light"] .header{background:rgba(255,255,255,.7)}
+    .header__inner{display:flex;align-items:center;justify-content:space-between;padding:.7rem 0}
+    .brand{display:flex;align-items:center;gap:.6rem}
+    .logo{width:36px;height:36px;border-radius:10px;display:grid;place-items:center;background:conic-gradient(from 180deg,var(--teal),var(--sky),#a8e7e2,var(--teal));color:#043b37;font-weight:800;box-shadow:var(--shadow)}
+    .nav{display:flex;align-items:center;gap:1rem}
+    .nav__menu{display:flex;gap:1rem;list-style:none;margin:0;padding:0}
+    .nav__link{color:#cfe1ff}
+    .nav__link:hover{color:#fff}
+    .nav__toggle{display:none}
+    .header__cta{display:flex;align-items:center;gap:.5rem}
+    @media (max-width:980px){
+      .nav__toggle{display:inline-flex}
+      .nav__menu{display:none;position:absolute;right:1rem;top:60px;background:var(--panel);padding:.7rem;border-radius:12px;border:1px solid var(--border);flex-direction:column}
+      .nav__menu.is-open{display:flex}
+    }
+
+    /* ===================== Sticky CTA (mobile) ===================== */
+    .sticky-cta{position:sticky;bottom:-1px;background:rgba(11,27,59,.8);backdrop-filter:blur(8px);border-top:1px solid var(--border);padding:.5rem;z-index:70}
+    @media (min-width:981px){ .sticky-cta{display:none} }
+    .sticky-cta .btn{flex:1;justify-content:center}
+
+    /* ===================== Hero ===================== */
+    .hero{padding:2.6rem 0}
+    .hero__grid{display:grid;gap:1rem;grid-template-columns:1fr}
+    @media (min-width:980px){ .hero__grid{grid-template-columns:1.05fr .95fr} }
+    .hero__panel{border:1px solid var(--border);border-radius:18px;overflow:hidden}
+    .activity{display:flex;gap:.5rem;align-items:center;flex-wrap:wrap;margin-top:.6rem}
+    .activity .pill{background:rgba(27,181,166,.12)}
+
+    /* ===================== Forms / Inputs ===================== */
+    .row{display:grid;gap:.35rem;margin-bottom:.6rem}
+    .label{font-weight:700}
+    .input,.select,.area{background:var(--soft);color:#eaf2ff;border:1px solid var(--border);border-radius:12px;padding:.6rem .7rem}
+    .inline{display:flex;gap:.5rem;flex-wrap:wrap}
+
+    /* ===================== Marketplace ===================== */
+    .layout{display:grid;gap:1rem;grid-template-columns:280px 1fr}
+    @media (max-width:1100px){ .layout{grid-template-columns:1fr} }
+    .filters{position:sticky;top:74px}
+    .filter__drawer{display:none}
+    @media (max-width:1100px){ .filters{display:none} .filter__drawer{display:flex;justify-content:space-between;align-items:center;margin:.6rem 0} .drawer{position:fixed;inset:0;background:rgba(0,0,0,.5);display:none;z-index:90} .drawer.is-open{display:block} .drawer__panel{position:absolute;left:0;top:0;width:85%;max-width:360px;height:100%;overflow:auto;background:var(--panel);border-right:1px solid var(--border);padding:1rem} }
+    .market__grid{display:grid;gap:1rem;grid-template-columns:repeat(auto-fit,minmax(260px,1fr))}
+    .listing:hover{transform:translateY(-2px);transition:transform .1s;box-shadow:var(--shadow)}
+    .listing__meta,.listing__foot{display:flex;align-items:center;justify-content:space-between;gap:.6rem;flex-wrap:wrap}
+    .stars{color:#fbbf24}
+
+    /* ===================== Chat ===================== */
+    .chat__layout{display:grid;gap:1rem;grid-template-columns:1fr}
+    @media (min-width:1100px){ .chat__layout{grid-template-columns:260px 1fr 280px} }
+    .thread{display:grid;gap:.6rem;max-height:60vh;overflow:auto;padding:.6rem}
+    .bubble{padding:.55rem .75rem;border-radius:14px;max-width:90%}
+    .me{justify-self:end;background:linear-gradient(135deg,var(--teal),#87efe6);color:#053a36}
+    .ai{background:var(--soft);border:1px solid var(--border)}
+    .toolchips{display:flex;gap:.4rem;flex-wrap:wrap}
+    .quick{padding:.25rem .5rem;border-radius:999px;border:1px dashed var(--border);background:var(--soft);cursor:pointer}
+
+    /* ===================== Tabs ===================== */
+    .tabs{display:flex;gap:.4rem;flex-wrap:wrap;border-bottom:1px solid var(--border);margin:.8rem 0}
+    .tab{padding:.45rem .75rem;border:1px solid var(--border);border-bottom:none;border-radius:10px 10px 0 0;background:var(--soft);cursor:pointer}
+    .tab[aria-selected="true"]{background:var(--sky);color:#084b45}
+
+    /* ===================== Footer & FAB ===================== */
+    .footer{border-top:1px solid var(--border);padding:1.2rem 0;background:rgba(11,27,59,.5)}
+    .fab{position:fixed;left:1rem;bottom:1rem;background:#25D366;color:white;border-radius:999px;padding:.7rem 1rem;box-shadow:var(--shadow);z-index:98}
+
+    /* ===================== Exit Intent Modal ===================== */
+    .modal{position:fixed;inset:0;background:rgba(0,0,0,.55);display:none;z-index:120;align-items:center;justify-content:center}
+    .modal.is-open{display:flex}
+    .modal__card{width:min(560px,92%);background:var(--panel);border:1px solid var(--border);border-radius:16px;box-shadow:var(--shadow);padding:1rem}
+
+  </style>
 </head>
-<body class="bg-gray-50 text-gray-900">
+<body>
+<a class="sr-only" href="#main">Skip to content</a>
 
-  <!-- Sticky Navbar -->
-  <header class="fixed top-0 left-0 w-full bg-white shadow z-50">
-    <div class="max-w-7xl mx-auto flex items-center justify-between p-4">
-      <div class="flex items-center space-x-2">
-        <img src="https://img.icons8.com/ios/50/0B1B3B/worldwide-location.png" alt="logo" class="h-8 w-8"/>
-        <span class="text-xl font-bold text-[#0B1B3B]">Chadaddy</span>
-      </div>
-      <nav class="hidden md:flex space-x-6 text-sm font-medium">
-        <a href="#marketplace" class="hover:text-teal-600">Marketplace</a>
-        <a href="#calculator" class="hover:text-teal-600">Duty Calculator</a>
-        <a href="#learn" class="hover:text-teal-600">Learn</a>
-        <a href="#pricing" class="hover:text-teal-600">Pricing</a>
-      </nav>
-      <a href="#signup" class="bg-teal-600 text-white px-4 py-2 rounded hover:bg-teal-700">Sign up</a>
+<!-- ===================== Header ===================== -->
+<header class="header">
+  <div class="container header__inner">
+    <a class="brand" href="#/home" aria-label="Chadaddy Home">
+      <span class="logo">◆</span><strong>Chadaddy</strong>
+      <span class="pill" style="margin-left:.5rem">AI Customs</span>
+    </a>
+    <nav class="nav" aria-label="Primary">
+      <button class="btn nav__toggle" id="navToggle" aria-expanded="false" aria-controls="navMenu">Menu</button>
+      <ul id="navMenu" class="nav__menu">
+        <li><a class="nav__link" href="#/marketplace">Marketplace</a></li>
+        <li><a class="nav__link" href="#/calc">Duty Calculator</a></li>
+        <li><a class="nav__link" href="#/hs">HS Finder</a></li>
+        <li><a class="nav__link" href="#/products">Products</a></li>
+        <li><a class="nav__link" href="#/news">News</a></li>
+        <li><a class="nav__link" href="#/chat">Chat</a></li>
+        <li><a class="nav__link" href="#/guides">Academy</a></li>
+        <li><a class="nav__link" href="#/pricing">Pricing</a></li>
+      </ul>
+    </nav>
+    <div class="header__cta">
+      <select id="langSel" class="input" aria-label="Language">
+        <option value="en" selected>EN</option><option value="hi">HI</option>
+      </select>
+      <select id="ccySel" class="input" aria-label="Currency">
+        <option value="INR" selected>₹ INR</option><option value="USD">$ USD</option><option value="EUR">€ EUR</option>
+      </select>
+      <button class="btn" id="themeToggle" aria-pressed="false" title="Toggle theme">🌗</button>
+      <a class="btn" href="#/auth">Sign in</a>
+      <a class="btn btn--primary" href="#/auth?mode=signup">Create Account</a>
     </div>
-  </header>
+  </div>
+</header>
 
-  <!-- Hero Section -->
-  <section class="pt-28 pb-16 bg-gradient-to-r from-[#0B1B3B] to-[#1BB5A6] text-white">
-    <div class="max-w-7xl mx-auto text-center">
-      <h1 class="text-4xl md:text-5xl font-bold">Ship Smarter. Calculate Faster. Connect Instantly.</h1>
-      <p class="mt-4 text-lg">Clear shipments, cut costs, and gain customs knowledge worldwide — with Chadaddy AI.</p>
-      <div class="mt-6 flex flex-col md:flex-row justify-center gap-4">
-        <a href="#chat" class="bg-white text-[#0B1B3B] px-6 py-3 rounded font-semibold hover:bg-gray-100">Start Free Chat</a>
-        <a href="#calculator" class="bg-teal-500 px-6 py-3 rounded font-semibold hover:bg-teal-400">Calculate Duties</a>
-        <a href="#marketplace" class="bg-gray-900 px-6 py-3 rounded font-semibold hover:bg-gray-800">Find a Broker</a>
+<main id="main">
+  <!-- ===================== HOME ===================== -->
+  <section id="home" class="section">
+    <div class="container hero">
+      <div class="hero__grid">
+        <div>
+          <h1>Your AI Trade Partner — Learn, Calculate, Clear.</h1>
+          <p class="muted">Ask questions like ChatGPT, find HS codes, calculate duties globally, and book verified brokers.</p>
+          <div class="inline" style="margin:.8rem 0">
+            <a class="btn btn--green" href="#/calc" data-analytics="click_cta_primary">Get Duty Estimate</a>
+            <a class="btn" href="#/marketplace">Find Broker</a>
+            <a class="btn" href="#/chat">Start Free Chat</a>
+          </div>
+
+          <div class="activity">
+            <span class="pill">★ 4.9 avg</span>
+            <span class="pill">10,000+ estimates</span>
+            <span class="pill">2,000+ verified CHAs</span>
+            <span class="pill" id="ticker">5 shipments cleared today at JNPT</span>
+          </div>
+
+          <!-- Trust bar -->
+          <div class="inline" style="margin-top:.6rem">
+            <span class="badge">KYC verified</span>
+            <span class="badge">Escrow protected</span>
+            <span class="badge">&lt; 2h avg response</span>
+            <span class="badge">SSL secure</span>
+          </div>
+
+          <!-- Persona Cards -->
+          <div class="section">
+            <h3>Built for everyone</h3>
+            <div class="grid grid--3">
+              <div class="card"><strong>Students</strong><p class="muted">Learn HS & Incoterms with micro-courses + quizzes.</p></div>
+              <div class="card"><strong>Businesses</strong><p class="muted">Instant landed cost + broker booking globally.</p></div>
+              <div class="card"><strong>CHAs & Fwdrs</strong><p class="muted">Verified profiles, RFPs, escrow, reviews.</p></div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Right: Calculator Teaser -->
+        <div class="hero__panel">
+          <img alt="Global cargo hero" style="aspect-ratio:16/9;object-fit:cover" src="https://images.unsplash.com/photo-1642790551042-5b78c2d5f85f?q=80&w=1600&auto=format&fit=crop" />
+          <div class="card" style="margin:.8rem">
+            <strong>Calculator teaser</strong>
+            <div class="grid grid--3" style="grid-template-columns:1fr 1fr 1fr">
+              <div class="row"><label class="label">Country</label><select id="tzCountry" class="select"><option>IN</option><option>US</option><option>EU</option><option>UK</option></select></div>
+              <div class="row"><label class="label">HS</label><input id="tzHS" class="input" placeholder="e.g., 8517" /></div>
+              <div class="row"><label class="label">Value (<span id="ccyTz">₹</span>)</label><input id="tzAV" type="number" class="input" placeholder="100000" /></div>
+            </div>
+            <button id="tzBtn" class="btn btn--primary">Quick Estimate</button>
+            <div id="tzOut" class="inline" style="margin-top:.6rem"></div>
+            <p class="muted" style="margin-top:.4rem"><a href="#/calc">See full duty breakdown →</a></p>
+          </div>
+        </div>
       </div>
-      <div class="mt-8 flex flex-wrap justify-center gap-6 text-sm text-gray-200">
-        <span>★ 4.9 avg rating</span>
-        <span>10,000+ duty estimates</span>
-        <span>2,000+ verified CHAs</span>
+    </div>
+
+    <!-- Below the fold -->
+    <div class="container section">
+      <h2>How it works</h2>
+      <div class="grid grid--3">
+        <div class="card"><strong>1) Chat</strong><p class="muted">Ask anything about HS, duties, docs, Incoterms.</p><a class="btn" href="#/chat">Chat with Chadaddy</a></div>
+        <div class="card"><strong>2) Calculate</strong><p class="muted">Enter HS & value to see line-by-line duties.</p><a class="btn" href="#/calc">Try Calculator</a></div>
+        <div class="card"><strong>3) Connect</strong><p class="muted">Book verified brokers & clear faster.</p><a class="btn" href="#/marketplace">Find a Broker</a></div>
+      </div>
+    </div>
+
+    <div class="container section">
+      <h2>Featured brokers</h2>
+      <div id="featBrokers" class="market__grid"></div>
+      <div style="margin-top:.6rem"><a class="btn btn--primary" href="#/marketplace">Browse all brokers</a></div>
+    </div>
+
+    <div class="container section">
+      <h2>Products & Trends</h2>
+      <div id="trendGrid" class="grid grid--4"></div>
+      <p style="margin-top:.6rem"><a class="btn" href="#/products">See more products</a></p>
+    </div>
+
+    <div class="container section">
+      <h2>Latest trade news</h2>
+      <div id="newsTeaser" class="grid grid--3"></div>
+      <p style="margin-top:.6rem"><a class="btn" href="#/news">Open news & alerts</a></p>
+    </div>
+
+    <div class="container section">
+      <h2>FAQs</h2>
+      <div class="grid grid--3">
+        <details class="card"><summary><strong>How accurate are HS suggestions?</strong></summary><p class="muted">We show 2–3 likely HS codes with confidence & examples. Final classification rests with customs.</p></details>
+        <details class="card"><summary><strong>What fees do I pay?</strong></summary><p class="muted">Browsing free. Platform fee is shown in quotes; escrow optional.</p></details>
+        <details class="card"><summary><strong>How do you verify brokers?</strong></summary><p class="muted">KYC, licenses, office checks, AEO status, review moderation.</p></details>
+        <details class="card"><summary><strong>Can I export results?</strong></summary><p class="muted">Yes — save PDF & share links (requires email/WhatsApp).</p></details>
+        <details class="card"><summary><strong>Support hours?</strong></summary><p class="muted">Email & WhatsApp 9am–9pm (IST) with priority SLAs on paid plans.</p></details>
+        <details class="card"><summary><strong>Is my data safe?</strong></summary><p class="muted">HTTPS, encryption at rest, audit logs, strict access control.</p></details>
       </div>
     </div>
   </section>
 
-  <!-- How it Works -->
-  <section class="py-16 bg-white" id="how-it-works">
-    <div class="max-w-7xl mx-auto px-6 text-center">
-      <h2 class="text-3xl font-bold mb-8">How It Works</h2>
-      <div class="grid md:grid-cols-3 gap-8">
-        <div class="p-6 border rounded-lg shadow hover:shadow-lg">
-          <img src="https://img.icons8.com/ios/80/1bb5a6/chat.png" alt="chat" class="mx-auto"/>
-          <h3 class="font-semibold mt-4">1. Chat</h3>
-          <p class="text-gray-600">Talk to Chadaddy AI to learn duties and process instantly.</p>
-        </div>
-        <div class="p-6 border rounded-lg shadow hover:shadow-lg">
-          <img src="https://img.icons8.com/ios/80/1bb5a6/calculator.png" alt="calculator" class="mx-auto"/>
-          <h3 class="font-semibold mt-4">2. Calculate</h3>
-          <p class="text-gray-600">Get instant HS code & landed cost breakdowns in 30 sec.</p>
-        </div>
-        <div class="p-6 border rounded-lg shadow hover:shadow-lg">
-          <img src="https://img.icons8.com/ios/80/1bb5a6/conference-call.png" alt="connect" class="mx-auto"/>
-          <h3 class="font-semibold mt-4">3. Connect</h3>
-          <p class="text-gray-600">Book verified CHAs globally and clear shipments faster.</p>
-        </div>
+  <!-- ===================== CHAT ===================== -->
+  <section id="chat" class="section" hidden>
+    <div class="container">
+      <h2>Chat with Chadaddy</h2>
+      <div class="chat__layout">
+        <aside class="card" aria-label="Conversations">
+          <strong>History</strong>
+          <ul id="threads" style="list-style:none;padding:0;margin:.6rem 0;display:grid;gap:.4rem"></ul>
+          <button id="newThread" class="btn">New chat</button>
+        </aside>
+
+        <section class="card">
+          <div class="toolchips" style="margin-bottom:.4rem">
+            <button class="quick" data-q="/hsfinder AirPods in India">/hsfinder</button>
+            <button class="quick" data-q="/duty IN 8517 CIF 100000">/duty</button>
+            <button class="quick" data-q="/marketplace IN JNPT electronics">/marketplace</button>
+            <button class="quick" data-q="/news IN ports">/news</button>
+            <button class="quick" data-q="/products trending electronics">/products</button>
+          </div>
+          <div id="thread" class="thread card" style="height:52vh"></div>
+          <form id="chatForm" class="inline" autocomplete="off">
+            <label for="chatInput" class="sr-only">Type your message</label>
+            <input id="chatInput" class="input" placeholder="Ask anything… (try: 'HS for LED bulbs in EU')" style="flex:1" />
+            <button class="btn btn--primary" type="submit">Send</button>
+            <button id="exportChat" class="btn" type="button" title="Export to PDF">🖨️ PDF</button>
+          </form>
+        </section>
+
+        <aside class="card" aria-label="Saved items">
+          <strong>Saved calcs & docs</strong>
+          <ul id="rightRail" style="list-style:none;padding:0;margin:.6rem 0;display:grid;gap:.4rem"></ul>
+          <div class="badge">Lead capture after export</div>
+        </aside>
       </div>
-      <a href="#signup" class="mt-8 inline-block bg-teal-600 text-white px-6 py-3 rounded hover:bg-teal-700">Create Free Account</a>
+      <p class="muted" style="margin-top:.5rem">We keep the last 30 messages per chat in your browser.</p>
     </div>
   </section>
 
-  <!-- Calculator Teaser -->
-  <section class="py-16 bg-gray-50" id="calculator">
-    <div class="max-w-4xl mx-auto text-center px-6">
-      <h2 class="text-3xl font-bold mb-6">Get Duty Estimate in 30 Seconds</h2>
-      <form class="bg-white p-6 shadow rounded-lg flex flex-col gap-4">
-        <input type="text" placeholder="Enter HS Code or Commodity" class="border p-3 rounded w-full"/>
-        <input type="number" placeholder="Product Value (USD)" class="border p-3 rounded w-full"/>
-        <button class="bg-teal-600 text-white py-3 rounded font-semibold hover:bg-teal-700">Calculate Now</button>
-      </form>
-      <p class="text-sm mt-4 text-gray-600">Save full breakdown as PDF — free with registration.</p>
-    </div>
-  </section>
-
-  <!-- Marketplace Spotlight -->
-  <section class="py-16 bg-white" id="marketplace">
-    <div class="max-w-7xl mx-auto px-6 text-center">
-      <h2 class="text-3xl font-bold mb-6">Find Your Broker</h2>
-      <div class="grid md:grid-cols-4 gap-6">
-        <div class="p-4 border rounded-lg shadow hover:shadow-lg">
-          <img src="https://via.placeholder.com/150" alt="CHA" class="rounded-full mx-auto"/>
-          <h3 class="mt-4 font-semibold">CHA Solutions Pvt</h3>
-          <p class="text-sm text-gray-600">JNPT • Apparel • 4.9★</p>
-          <button class="mt-4 bg-teal-600 text-white px-4 py-2 rounded">Get Quote</button>
+  <!-- ===================== HS FINDER ===================== -->
+  <section id="hs" class="section" hidden>
+    <div class="container card">
+      <h2>HS / HSN Finder (Global)</h2>
+      <div class="grid grid--2">
+        <div>
+          <div class="row"><label class="label">Country</label><select id="hsCountry" class="select"><option>IN</option><option>US</option><option>EU</option><option>UK</option><option>AE</option><option>SG</option><option>AU</option><option>CA</option><option>MX</option><option>CN</option></select></div>
+          <div class="row"><label class="label">Describe your product</label><textarea id="hsDesc" class="area" rows="5" placeholder="Example: true wireless earbuds with bluetooth, battery, charging case"></textarea></div>
+          <div class="inline"><button id="hsRun" class="btn btn--primary">Find HS codes</button><button id="hsReset" class="btn">Reset</button></div>
         </div>
-        <!-- Repeat 3 more sample broker cards -->
+        <div id="hsResults" class="grid" aria-live="polite"></div>
       </div>
-      <a href="#marketplace" class="mt-8 inline-block bg-teal-600 text-white px-6 py-3 rounded hover:bg-teal-700">Browse All Brokers</a>
     </div>
   </section>
 
-  <!-- Footer -->
-  <footer class="bg-gray-900 text-gray-300 py-10 mt-16">
-    <div class="max-w-7xl mx-auto px-6 grid md:grid-cols-4 gap-6">
-      <div>
-        <h4 class="font-semibold text-white mb-3">Chadaddy</h4>
-        <p>AI-powered customs platform to ship smarter worldwide.</p>
-      </div>
-      <div>
-        <h4 class="font-semibold text-white mb-3">Quick Links</h4>
-        <ul class="space-y-2 text-sm">
-          <li><a href="#">About</a></li>
-          <li><a href="#">Ports we cover</a></li>
-          <li><a href="#">HS code index</a></li>
-        </ul>
-      </div>
-      <div>
-        <h4 class="font-semibold text-white mb-3">Legal</h4>
-        <ul class="space-y-2 text-sm">
-          <li><a href="#">Privacy</a></li>
-          <li><a href="#">Terms</a></li>
-          <li><a href="#">Refunds</a></li>
-        </ul>
-      </div>
-      <div>
-        <h4 class="font-semibold text-white mb-3">Stay Updated</h4>
-        <form class="flex">
-          <input type="email" placeholder="Your email" class="p-2 rounded-l w-full"/>
-          <button class="bg-teal-600 px-4 rounded-r">→</button>
+  <!-- ===================== CALCULATOR ===================== -->
+  <section id="calc" class="section" hidden>
+    <div class="container card">
+      <h2>Global Duty & Landed Cost</h2>
+      <div class="grid grid--2">
+        <form id="calcForm">
+          <div class="row"><label class="label">Country</label><select id="cCountry" class="select"><option>IN</option><option>US</option><option>EU</option><option>UK</option></select></div>
+          <div class="grid grid--2" style="grid-template-columns:1fr 1fr">
+            <div class="row"><label class="label">HS code</label><input id="cHS" class="input" placeholder="e.g., 851713" required /></div>
+            <div class="row"><label class="label">Incoterm</label><select id="cIncoterm" class="select"><option value="CIF">CIF</option><option value="FOB">FOB</option><option value="EXW">EXW</option></select></div>
+          </div>
+          <div class="grid grid--2" style="grid-template-columns:1fr 1fr">
+            <div class="row"><label class="label">Goods Value (<span class="ccy">₹</span>)</label><input id="cGoods" class="input" type="number" placeholder="100000" required /></div>
+            <div class="row"><label class="label">Freight (<span class="ccy">₹</span>)</label><input id="cFreight" class="input" type="number" placeholder="10000" /></div>
+            <div class="row"><label class="label">Insurance (<span class="ccy">₹</span>)</label><input id="cIns" class="input" type="number" placeholder="1000" /></div>
+            <div class="row"><label class="label">Other includable (<span class="ccy">₹</span>)</label><input id="cOther" class="input" type="number" placeholder="0" /></div>
+          </div>
+
+          <details class="card"><summary><strong>Advanced (optional)</strong></summary>
+            <div class="grid grid--3" style="margin-top:.6rem;grid-template-columns:repeat(3,1fr)">
+              <div class="row"><label class="label">Override Duty %</label><input id="cDuty" class="input" type="number" placeholder="(auto)" /></div>
+              <div class="row"><label class="label">VAT/IGST %</label><input id="cVat" class="input" type="number" placeholder="(auto)" /></div>
+              <div class="row"><label class="label">AIDC/Cess %</label><input id="cAidc" class="input" type="number" placeholder="(auto)" /></div>
+            </div>
+          </details>
+
+          <div class="inline" style="margin-top:.6rem">
+            <button class="btn btn--green" type="submit">Calculate</button>
+            <button id="cShare" type="button" class="btn">Share</button>
+            <button id="cPDF" type="button" class="btn">Download PDF</button>
+            <button id="cRFP" type="button" class="btn">Request Broker Quotes</button>
+          </div>
+          <p class="muted" id="rateStamp" style="margin-top:.5rem"></p>
         </form>
+
+        <div>
+          <h3>Breakdown</h3>
+          <table class="card" style="width:100%;border-collapse:separate;border-spacing:.4rem">
+            <tbody id="cTable"></tbody>
+          </table>
+          <div id="hsSuggestBox" class="card" hidden>
+            <strong>HS suggestions</strong>
+            <ul id="hsSuggestList"></ul>
+            <p class="muted">Review examples & risk notes. Customs makes the final decision.</p>
+          </div>
+        </div>
       </div>
     </div>
-    <p class="text-center text-sm mt-8">© 2025 Chadaddy. All rights reserved.</p>
-  </footer>
+  </section>
 
-</body>
-</html>
+  <!-- ===================== MARKETPLACE ===================== -->
+  <section id="marketplace" class="section" hidden>
+    <div class="container">
+      <div class="filter__drawer">
+        <strong>Filters</strong><button class="btn" id="openFilters">Open</button>
+      </div>
+      <div class="layout">
+        <aside id="filters" class="filters card">
+          <h3>Refine</h3>
+          <div class="row"><label class="label">Country</label><select id="fCountry" class="select"><option>IN</option><option>US</option><option>EU</option><option>UK</option></select></div>
+          <div class="row"><label class="label">Port</label><input id="fPort" class="input" placeholder="e.g., JNPT" /></div>
+          <div class="row"><label class="label">Mode</label><select id="fMode" class="select"><option>Sea FCL</option><option>Sea LCL</option><option>Air</option><option>Courier</option><option>ICD</option></select></div>
+          <div class="row"><label class="label">Commodity/HS</label><input id="fHS" class="input" placeholder="e.g., 8517" /></div>
+          <div class="row"><label class="label">Services</label><select id="fSvc" class="select"><option>Clearance only</option><option>Clearance + Transport</option><option>Drawback</option><option>Bonded warehousing</option><option>License handling</option></select></div>
+          <div class="row"><label class="label">Budget max (<span class="ccy">₹</span>)</label><input id="fBudget" type="number" class="input" placeholder="50000" /></div>
+          <div class="row"><label class="label">SLA</label><select id="fSla" class="select"><option>Any</option><option>Standard</option><option>Express</option></select></div>
+          <div class="row"><label class="label">Languages</label><select id="fLang" class="select"><option>EN</option><option>EN + HI</option></select></div>
+          <div class="row"><label class="label">Badges</label>
+            <div class="inline"><label><input type="checkbox" id="bVerified" /> Verified</label><label><input type="checkbox" id="bTop" /> Top Rated</label><label><input type="checkbox" id="bFast" /> Fast responder</label></div>
+          </div>
+          <button id="applyFilters" class="btn btn--primary">Apply</button>
+        </aside>
+
+        <section>
+          <div class="card inline" style="justify-content:space-between">
+            <div><strong>Brokers</strong> <span class="muted" id="brokCount">—</span></div>
+            <div class="inline"><input id="fSearch" class="input" placeholder="Search broker or HS…" /><select id="fSort" class="select"><option value="featured">Featured</option><option value="rating">Rating</option><option value="price">Price from</option><option value="response">Response time</option></select></div>
+          </div>
+          <div id="brokGrid" class="market__grid" role="list"></div>
+        </section>
+      </div>
+      <div id="drawer" class="drawer" aria-hidden="true">
+        <div class="drawer__panel card">
+          <div class="inline" style="justify-content:space-between"><h3>Filters</h3><button id="closeFilters" class="btn">Close</button></div>
+          <div id="drawerFilters"></div>
+        </div>
+      </div>
+
+      <!-- Compare tray -->
+      <div id="compareTray" class="card" style="position:sticky;bottom:1rem;max-width:1200px;margin:1rem auto;display:none">
+        <div class="inline" style="justify-content:space-between">
+          <div><strong>Compare</strong> <span id="cmpNames" class="muted"></span></div>
+          <div class="inline"><button id="cmpClear" class="btn">Clear</button><button id="cmpRfp" class="btn btn--primary">Request quotes</button></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===================== PROFILE ===================== -->
+  <section id="profile" class="section" hidden>
+    <div class="container">
+      <div id="profileHero" class="card"></div>
+      <div id="profileTabs" class="tabs" role="tablist" aria-label="Broker profile tabs"></div>
+      <div id="profileBody" class="card"></div>
+      <div class="sticky-cta">
+        <div class="inline" style="justify-content:space-between">
+          <a class="btn" href="#/marketplace">Message</a>
+          <a class="btn btn--primary" href="#/marketplace">Get Quote</a>
+          <a class="btn" href="tel:+910000000000">Call</a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===================== PRODUCTS ===================== -->
+  <section id="products" class="section" hidden>
+    <div class="container">
+      <h2>Trending products</h2>
+      <div id="productsGrid" class="grid grid--4"></div>
+    </div>
+  </section>
+
+  <!-- ===================== NEWS ===================== -->
+  <section id="news" class="section" hidden>
+    <div class="container">
+      <div class="card inline" style="justify-content:space-between">
+        <div class="inline">
+          <strong>News & Alerts</strong>
+          <span class="badge">AI summaries</span>
+        </div>
+        <div class="inline">
+          <select id="newsCountry" class="select"><option>ALL</option><option>IN</option><option>US</option><option>EU</option></select>
+          <select id="newsTopic" class="select"><option>All topics</option><option>Ports</option><option>Tariff</option><option>Compliance</option></select>
+          <button id="newsSub" class="btn btn--primary">Subscribe</button>
+        </div>
+      </div>
+      <div id="newsList" class="grid grid--3"></div>
+    </div>
+  </section>
+
+  <!-- ===================== GUIDES / ACADEMY ===================== -->
+  <section id="guides" class="section" hidden>
+    <div class="container">
+      <h2>Academy</h2>
+      <div class="grid grid--3">
+        <div class="card"><strong>HS Basics (30 min)</strong><p class="muted">Chapters, headings, rules.</p><button class="btn">Start</button></div>
+        <div class="card"><strong>Incoterms 2020 (20 min)</strong><p class="muted">FOB vs CIF vs EXW.</p><button class="btn">Start</button></div>
+        <div class="card"><strong>Valuation (25 min)</strong><p class="muted">What goes into customs value?</p><button class="btn">Start</button></div>
+      </div>
+      <div class="card" style="margin-top:1rem">
+        <strong>Quick quiz</strong>
+        <div class="row"><label class="label">Q1: CIF includes freight & insurance?</label>
+          <div class="inline"><label><input type="radio" name="q1" /> Yes</label><label><input type="radio" name="q1" /> No</label></div>
+        </div>
+        <button class="btn btn--primary">Submit</button>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===================== PRICING / AUTH (stubs) ===================== -->
+  <section id="pricing" class="section" hidden><div class="container card"><h2>Pricing</h2><p class="muted">Free to try. Pro features, escrow & alerts from $9/mo.</p></div></section>
+  <section id="auth" class="section" hidden>
+    <div class="container grid grid--2">
+      <form class="card" id="signinForm">
+        <h3>Sign in</h3>
+        <div class="row"><label class="label" for="siEmail">Email</label><input id="siEmail" class="input" type="email" required></div>
+        <div class="row"><label class="label" for="siPass">Password</label><input id="siPass" class="input" type="password" required></div>
+        <button class="btn btn--primary" type="submit">Sign in</button>
+      </form>
+      <form class="card" id="signupForm">
+        <h3>Create account</h3>
+        <div class="row"><label class="label">I am</label><select class="select"><option>Student</option><option>Importer</option><option>CHA/Forwarder</option><option>Officer</option></select></div>
+        <div class="row"><label class="label">Name</label><input class="input" required></div>
+        <div class="row"><label class="label">Email</label><input class="input" type="email" required></div>
+        <div class="row"><label class="label">Password</label><input class="input" type="password" required></div>
+        <button class="btn btn--primary" type="submit">Create account</button>
+      </form>
+    </div>
+  </section>
+</main>
+
+<!-- ===================== Sticky CTA (mobile) ===================== -->
+<div class="sticky-cta">
+  <div class="container inline">
+    <a class="btn btn--green" href="#/calc">Get Duty Estimate</a>
+    <a class="btn" href="#/marketplace">Find Broker</a>
+    <a class="btn" href="#/chat">Chat</a>
+  </div>
+</div>
+
+<!-- ===================== Footer ===================== -->
+<footer class="footer">
+  <div class="container" style="display:flex;justify-content:space-between;align-items:center;gap:1rem;flex-wrap:wrap">
+    <small>© <span id="year"></span> Chadaddy</small>
+    <nav aria-label="Footer" style="display:flex;gap:.8rem;flex-wrap:wrap">
+      <a href="#/guides">About</a>
+      <a href="#/marketplace">Ports we cover</a>
+      <a href="#/hs">HS index</a>
+      <a href="#/news">News</a>
+      <a href="#/pricing">Pricing</a>
+      <a href="#/auth">Sign in</a>
+      <a href="https://wa.me/0000000000">WhatsApp</a>
+    </nav>
+  </div>
+</footer>
+
+<!-- ===================== WhatsApp FAB ===================== -->
+<a class="fab" href="https://wa.me/0000000000" target="_blank" rel="noopener" id="waFab">WhatsApp</a>
+
+<!-- ===================== Exit Intent Modal ===================== -->
+<div id="exitModal" class="modal" role="dialog" aria-modal="true" aria-labelledby="exitTitle">
+  <div class="modal__card">
+    <div class="inline" style="justify-content:space-between;align-items:center">
+      <h3 id="exitTitle">Don’t leave without your duty estimate</h3>
+      <button id="exitClose" class="btn">✕</button>
+    </div>
+    <p class="muted">Get a free, printable breakdown in your inbox.</p>
+    <form id="leadForm" class="grid" style="grid-template-columns:1fr 1fr;gap:.6rem;margin-top:.6rem">
+      <input class="input" placeholder="Your name" required>
+      <input class="input" type="email" placeholder="Email" required>
+      <input class="input" placeholder="WhatsApp (optional)">
+      <button class="btn btn--primary" type="submit" style="grid-column:1/-1">Send my free estimate</button>
+    </form>
+  </div>
+</div>
+
+<!-- ===================== Structured Data (SEO) ===================== -->
+<script type="application/ld+json">
+{"@context":"https://schema.org","@type":"Organization","name":"Chadaddy","url":"https://example.com","logo":"https://example.com/logo.png","sameAs":["https://twitter.com/"],"description":"AI-powered customs & trade platform: learn, calculate duties, and book verified brokers worldwide."}
+</script>
+
+<!-- ===================== App Script (routing, stubs, CRO, calculators) ===================== -->
+<script>
+/* ---------- Utilities ---------- */
+const $=sel=>document.querySelector(sel); const $$=sel=>Array.from(document.querySelectorAll(sel));
+const fmtCcy=(n)=>new Intl.NumberFormat('en-IN',{maximumFractionDigits:0}).format(n||0);
+const logEvent=(name,extra={})=>{ /* stub for GA4/PostHog */ console.debug('[event]',name,extra); };
+const setTheme=(m)=>{document.documentElement.setAttribute('data-theme',m);localStorage.setItem('theme',m);$('#metaTheme').setAttribute('content',m==='light'?'#ffffff':'#0B1B3B');$('#themeToggle').setAttribute('aria-pressed',String(m==='dark'));};
+setTheme(localStorage.getItem('theme') || (matchMedia('(prefers-color-scheme: light)').matches?'light':'dark'));
+$('#themeToggle').addEventListener('click',()=>setTheme(document.documentElement.getAttribute('data-theme')==='light'?'dark':'light'));
+$('#year').textContent=new Date().getFullYear();
+$('#navToggle').addEventListener('click',()=>{const m=$('#navMenu');const open=m.classList.toggle('is-open');$('#navToggle').setAttribute('aria-expanded',String(open));});
+
+/* ---------- Router (hash) ---------- */
+const pages=['home','chat','hs','calc','marketplace','profile','products','news','guides','pricing','auth'];
+function route(){const [hash,sub] = (location.hash||'#/home').slice(2).split('/'); pages.forEach(id=>{const el=document.getElementById(id); if(el) el.hidden = id!==hash;});
+  if(hash==='marketplace'){renderMarketplace();}
+  if(hash==='profile'){renderProfile(Number(sub||1));}
+  if(hash==='calc'){/* nothing */ }
+  if(hash==='chat'){bootChat();}
+  if(hash==='home'){logEvent('view_hero');}
+}
+addEventListener('hashchange',route); route();
+
+/* ---------- Currency / Language ---------- */
+const currencySymbols={INR:'₹',USD:'$',EUR:'€'}; let CCY=localStorage.getItem('ccy')||'INR';
+$('#ccySel').value=CCY; $$('.ccy').forEach(n=>n.textContent=currencySymbols[CCY]||'₹'); $('#ccyTz').textContent=currencySymbols[CCY]||'₹';
+$('#ccySel').addEventListener('change',e=>{CCY=e.target.value;localStorage.setItem('ccy',CCY); $$('.ccy').forEach(n=>n.textContent=currencySymbols[CCY]||'₹'); $('#ccyTz').textContent=currencySymbols[CCY]||'₹';});
+
+/* ---------- Activity Ticker ---------- */
+const ports=['JNPT','Mundra','Chennai','Rotterdam','LA','Felixstowe','Dubai','Singapore'];
+let tickI=0; setInterval(()=>{$('#ticker').textContent=`${Math.floor(Math.random()*6)+3} shipments cleared today at ${ports[tickI++%ports.length]}`;},4500);
+
+/* ---------- Home: Quick Teaser ---------- */
+$('#tzBtn').addEventListener('click',()=>{
+  const av=Number($('#tzAV').value||0), country=$('#tzCountry').value.toUpperCase();
+  if(!av){$('#tzOut').innerHTML='<span class="badge">Enter a value</span>';return;}
+  const quick = (country==='IN')? av*0.10 + (av*0.10*0.10) + (av*0.18) : (country==='US')? av*0.03 + av*0.009 : (country==='EU'||country==='UK')? av*0.05 + av*0.20 : av*0.1;
+  $('#tzOut').innerHTML=`<span class="badge">Est. duties: ${currencySymbols[CCY]||'₹'} ${fmtCcy(quick)}</span><span class="chip">Total: ${currencySymbols[CCY]||'₹'} ${fmtCcy(av+quick)}</span>`;
+  logEvent('calculator_result_shown',{context:'teaser',country});
+});
+
+/* ---------- Demo Data ---------- */
+const BROKERS=[
+ {id:1,name:'Pacific Global',verified:true,country:'IN',ports:['JNPT','Mundra'],rating:4.9,reviews:312,response:12,priceFrom:6500,badges:['Top Rated','Fast'],img:'https://images.unsplash.com/photo-1556761175-4b46a572b786?q=80&w=800&auto=format&fit=crop',specialties:['Electronics','Chemicals']},
+ {id:2,name:'Astra Customs',verified:true,country:'IN',ports:['Mundra','Chennai'],rating:4.7,reviews:201,response:15,priceFrom:5500,badges:['Verified'],img:'https://images.unsplash.com/photo-1515879218367-8466d910aaa4?q=80&w=800&auto=format&fit=crop',specialties:['Apparel','Furniture']},
+ {id:3,name:'Metro ACI',verified:true,country:'IN',ports:['Delhi Air','BLR'],rating:4.6,reviews:154,response:25,priceFrom:4800,badges:['Fast'],img:'https://images.unsplash.com/photo-1507679799987-c73779587ccf?q=80&w=800&auto=format&fit=crop',specialties:['Pharma','Electronics']},
+ {id:4,name:'OceanBridge EU',verified:true,country:'EU',ports:['Rotterdam','Antwerp'],rating:4.8,reviews:188,response:20,priceFrom:120, badges:['Top Rated'],img:'https://images.unsplash.com/photo-1586521995568-39ef16c6934d?q=80&w=800&auto=format&fit=crop',specialties:['Machinery','Food']}
+];
+const TRENDS=[
+ {name:'Smartphones',fob:'$110–$240',duty:'IN ~20% IGST 18%',img:'https://images.unsplash.com/photo-1511707171634-5f897ff02aa9?q=80&w=800&auto=format&fit=crop'},
+ {name:'LED bulbs',fob:'$0.2–$0.6',duty:'EU ~4% VAT 20%',img:'https://images.unsplash.com/photo-1481277542470-605612bd2d61?q=80&w=800&auto=format&fit=crop'},
+ {name:'Sneakers',fob:'$12–$35',duty:'US ~20% + fees',img:'https://images.unsplash.com/photo-1542291026-7eec264c27ff?q=80&w=800&auto=format&fit=crop'},
+ {name:'Coffee beans',fob:'$2–$4/kg',duty:'IN ~100% IGST 5%',img:'https://images.unsplash.com/photo-1509042239860-f550ce710b93?q=80&w=800&auto=format&fit=crop'}
+];
+const NEWS=[{id:1,country:'IN',topic:'Ports',title:'JNPT issues advisory on weekend cut-off',sev:'medium'},{id:2,country:'EU',topic:'Tariff',title:'EU updates CET for electronics',sev:'high'},{id:3,country:'US',topic:'Compliance',title:'New FDA prior-notice pilot',sev:'low'}];
+
+/* ---------- Render Home sections ---------- */
+function renderFeatured(){
+  $('#featBrokers').innerHTML = BROKERS.slice(0,4).map(b=>`
+    <article class="card listing" role="listitem">
+      <img alt="${b.name}" src="${b.img}" style="height:140px;border-radius:12px;border:1px solid var(--border);object-fit:cover">
+      <div class="listing__meta" style="margin-top:.4rem">
+        <div><strong>${b.name}</strong> ${b.verified?'<span class="chip">Verified</span>':''}</div>
+        <div class="badge"><span class="stars">★</span> ${b.rating} (${b.reviews})</div>
+      </div>
+      <div class="muted">${b.country} • ${b.ports.join(' • ')}</div>
+      <div class="muted">${b.specialties.join(', ')}</div>
+      <div class="listing__foot">
+        <div><span class="muted">From</span> <strong>${currencySymbols[CCY]||'₹'} ${fmtCcy(b.priceFrom)}</strong></div>
+        <div class="inline"><a class="btn" href="#/profile/${b.id}">View</a><a class="btn btn--primary" href="#/marketplace">Get Quote</a></div>
+      </div>
+    </article>`).join('');
+}
+function renderTrends(){
+  $('#trendGrid').innerHTML= TRENDS.map(t=>`
+    <article class="card">
+      <img loading="lazy
