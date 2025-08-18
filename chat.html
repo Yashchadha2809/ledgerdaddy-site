@@ -44,10 +44,12 @@
     .thumb{width:56px;height:56px;border-radius:10px;object-fit:cover;border:1px solid #E6E8EE}
     .file-pill{border:1px solid #E6E8EE;border-radius:10px;padding:.4rem .6rem;font-size:12px;display:flex;align-items:center;gap:.5rem;background:#fff}
     .sr-only-focusable:focus{position:static;width:auto;height:auto;clip:auto;clip-path:none;padding:.25rem .5rem;border-radius:6px;background:#ECFDF5}
+    /* Upload overlay */
+    #dropOverlay{backdrop-filter: blur(2px);}
   </style>
 </head>
 <body class="h-full bg-soft text-ink">
-  <!-- Skip link for accessibility -->
+  <!-- Skip link -->
   <a href="#composer" class="sr-only sr-only-focusable absolute left-2 top-2 -translate-y-12 focus:translate-y-0 focus:outline-none">
     Skip to message composer
   </a>
@@ -99,9 +101,16 @@
     <!-- Chat column -->
     <section class="flex flex-col h-[calc(100vh-64px)]">
       <!-- System notifications -->
-      <div id="sysbar" class="mx-auto w-full max-w-3xl px-2 pt-3">
-        <!-- Examples: inject via JS -->
-        <!-- <div class="mb-2 rounded-lg bg-yellow-50 border border-yellow-200 text-[13px] text-amber-800 px-3 py-2">Processing…</div> -->
+      <div id="sysbar" class="mx-auto w-full max-w-3xl px-2 pt-3"></div>
+
+      <!-- Drag & Drop Overlay -->
+      <div id="dropOverlay" class="hidden fixed inset-0 z-40 bg-white/50">
+        <div class="absolute inset-0 border-4 border-dashed border-emerald-300 rounded-xl m-8 grid place-items-center">
+          <div class="bg-white rounded-xl border border-emerald-200 shadow-soft px-4 py-3 text-center">
+            <div class="text-emerald-700 font-semibold">Drop files to upload</div>
+            <div class="text-sm text-mute">Images, PDFs, spreadsheets, docs (max 25MB each)</div>
+          </div>
+        </div>
       </div>
 
       <!-- Stream -->
@@ -127,15 +136,25 @@
       <!-- Composer -->
       <div class="border-t border-line bg-card sticky bottom-0">
         <div class="max-w-3xl mx-auto px-3 pt-3">
-          <!-- Attachments preview -->
-          <div id="attachRow" class="hidden mb-2 flex items-center gap-2 flex-wrap"></div>
+
+          <!-- Attachments tray (with progress + clear) -->
+          <div id="attachRow" class="hidden mb-3 flex items-center gap-3 flex-wrap">
+            <div class="text-[12px] text-mute pr-1">Attachments</div>
+            <!-- pills are injected here -->
+            <button id="clearAttach" class="chip text-red-600 border-red-200 hover:text-red-700 hidden">Clear all</button>
+          </div>
 
           <form id="composer" class="flex items-end gap-2" aria-label="Message composer">
-            <!-- Attach -->
+            <!-- Hidden file input -->
             <input id="fileInput" type="file" class="hidden" multiple
-                   accept="image/*,.pdf,.csv,.txt,.json,.doc,.docx,.xls,.xlsx,.ppt,.pptx"/>
-            <button type="button" id="attachBtn" title="Attach files"
-              class="btn btn-ghost" aria-label="Attach files">📎</button>
+                   accept="image/*,.pdf,.csv,.txt,.json,.doc,.docx,.xls,.xlsx,.ppt,.pptx" capture="environment"/>
+
+            <!-- Upload -->
+            <button type="button" id="attachBtn" title="Upload files"
+              class="btn btn-ghost" aria-label="Upload files">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none"><path d="M12 16V4m0 0l-4 4m4-4l4 4M4 16v2a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-2" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>
+              Upload
+            </button>
 
             <!-- Text -->
             <label for="chatInput" class="sr-only">Message</label>
@@ -147,7 +166,7 @@
             <button id="sendBtn" class="btn btn-accent" aria-label="Send message">Send</button>
           </form>
 
-          <!-- Quick Action Shortcuts (under input) -->
+          <!-- Quick Action Shortcuts -->
           <div class="mt-2 flex items-center justify-between pb-3">
             <div class="flex flex-wrap gap-2">
               <button class="chip qa-btn" data-q="Estimate duty">Estimate Duty</button>
@@ -155,7 +174,7 @@
               <button class="chip qa-btn" data-q="Documents required">Docs</button>
               <button class="chip qa-btn" data-q="Landed cost calculator">Landed Cost</button>
             </div>
-            <div class="text-[11px] text-mute">Enter to send • Shift+Enter = new line • Drag & drop files</div>
+            <div class="text-[11px] text-mute">Enter to send • Shift+Enter = new line • Drag, paste, or upload files</div>
           </div>
         </div>
       </div>
@@ -172,7 +191,7 @@
   <script>
     // ===== Config =====
     const API_BASE = window.NEXT_PUBLIC_API_BASE || window.VITE_API_BASE || "http://localhost:5001";
-    const USE_WS   = false; // set true when your websocket is ready (see hook below)
+    const USE_WS   = false;
 
     // ===== Utils =====
     const $ = s => document.querySelector(s);
@@ -267,9 +286,7 @@
       const isSystem = kind === 'system';
       const who = isSystem ? 'System' : (isUser ? 'You' : 'LedgerBot');
       const avatar = isSystem ? '⚙️' : (isUser ? '👤' : '◆');
-      const shell = isSystem ? 'bg-yellow-50 border-yellow-200' : 'bg-card border-line';
 
-      // delivery/read status (user only)
       const statusText = isUser ? (status==='read' ? 'Read' : status==='delivered' ? 'Delivered' : 'Sending…') : '';
 
       return `
@@ -277,7 +294,7 @@
           <div class="flex ${isUser?'justify-end':''}">
             <div class="flex ${isUser?'flex-row-reverse':''} gap-3 items-start">
               <span class="mt-1 inline-flex w-8 h-8 shrink-0 items-center justify-center rounded-full ${isSystem?'bg-yellow-500 text-white':(isUser?'bg-ink text-white':'bg-accent text-white')}" aria-hidden="true">${avatar}</span>
-              <div class="bg-card border ${shell.includes('yellow')?'border-yellow-200':'border-line'} rounded-2xl px-4 py-3 max-w-[min(78vw,720px)]">
+              <div class="bg-card border border-line rounded-2xl px-4 py-3 max-w-[min(78vw,720px)]">
                 <div class="flex items-center justify-between gap-3 mb-1">
                   <div class="text-sm ${isSystem?'text-amber-800':'text-mute'}">${who}</div>
                   <div class="text-[11px] ${isSystem?'text-amber-700':'text-mute'}">${fmtTime(ts||Date.now())}${statusText?` • ${statusText}`:''}</div>
@@ -338,35 +355,50 @@
       if(t.title==='New chat'){ setTitleFromFirstUserMessage(t); }
       saveThreads(); renderSidebar(); renderMessages();
     }
-    function addSystem(text, tone='info'){ // 'info'|'warn'|'error'
+    function addSystem(text, tone='info'){
       const t = getCurrent(); if(!t) return;
       t.messages.push({ role:'system', kind:'system', ts: Date.now(), text });
       saveThreads(); renderMessages();
       banner(text, tone);
     }
 
-    // ===== Upload handling =====
+    // ===== Upload handling (enhanced) =====
     const MAX_FILES = 10;
     const MAX_MB = 25;
-    let pendingFiles = []; // {file, url, id}
+    let pendingFiles = []; // {file, url, id, progress}
 
-    const fileInput = $('#fileInput');
-    const attachBtn  = $('#attachBtn');
-    const attachRow  = $('#attachRow');
-    const msgWrap    = $('#messages');
+    const fileInput   = $('#fileInput');
+    const attachBtn   = $('#attachBtn');
+    const attachRow   = $('#attachRow');
+    const clearAttach = $('#clearAttach');
+    const msgWrap     = $('#messages');
+    const dropOverlay = $('#dropOverlay');
 
     attachBtn.addEventListener('click', ()=> fileInput.click());
     fileInput.addEventListener('change', (e)=> addPendingFiles([...e.target.files]));
 
-    // Drag & drop
+    clearAttach.addEventListener('click', ()=>{
+      pendingFiles.forEach(p=> URL.revokeObjectURL(p.url));
+      pendingFiles = [];
+      renderPending();
+    });
+
+    // Drag & drop overlay
     ;['dragenter','dragover'].forEach(ev=>{
-      document.addEventListener(ev, (e)=>{ e.preventDefault(); msgWrap.classList.add('drop-target'); });
+      document.addEventListener(ev, (e)=>{ e.preventDefault(); dropOverlay.classList.remove('hidden'); });
     });
     ;['dragleave','drop'].forEach(ev=>{
-      document.addEventListener(ev, (e)=>{ e.preventDefault(); msgWrap.classList.remove('drop-target'); });
+      document.addEventListener(ev, (e)=>{ e.preventDefault(); dropOverlay.classList.add('hidden'); });
     });
     document.addEventListener('drop', (e)=>{
       const files = [...(e.dataTransfer?.files||[])];
+      if(files.length) addPendingFiles(files);
+    });
+
+    // Paste to upload (screenshots, files)
+    document.addEventListener('paste', (e)=>{
+      const items = [...(e.clipboardData?.items||[])];
+      const files = items.map(i=> i.getAsFile()).filter(Boolean);
       if(files.length) addPendingFiles(files);
     });
 
@@ -375,49 +407,95 @@
       for(const f of files){
         if(all.length >= MAX_FILES){ toast('Max 10 files'); break; }
         if(f.size > MAX_MB*1024*1024){ toast(`${f.name} is over ${MAX_MB}MB`); continue; }
-        all.push({ file:f, id:uid(), url: URL.createObjectURL(f) });
+        all.push({ file:f, id:uid(), url: URL.createObjectURL(f), progress:0 });
       }
       pendingFiles = all;
       renderPending();
     }
 
     function removePending(id){
+      const p = pendingFiles.find(x=>x.id===id);
+      if(p){ URL.revokeObjectURL(p.url); }
       pendingFiles = pendingFiles.filter(p=>p.id!==id);
       renderPending();
     }
 
     function renderPending(){
-      if(!pendingFiles.length){ attachRow.classList.add('hidden'); attachRow.innerHTML=''; return; }
+      if(!pendingFiles.length){
+        attachRow.classList.add('hidden'); attachRow.innerHTML=''; clearAttach.classList.add('hidden'); return;
+      }
       attachRow.classList.remove('hidden');
-      attachRow.innerHTML = pendingFiles.map(p=>{
-        const isImg = p.file.type.startsWith('image/');
-        const size = (p.file.size/1024/1024).toFixed(1)+'MB';
-        return isImg
-          ? `<div class="relative">
-               <img src="${p.url}" class="thumb" alt="${p.file.name}"/>
-               <button title="Remove" class="absolute -top-2 -right-2 bg-white border border-line rounded-full w-6 h-6 text-xs"
-                 onclick="removePending('${p.id}')">×</button>
-             </div>`
-          : `<div class="file-pill">
-               <span>${fileIcon(p.file.name)}</span>
-               <span class="truncate max-w-[160px]">${p.file.name}</span>
-               <span class="text-mute">${size}</span>
-               <button title="Remove" class="ml-1 border border-line rounded px-1 text-[11px]" onclick="removePending('${p.id}')">×</button>
-             </div>`;
-      }).join('');
-      window.removePending = removePending; // expose
+      clearAttach.classList.remove('hidden');
+      attachRow.innerHTML = `
+        <div class="text-[12px] text-mute pr-1">Attachments</div>
+        ${pendingFiles.map(p=>{
+          const isImg = p.file.type.startsWith('image/');
+          const size = (p.file.size/1024/1024).toFixed(1)+'MB';
+          return isImg
+            ? `<div class="relative">
+                 <img src="${p.url}" class="thumb" alt="${p.file.name}"/>
+                 <button title="Remove" class="absolute -top-2 -right-2 bg-white border border-line rounded-full w-6 h-6 text-xs"
+                   onclick="removePending('${p.id}')">×</button>
+                 <div class="absolute left-0 right-0 -bottom-2 h-1 bg-gray-100 rounded-full overflow-hidden"><div style="width:${p.progress||0}%;" class="h-full bg-emerald-500"></div></div>
+               </div>`
+            : `<div class="file-pill">
+                 <span>${fileIcon(p.file.name)}</span>
+                 <span class="truncate max-w-[160px]">${p.file.name}</span>
+                 <span class="text-mute">${size}</span>
+                 <div class="w-20 h-1 bg-gray-100 rounded-full overflow-hidden"><div style="width:${p.progress||0}%;" class="h-full bg-emerald-500"></div></div>
+                 <button title="Remove" class="ml-1 border border-line rounded px-1 text-[11px]" onclick="removePending('${p.id}')">×</button>
+               </div>`;
+        }).join('')}
+      `;
+      window.removePending = removePending;
     }
 
+    // Upload with progress (XHR for progress events)
     async function uploadFiles(files){
       if(!files.length) return [];
-      const form = new FormData();
-      files.forEach(f => form.append('files', f.file, f.file.name));
       try{
-        const res = await fetch(`${API_BASE}/api/upload`, { method:'POST', body:form });
-        if(!res.ok) throw new Error('Upload failed');
-        const data = await res.json();
-        const list = Array.isArray(data) ? data : (data.files || [data]);
-        return list.map((x,i)=>({
+        const form = new FormData();
+        files.forEach(f => form.append('files', f.file, f.file.name));
+
+        const resp = await new Promise((resolve, reject)=>{
+          const xhr = new XMLHttpRequest();
+          xhr.open('POST', `${API_BASE}/api/upload`);
+          xhr.onload = () => {
+            try{
+              const data = JSON.parse(xhr.responseText || '[]');
+              resolve({ ok: xhr.status>=200 && xhr.status<300, data });
+            }catch(e){ reject(e); }
+          };
+          xhr.onerror = () => reject(new Error('Network error'));
+          const total = files.reduce((sum,f)=> sum + (f.file.size||0), 0);
+          let loadedSoFar = 0;
+
+          // Per-file progress (approximate: update evenly by chunk)
+          xhr.upload.onprogress = (e)=>{
+            const ratio = e.lengthComputable ? (e.loaded / e.total) : 0.5;
+            files.forEach(f=>{
+              const pf = pendingFiles.find(x=>x.id===f.id);
+              if(pf){ pf.progress = Math.max(pf.progress||0, Math.floor(ratio*100)); }
+            });
+            renderPending();
+          };
+          xhr.send(form);
+        });
+
+        if(!resp.ok) throw new Error('Upload failed');
+
+        const data = resp.data;
+        const listRaw = Array.isArray(data) ? data : (data.files || [data]);
+
+        // Finish progress
+        files.forEach(f=>{
+          const pf = pendingFiles.find(x=>x.id===f.id);
+          if(pf){ pf.progress = 100; }
+        });
+        renderPending();
+
+        // Map response
+        return listRaw.map((x,i)=>({
           url: x.url || files[i].url,
           name: x.name || files[i].file.name,
           type: x.type || files[i].file.type,
@@ -445,36 +523,32 @@
     // ===== Send flow =====
     const area = $('#chatInput');
     const form = $('#composer');
+    const sendBtn = $('#sendBtn');
     let lastPrompt = "";
 
     async function send(text){
       const trimmed = (text || '').trim();
       if(!trimmed && !pendingFiles.length) return;
 
-      // 1) Upload attachments
-      banner('Loading…','info');
+      // Upload attachments
+      banner('Uploading attachments…','info');
+      sendBtn.disabled = true; sendBtn.classList.add('opacity-60','cursor-not-allowed');
       const uploaded = await uploadFiles(pendingFiles);
       pendingFiles.forEach(p=> URL.revokeObjectURL(p.url));
       pendingFiles = []; renderPending();
 
-      // 2) Add user message
+      // Add user message
       const userMsg = { role:'user', text: trimmed, attachments: uploaded };
       addMessage(userMsg);
 
-      // 3) Show typing
+      // Typing indicator
       const wrap = $('#messages');
       wrap.insertAdjacentHTML('beforeend', typingRow());
       wrap.scrollTop = wrap.scrollHeight;
 
-      // 4) Call backend (REST or WebSocket)
       try {
         let replyText = '';
         if (USE_WS) {
-          // --- WebSocket placeholder ---
-          // const ws = new WebSocket("wss://YOUR_WS_ENDPOINT");
-          // ws.onopen = ()=> ws.send(JSON.stringify({ message: trimmed, attachments: uploaded }));
-          // ws.onmessage = (ev)=> { replyText += ev.data; /* stream */ };
-          // await new Promise(r=> setTimeout(r, 1200)); // demo
           replyText = "Streaming via WebSocket is not wired yet.";
         } else {
           const res = await fetch(`${API_BASE}/api/chat`, {
@@ -490,19 +564,21 @@
         // remove typing
         wrap.lastElementChild?.remove();
 
-        // 5) Mark user as delivered+read (demo timing)
+        // delivery/read status demo
         markLastUserStatus('delivered');
         setTimeout(()=> markLastUserStatus('read'), 800);
 
-        // 6) Add assistant
+        // assistant reply
         addMessage({ role:'assistant', text: replyText });
 
         lastPrompt = trimmed;
       } catch (err) {
         wrap.lastElementChild?.remove();
-        markLastUserStatus('sending'); // keep as sending on error
+        markLastUserStatus('sending');
         addSystem('Error: ' + err.message, 'error');
         addMessage({ role:'assistant', text: "⚠️ " + err.message });
+      } finally {
+        sendBtn.disabled = false; sendBtn.classList.remove('opacity-60','cursor-not-allowed');
       }
     }
 
@@ -528,7 +604,7 @@
     });
     form.addEventListener('submit', (e)=>{ e.preventDefault(); send(area.value); area.value=''; area.style.height='auto'; });
 
-    // quick chips (welcome + under input)
+    // quick chips
     [...$$('.demo-btn'), ...$$('.qa-btn')].forEach(b=> b.onclick = ()=>{
       area.value = b.getAttribute('data-q') || b.textContent.trim();
       area.dispatchEvent(new Event('input'));
@@ -564,20 +640,17 @@
     toBottomBtn.className = 'hidden fixed bottom-24 right-6 chip';
     toBottomBtn.textContent = 'Scroll to bottom';
     document.body.appendChild(toBottomBtn);
-    const msgWrap = $('#messages');
+    const msgWrapEl = $('#messages');
     function toggleScrollBtn(){
-      if(!msgWrap) return;
-      const nearBottom = (msgWrap.scrollHeight - msgWrap.scrollTop - msgWrap.clientHeight) < 140;
+      if(!msgWrapEl) return;
+      const nearBottom = (msgWrapEl.scrollHeight - msgWrapEl.scrollTop - msgWrapEl.clientHeight) < 140;
       if(nearBottom) toBottomBtn.classList.add('hidden'); else toBottomBtn.classList.remove('hidden');
     }
-    msgWrap.addEventListener('scroll', toggleScrollBtn);
-    toBottomBtn.addEventListener('click', ()=>{ msgWrap.scrollTop = msgWrap.scrollHeight; toggleScrollBtn(); });
+    msgWrapEl.addEventListener('scroll', toggleScrollBtn);
+    toBottomBtn.addEventListener('click', ()=>{ msgWrapEl.scrollTop = msgWrapEl.scrollHeight; toggleScrollBtn(); });
 
     // Init
     if(!threads.length){ newThread(); } else { renderSidebar(); renderMessages(); }
-
-    // expose removePending for inline onclick
-    window.removePending = (id)=>removePending(id);
   </script>
 </body>
 </html>
