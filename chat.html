@@ -14,9 +14,11 @@
             ink:"#0B1020", soft:"#F5F7FA", card:"#FFFFFF",
             line:"#E6E8EE", mute:"#6B7280",
             accent:"#10B981", accentSoft:"#ECFDF5",
+            warn:"#F59E0B", danger:"#EF4444",
             codeBg:"#0F172A"
           },
-          boxShadow:{ soft:"0 10px 30px rgba(3,7,18,.06)" }
+          boxShadow:{ soft:"0 10px 30px rgba(3,7,18,.06)" },
+          borderRadius:{ xl2:"16px" }
         }
       }
     }
@@ -30,7 +32,7 @@
     @keyframes pulse{0%,80%,100%{opacity:.25}40%{opacity:1}}
     .btn{display:inline-flex;align-items:center;gap:.5rem;padding:.56rem .9rem;border-radius:10px;font-weight:600}
     .btn-accent{background:#10B981;color:#fff}
-    .btn-accent:hover{filter:brightness(1.03)}
+    .btn-accent:hover{filter:brightness(1.04)}
     .btn-ghost{background:transparent;border:1px solid #E6E8EE}
     .btn-ghost:hover{background:#F9FAFB}
     .chip{font-size:12px;border:1px solid #E6E8EE;border-radius:999px;padding:.35rem .7rem;background:#FFF}
@@ -41,9 +43,15 @@
     .drop-target{outline:2px dashed #A7F3D0; outline-offset:4px}
     .thumb{width:56px;height:56px;border-radius:10px;object-fit:cover;border:1px solid #E6E8EE}
     .file-pill{border:1px solid #E6E8EE;border-radius:10px;padding:.4rem .6rem;font-size:12px;display:flex;align-items:center;gap:.5rem;background:#fff}
+    .sr-only-focusable:focus{position:static;width:auto;height:auto;clip:auto;clip-path:none;padding:.25rem .5rem;border-radius:6px;background:#ECFDF5}
   </style>
 </head>
 <body class="h-full bg-soft text-ink">
+  <!-- Skip link for accessibility -->
+  <a href="#composer" class="sr-only sr-only-focusable absolute left-2 top-2 -translate-y-12 focus:translate-y-0 focus:outline-none">
+    Skip to message composer
+  </a>
+
   <!-- Topbar -->
   <header class="sticky top-0 z-50 border-b border-line bg-card/90 backdrop-blur">
     <div class="max-w-6xl mx-auto px-4 py-3 flex items-center justify-between">
@@ -73,13 +81,16 @@
       <div class="bg-card border border-line rounded-xl shadow-soft p-3 h-full flex flex-col">
         <div class="flex items-center justify-between">
           <strong>Conversations</strong>
-          <button id="newChat" class="text-xs btn btn-ghost">New</button>
+          <button id="newChat" class="text-xs btn btn-ghost" aria-label="Start new chat">New</button>
         </div>
-        <ul id="chatList" class="mt-3 grid gap-1 text-sm overflow-auto pr-1"></ul>
+        <ul id="chatList" class="mt-3 grid gap-1 text-sm overflow-auto pr-1" role="listbox" aria-label="Conversation list"></ul>
         <div class="mt-3 grid gap-2 text-sm">
           <a class="btn btn-ghost justify-center" href="/hs-finder.html">Open HS Finder</a>
           <a class="btn btn-ghost justify-center" href="/calculator.html">Open Calculator</a>
-          <button id="exportBtn" class="btn btn-ghost justify-center">Export current</button>
+          <div class="grid grid-cols-2 gap-2">
+            <button id="exportBtn" class="btn btn-ghost justify-center" aria-label="Download chat transcript">Download</button>
+            <button id="emailBtn" class="btn btn-ghost justify-center" aria-label="Email chat transcript">Email</button>
+          </div>
           <button id="clearAll" class="btn btn-ghost justify-center text-red-600 border-red-200">Clear all</button>
         </div>
       </div>
@@ -87,30 +98,39 @@
 
     <!-- Chat column -->
     <section class="flex flex-col h-[calc(100vh-64px)]">
-      <!-- Stream (also acts as drop zone) -->
-      <div id="messages" class="flex-1 overflow-auto px-0 sm:px-2 py-4">
-        <div id="welcome" class="max-w-2xl mx-auto bg-card border border-line rounded-xl p-4 shadow-soft">
-          <div class="text-sm text-mute">Assistant</div>
+      <!-- System notifications -->
+      <div id="sysbar" class="mx-auto w-full max-w-3xl px-2 pt-3">
+        <!-- Examples: inject via JS -->
+        <!-- <div class="mb-2 rounded-lg bg-yellow-50 border border-yellow-200 text-[13px] text-amber-800 px-3 py-2">Processing…</div> -->
+      </div>
+
+      <!-- Stream -->
+      <div id="messages" class="flex-1 overflow-auto px-0 sm:px-2 py-4" role="log" aria-live="polite" aria-relevant="additions">
+        <!-- Conversational onboarding -->
+        <section id="welcome" class="max-w-2xl mx-auto bg-card border border-line rounded-xl2 p-5 shadow-soft">
+          <div class="text-sm text-mute">LedgerBot</div>
           <div class="mt-1">
             <p class="text-[15px] leading-relaxed">
-              Hi! Ask anything about HS codes, duties, or customs docs. You can also attach files (photos, PDFs, spreadsheets).
+              Hi there! I’m <strong>LedgerBot</strong> — ask me about customs, HS codes, or calculations.
+              What would you like to do today?
             </p>
             <div class="mt-3 flex flex-wrap gap-2">
-              <button class="chip demo-btn" data-q="Find HS code for wireless earbuds in IN">Find HS code for wireless earbuds in IN</button>
-              <button class="chip demo-btn" data-q="Duty for IN 851713 CIF 100000">Duty for IN 851713 CIF 100000</button>
-              <button class="chip demo-btn" data-q="Documents to import wooden furniture into EU">Documents to import wooden furniture into EU</button>
+              <button class="chip demo-btn" data-q="Estimate duty for HS 851713 (IN) CIF 100000">Estimate Duty</button>
+              <button class="chip demo-btn" data-q="Find HS code for wireless earbuds in India">Find HS Code</button>
+              <button class="chip demo-btn" data-q="List documents to import wooden furniture into EU">Docs Checklist</button>
+              <button class="chip demo-btn" data-q="Calculate landed cost for 500 LED lights to USA">Landed Cost</button>
             </div>
           </div>
-        </div>
+        </section>
       </div>
 
       <!-- Composer -->
       <div class="border-t border-line bg-card sticky bottom-0">
         <div class="max-w-3xl mx-auto px-3 pt-3">
-          <!-- Attachments preview row -->
+          <!-- Attachments preview -->
           <div id="attachRow" class="hidden mb-2 flex items-center gap-2 flex-wrap"></div>
 
-          <form id="composer" class="flex items-end gap-2">
+          <form id="composer" class="flex items-end gap-2" aria-label="Message composer">
             <!-- Attach -->
             <input id="fileInput" type="file" class="hidden" multiple
                    accept="image/*,.pdf,.csv,.txt,.json,.doc,.docx,.xls,.xlsx,.ppt,.pptx"/>
@@ -118,19 +138,24 @@
               class="btn btn-ghost" aria-label="Attach files">📎</button>
 
             <!-- Text -->
-            <textarea id="chatInput" rows="1" placeholder="Message Ledgerdaddy…"
+            <label for="chatInput" class="sr-only">Message</label>
+            <textarea id="chatInput" rows="1" placeholder="Message LedgerBot…"
               class="flex-1 border border-line rounded-xl px-3 py-2 resize-none max-h-40 focus:outline-none focus:ring-2 focus:ring-accent/30"
-            ></textarea>
+              aria-multiline="true" aria-label="Type your message"></textarea>
 
             <!-- Send -->
-            <button id="sendBtn" class="btn btn-accent">Send</button>
+            <button id="sendBtn" class="btn btn-accent" aria-label="Send message">Send</button>
           </form>
+
+          <!-- Quick Action Shortcuts (under input) -->
           <div class="mt-2 flex items-center justify-between pb-3">
-            <div class="text-[11px] text-mute">Enter to send • Shift+Enter for new line • Drag & drop files anywhere</div>
-            <div class="flex items-center gap-2">
-              <button id="regenBtn" class="chip">Regenerate</button>
-              <button id="toBottom" class="chip hidden">Scroll to bottom</button>
+            <div class="flex flex-wrap gap-2">
+              <button class="chip qa-btn" data-q="Estimate duty">Estimate Duty</button>
+              <button class="chip qa-btn" data-q="Find HS code">Find HS Code</button>
+              <button class="chip qa-btn" data-q="Documents required">Docs</button>
+              <button class="chip qa-btn" data-q="Landed cost calculator">Landed Cost</button>
             </div>
+            <div class="text-[11px] text-mute">Enter to send • Shift+Enter = new line • Drag & drop files</div>
           </div>
         </div>
       </div>
@@ -138,24 +163,25 @@
   </main>
 
   <!-- Toast -->
-  <div id="toast" class="hidden fixed bottom-6 right-6 bg-ink text-white text-sm px-3 py-2 rounded-lg shadow"></div>
+  <div id="toast" class="hidden fixed bottom-6 right-6 bg-ink text-white text-sm px-3 py-2 rounded-lg shadow" role="status" aria-live="polite"></div>
 
   <footer class="text-center text-xs text-mute my-6">
     © <span id="year"></span> Ledgerdaddy
   </footer>
 
   <script>
-    // ===== Backend URL =====
+    // ===== Config =====
     const API_BASE = window.NEXT_PUBLIC_API_BASE || window.VITE_API_BASE || "http://localhost:5001";
+    const USE_WS   = false; // set true when your websocket is ready (see hook below)
 
-    // ===== Utilities =====
+    // ===== Utils =====
     const $ = s => document.querySelector(s);
     const $$ = s => Array.from(document.querySelectorAll(s));
-    const toast = (msg) => { const t = $('#toast'); t.textContent = msg; t.classList.remove('hidden'); setTimeout(()=>t.classList.add('hidden'), 1400); };
-    const uid = () => Math.random().toString(36).slice(2)+Date.now().toString(36);
+    const toast = (msg) => { const t = $('#toast'); t.textContent = msg; t.classList.remove('hidden'); setTimeout(()=>t.classList.add('hidden'), 1600); };
+    const uid = () => Math.random().toString(36).slice(2) + Date.now().toString(36);
     $('#year').textContent = new Date().getFullYear();
 
-    // ===== Storage (threads) =====
+    // ===== Local storage (threads) =====
     const STORE_KEY='ld_chat_threads_v1';
     let threads = JSON.parse(localStorage.getItem(STORE_KEY) || '[]');
     let currentId = threads[0]?.id || null;
@@ -183,7 +209,7 @@
       list.innerHTML = threads.map(t=>`
         <li>
           <button data-id="${t.id}"
-            class="w-full text-left px-2 py-2 rounded hover:bg-soft ${t.id===currentId?'bg-soft':''}">
+            class="w-full text-left px-2 py-2 rounded hover:bg-soft ${t.id===currentId?'bg-soft':''}" role="option" aria-selected="${t.id===currentId}">
             <div class="truncate">${t.title || 'Conversation'}</div>
             <div class="text-[11px] text-mute">${(t.messages?.length||0)} messages</div>
           </button>
@@ -203,8 +229,9 @@
       out = out.replace(/\n\n/g, '<br/><br/>');
       return out;
     }
+    const fmtTime = ts => new Date(ts).toLocaleString([], {hour:'2-digit', minute:'2-digit', day:'2-digit', month:'short'});
 
-    // ===== Message bubbles (now support attachments) =====
+    // ===== Message bubble + types =====
     function fileIcon(name){ const ext=(name.split('.').pop()||'').toLowerCase();
       if(['png','jpg','jpeg','gif','webp','heic','heif','bmp'].includes(ext)) return '🖼️';
       if(['pdf'].includes(ext)) return '📄';
@@ -233,33 +260,48 @@
         </div>
       `;
     }
-    function bubble(role, text, attachments){
+
+    function bubble(m){
+      const { role, text, attachments, ts, status, kind } = m; // kind: 'system'|'message'
       const isUser = role==='user';
+      const isSystem = kind === 'system';
+      const who = isSystem ? 'System' : (isUser ? 'You' : 'LedgerBot');
+      const avatar = isSystem ? '⚙️' : (isUser ? '👤' : '◆');
+      const shell = isSystem ? 'bg-yellow-50 border-yellow-200' : 'bg-card border-line';
+
+      // delivery/read status (user only)
+      const statusText = isUser ? (status==='read' ? 'Read' : status==='delivered' ? 'Delivered' : 'Sending…') : '';
+
       return `
-        <div class="fade-in max-w-3xl mx-auto message">
+        <article class="fade-in max-w-3xl mx-auto message" aria-label="${who} message">
           <div class="flex ${isUser?'justify-end':''}">
-            <div class="flex gap-3 items-start ${isUser?'flex-row-reverse':''}">
-              <span class="mt-1 inline-flex w-8 h-8 shrink-0 items-center justify-center rounded-full ${isUser?'bg-ink text-white':'bg-accent text-white'}">${isUser?'👤':'◆'}</span>
-              <div class="bg-card border border-line rounded-2xl px-4 py-3 max-w-[min(78vw,720px)]">
-                <div class="text-sm text-mute mb-1">${isUser?'You':'Assistant'}</div>
+            <div class="flex ${isUser?'flex-row-reverse':''} gap-3 items-start">
+              <span class="mt-1 inline-flex w-8 h-8 shrink-0 items-center justify-center rounded-full ${isSystem?'bg-yellow-500 text-white':(isUser?'bg-ink text-white':'bg-accent text-white')}" aria-hidden="true">${avatar}</span>
+              <div class="bg-card border ${shell.includes('yellow')?'border-yellow-200':'border-line'} rounded-2xl px-4 py-3 max-w-[min(78vw,720px)]">
+                <div class="flex items-center justify-between gap-3 mb-1">
+                  <div class="text-sm ${isSystem?'text-amber-800':'text-mute'}">${who}</div>
+                  <div class="text-[11px] ${isSystem?'text-amber-700':'text-mute'}">${fmtTime(ts||Date.now())}${statusText?` • ${statusText}`:''}</div>
+                </div>
                 ${attachments?.length ? attachBlock(attachments) : ''}
                 <div class="prose prose-sm max-w-none">${mdLite(text)}</div>
+                ${!isSystem ? `
                 <div class="mt-2 flex items-center gap-2">
-                  <button class="copy-btn text-[11px] px-2 py-1 rounded border border-line hover:bg-soft" data-copy="${encodeURIComponent(text)}">Copy</button>
-                </div>
+                  <button class="copy-btn text-[11px] px-2 py-1 rounded border border-line hover:bg-soft" data-copy="${encodeURIComponent(text)}" aria-label="Copy message">Copy</button>
+                </div>`:''}
               </div>
             </div>
           </div>
-        </div>
+        </article>
       `;
     }
+
     function typingRow(){
       return `
-        <div class="max-w-3xl mx-auto">
+        <div class="max-w-3xl mx-auto" aria-live="polite">
           <div class="flex gap-3 items-start">
             <span class="mt-1 inline-flex w-8 h-8 items-center justify-center rounded-full bg-accent text-white">◆</span>
             <div class="bg-card border border-line rounded-2xl px-4 py-3">
-              <div class="flex items-center gap-1">
+              <div class="flex items-center gap-1" aria-label="LedgerBot is typing">
                 <span class="typing-dot w-2 h-2 rounded-full bg-gray-400"></span>
                 <span class="typing-dot w-2 h-2 rounded-full bg-gray-400"></span>
                 <span class="typing-dot w-2 h-2 rounded-full bg-gray-400"></span>
@@ -275,9 +317,9 @@
       const wrap = $('#messages');
       const t = getCurrent();
       const welcome = $('#welcome');
-      if(!t){ wrap.innerHTML = ''; welcome?.classList.remove('hidden'); return; }
+      if(!t || !t.messages.length){ wrap.innerHTML = ''; welcome?.classList.remove('hidden'); return; }
       welcome?.classList.add('hidden');
-      wrap.innerHTML = t.messages.map(m=>bubble(m.role, m.text, m.attachments)).join('');
+      wrap.innerHTML = t.messages.map(bubble).join('');
       // copy
       $$('.copy-btn').forEach(b=>{
         b.onclick = async ()=>{
@@ -289,17 +331,23 @@
       toggleScrollBtn();
     }
 
-    // ===== Message mutate =====
-    function addMessage(role, text, attachments=[]){
+    // ===== Mutate =====
+    function addMessage(m){
       const t = getCurrent(); if(!t) return;
-      t.messages.push({role, text, attachments, ts: Date.now()});
+      t.messages.push({ kind:'message', ts: Date.now(), status: m.role==='user'?'sending':undefined, ...m });
       if(t.title==='New chat'){ setTitleFromFirstUserMessage(t); }
       saveThreads(); renderSidebar(); renderMessages();
+    }
+    function addSystem(text, tone='info'){ // 'info'|'warn'|'error'
+      const t = getCurrent(); if(!t) return;
+      t.messages.push({ role:'system', kind:'system', ts: Date.now(), text });
+      saveThreads(); renderMessages();
+      banner(text, tone);
     }
 
     // ===== Upload handling =====
     const MAX_FILES = 10;
-    const MAX_MB = 25; // per file
+    const MAX_MB = 25;
     let pendingFiles = []; // {file, url, id}
 
     const fileInput = $('#fileInput');
@@ -357,12 +405,10 @@
                <button title="Remove" class="ml-1 border border-line rounded px-1 text-[11px]" onclick="removePending('${p.id}')">×</button>
              </div>`;
       }).join('');
-      // expose removePending to window for inline onclick
-      window.removePending = removePending;
+      window.removePending = removePending; // expose
     }
 
     async function uploadFiles(files){
-      // expects backend endpoint: POST /api/upload (multipart) -> [{url,name,type,size}]
       if(!files.length) return [];
       const form = new FormData();
       files.forEach(f => form.append('files', f.file, f.file.name));
@@ -370,18 +416,30 @@
         const res = await fetch(`${API_BASE}/api/upload`, { method:'POST', body:form });
         if(!res.ok) throw new Error('Upload failed');
         const data = await res.json();
-        // Fallback: if backend returns a single object
         const list = Array.isArray(data) ? data : (data.files || [data]);
         return list.map((x,i)=>({
-          url: x.url || files[i].url, // use server URL; fallback to blob url
+          url: x.url || files[i].url,
           name: x.name || files[i].file.name,
           type: x.type || files[i].file.type,
           size: x.size || files[i].file.size
         }));
       }catch(e){
-        toast(e.message || 'Upload error');
+        banner('Upload error: ' + (e.message||'unknown'), 'error');
         return [];
       }
+    }
+
+    // ===== System feedback banners =====
+    function banner(text, tone='info'){
+      const bar = $('#sysbar');
+      const color = tone==='error' ? 'bg-red-50 border-red-200 text-red-800'
+                   : tone==='warn' ? 'bg-yellow-50 border-yellow-200 text-amber-800'
+                   : 'bg-accentSoft border-emerald-200 text-emerald-800';
+      const el = document.createElement('div');
+      el.className = `mb-2 rounded-lg border px-3 py-2 text-[13px] ${color}`;
+      el.textContent = text;
+      bar.appendChild(el);
+      setTimeout(()=>{ el.remove(); }, 2500);
     }
 
     // ===== Send flow =====
@@ -393,43 +451,67 @@
       const trimmed = (text || '').trim();
       if(!trimmed && !pendingFiles.length) return;
 
-      // 1) upload attachments first
+      // 1) Upload attachments
+      banner('Loading…','info');
       const uploaded = await uploadFiles(pendingFiles);
-      // clear local blob urls
       pendingFiles.forEach(p=> URL.revokeObjectURL(p.url));
       pendingFiles = []; renderPending();
 
-      // 2) add user message with attachments
-      addMessage('user', trimmed, uploaded);
+      // 2) Add user message
+      const userMsg = { role:'user', text: trimmed, attachments: uploaded };
+      addMessage(userMsg);
 
-      // 3) typing placeholder
+      // 3) Show typing
       const wrap = $('#messages');
       wrap.insertAdjacentHTML('beforeend', typingRow());
       wrap.scrollTop = wrap.scrollHeight;
 
-      // 4) call chat with attachments
+      // 4) Call backend (REST or WebSocket)
       try {
-        const res = await fetch(`${API_BASE}/api/chat`, {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({
-            message: trimmed,
-            mode: "learn",
-            attachments: uploaded   // [{url,name,type,size}]
-          })
-        });
-        const data = await res.json();
-        wrap.lastElementChild?.remove();
-        if (res.ok && data.reply){
-          addMessage('assistant', data.reply);
-          lastPrompt = trimmed;
+        let replyText = '';
+        if (USE_WS) {
+          // --- WebSocket placeholder ---
+          // const ws = new WebSocket("wss://YOUR_WS_ENDPOINT");
+          // ws.onopen = ()=> ws.send(JSON.stringify({ message: trimmed, attachments: uploaded }));
+          // ws.onmessage = (ev)=> { replyText += ev.data; /* stream */ };
+          // await new Promise(r=> setTimeout(r, 1200)); // demo
+          replyText = "Streaming via WebSocket is not wired yet.";
         } else {
-          addMessage('assistant', "⚠️ Error: " + (data.error || "No reply from server"));
+          const res = await fetch(`${API_BASE}/api/chat`, {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ message: trimmed, mode: "learn", attachments: uploaded })
+          });
+          const data = await res.json();
+          if (res.ok && data.reply){ replyText = data.reply; }
+          else { throw new Error(data.error || 'No reply from server'); }
         }
+
+        // remove typing
+        wrap.lastElementChild?.remove();
+
+        // 5) Mark user as delivered+read (demo timing)
+        markLastUserStatus('delivered');
+        setTimeout(()=> markLastUserStatus('read'), 800);
+
+        // 6) Add assistant
+        addMessage({ role:'assistant', text: replyText });
+
+        lastPrompt = trimmed;
       } catch (err) {
         wrap.lastElementChild?.remove();
-        addMessage('assistant', "⚠️ Network error: " + err.message);
+        markLastUserStatus('sending'); // keep as sending on error
+        addSystem('Error: ' + err.message, 'error');
+        addMessage({ role:'assistant', text: "⚠️ " + err.message });
       }
+    }
+
+    function markLastUserStatus(st){
+      const t = getCurrent(); if(!t) return;
+      for(let i=t.messages.length-1;i>=0;i--){
+        if(t.messages[i].role==='user'){ t.messages[i].status = st; break; }
+      }
+      saveThreads(); renderMessages();
     }
 
     // autoresize + key handling
@@ -446,22 +528,29 @@
     });
     form.addEventListener('submit', (e)=>{ e.preventDefault(); send(area.value); area.value=''; area.style.height='auto'; });
 
-    // quick chips
-    $$('.demo-btn').forEach(b=> b.onclick = ()=>{
-      area.value = b.getAttribute('data-q');
+    // quick chips (welcome + under input)
+    [...$$('.demo-btn'), ...$$('.qa-btn')].forEach(b=> b.onclick = ()=>{
+      area.value = b.getAttribute('data-q') || b.textContent.trim();
       area.dispatchEvent(new Event('input'));
       area.focus();
     });
 
-    // sidebar actions
+    // Sidebar actions
     $('#newChat')?.addEventListener('click', ()=> newThread());
-    $('#exportBtn')?.addEventListener('click', ()=>{
+    function downloadCurrent(){
       const t = getCurrent(); if(!t) return toast('No chat');
       const blob = new Blob([JSON.stringify(t, null, 2)], {type:'application/json'});
       const a = document.createElement('a');
       a.href = URL.createObjectURL(blob);
       a.download = (t.title||'chat') + '.json';
       a.click(); URL.revokeObjectURL(a.href);
+    }
+    $('#exportBtn')?.addEventListener('click', downloadCurrent);
+    $('#emailBtn')?.addEventListener('click', ()=>{
+      const t = getCurrent(); if(!t) return toast('No chat');
+      const subject = encodeURIComponent('Ledgerdaddy Chat Transcript');
+      const body = encodeURIComponent(t.messages.map(m=>`[${fmtTime(m.ts)}] ${m.role.toUpperCase()}: ${m.text}`).join('\n\n'));
+      window.location.href = `mailto:?subject=${subject}&body=${body}`;
     });
     $('#clearAll')?.addEventListener('click', ()=>{
       if(confirm('Delete all conversations?')){
@@ -469,22 +558,25 @@
       }
     });
 
-    // regenerate + scroll-to-bottom
-    $('#regenBtn')?.addEventListener('click', ()=> lastPrompt ? send(lastPrompt) : toast('Nothing to regenerate yet'));
-    const toBottomBtn = $('#toBottom');
+    // scroll-to-bottom helper
+    const toBottomBtn = document.createElement('button');
+    toBottomBtn.id = 'toBottom';
+    toBottomBtn.className = 'hidden fixed bottom-24 right-6 chip';
+    toBottomBtn.textContent = 'Scroll to bottom';
+    document.body.appendChild(toBottomBtn);
     const msgWrap = $('#messages');
     function toggleScrollBtn(){
       if(!msgWrap) return;
-      const nearBottom = (msgWrap.scrollHeight - msgWrap.scrollTop - msgWrap.clientHeight) < 120;
-      if(nearBottom) toBottomBtn?.classList.add('hidden'); else toBottomBtn?.classList.remove('hidden');
+      const nearBottom = (msgWrap.scrollHeight - msgWrap.scrollTop - msgWrap.clientHeight) < 140;
+      if(nearBottom) toBottomBtn.classList.add('hidden'); else toBottomBtn.classList.remove('hidden');
     }
     msgWrap.addEventListener('scroll', toggleScrollBtn);
-    toBottomBtn?.addEventListener('click', ()=>{ msgWrap.scrollTop = msgWrap.scrollHeight; toggleScrollBtn(); });
+    toBottomBtn.addEventListener('click', ()=>{ msgWrap.scrollTop = msgWrap.scrollHeight; toggleScrollBtn(); });
 
-    // init
+    // Init
     if(!threads.length){ newThread(); } else { renderSidebar(); renderMessages(); }
 
-    // expose for inline removePending
+    // expose removePending for inline onclick
     window.removePending = (id)=>removePending(id);
   </script>
 </body>
