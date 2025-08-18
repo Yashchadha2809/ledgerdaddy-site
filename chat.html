@@ -1,653 +1,362 @@
 <!DOCTYPE html>
-<html lang="en" class="h-full">
+<html lang="en" class="scroll-smooth">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Chat — Channels • Messages • Threads</title>
-  <meta name="theme-color" content="#2563eb" />
+  <title>Ask in Chat – Ledgerdaddy</title>
+  <meta name="theme-color" content="#1A237E" />
+  <link rel="preconnect" href="https://images.unsplash.com" />
   <script src="https://cdn.tailwindcss.com"></script>
   <script>
     tailwind.config = {
       theme: {
         extend: {
-          colors: {
-            brand: {
-              50:"#eef2ff",100:"#e0e7ff",200:"#c7d2fe",300:"#a5b4fc",
-              400:"#818cf8",500:"#6366f1",600:"#4f46e5",700:"#4338ca",
-              800:"#3730a3",900:"#312e81"
-            },
-            mint: { 50:"#ecfdf5", 500:"#10b981" },
-            sky: { 50:"#f0f9ff", 500:"#0ea5e9" },
-            slate: {
-              25:"#fafbfc"
-            }
-          },
-          boxShadow: {
-            soft: "0 10px 30px rgba(2,6,23,.08)",
-            card: "0 12px 28px rgba(2,6,23,.06)",
-            lift: "0 16px 40px rgba(2,6,23,.10)"
-          },
-          borderRadius: {
-            xl2:"18px",
-            pill:"999px"
-          }
+          colors:{ indigoDeep:"#1A237E", emerald:"#2E7D32", cyanBright:"#00BCD4", accentOrange:"#FF7043" },
+          boxShadow:{ lift:"0 14px 34px rgba(0,0,0,.12)" }
         }
       }
     }
   </script>
   <style>
-    .scrollbar-thin::-webkit-scrollbar{height:8px;width:8px}
-    .scrollbar-thin::-webkit-scrollbar-thumb{background:#e5e7eb;border-radius:8px}
-    .fade-in{animation:fade .14s ease-out}
+    .fade-in{animation:fade .15s ease-out}
     @keyframes fade{from{opacity:.5;transform:translateY(2px)}to{opacity:1;transform:none}}
     .typing-dot{animation:pulse 1s infinite ease-in-out}
     .typing-dot:nth-child(2){animation-delay:.15s}
     .typing-dot:nth-child(3){animation-delay:.3s}
     @keyframes pulse{0%,80%,100%{opacity:.25}40%{opacity:1}}
-
-    .btn{display:inline-flex;align-items:center;gap:.55rem;padding:.58rem .95rem;border-radius:12px;font-weight:600}
-    .btn-ghost{background:transparent;border:1px solid #e5e7eb}
-    .btn-ghost:hover{background:#f9fafb}
-    .btn-brand{background:#6366f1;color:#fff}
-    .btn-brand:hover{filter:brightness(1.06)}
-    .chip{font-size:12px;border:1px solid #e5e7eb;border-radius:999px;padding:.32rem .6rem;background:#fff}
-    .chip:hover{border-color:#6366f1;color:#3730a3}
-
-    .bubble{max-width:min(78vw,760px)}
-    .bubble-user{background:linear-gradient(135deg,#6366f1,#0ea5e9);color:#fff;box-shadow:0 10px 26px rgba(99,102,241,.28)}
-    .bubble-other{background:#fff;border:1px solid #e5e7eb;box-shadow:0 8px 22px rgba(2,6,23,.06)}
-    .file-pill{border:1px solid #e5e7eb;border-radius:12px;padding:.4rem .6rem;font-size:12px;display:inline-flex;align-items:center;gap:.45rem;background:#fff}
-    .emoji{cursor:pointer;user-select:none}
-
-    .glass{background:linear-gradient(180deg,rgba(255,255,255,.85),rgba(255,255,255,.78));backdrop-filter:saturate(120%) blur(6px)}
+    .card{transition:transform .12s ease, box-shadow .2s ease}
+    .card:hover{transform:translateY(-2px); box-shadow:0 14px 34px rgba(0,0,0,.14)}
+    .hero-img{background:url('https://images.unsplash.com/photo-1586521995568-39ef16c6934d?q=80&w=1920&auto=format&fit=crop') center/cover no-repeat;}
+    pre{background:#0f172a; color:#e5e7eb; padding:12px; border-radius:10px; overflow:auto}
+    code{font-family:ui-monospace,SFMono-Regular,Menlo,monospace}
   </style>
 </head>
-<body class="h-full bg-slate-25 text-slate-900">
-  <!-- Header -->
-  <header class="sticky top-0 z-40 glass border-b border-white/60">
-    <div class="max-w-7xl mx-auto px-4 py-3 flex items-center gap-3">
-      <div class="flex items-center gap-3">
-        <div class="h-9 w-9 grid place-items-center rounded-xl bg-gradient-to-tr from-brand-600 to-sky-500 text-white font-bold shadow-card">◆</div>
-        <div>
-          <div class="font-bold leading-none">Chat</div>
-          <div class="text-[11px] text-slate-600 leading-none">Channels • Messages • Threads</div>
-        </div>
+<body class="bg-gray-50 text-gray-900">
+
+  <!-- Topbar -->
+  <header class="fixed top-0 inset-x-0 z-50 border-b border-gray-200 bg-white/90 backdrop-blur">
+    <div class="max-w-7xl mx-auto px-4 py-3 flex items-center justify-between">
+      <a href="/" class="flex items-center gap-2" aria-label="Home">
+        <span class="grid h-9 w-9 place-items-center rounded-xl bg-gradient-to-tr from-cyanBright to-emerald text-white font-extrabold shadow">◆</span>
+        <span class="text-xl font-bold text-indigoDeep">Ledgerdaddy</span>
+        <span class="ml-2 hidden sm:inline-flex text-[11px] px-2 py-0.5 rounded-full border border-cyanBright/40 text-cyanBright">AI Customs</span>
+      </a>
+      <nav class="hidden md:flex items-center gap-6 text-sm font-medium">
+        <a href="/marketplace.html" class="hover:text-cyanBright">Marketplace</a>
+        <a href="/calculator.html" class="hover:text-cyanBright">Calculator</a>
+        <a href="/hs-finder.html" class="hover:text-cyanBright">HS Finder</a>
+        <a href="/dashboard.html" class="hover:text-cyanBright">Dashboard</a>
+      </nav>
+      <div class="hidden md:flex items-center gap-2">
+        <a href="/log-in.html" class="border px-4 py-2 rounded-lg">Log in</a>
+        <a href="/personal-sign-up.html" class="bg-emerald text-white px-4 py-2 rounded-lg hover:opacity-95">Sign up</a>
       </div>
-      <!-- global search -->
-      <div class="ml-auto relative w-64 hidden md:block">
-        <input id="globalSearch" placeholder="Search channels or users"
-               class="w-full text-sm rounded-lg border border-slate-200 bg-white/70 px-3 py-2 pl-8 focus:outline-none focus:ring-2 focus:ring-brand-200" />
-        <svg class="absolute left-2 top-2.5 h-4 w-4 text-slate-400" viewBox="0 0 24 24" fill="none"><path d="m21 21-4.3-4.3M11 19a8 8 0 1 1 0-16 8 8 0 0 1 0 16Z" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg>
-      </div>
-      <button id="newChat" class="btn btn-brand shadow-soft">New Chat</button>
+      <a href="/personal-sign-up.html" class="md:hidden bg-emerald text-white px-3 py-1.5 rounded-lg">Start</a>
     </div>
   </header>
 
-  <!-- App -->
-  <main class="max-w-7xl mx-auto grid grid-rows-[1fr,auto] md:grid-rows-1 md:grid-cols-[300px,1fr,340px] gap-4 p-3 md:py-5">
-    <!-- Channels -->
-    <aside class="bg-white border border-slate-200 rounded-xl2 shadow-card overflow-hidden flex flex-col h-[calc(100vh-120px)]">
-      <div class="p-3 border-b border-slate-200 bg-gradient-to-br from-white to-slate-50">
-        <div class="text-sm font-semibold flex items-center justify-between">
-          Channels
-          <button id="addChannel" class="chip">+ Create</button>
-        </div>
-        <div class="mt-2 relative">
-          <input id="channelSearch" placeholder="Filter channel…"
-                 class="w-full text-sm rounded-lg border border-slate-200 px-3 py-2 pl-8 focus:outline-none focus:ring-2 focus:ring-brand-200" />
-          <svg class="absolute left-2 top-2.5 h-4 w-4 text-slate-400" viewBox="0 0 24 24" fill="none"><path d="m21 21-4.3-4.3M11 19a8 8 0 1 1 0-16 8 8 0 0 1 0 16Z" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg>
+  <!-- Hero strip -->
+  <section class="pt-20 md:pt-24">
+    <div class="hero-img">
+      <div class="backdrop-brightness-90 bg-gradient-to-r from-indigoDeep/70 to-cyanBright/60">
+        <div class="max-w-6xl mx-auto px-4 py-8 text-white">
+          <h1 class="text-3xl md:text-4xl font-extrabold">Ask in Chat</h1>
+          <p class="mt-2 text-white/95">ChatGPT-style assistant for HS, duties, valuation & more. (Connected to backend)</p>
         </div>
       </div>
-      <ul id="channelList" class="flex-1 overflow-auto scrollbar-thin divide-y divide-slate-100"></ul>
+    </div>
+  </section>
+
+  <!-- Chat layout -->
+  <main class="max-w-6xl mx-auto px-2 sm:px-4 pb-28 grid md:grid-cols-[260px,1fr] gap-4 -mt-6">
+    <!-- Sidebar -->
+    <aside class="bg-white border border-gray-200 rounded-2xl shadow p-3 h-fit sticky top-24">
+      <div class="flex items-center justify-between">
+        <strong>Conversations</strong>
+        <button id="newChat" class="text-xs border rounded px-2 py-1">New chat</button>
+      </div>
+      <ul id="chatList" class="mt-3 grid gap-1 text-sm max-h-[50vh] overflow-auto"></ul>
+      <div class="mt-3 grid gap-2 text-sm">
+        <a class="border px-2 py-1 rounded text-center" href="/hs-finder.html">Open HS Finder</a>
+        <a class="border px-2 py-1 rounded text-center" href="/calculator.html">Open Calculator</a>
+        <button id="exportBtn" class="border px-2 py-1 rounded">Export current chat</button>
+        <button id="clearAll" class="text-red-600 border border-red-200 px-2 py-1 rounded">Clear all</button>
+      </div>
     </aside>
 
-    <!-- Messages -->
-    <section class="bg-white border border-slate-200 rounded-xl2 shadow-card overflow-hidden flex flex-col h-[calc(100vh-120px)]">
-      <!-- Channel header -->
-      <div id="roomHeader" class="p-3 border-b border-slate-200 flex items-center justify-between bg-gradient-to-br from-white to-slate-50">
-        <div class="flex items-center gap-3">
-          <div class="h-9 w-9 grid place-items-center rounded-xl bg-brand-100 text-brand-700 font-bold">#</div>
-          <div>
-            <div id="roomName" class="font-semibold">Welcome</div>
-            <div id="roomMeta" class="text-xs text-slate-500">0 online • 0 members</div>
+    <!-- Conversation -->
+    <section class="bg-white border border-gray-200 rounded-2xl shadow flex flex-col">
+      <!-- Stream -->
+      <div id="messages" class="flex-1 overflow-auto p-4 space-y-4">
+        <!-- Welcome -->
+        <div class="fade-in rounded-xl bg-gray-50 p-4">
+          <div class="text-sm text-gray-600">Assistant</div>
+          <div class="mt-1 whitespace-pre-wrap">
+            Hi! Ask me anything about HS codes, import duty, or customs docs.
+            Try:
+            <ul class="list-disc ml-5 mt-2">
+              <li><button class="demo-btn text-cyanBright" data-q="Find HS code for wireless earbuds in IN">Find HS code for wireless earbuds in IN</button></li>
+              <li><button class="demo-btn text-cyanBright" data-q="Duty for IN 851713 CIF 100000">Duty for IN 851713 CIF 100000</button></li>
+              <li><button class="demo-btn text-cyanBright" data-q="List docs needed to import furniture into EU">List docs needed to import furniture into EU</button></li>
+            </ul>
           </div>
         </div>
-        <div class="flex items-center gap-2">
-          <button id="pinRoom" class="chip">📌 Pin</button>
-          <button id="muteRoom" class="chip">🔕 Mute</button>
-          <button id="moreRoom" class="chip">⋯</button>
-        </div>
-      </div>
-
-      <!-- Stream -->
-      <div id="messageWrap" class="flex-1 overflow-auto p-3 md:p-4 space-y-3 scrollbar-thin bg-gradient-to-b from-sky-50/50 to-white">
-        <!-- date divider + messages injected here -->
-      </div>
-
-      <!-- Typing indicator -->
-      <div id="typing" class="px-4 pb-2 text-xs text-slate-500 hidden">
-        <span class="typing-dot inline-block w-2 h-2 rounded-full bg-slate-400"></span>
-        <span class="typing-dot inline-block w-2 h-2 rounded-full bg-slate-400"></span>
-        <span class="typing-dot inline-block w-2 h-2 rounded-full bg-slate-400"></span>
-        <span class="ml-2">Someone is typing…</span>
       </div>
 
       <!-- Composer -->
-      <div class="border-t border-slate-200 p-2 md:p-3 bg-white/90 backdrop-blur">
-        <form id="composer" class="flex items-end gap-2">
-          <input id="fileInput" type="file" class="hidden" multiple accept="image/*,.pdf,.csv,.txt,.json,.doc,.docx,.xls,.xlsx,.ppt,.pptx" />
-          <label for="fileInput" class="btn btn-ghost hover:shadow-soft" title="Upload files">📎 Upload</label>
-
-          <div class="relative flex-1">
-            <textarea id="chatInput" rows="1" placeholder="Message #welcome"
-                      class="w-full rounded-xl border border-slate-200 px-3 py-2 pr-24 resize-none max-h-40 focus:outline-none focus:ring-2 focus:ring-brand-200"></textarea>
-            <div class="absolute right-2 top-1.5 flex items-center gap-1">
-              <button type="button" id="emojiBtn" class="chip" title="Emoji">😊</button>
-              <button type="button" id="giphyBtn" class="chip" title="GIF">GIF</button>
-              <button type="submit" id="sendBtn" class="btn btn-brand shadow-soft">Send</button>
-            </div>
+      <div class="border-t p-3">
+        <form id="composer" class="flex flex-col gap-2">
+          <div class="flex items-center gap-2">
+            <label for="modeSel" class="text-xs text-gray-600">Mode</label>
+            <select id="modeSel" class="border rounded-lg px-2 py-1 text-sm">
+              <option value="core">Core</option>
+              <option value="learn">Learn</option>
+              <option value="calculate">Calculate</option>
+              <option value="earn">Earn</option>
+              <option value="business">Business</option>
+            </select>
+          </div>
+          <div class="flex items-end gap-2">
+            <textarea id="chatInput" rows="1" placeholder="Message Ledgerdaddy…"
+              class="flex-1 border rounded-xl px-3 py-2 resize-none max-h-40"
+            ></textarea>
+            <button id="sendBtn" class="bg-emerald text-white px-4 py-2 rounded-xl">Send</button>
           </div>
         </form>
-
-        <!-- attachment tray -->
-        <div id="attachTray" class="hidden mt-2 flex flex-wrap items-center gap-2">
-          <div class="text-xs text-slate-500">Attachments:</div>
-          <!-- pills injected -->
-          <button id="clearAttach" class="chip text-red-600 border-red-200 hidden">Clear all</button>
-        </div>
-
-        <!-- quick replies -->
-        <div class="mt-2 flex flex-wrap gap-2">
-          <button class="chip qa" data-q="When will the shipment arrive?">ETA?</button>
-          <button class="chip qa" data-q="Share HS code for LED bulbs">HS code LED</button>
-          <button class="chip qa" data-q="What duty applies to HS 851713 in IN?">Duty 851713</button>
-          <button class="chip qa" data-q="Required docs for wooden furniture to EU">Docs EU</button>
-        </div>
+        <p class="text-[11px] text-gray-500 mt-1">Enter to send • Shift+Enter for new line</p>
       </div>
     </section>
-
-    <!-- Right panel -->
-    <aside class="bg-white border border-slate-200 rounded-xl2 shadow-card overflow-hidden h-[calc(100vh-120px)] hidden lg:flex lg:flex-col">
-      <div class="p-3 border-b border-slate-200 flex items-center justify-between bg-gradient-to-br from-white to-slate-50">
-        <div class="font-semibold">Details</div>
-        <button id="closeThread" class="chip">Close</button>
-      </div>
-      <div id="threadWrap" class="flex-1 overflow-auto p-3 space-y-3 scrollbar-thin">
-        <div class="text-sm text-slate-500">Select a message to open its thread, reactions, and attachments.</div>
-      </div>
-    </aside>
   </main>
 
-  <!-- Templates -->
-  <template id="dateDividerTpl">
-    <div class="sticky top-1 z-10 w-full text-center">
-      <span class="inline-block text-[11px] text-slate-700 bg-white/90 backdrop-blur border border-slate-200 rounded-pill px-2 py-0.5 shadow-soft">DATE</span>
-    </div>
-  </template>
+  <!-- Toast -->
+  <div id="toast" class="hidden fixed bottom-6 right-6 bg-gray-900 text-white text-sm px-3 py-2 rounded-lg shadow"></div>
 
-  <template id="msgTpl">
-    <article class="fade-in flex gap-2 md:gap-3">
-      <img class="h-9 w-9 rounded-full ring-2 ring-white shadow" />
-      <div class="bubble bubble-other rounded-2xl px-3 py-2 flex-1">
-        <div class="flex items-center gap-2 text-xs text-slate-500">
-          <span class="name font-semibold">Name</span>
-          <span class="time">time</span>
-          <span class="ml-auto receipt hidden">✓✓ Read</span>
-        </div>
-        <div class="content prose prose-sm max-w-none"></div>
-        <div class="mt-2 flex items-center gap-2">
-          <button class="chip react">😀</button>
-          <button class="chip reply">↩︎ Reply</button>
-          <button class="chip more">⋯</button>
-        </div>
-        <div class="mt-2 hidden attachments"></div>
-        <div class="mt-2 hidden reactions"></div>
-        <div class="mt-2 hidden thread"></div>
-      </div>
-    </article>
-  </template>
-
-  <template id="attachPillTpl">
-    <a target="_blank" class="file-pill">
-      <span>📄</span>
-      <span class="name truncate max-w-[160px]"></span>
-      <span class="size text-slate-500"></span>
-    </a>
-  </template>
+  <footer class="text-center text-xs text-gray-500 my-8">
+    © <span id="year"></span> Ledgerdaddy
+  </footer>
 
   <script>
-    // ----------------------------
-    // Mock Users / Channels
-    // ----------------------------
-    const me = { id: "u_me", name: "You", avatar: "https://i.pravatar.cc/64?img=12" };
-    const users = [
-      me,
-      { id:"u_amy", name:"Amy", avatar:"https://i.pravatar.cc/64?img=5"},
-      { id:"u_max", name:"Max", avatar:"https://i.pravatar.cc/64?img=20"},
-      { id:"u_lee", name:"Lee", avatar:"https://i.pravatar.cc/64?img=33"},
-    ];
-    let channels = [
-      { id: "c_welcome", name:"#welcome", members: ["u_me","u_amy","u_max"], online: ["u_amy","u_me"], pinned:false, muted:false, messages: [] },
-      { id: "c_ops", name:"#ops", members: ["u_me","u_amy","u_max","u_lee"], online: ["u_lee"], pinned:true, muted:false, messages: [] },
-      { id: "c_random", name:"#random", members: ["u_me","u_amy"], online: [], pinned:false, muted:true, messages: [] },
-    ];
+    // ===== Bridge config =====
+    // If you proxy on the frontend (Vercel rewrite), keep "/bridge"
+    // Otherwise set full URL: "https://api.ledgerdaddy.com/bridge"
+    const BRIDGE_BASE  = "/bridge";
+    const BRIDGE_TOKEN = "YOUR_BRIDGE_TOKEN"; // <-- set this
 
-    // ----------------------------
-    // Realtime stub
-    // ----------------------------
-    const events = { _cbs: [], on(cb){this._cbs.push(cb)}, emit(p){this._cbs.forEach(fn=>fn(p))} };
-    const realtime = {
-      subscribe(channelId, cb){
-        setInterval(()=>{
-          if(Math.random()<0.22){
-            const sender = users[Math.floor(Math.random()*(users.length-1))+1];
-            cb({ type:"message.new", message: {
-              id: crypto.randomUUID(), userId: sender.id, text: randomLine(),
-              createdAt: Date.now(), attachments:[], reactions:{}, thread:[] }
-            });
-          }
-        }, 5000);
-      },
-      send(channelId, message){
-        setTimeout(()=> events.emit({ type:"message.delivered", messageId:message.id }), 450);
-        setTimeout(()=> events.emit({ type:"message.read", messageId:message.id }), 1200);
-      },
-      typing(channelId, on){ events.emit({ type:"typing", on }); }
-    };
-    function randomLine(){
-      const lines = [
-        "Got it — checking that now.",
-        "Can you share the invoice as a PDF?",
-        "HS 851713 may apply.",
-        "ETA looks like 4–6 days via air.",
-        "Let me calculate the duty.",
-      ];
-      return lines[Math.floor(Math.random()*lines.length)];
+    // ===== Utilities =====
+    const $  = s => document.querySelector(s);
+    const $$ = s => Array.from(document.querySelectorAll(s));
+    const yearEl = $('#year'); if (yearEl) yearEl.textContent = new Date().getFullYear();
+    const toast = (msg) => { const t = $('#toast'); t.textContent = msg; t.classList.remove('hidden'); setTimeout(()=>t.classList.add('hidden'), 1400); };
+    const uid = () => Math.random().toString(36).slice(2)+Date.now().toString(36);
+
+    // Sticky session id per browser
+    function getSessionId(){
+      const k="ld_chat_session_id";
+      let v = localStorage.getItem(k);
+      if(!v){ v=(crypto?.randomUUID?.() || `sess_${uid()}`); localStorage.setItem(k, v); }
+      return v;
+    }
+    const SESSION_ID = getSessionId();
+
+    // ===== Storage (threads) =====
+    const STORE_KEY='ld_chat_threads_v1';
+    let threads = JSON.parse(localStorage.getItem(STORE_KEY) || '[]');
+    let currentId = threads[0]?.id || null;
+    function saveThreads(){ localStorage.setItem(STORE_KEY, JSON.stringify(threads)); }
+    function newThread(){
+      const id = uid();
+      const t = { id, title: 'New chat', mode: "core", messages: [] };
+      threads.unshift(t);
+      currentId = id;
+      saveThreads(); renderSidebar(); renderMessages(); renderMode();
+    }
+    function getCurrent(){ return threads.find(t=>t.id===currentId); }
+    function setTitleFromFirstUserMessage(thread){
+      const first = thread.messages.find(m=>m.role==='user');
+      if(first){ thread.title = (first.text || 'Conversation').slice(0, 50); }
     }
 
-    // ----------------------------
-    // DOM helpers
-    // ----------------------------
-    const $ = s => document.querySelector(s);
-    const $$ = s => Array.from(document.querySelectorAll(s));
-    const fmtTime = ts => new Date(ts).toLocaleString([], {hour:'2-digit', minute:'2-digit'});
-    const fmtDate = ts => new Date(ts).toLocaleDateString([], {day:"2-digit", month:"short", year:"numeric"});
-    const sizeStr = b => (b/1024/1024).toFixed(1) + "MB";
-    function debounce(fn, ms){ let t; return (...args)=>{ clearTimeout(t); t=setTimeout(()=>fn(...args), ms); }; }
-
-    // ----------------------------
-    // State
-    // ----------------------------
-    let currentChannelId = channels[0].id;
-    let attach = []; // [{name,url,type,size}]
-
-    // ----------------------------
-    // Channels
-    // ----------------------------
-    function renderChannels(filter=""){
-      const ul = $("#channelList");
-      const q = filter.toLowerCase();
-      ul.innerHTML = channels
-        .filter(c=> c.name.toLowerCase().includes(q))
-        .map(c=>{
-          const active = c.id===currentChannelId ? "bg-slate-50" : "hover:bg-slate-50";
-          const pin = c.pinned ? "📌" : "";
-          const mute = c.muted ? "🔕" : "";
-          const dot = c.online.length ? `<span class="inline-block w-2 h-2 rounded-full bg-emerald-500"></span>` : `<span class="inline-block w-2 h-2 rounded-full bg-slate-300"></span>`;
-          return `
-          <li>
-            <button data-id="${c.id}" class="w-full px-3 py-2 ${active} text-left">
-              <div class="flex items-center justify-between">
-                <div class="flex items-center gap-2">
-                  ${dot}
-                  <div class="font-medium">${c.name}</div>
-                </div>
-                <div class="text-slate-400">${pin}${mute}</div>
-              </div>
-              <div class="text-[11px] text-slate-500">${c.online.length} online • ${c.members.length} members</div>
-            </button>
-          </li>`;
-        }).join("");
-
-      ul.querySelectorAll("button[data-id]").forEach(btn=>{
-        btn.onclick = ()=> {
-          currentChannelId = btn.getAttribute("data-id");
-          loadChannel(currentChannelId);
-          renderChannels($("#channelSearch").value);
-        };
+    // ===== Sidebar =====
+    function renderSidebar(){
+      const list = $('#chatList');
+      if(!threads.length){
+        list.innerHTML = '<li class="text-gray-500 text-xs p-2 rounded bg-gray-50">No conversations yet</li>'; return;
+      }
+      list.innerHTML = threads.map(t=>`
+        <li>
+          <button data-id="${t.id}"
+            class="w-full text-left px-2 py-2 rounded hover:bg-gray-50 ${t.id===currentId?'bg-gray-100':''}">
+            <div class="truncate">${t.title || 'Conversation'}</div>
+            <div class="text-[11px] text-gray-500">${(t.messages?.length||0)} messages • ${(t.mode||'core').toUpperCase()}</div>
+          </button>
+        </li>
+      `).join('');
+      list.querySelectorAll('button[data-id]').forEach(btn=>{
+        btn.onclick = ()=>{ currentId = btn.getAttribute('data-id'); renderSidebar(); renderMessages(); renderMode(); };
       });
     }
 
-    function loadChannel(id){
-      const ch = channels.find(c=>c.id===id);
-      $("#roomName").textContent = ch.name;
-      $("#roomMeta").textContent = `${ch.online.length} online • ${ch.members.length} members`;
-      $("#chatInput").placeholder = `Message ${ch.name}`;
-      renderMessages();
+    // ===== Messages UI =====
+    function msgBubble(role, text){
+      const isUser = role==='user';
+      const avatar = isUser ? '👤' : '◆';
+      const bg = isUser ? 'bg-white' : 'bg-gray-50';
+      return `
+        <div class="fade-in rounded-xl ${bg} p-4">
+          <div class="text-sm text-gray-600 flex items-center gap-2">
+            <span class="grid w-6 h-6 place-items-center rounded-full ${isUser?'bg-gray-200':'bg-indigoDeep text-white'} text-[12px]">${avatar}</span>
+            <span>${isUser?'You':'Assistant'}</span>
+            <button class="ml-auto text-[11px] text-gray-500 copy-btn" data-copy="${encodeURIComponent(text)}">Copy</button>
+          </div>
+          <div class="mt-1 whitespace-pre-wrap leading-relaxed">${renderMarkdownLite(text)}</div>
+        </div>
+      `;
     }
-
-    // ----------------------------
-    // Messages
-    // ----------------------------
-    function ensureDateDivider(wrap, ts, prevTs){
-      const d1 = fmtDate(ts), d2 = prevTs?fmtDate(prevTs):"";
-      if(d1!==d2){
-        const t = $("#dateDividerTpl").content.cloneNode(true);
-        t.querySelector("span").textContent = d1;
-        wrap.appendChild(t);
-      }
+    function typingBubble(){
+      return `
+        <div class="rounded-xl bg-gray-50 p-4">
+          <div class="text-sm text-gray-600 flex items-center gap-2">
+            <span class="grid w-6 h-6 place-items-center rounded-full bg-indigoDeep text-white text-[12px]">◆</span>
+            <span>Assistant</span>
+          </div>
+          <div class="mt-2 flex items-center gap-1">
+            <span class="typing-dot w-2 h-2 rounded-full bg-gray-400"></span>
+            <span class="typing-dot w-2 h-2 rounded-full bg-gray-400"></span>
+            <span class="typing-dot w-2 h-2 rounded-full bg-gray-400"></span>
+          </div>
+        </div>
+      `;
     }
-
+    function renderMarkdownLite(text){
+      let out = (text || '').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+      out = out.replace(/```([\s\S]*?)```/g, (_,code)=>`<pre><code>${code}</code></pre>`);
+      out = out.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>');
+      out = out.replace(/`([^`]+)`/g, '<code class="bg-gray-100 px-1 py-0.5 rounded text-[90%]">$1</code>');
+      return out;
+    }
     function renderMessages(){
-      const wrap = $("#messageWrap");
-      const ch = channels.find(c=>c.id===currentChannelId);
-      wrap.innerHTML = "";
-      let lastTs = 0;
-      ch.messages.forEach(m=>{
-        ensureDateDivider(wrap, m.createdAt, lastTs);
-        lastTs = m.createdAt;
-        wrap.appendChild(renderMessageNode(m));
+      const wrap = $('#messages');
+      const t = getCurrent();
+      if(!t){ wrap.innerHTML = '<div class="p-4 text-gray-500">Start a new chat.</div>'; return; }
+      wrap.innerHTML = t.messages.map(m=>msgBubble(m.role, m.text)).join('') || `
+        <div class="rounded-xl bg-gray-50 p-4">
+          <div class="text-sm text-gray-600">Assistant</div>
+          <div class="mt-1">How can I help today?</div>
+        </div>
+      `;
+      $$('.copy-btn').forEach(b=>{
+        b.onclick = async ()=>{
+          try{ await navigator.clipboard.writeText(decodeURIComponent(b.getAttribute('data-copy'))); toast('Copied'); }
+          catch{ toast('Copy failed'); }
+        };
       });
       wrap.scrollTop = wrap.scrollHeight;
     }
 
-    function renderMessageNode(m){
-      const tpl = $("#msgTpl").content.cloneNode(true);
-      const root = tpl.querySelector("article");
-      const avatar = tpl.querySelector("img");
-      const name = tpl.querySelector(".name");
-      const time = tpl.querySelector(".time");
-      const content = tpl.querySelector(".content");
-      const receipt = tpl.querySelector(".receipt");
-      const attachWrap = tpl.querySelector(".attachments");
-      const reactBtn = tpl.querySelector(".react");
-      const replyBtn = tpl.querySelector(".reply");
-      const moreBtn = tpl.querySelector(".more");
-      const bubble = tpl.querySelector(".bubble");
+    // ===== Mode handling =====
+    function renderMode(){
+      const t = getCurrent(); if(!t) return;
+      const sel = $('#modeSel'); if(!sel) return;
+      sel.value = t.mode || "core";
+    }
+    $('#modeSel')?.addEventListener('change', (e)=>{
+      const t = getCurrent(); if(!t) return;
+      t.mode = e.target.value || "core";
+      saveThreads(); renderSidebar();
+    });
 
-      const user = users.find(u=>u.id===m.userId) || me;
-      avatar.src = user.avatar;
-      avatar.alt = user.name;
-      name.textContent = user.id===me.id ? "You" : user.name;
-      time.textContent = fmtTime(m.createdAt);
-      content.innerHTML = linkify(m.text);
+    // ===== Send flow (calls Bridge) =====
+    function addMessage(role, text){
+      const t = getCurrent(); if(!t) return;
+      t.messages.push({role, text, ts: Date.now()});
+      if(t.title==='New chat'){ setTitleFromFirstUserMessage(t); }
+      saveThreads(); renderSidebar(); renderMessages();
+    }
 
-      if(m.userId===me.id){
-        root.classList.add("flex-row-reverse");
-        bubble.classList.remove("bubble-other");
-        bubble.classList.add("bubble-user");
-        receipt.classList.remove("hidden");
-      }
+    async function send(text){
+      const trimmed = (text || '').trim();
+      if(!trimmed) return;
+      addMessage('user', trimmed);
 
-      if(m.attachments?.length){
-        attachWrap.classList.remove("hidden");
-        m.attachments.forEach(a=>{
-          const pill = $("#attachPillTpl").content.cloneNode(true);
-          const link = pill.querySelector("a");
-          link.href = a.url;
-          pill.querySelector(".name").textContent = a.name;
-          pill.querySelector(".size").textContent = a.size ? sizeStr(a.size) : "";
-          attachWrap.appendChild(pill);
+      const wrap = $('#messages');
+      wrap.insertAdjacentHTML('beforeend', typingBubble());
+      wrap.scrollTop = wrap.scrollHeight;
+
+      try {
+        const thread = getCurrent();
+        const mode   = (thread?.mode) || "core";
+
+        const res = await fetch(`${BRIDGE_BASE}/chat`, {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            ...(BRIDGE_TOKEN ? { "X-Bridge-Token": BRIDGE_TOKEN } : {})
+          },
+          body: JSON.stringify({ message: trimmed, mode, session_id: SESSION_ID })
         });
+
+        const data = await res.json().catch(()=>({}));
+        const last = wrap.lastElementChild; if(last) last.remove();
+
+        if (res.ok && (data.reply || data.ok)) {
+          addMessage('assistant', data.reply || "(empty)");
+        } else {
+          addMessage('assistant', "⚠️ Error: " + (data.error || `Bridge ${res.status}`));
+        }
+      } catch (err) {
+        const last = wrap.lastElementChild; if(last) last.remove();
+        addMessage('assistant', "⚠️ Network error: " + err.message);
       }
-
-      const reactionsEl = tpl.querySelector(".reactions");
-      if(m.reactions && Object.keys(m.reactions).length){
-        reactionsEl.classList.remove("hidden");
-        reactionsEl.innerHTML = Object.entries(m.reactions).map(([emo, ids])=>{
-          const mine = ids.includes(me.id) ? "ring-2 ring-brand-200" : "";
-          return `<button class="chip emoji ${mine}" data-id="${m.id}" data-emoji="${emo}">${emo} <span class="text-slate-500">${ids.length}</span></button>`;
-        }).join(" ");
-      }
-
-      const threadEl = tpl.querySelector(".thread");
-      if(m.thread?.length){
-        threadEl.classList.remove("hidden");
-        threadEl.innerHTML = m.thread.map(t=>`
-          <div class="text-sm text-slate-700 flex items-start gap-2">
-            <img src="${(users.find(u=>u.id===t.userId)||me).avatar}" class="h-5 w-5 rounded-full" />
-            <div><strong class="mr-1">${(users.find(u=>u.id===t.userId)||me).name}:</strong>${linkify(t.text)}</div>
-          </div>
-        `).join("");
-      }
-
-      reactBtn.onclick = ()=> openReactions(m.id, reactionsEl);
-      replyBtn.onclick = ()=> openThread(m.id);
-      moreBtn.onclick = (e)=> openMoreMenu(e, m.id);
-
-      return root;
     }
 
-    function linkify(text=""){
-      const esc = text.replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;");
-      return esc.replace(/(https?:\/\/[^\s]+)/g, '<a class="text-sky-600 underline" target="_blank" href="$1">$1</a>');
-    }
+    // ===== Composer behaviour =====
+    const area = $('#chatInput');
+    const form = $('#composer');
 
-    // ----------------------------
-    // Composer / Uploads
-    // ----------------------------
-    const area = $("#chatInput");
-    const form = $("#composer");
-    const sendBtn = $("#sendBtn");
-    const fileInput = $("#fileInput");
-    const attachTray = $("#attachTray");
-    const clearAttach = $("#clearAttach");
-
-    fileInput.addEventListener("change", e=>{
-      const files = [...e.target.files];
-      files.forEach(f=> attach.push({ name:f.name, url: URL.createObjectURL(f), type:f.type, size:f.size }));
-      renderAttachTray();
+    // autoresize
+    area.addEventListener('input', ()=>{
+      area.style.height = 'auto';
+      area.style.height = Math.min(area.scrollHeight, 160) + 'px';
     });
 
-    // Drag & drop on message area
-    const messageWrap = $("#messageWrap");
-    ;["dragenter","dragover"].forEach(ev=>{
-      messageWrap.addEventListener(ev, e=>{ e.preventDefault(); messageWrap.classList.add("ring-2","ring-brand-200"); });
-    });
-    ;["dragleave","drop"].forEach(ev=>{
-      messageWrap.addEventListener(ev, e=>{ e.preventDefault(); messageWrap.classList.remove("ring-2","ring-brand-200"); });
-    });
-    messageWrap.addEventListener("drop", e=>{
-      const files = [...(e.dataTransfer?.files||[])];
-      if(files.length){
-        files.forEach(f=> attach.push({ name:f.name, url: URL.createObjectURL(f), type:f.type, size:f.size }));
-        renderAttachTray();
-      }
-    });
-
-    function renderAttachTray(){
-      if(!attach.length){ attachTray.classList.add('hidden'); clearAttach.classList.add('hidden'); attachTray.innerHTML=""; return; }
-      attachTray.classList.remove('hidden'); clearAttach.classList.remove('hidden');
-      attachTray.innerHTML = `<div class="text-xs text-slate-500">Attachments:</div>` + attach.map((a,i)=>`
-        <span class="file-pill shadow-soft">
-          <span>${fileIcon(a.name)}</span>
-          <span class="truncate max-w-[160px]" title="${a.name}">${a.name}</span>
-          <span class="text-slate-500">${sizeStr(a.size)}</span>
-          <button class="ml-1 chip" onclick="removeAttach(${i})">×</button>
-        </span>
-      `).join("");
-    }
-    window.removeAttach = (i)=>{ 
-      try{ URL.revokeObjectURL(attach[i].url); }catch{}
-      attach.splice(i,1); 
-      renderAttachTray(); 
-    };
-    clearAttach.onclick = ()=>{
-      attach.forEach(a=> URL.revokeObjectURL(a.url));
-      attach=[]; renderAttachTray();
-    };
-
-    function fileIcon(name){
-      const ext = (name.split(".").pop()||"").toLowerCase();
-      if(["png","jpg","jpeg","gif","webp","heic"].includes(ext)) return "🖼️";
-      if(["pdf"].includes(ext)) return "📄";
-      if(["csv","xls","xlsx"].includes(ext)) return "📊";
-      if(["doc","docx"].includes(ext)) return "📝";
-      if(["ppt","pptx"].includes(ext)) return "📽️";
-      if(["txt","json","md"].includes(ext)) return "📃";
-      return "📎";
-    }
-
-    area.addEventListener("input", ()=>{
-      area.style.height = "auto";
-      area.style.height = Math.min(area.scrollHeight, 160) + "px";
-      realtime.typing(currentChannelId, true);
-      debouncedStopTyping();
-    });
-    const debouncedStopTyping = debounce(()=> realtime.typing(currentChannelId, false), 800);
-
-    form.addEventListener("submit", (e)=>{
-      e.preventDefault();
-      send();
-    });
-    $("#emojiBtn").onclick = ()=> insertAtCursor(area, " 🙂");
-    $("#giphyBtn").onclick  = ()=> insertAtCursor(area, " /giphy shipment");
-    $$(".qa").forEach(b=> b.onclick = ()=> { area.value = b.getAttribute("data-q"); area.dispatchEvent(new Event("input")); area.focus(); });
-
-    function send(){
-      const text = area.value.trim();
-      if(!text && !attach.length) return;
-      const ch = channels.find(c=>c.id===currentChannelId);
-      const msg = { id: crypto.randomUUID(), userId: me.id, text, createdAt: Date.now(), attachments: attach.slice(), reactions:{}, thread:[] };
-      ch.messages.push(msg);
-      renderMessages();
-      area.value=""; area.style.height="auto";
-      attach = []; renderAttachTray();
-      realtime.send(currentChannelId, msg);
-    }
-
-    function insertAtCursor(el, text){
-      const start = el.selectionStart, end = el.selectionEnd;
-      el.value = el.value.slice(0,start) + text + el.value.slice(end);
-      el.selectionStart = el.selectionEnd = start + text.length;
-      el.dispatchEvent(new Event("input"));
-    }
-
-    // ----------------------------
-    // Reactions / Threads
-    // ----------------------------
-    function openReactions(messageId, container){
-      const pop = document.createElement("div");
-      pop.className = "fixed inset-0 z-50";
-      pop.innerHTML = `
-        <div class="absolute inset-0" onclick="this.parentElement.remove()"></div>
-        <div class="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 bg-white border border-slate-200 rounded-xl2 shadow-lift p-3 w-[min(420px,92vw)]">
-          <div class="text-sm font-semibold mb-2">Add reaction</div>
-          <div class="grid grid-cols-8 gap-1 text-2xl">
-            ${["👍","😀","🎉","🙏","🔥","😮","❤️","🤝","🧠","📦","🕒","📝","✅","❗","📎","🧾"].map(e=>`<button class="emoji" data-emoji="${e}">${e}</button>`).join("")}
-          </div>
-        </div>`;
-      document.body.appendChild(pop);
-      pop.querySelectorAll(".emoji").forEach(btn=>{
-        btn.onclick = ()=>{
-          addReaction(messageId, btn.dataset.emoji);
-          pop.remove();
-        };
-      });
-    }
-
-    function addReaction(messageId, emoji){
-      const ch = channels.find(c=>c.id===currentChannelId);
-      const m = ch.messages.find(x=>x.id===messageId);
-      if(!m.reactions[emoji]) m.reactions[emoji] = [];
-      const idx = m.reactions[emoji].indexOf(me.id);
-      if(idx===-1) m.reactions[emoji].push(me.id); else m.reactions[emoji].splice(idx,1);
-      renderMessages();
-    }
-
-    function openThread(messageId){
-      const panel = $("#threadWrap");
-      const ch = channels.find(c=>c.id===currentChannelId);
-      const m = ch.messages.find(x=>x.id===messageId);
-      document.querySelector("aside.lg\\:flex").classList.remove("hidden");
-      panel.innerHTML = `
-        <div class="text-sm text-slate-500">Thread in <strong>${ch.name}</strong></div>
-        <div class="mt-2 border border-slate-200 rounded-xl bg-white p-3 shadow-soft">
-          <div class="font-semibold mb-1">Original message</div>
-          <div>${linkify(m.text)}</div>
-          ${m.attachments?.length? `<div class="mt-2">${m.attachments.map(a=>`<a class="file-pill" target="_blank" href="${a.url}">📄 ${a.name}</a>`).join(" ")}</div>`:""}
-        </div>
-        <div class="mt-3 font-semibold">Thread</div>
-        <div id="threadMsgs" class="space-y-2 mt-1">
-          ${(m.thread||[]).map(t=>`
-          <div class="flex gap-2">
-            <img src="${(users.find(u=>u.id===t.userId)||me).avatar}" class="h-6 w-6 rounded-full" />
-            <div class="bg-white border border-slate-200 rounded-lg px-2 py-1">${linkify(t.text)}</div>
-          </div>`).join("")}
-        </div>
-        <form id="threadComposer" class="mt-2 flex gap-2">
-          <input id="threadInput" class="flex-1 border border-slate-200 rounded-lg px-3 py-2 text-sm" placeholder="Reply in thread…" />
-          <button class="btn btn-brand text-sm">Send</button>
-        </form>
-      `;
-      $("#threadComposer").onsubmit = (e)=>{
+    // enter to send
+    area.addEventListener('keydown', (e)=>{
+      if(e.key==='Enter' && !e.shiftKey){
         e.preventDefault();
-        const t = $("#threadInput").value.trim();
-        if(!t) return;
-        m.thread = m.thread || [];
-        m.thread.push({ userId: me.id, text: t, createdAt: Date.now() });
-        $("#threadInput").value="";
-        openThread(messageId);
-        renderMessages();
-      };
-      $("#closeThread").onclick = ()=> document.querySelector("aside.lg\\:flex").classList.add("hidden");
-    }
-
-    // ----------------------------
-    // Typing + receipts (mock)
-    // ----------------------------
-    events.on(p=>{
-      if(p.type==="typing"){ $("#typing").classList.toggle("hidden", !p.on); }
-      if(p.type==="message.delivered" || p.type==="message.read"){
-        renderMessages(); // re-render to update receipts on my messages
-      }
-      if(p.type==="message.new"){
-        const ch = channels.find(c=>c.id===currentChannelId);
-        ch.messages.push(p.message);
-        renderMessages();
+        send(area.value);
+        area.value=''; area.style.height='auto';
       }
     });
+    form.addEventListener('submit', (e)=>{ e.preventDefault(); send(area.value); area.value=''; area.style.height='auto'; });
 
-    // ----------------------------
-    // Search / Actions
-    // ----------------------------
-    $("#channelSearch").addEventListener("input", e=> renderChannels(e.target.value));
-    $("#globalSearch").addEventListener("keydown", e=>{
-      if((e.metaKey || e.ctrlKey) && e.key.toLowerCase()==="k"){ e.preventDefault(); $("#globalSearch").focus(); }
+    // demo quick buttons
+    $$('.demo-btn').forEach(b=> b.onclick = ()=>{
+      area.value = b.getAttribute('data-q');
+      area.dispatchEvent(new Event('input'));
+      area.focus();
     });
-    $("#addChannel").onclick = ()=>{
-      const name = prompt("Channel name (with #):", "#new-channel");
-      if(!name) return;
-      const id = "c_" + crypto.randomUUID().slice(0,6);
-      channels.unshift({ id, name, members:[me.id], online:[me.id], pinned:false, muted:false, messages:[] });
-      renderChannels($("#channelSearch").value);
+
+    // new chat
+    $('#newChat').onclick = ()=> newThread();
+
+    // export & clear
+    $('#exportBtn').onclick = ()=>{
+      const t = getCurrent(); if(!t) return toast('No chat');
+      const blob = new Blob([JSON.stringify(t, null, 2)], {type:'application/json'});
+      const a = document.createElement('a');
+      a.href = URL.createObjectURL(blob);
+      a.download = (t.title||'chat') + '.json';
+      a.click();
+      URL.revokeObjectURL(a.href);
     };
-    $("#newChat").onclick = ()=>{
-      const uname = prompt("Start DM with who? (Amy/Max/Lee)");
-      const u = users.find(x=> x.name.toLowerCase()===String(uname||"").toLowerCase());
-      if(!u) return alert("User not found");
-      const id = "dm_" + crypto.randomUUID().slice(0,6);
-      channels.unshift({ id, name:`@${u.name}`, members:[me.id,u.id], online:[me.id], pinned:false, muted:false, messages:[] });
-      currentChannelId = id;
-      loadChannel(id);
-      renderChannels($("#channelSearch").value);
+    $('#clearAll').onclick = ()=>{
+      if(confirm('Delete all conversations?')){
+        threads=[]; currentId=null; saveThreads(); renderSidebar(); renderMessages(); toast('Cleared');
+      }
     };
 
-    // ----------------------------
-    // Seed + Start
-    // ----------------------------
-    function seed(){
-      const ch = channels.find(c=>c.id===currentChannelId);
-      ch.messages.push(
-        { id:crypto.randomUUID(), userId:"u_amy", text:"Welcome to the channel! 🎉", createdAt:Date.now()-1000*60*60*24, attachments:[], reactions:{"🎉":["u_me","u_max"]}, thread:[] },
-        { id:crypto.randomUUID(), userId:"u_me", text:"Hey team — I’ll share the HS codes list shortly.", createdAt:Date.now()-1000*60*50, attachments:[], reactions:{}, thread:[] },
-        { id:crypto.randomUUID(), userId:"u_max", text:"Anyone knows the ETA for PO-1021?", createdAt:Date.now()-1000*60*30, attachments:[], reactions:{}, thread:[] },
-      );
-    }
-    seed();
-    renderChannels();
-    loadChannel(currentChannelId);
-    realtime.subscribe(currentChannelId, ev=> events.emit(ev));
+    // ===== Init =====
+    if(!threads.length){ newThread(); } else { renderSidebar(); renderMessages(); renderMode(); }
   </script>
 </body>
 </html>
