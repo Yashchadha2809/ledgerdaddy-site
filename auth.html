@@ -1,0 +1,249 @@
+<!DOCTYPE html>
+<html lang="en" class="scroll-smooth">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <title>Chadaddy – Sign in / Sign up</title>
+  <meta name="theme-color" content="#1A237E" />
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors:{ indigoDeep:"#1A237E", emerald:"#2E7D32", cyanBright:"#00BCD4", accentOrange:"#FF7043" },
+          boxShadow:{ lift:"0 14px 34px rgba(0,0,0,.12)" }
+        }
+      }
+    }
+  </script>
+  <style>
+    .card{transition:transform .12s ease, box-shadow .2s ease}
+    .card:hover{transform:translateY(-2px); box-shadow:0 14px 34px rgba(0,0,0,.14)}
+  </style>
+</head>
+<body class="bg-gray-50 text-gray-900">
+
+  <!-- Topbar -->
+  <header class="fixed top-0 inset-x-0 z-50 border-b border-gray-200 bg-white/90 backdrop-blur">
+    <div class="max-w-7xl mx-auto px-4 py-3 flex items-center justify-between">
+      <a href="index.html" class="flex items-center gap-2" aria-label="Chadaddy home">
+        <span class="grid h-9 w-9 place-items-center rounded-xl bg-gradient-to-tr from-cyanBright to-emerald text-white font-extrabold shadow">◆</span>
+        <span class="text-xl font-bold text-indigoDeep">Chadaddy</span>
+        <span class="ml-2 hidden sm:inline-flex text-[11px] px-2 py-0.5 rounded-full border border-cyanBright/40 text-cyanBright">AI Customs</span>
+      </a>
+      <nav class="hidden md:flex items-center gap-2">
+        <a href="auth.html#signin" class="border px-3 py-2 rounded-lg">Sign in</a>
+        <a href="auth.html#signup" class="bg-emerald text-white px-4 py-2 rounded-lg hover:opacity-95">Sign up</a>
+      </nav>
+    </div>
+  </header>
+
+  <!-- Auth Card -->
+  <main class="pt-28 pb-10">
+    <div class="max-w-7xl mx-auto px-4">
+      <div class="mx-auto max-w-md bg-white border border-gray-200 rounded-2xl shadow card p-6">
+        <div class="flex items-center justify-center gap-2 mb-2">
+          <span class="grid h-10 w-10 place-items-center rounded-xl bg-gradient-to-tr from-cyanBright to-emerald text-white font-extrabold shadow">◆</span>
+          <h1 class="text-2xl font-bold">Welcome to Chadaddy</h1>
+        </div>
+        <p class="text-center text-sm text-gray-600">Create your account or sign in.</p>
+
+        <!-- Tabs -->
+        <div class="mt-5 grid grid-cols-2 rounded-lg overflow-hidden border">
+          <button id="tabSignIn" class="py-2 text-center bg-gray-50 font-medium">Sign in</button>
+          <button id="tabSignUp" class="py-2 text-center">Sign up</button>
+        </div>
+
+        <!-- Alerts -->
+        <div id="alert" class="hidden mt-4 text-sm px-3 py-2 rounded border"></div>
+
+        <!-- Sign In -->
+        <form id="formSignIn" class="mt-4 grid gap-3">
+          <div class="grid gap-1">
+            <label class="text-sm font-medium">Email</label>
+            <input id="siEmail" type="email" required class="border rounded-lg px-3 py-2" placeholder="you@company.com" />
+          </div>
+          <div class="grid gap-1">
+            <label class="text-sm font-medium">Password</label>
+            <div class="relative">
+              <input id="siPass" type="password" required class="border rounded-lg px-3 py-2 w-full pr-9" placeholder="••••••••" />
+              <button type="button" data-toggle="siPass" class="absolute right-2 top-1/2 -translate-y-1/2 text-xs underline">show</button>
+            </div>
+          </div>
+          <div class="flex items-center justify-between text-sm">
+            <label class="inline-flex items-center gap-2">
+              <input id="rememberMe" type="checkbox" />
+              Remember me
+            </label>
+            <a class="text-cyanBright" href="#" onclick="alert('Use Sign up if you forgot your password in this demo.');return false;">Forgot?</a>
+          </div>
+          <button class="bg-emerald text-white py-2 rounded-lg">Sign in</button>
+          <p class="text-xs text-gray-600 text-center">No account?
+            <a href="#signup" class="text-cyanBright underline" id="linkToSignUp">Create one</a>
+          </p>
+        </form>
+
+        <!-- Sign Up -->
+        <form id="formSignUp" class="hidden mt-4 grid gap-3">
+          <div class="grid gap-1">
+            <label class="text-sm font-medium">Full name</label>
+            <input id="suName" required class="border rounded-lg px-3 py-2" placeholder="e.g., Alex Kumar" />
+          </div>
+          <div class="grid gap-1">
+            <label class="text-sm font-medium">Email</label>
+            <input id="suEmail" type="email" required class="border rounded-lg px-3 py-2" placeholder="you@company.com" />
+          </div>
+          <div class="grid gap-1">
+            <label class="text-sm font-medium">Password</label>
+            <div class="relative">
+              <input id="suPass" type="password" minlength="6" required class="border rounded-lg px-3 py-2 w-full pr-9" placeholder="min 6 characters" />
+              <button type="button" data-toggle="suPass" class="absolute right-2 top-1/2 -translate-y-1/2 text-xs underline">show</button>
+            </div>
+          </div>
+          <div class="grid gap-1">
+            <label class="text-sm font-medium">Confirm password</label>
+            <input id="suPass2" type="password" minlength="6" required class="border rounded-lg px-3 py-2" placeholder="repeat password" />
+          </div>
+          <button class="bg-emerald text-white py-2 rounded-lg">Create account</button>
+          <p class="text-xs text-gray-600 text-center">Already have an account?
+            <a href="#signin" class="text-cyanBright underline" id="linkToSignIn">Sign in</a>
+          </p>
+          <p class="text-xs text-gray-500 text-center">By continuing you agree to our Terms & Privacy.</p>
+        </form>
+      </div>
+
+      <!-- Optional mini “you’re signed in” box -->
+      <div id="afterLogin" class="hidden mx-auto max-w-md mt-6 bg-white border border-gray-200 rounded-2xl p-4">
+        <p class="text-sm">Signed in as <strong id="whoami"></strong></p>
+        <div class="mt-3 flex gap-2">
+          <a href="index.html" class="border px-3 py-2 rounded-lg">Go to homepage</a>
+          <button id="signOutBtn" class="bg-gray-900 text-white px-3 py-2 rounded-lg">Sign out</button>
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <script>
+    // ===== Simple client-side auth (demo only) =====
+    const USERS_KEY = 'chadaddy_users_v1';   // { [email]: {name, email, pass} } (pass stored plain in demo)
+    const SESSION_KEY = 'chadaddy_session_v1'; // { email, name, ts }
+
+    const $ = s => document.querySelector(s);
+    const alertBox = $('#alert');
+
+    function showAlert(msg, type='info'){
+      alertBox.classList.remove('hidden');
+      alertBox.textContent = msg;
+      alertBox.className = 'mt-4 text-sm px-3 py-2 rounded border ' +
+        (type==='error' ? 'border-red-300 text-red-700 bg-red-50'
+          : type==='success' ? 'border-emerald-300 text-emerald-800 bg-emerald-50'
+          : 'border-cyanBright/40 text-gray-800 bg-cyanBright/10');
+    }
+    function clearAlert(){ alertBox.classList.add('hidden'); alertBox.textContent=''; }
+
+    function getUsers(){
+      try { return JSON.parse(localStorage.getItem(USERS_KEY) || '{}'); }
+      catch(e){ return {}; }
+    }
+    function setUsers(obj){ localStorage.setItem(USERS_KEY, JSON.stringify(obj)); }
+
+    function getSession(){
+      try { return JSON.parse(localStorage.getItem(SESSION_KEY) || 'null'); }
+      catch(e){ return null; }
+    }
+    function setSession(s){ localStorage.setItem(SESSION_KEY, JSON.stringify(s)); }
+    function clearSession(){ localStorage.removeItem(SESSION_KEY); }
+
+    // ===== UI tabs =====
+    const tabSignIn = $('#tabSignIn'), tabSignUp = $('#tabSignUp');
+    const formSignIn = $('#formSignIn'), formSignUp = $('#formSignUp');
+
+    function activate(tab){
+      clearAlert();
+      if(tab === 'signup'){
+        formSignUp.classList.remove('hidden');
+        formSignIn.classList.add('hidden');
+        tabSignUp.classList.add('bg-gray-50','font-medium');
+        tabSignIn.classList.remove('bg-gray-50','font-medium');
+      }else{
+        formSignIn.classList.remove('hidden');
+        formSignUp.classList.add('hidden');
+        tabSignIn.classList.add('bg-gray-50','font-medium');
+        tabSignUp.classList.remove('bg-gray-50','font-medium');
+      }
+    }
+
+    tabSignIn.addEventListener('click', ()=>activate('signin'));
+    tabSignUp.addEventListener('click', ()=>activate('signup'));
+    document.getElementById('linkToSignUp').addEventListener('click', e=>{ e.preventDefault(); activate('signup'); history.replaceState(null,'','#signup'); });
+    document.getElementById('linkToSignIn').addEventListener('click', e=>{ e.preventDefault(); activate('signin'); history.replaceState(null,'','#signin'); });
+
+    // Deep link by hash
+    if(location.hash === '#signup'){ activate('signup'); } else { activate('signin'); }
+
+    // ===== show/hide password toggles =====
+    document.querySelectorAll('[data-toggle]').forEach(btn=>{
+      btn.addEventListener('click', ()=>{
+        const id = btn.getAttribute('data-toggle');
+        const inp = document.getElementById(id);
+        if(!inp) return;
+        inp.type = (inp.type==='password' ? 'text' : 'password');
+        btn.textContent = (inp.type==='password'?'show':'hide');
+      });
+    });
+
+    // ===== Sign up handler =====
+    formSignUp.addEventListener('submit', (e)=>{
+      e.preventDefault(); clearAlert();
+      const name = $('#suName').value.trim();
+      const email = $('#suEmail').value.trim().toLowerCase();
+      const pass = $('#suPass').value;
+      const pass2 = $('#suPass2').value;
+
+      if(!name || !email || !pass) return showAlert('Please fill all required fields.', 'error');
+      if(!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(email)) return showAlert('Please enter a valid email.', 'error');
+      if(pass.length < 6) return showAlert('Password must be at least 6 characters.', 'error');
+      if(pass !== pass2) return showAlert('Passwords do not match.', 'error');
+
+      const users = getUsers();
+      if(users[email]) return showAlert('This email is already registered. Try Sign in.', 'error');
+
+      users[email] = { name, email, pass }; // NOTE: demo only (plain text). Use a real backend to hash passwords!
+      setUsers(users);
+
+      setSession({ email, name, ts: Date.now() });
+      showAlert('Account created. Redirecting…', 'success');
+      setTimeout(()=>{ location.href = 'index.html'; }, 800);
+    });
+
+    // ===== Sign in handler =====
+    formSignIn.addEventListener('submit', (e)=>{
+      e.preventDefault(); clearAlert();
+      const email = $('#siEmail').value.trim().toLowerCase();
+      const pass = $('#siPass').value;
+
+      const users = getUsers();
+      const u = users[email];
+      if(!u) return showAlert('No account found. Try Sign up.', 'error');
+      if(u.pass !== pass) return showAlert('Incorrect password.', 'error');
+
+      setSession({ email: u.email, name: u.name, ts: Date.now() });
+
+      showAlert('Welcome back! Redirecting…', 'success');
+      setTimeout(()=>{ location.href = 'index.html'; }, 600);
+    });
+
+    // ===== After-login panel (optional) =====
+    const sess = getSession();
+    if(sess){
+      document.getElementById('afterLogin').classList.remove('hidden');
+      document.getElementById('whoami').textContent = `${sess.name} (${sess.email})`;
+    }
+    document.getElementById('signOutBtn').addEventListener('click', ()=>{
+      clearSession();
+      showAlert('Signed out.', 'info');
+      setTimeout(()=>{ location.reload(); }, 400);
+    });
+  </script>
+</body>
+</html>
