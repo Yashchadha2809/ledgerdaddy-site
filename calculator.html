@@ -1,0 +1,267 @@
+<!DOCTYPE html>
+<html lang="en" class="scroll-smooth">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Global Duty & Landed Cost – Ledgerdaddy</title>
+  <meta name="theme-color" content="#1A237E" />
+  <link rel="preconnect" href="https://images.unsplash.com" />
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors:{ indigoDeep:"#1A237E", emerald:"#2E7D32", cyanBright:"#00BCD4", accentOrange:"#FF7043" },
+          boxShadow:{ lift:"0 14px 34px rgba(0,0,0,.12)" }
+        }
+      }
+    }
+  </script>
+  <style>
+    .card{transition:transform .12s ease, box-shadow .2s ease}
+    .card:hover{transform:translateY(-2px); box-shadow:0 14px 34px rgba(0,0,0,.14)}
+    .hero-img{background:url('https://images.unsplash.com/photo-1586521995568-39ef16c6934d?q=80&w=1920&auto=format&fit=crop') center/cover no-repeat;}
+  </style>
+</head>
+<body class="bg-gray-50 text-gray-900">
+
+  <!-- Topbar -->
+  <header class="fixed top-0 inset-x-0 z-50 border-b border-gray-200 bg-white/90 backdrop-blur">
+    <div class="max-w-7xl mx-auto px-4 py-3 flex items-center justify-between">
+      <a href="/" class="flex items-center gap-2" aria-label="Home">
+        <span class="grid h-9 w-9 place-items-center rounded-xl bg-gradient-to-tr from-cyanBright to-emerald text-white font-extrabold shadow">◆</span>
+        <span class="text-xl font-bold text-indigoDeep">Ledgerdaddy</span>
+        <span class="ml-2 hidden sm:inline-flex text-[11px] px-2 py-0.5 rounded-full border border-cyanBright/40 text-cyanBright">AI Customs</span>
+      </a>
+      <nav class="hidden md:flex items-center gap-6 text-sm font-medium" aria-label="Main">
+        <a href="/#marketplace" class="hover:text-cyanBright">Marketplace</a>
+        <a href="/calculator" class="hover:text-cyanBright text-cyanBright">Calculator</a>
+        <a href="/#hsfinder" class="hover:text-cyanBright">HS Finder</a>
+        <a href="/#chat" class="hover:text-cyanBright">Chat</a>
+        <a href="/#news" class="hover:text-cyanBright">News</a>
+        <a href="/#learn" class="hover:text-cyanBright">Academy</a>
+        <a href="/#pricing" class="hover:text-cyanBright">Pricing</a>
+      </nav>
+      <div class="hidden md:flex items-center gap-2">
+        <a href="/log-in" class="border px-4 py-2 rounded-lg">Log in</a>
+        <a href="/personal-sign-up" class="bg-emerald text-white px-4 py-2 rounded-lg hover:opacity-95">Sign up</a>
+      </div>
+      <a href="/personal-sign-up" class="md:hidden bg-emerald text-white px-3 py-1.5 rounded-lg">Start</a>
+    </div>
+  </header>
+
+  <!-- Hero -->
+  <section class="pt-24 md:pt-28">
+    <div class="hero-img">
+      <div class="backdrop-brightness-90 bg-gradient-to-r from-indigoDeep/70 to-cyanBright/60">
+        <div class="max-w-5xl mx-auto px-4 py-12 text-white">
+          <h1 class="text-4xl md:text-5xl font-extrabold leading-tight">Global Duty & Landed Cost</h1>
+          <p class="mt-3 text-white/95">Get a quick estimate for BCD, VAT/IGST and landed cost. (Demo logic; connect your rates later.)</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Calculator -->
+  <main class="max-w-5xl mx-auto px-4 -mt-10">
+    <div class="bg-white border border-gray-200 rounded-2xl shadow p-6 md:p-8">
+      <form id="calcForm" class="grid md:grid-cols-2 gap-6 items-start">
+        <section class="grid gap-3">
+          <div class="grid grid-cols-2 gap-3">
+            <label class="grid gap-1 text-sm">
+              <span class="font-medium">Country</span>
+              <select id="cCountry" class="border rounded-lg px-3 py-2">
+                <option>IN</option><option>US</option><option>EU</option><option>UK</option>
+              </select>
+            </label>
+            <label class="grid gap-1 text-sm">
+              <span class="font-medium">Incoterm</span>
+              <select id="cIncoterm" class="border rounded-lg px-3 py-2">
+                <option value="CIF">CIF</option>
+                <option value="FOB">FOB</option>
+                <option value="EXW">EXW</option>
+              </select>
+            </label>
+          </div>
+
+          <div class="grid grid-cols-2 gap-3">
+            <label class="grid gap-1 text-sm">
+              <span class="font-medium">HS Code</span>
+              <input id="cHS" class="border rounded-lg px-3 py-2" placeholder="e.g. 851713" required />
+            </label>
+            <label class="grid gap-1 text-sm">
+              <span class="font-medium">Goods Value</span>
+              <input id="cGoods" type="number" class="border rounded-lg px-3 py-2" placeholder="e.g. 100000" required />
+            </label>
+          </div>
+
+          <div class="grid grid-cols-3 gap-3">
+            <label class="grid gap-1 text-sm">
+              <span class="font-medium">Freight</span>
+              <input id="cFreight" type="number" class="border rounded-lg px-3 py-2" placeholder="0" />
+            </label>
+            <label class="grid gap-1 text-sm">
+              <span class="font-medium">Insurance</span>
+              <input id="cIns" type="number" class="border rounded-lg px-3 py-2" placeholder="0" />
+            </label>
+            <label class="grid gap-1 text-sm">
+              <span class="font-medium">Other includable</span>
+              <input id="cOther" type="number" class="border rounded-lg px-3 py-2" placeholder="0" />
+            </label>
+          </div>
+
+          <details class="p-3 border rounded-lg">
+            <summary class="cursor-pointer font-medium">Advanced (optional)</summary>
+            <div class="grid grid-cols-3 gap-3 mt-3 text-sm">
+              <label class="grid gap-1">
+                <span>Override duty %</span>
+                <input id="cDuty" type="number" class="border rounded-lg px-3 py-2" placeholder="auto" />
+              </label>
+              <label class="grid gap-1">
+                <span>VAT/IGST %</span>
+                <input id="cVat" type="number" class="border rounded-lg px-3 py-2" placeholder="auto" />
+              </label>
+              <label class="grid gap-1">
+                <span>AIDC/Cess %</span>
+                <input id="cAidc" type="number" class="border rounded-lg px-3 py-2" placeholder="0" />
+              </label>
+            </div>
+          </details>
+
+          <div class="flex items-center gap-3">
+            <button class="bg-emerald text-white py-2 px-4 rounded-lg" type="submit">Calculate</button>
+            <label class="text-sm inline-flex items-center gap-2">
+              <input id="ftaToggle" type="checkbox" class="h-4 w-4 border rounded"> Apply FTA savings (demo)
+            </label>
+          </div>
+
+          <p class="text-xs text-gray-600">Demo rates: IN BCD 10% (+SWS 10% of BCD), IGST 18%; US 3% & 0.9% VAT; EU/UK 5% & 20%. Override above if needed.</p>
+        </section>
+
+        <section>
+          <h3 class="font-semibold mb-2">Breakdown</h3>
+          <div class="overflow-hidden rounded-xl border border-gray-200">
+            <table class="w-full text-sm">
+              <thead class="bg-gray-50">
+                <tr>
+                  <th class="px-3 py-2 text-left">Component</th>
+                  <th class="px-3 py-2 text-right">Basis</th>
+                  <th class="px-3 py-2 text-right">Rate</th>
+                  <th class="px-3 py-2 text-right">Amount</th>
+                </tr>
+              </thead>
+              <tbody id="cTable" class="divide-y divide-gray-200">
+                <tr><td class="px-3 py-3 text-center text-gray-500" colspan="4">No results yet — run a calculation.</td></tr>
+              </tbody>
+            </table>
+          </div>
+
+          <div id="hsSuggestBox" class="hidden mt-3 p-3 border rounded-lg bg-white">
+            <strong>HS suggestions</strong>
+            <ul id="hsSuggestList" class="list-disc ml-5 text-sm"></ul>
+            <p class="text-xs text-gray-500 mt-1">Customs makes the final decision.</p>
+          </div>
+
+          <div id="totalCard" class="hidden mt-4 p-4 rounded-xl border bg-gray-50">
+            <div class="text-sm text-gray-600">Estimated total landed cost</div>
+            <div id="totalVal" class="text-2xl font-extrabold mt-1">—</div>
+          </div>
+        </section>
+      </form>
+
+      <div class="mt-6 text-sm flex items-center justify-between">
+        <a href="/" class="text-cyanBright">← Back to home</a>
+        <a href="/dashboard" class="underline">Go to dashboard</a>
+      </div>
+    </div>
+  </main>
+
+  <!-- Footer -->
+  <footer class="text-center text-xs text-gray-500 mt-10 mb-8">
+    © <span id="year"></span> Ledgerdaddy
+  </footer>
+
+  <script>
+    // Footer year
+    document.getElementById('year').textContent = new Date().getFullYear();
+
+    // Helpers
+    const $ = s=>document.querySelector(s);
+    function addRow(label,basis,rate,amount){
+      return `<tr>
+        <td class="px-3 py-2">${label}</td>
+        <td class="px-3 py-2 text-right">${Number.isFinite(basis)?basis.toLocaleString(): '—'}</td>
+        <td class="px-3 py-2 text-right">${(rate ?? '') !== '' ? rate + '%' : '—'}</td>
+        <td class="px-3 py-2 text-right font-semibold">${Number.isFinite(amount)?Math.round(amount).toLocaleString(): '—'}</td>
+      </tr>`;
+    }
+
+    const ccy = {IN:'₹', US:'$', EU:'€', UK:'£'};
+
+    function runCalc(){
+      const country = $('#cCountry').value;
+      const hs = $('#cHS').value.trim();
+      const goods = +($('#cGoods').value||0);
+      const freight = +($('#cFreight').value||0);
+      const ins = +($('#cIns').value||0);
+      const other = +($('#cOther').value||0);
+      const override = +($('#cDuty').value||NaN);
+      const vatIn = +($('#cVat').value||NaN);
+      const aidcIn = +($('#cAidc').value||NaN);
+      const fta = $('#ftaToggle').checked;
+
+      if(!goods){ alert('Please enter Goods Value'); return; }
+
+      let AV = goods + freight + ins + other;
+
+      let baseDuty = isNaN(override)?({IN:10,US:3,EU:5,UK:5}[country]||10):override;
+      if(fta) baseDuty = Math.max(0, baseDuty - 5);
+
+      const vatRate = isNaN(vatIn)?({IN:18,US:0.9,EU:20,UK:20}[country]||18):vatIn;
+      const aidcRate = isNaN(aidcIn)?({IN:0,US:0,EU:0,UK:0}[country]||0):aidcIn;
+
+      const BCD = AV * baseDuty / 100;
+      const SWS = (country==='IN') ? BCD * 0.10 : 0;
+      const AIDC = AV * aidcRate / 100;
+
+      const sub = AV + BCD + SWS + AIDC;
+      const VAT = sub * (vatRate/100);
+      const total = sub + VAT;
+
+      const tb = $('#cTable');
+      tb.innerHTML = addRow('Assessable Value (AV)', AV, '', AV)
+        + addRow('BCD', AV, baseDuty, BCD)
+        + (SWS ? addRow('SWS (10% of BCD)', BCD, 10, SWS) : '')
+        + (AIDC ? addRow('AIDC/Cess', AV, aidcRate, AIDC) : '')
+        + addRow(country==='IN'?'IGST':'VAT', sub, vatRate, VAT)
+        + `<tr class="bg-gray-50 font-semibold">
+             <td class="px-3 py-2" colspan="3">Total Landed Cost</td>
+             <td class="px-3 py-2 text-right">${Math.round(total).toLocaleString()}</td>
+           </tr>`;
+
+      // HS suggestions if HS looks short
+      const box = $('#hsSuggestBox');
+      if(hs.length < 6){
+        box.classList.remove('hidden');
+        $('#hsSuggestList').innerHTML = [
+          '851713 – Phones',
+          '851762 – Comm. equip',
+          '850760 – Li-ion cells'
+        ].map((s,i)=>`<li>${s} <span class="text-xs text-gray-500">confidence ${85 - i*10}%</span></li>`).join('');
+      } else {
+        box.classList.add('hidden');
+      }
+
+      // Total card
+      const sym = ccy[country] || '';
+      $('#totalCard').classList.remove('hidden');
+      $('#totalVal').textContent = `${sym} ${Math.round(total).toLocaleString()}`;
+    }
+
+    document.getElementById('calcForm').addEventListener('submit', function(e){
+      e.preventDefault();
+      runCalc();
+    });
+  </script>
+</body>
+</html>
