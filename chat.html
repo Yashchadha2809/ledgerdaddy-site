@@ -44,17 +44,14 @@
     .thumb{width:56px;height:56px;border-radius:10px;object-fit:cover;border:1px solid #E6E8EE}
     .file-pill{border:1px solid #E6E8EE;border-radius:10px;padding:.4rem .6rem;font-size:12px;display:flex;align-items:center;gap:.5rem;background:#fff}
     .sr-only-focusable:focus{position:static;width:auto;height:auto;clip:auto;clip-path:none;padding:.25rem .5rem;border-radius:6px;background:#ECFDF5}
-    /* Upload overlay */
     #dropOverlay{backdrop-filter: blur(2px);}
   </style>
 </head>
 <body class="h-full bg-soft text-ink">
-  <!-- Skip link -->
   <a href="#composer" class="sr-only sr-only-focusable absolute left-2 top-2 -translate-y-12 focus:translate-y-0 focus:outline-none">
     Skip to message composer
   </a>
 
-  <!-- Topbar -->
   <header class="sticky top-0 z-50 border-b border-line bg-card/90 backdrop-blur">
     <div class="max-w-6xl mx-auto px-4 py-3 flex items-center justify-between">
       <a href="/" class="flex items-center gap-2" aria-label="Home">
@@ -76,9 +73,7 @@
     </div>
   </header>
 
-  <!-- Page -->
   <main class="max-w-6xl mx-auto px-2 sm:px-4 grid md:grid-cols-[260px,1fr] gap-4">
-    <!-- Sidebar -->
     <aside class="hidden md:block h-[calc(100vh-64px)] sticky top-[64px]">
       <div class="bg-card border border-line rounded-xl shadow-soft p-3 h-full flex flex-col">
         <div class="flex items-center justify-between">
@@ -98,12 +93,9 @@
       </div>
     </aside>
 
-    <!-- Chat column -->
     <section class="flex flex-col h-[calc(100vh-64px)]">
-      <!-- System notifications -->
       <div id="sysbar" class="mx-auto w-full max-w-3xl px-2 pt-3"></div>
 
-      <!-- Drag & Drop Overlay -->
       <div id="dropOverlay" class="hidden fixed inset-0 z-40 bg-white/50">
         <div class="absolute inset-0 border-4 border-dashed border-emerald-300 rounded-xl m-8 grid place-items-center">
           <div class="bg-white rounded-xl border border-emerald-200 shadow-soft px-4 py-3 text-center">
@@ -113,14 +105,12 @@
         </div>
       </div>
 
-      <!-- Stream -->
       <div id="messages" class="flex-1 overflow-auto px-0 sm:px-2 py-4" role="log" aria-live="polite" aria-relevant="additions">
-        <!-- Conversational onboarding -->
         <section id="welcome" class="max-w-2xl mx-auto bg-card border border-line rounded-xl2 p-5 shadow-soft">
-          <div class="text-sm text-mute">LedgerBot</div>
+          <div class="text-sm text-mute">AI</div>
           <div class="mt-1">
             <p class="text-[15px] leading-relaxed">
-              Hi there! I’m <strong>LedgerBot</strong> — ask me about customs, HS codes, or calculations.
+              Hi there! I’m <strong>AI</strong> — ask me about customs, HS codes, or calculations.
               What would you like to do today?
             </p>
             <div class="mt-3 flex flex-wrap gap-2">
@@ -133,40 +123,33 @@
         </section>
       </div>
 
-      <!-- Composer -->
       <div class="border-t border-line bg-card sticky bottom-0">
         <div class="max-w-3xl mx-auto px-3 pt-3">
 
-          <!-- Attachments tray (with progress + clear) -->
           <div id="attachRow" class="hidden mb-3 flex items-center gap-3 flex-wrap">
             <div class="text-[12px] text-mute pr-1">Attachments</div>
-            <!-- pills are injected here -->
             <button id="clearAttach" class="chip text-red-600 border-red-200 hover:text-red-700 hidden">Clear all</button>
           </div>
 
-          <form id="composer" class="flex items-end gap-2" aria-label="Message composer">
-            <!-- Hidden file input -->
+          <form id="composer" class="flex items-end gap-2" aria-label="Message composer" novalidate>
             <input id="fileInput" type="file" class="hidden" multiple
                    accept="image/*,.pdf,.csv,.txt,.json,.doc,.docx,.xls,.xlsx,.ppt,.pptx" capture="environment"/>
 
-            <!-- Upload -->
             <button type="button" id="attachBtn" title="Upload files"
               class="btn btn-ghost" aria-label="Upload files">
               <svg width="16" height="16" viewBox="0 0 24 24" fill="none"><path d="M12 16V4m0 0l-4 4m4-4l4 4M4 16v2a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-2" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>
               Upload
             </button>
 
-            <!-- Text -->
             <label for="chatInput" class="sr-only">Message</label>
-            <textarea id="chatInput" rows="1" placeholder="Message LedgerBot…"
+            <textarea id="chatInput" rows="1" placeholder="Message AI…"
               class="flex-1 border border-line rounded-xl px-3 py-2 resize-none max-h-40 focus:outline-none focus:ring-2 focus:ring-accent/30"
               aria-multiline="true" aria-label="Type your message"></textarea>
 
-            <!-- Send -->
-            <button id="sendBtn" class="btn btn-accent" aria-label="Send message">Send</button>
+            <!-- FIX: make this a submit button explicitly -->
+            <button id="sendBtn" type="submit" class="btn btn-accent" aria-label="Send message">Send</button>
           </form>
 
-          <!-- Quick Action Shortcuts -->
           <div class="mt-2 flex items-center justify-between pb-3">
             <div class="flex flex-wrap gap-2">
               <button class="chip qa-btn" data-q="Estimate duty">Estimate Duty</button>
@@ -181,7 +164,6 @@
     </section>
   </main>
 
-  <!-- Toast -->
   <div id="toast" class="hidden fixed bottom-6 right-6 bg-ink text-white text-sm px-3 py-2 rounded-lg shadow" role="status" aria-live="polite"></div>
 
   <footer class="text-center text-xs text-mute my-6">
@@ -200,7 +182,7 @@
     const uid = () => Math.random().toString(36).slice(2) + Date.now().toString(36);
     $('#year').textContent = new Date().getFullYear();
 
-    // ===== Local storage (threads) =====
+    // ===== Storage =====
     const STORE_KEY='ld_chat_threads_v1';
     let threads = JSON.parse(localStorage.getItem(STORE_KEY) || '[]');
     let currentId = threads[0]?.id || null;
@@ -250,7 +232,7 @@
     }
     const fmtTime = ts => new Date(ts).toLocaleString([], {hour:'2-digit', minute:'2-digit', day:'2-digit', month:'short'});
 
-    // ===== Message bubble + types =====
+    // ===== Bubbles =====
     function fileIcon(name){ const ext=(name.split('.').pop()||'').toLowerCase();
       if(['png','jpg','jpeg','gif','webp','heic','heif','bmp'].includes(ext)) return '🖼️';
       if(['pdf'].includes(ext)) return '📄';
@@ -281,12 +263,11 @@
     }
 
     function bubble(m){
-      const { role, text, attachments, ts, status, kind } = m; // kind: 'system'|'message'
+      const { role, text, attachments, ts, status, kind } = m;
       const isUser = role==='user';
       const isSystem = kind === 'system';
-      const who = isSystem ? 'System' : (isUser ? 'You' : 'LedgerBot');
+      const who = isSystem ? 'System' : (isUser ? 'You' : 'AI');
       const avatar = isSystem ? '⚙️' : (isUser ? '👤' : '◆');
-
       const statusText = isUser ? (status==='read' ? 'Read' : status==='delivered' ? 'Delivered' : 'Sending…') : '';
 
       return `
@@ -318,7 +299,7 @@
           <div class="flex gap-3 items-start">
             <span class="mt-1 inline-flex w-8 h-8 items-center justify-center rounded-full bg-accent text-white">◆</span>
             <div class="bg-card border border-line rounded-2xl px-4 py-3">
-              <div class="flex items-center gap-1" aria-label="LedgerBot is typing">
+              <div class="flex items-center gap-1" aria-label="AI is typing">
                 <span class="typing-dot w-2 h-2 rounded-full bg-gray-400"></span>
                 <span class="typing-dot w-2 h-2 rounded-full bg-gray-400"></span>
                 <span class="typing-dot w-2 h-2 rounded-full bg-gray-400"></span>
@@ -337,7 +318,6 @@
       if(!t || !t.messages.length){ wrap.innerHTML = ''; welcome?.classList.remove('hidden'); return; }
       welcome?.classList.add('hidden');
       wrap.innerHTML = t.messages.map(bubble).join('');
-      // copy
       $$('.copy-btn').forEach(b=>{
         b.onclick = async ()=>{
           try{ await navigator.clipboard.writeText(decodeURIComponent(b.getAttribute('data-copy'))); toast('Copied'); }
@@ -362,7 +342,7 @@
       banner(text, tone);
     }
 
-    // ===== Upload handling (enhanced) =====
+    // ===== Upload handling =====
     const MAX_FILES = 10;
     const MAX_MB = 25;
     let pendingFiles = []; // {file, url, id, progress}
@@ -383,7 +363,6 @@
       renderPending();
     });
 
-    // Drag & drop overlay
     ;['dragenter','dragover'].forEach(ev=>{
       document.addEventListener(ev, (e)=>{ e.preventDefault(); dropOverlay.classList.remove('hidden'); });
     });
@@ -395,7 +374,6 @@
       if(files.length) addPendingFiles(files);
     });
 
-    // Paste to upload (screenshots, files)
     document.addEventListener('paste', (e)=>{
       const items = [...(e.clipboardData?.items||[])];
       const files = items.map(i=> i.getAsFile()).filter(Boolean);
@@ -450,7 +428,6 @@
       window.removePending = removePending;
     }
 
-    // Upload with progress (XHR for progress events)
     async function uploadFiles(files){
       if(!files.length) return [];
       try{
@@ -467,16 +444,9 @@
             }catch(e){ reject(e); }
           };
           xhr.onerror = () => reject(new Error('Network error'));
-          const total = files.reduce((sum,f)=> sum + (f.file.size||0), 0);
-          let loadedSoFar = 0;
-
-          // Per-file progress (approximate: update evenly by chunk)
           xhr.upload.onprogress = (e)=>{
             const ratio = e.lengthComputable ? (e.loaded / e.total) : 0.5;
-            files.forEach(f=>{
-              const pf = pendingFiles.find(x=>x.id===f.id);
-              if(pf){ pf.progress = Math.max(pf.progress||0, Math.floor(ratio*100)); }
-            });
+            pendingFiles.forEach(p=>{ p.progress = Math.max(p.progress||0, Math.floor(ratio*100)); });
             renderPending();
           };
           xhr.send(form);
@@ -487,19 +457,14 @@
         const data = resp.data;
         const listRaw = Array.isArray(data) ? data : (data.files || [data]);
 
-        // Finish progress
-        files.forEach(f=>{
-          const pf = pendingFiles.find(x=>x.id===f.id);
-          if(pf){ pf.progress = 100; }
-        });
+        pendingFiles.forEach(p=>{ p.progress = 100; });
         renderPending();
 
-        // Map response
         return listRaw.map((x,i)=>({
-          url: x.url || files[i].url,
-          name: x.name || files[i].file.name,
-          type: x.type || files[i].file.type,
-          size: x.size || files[i].file.size
+          url: x.url || pendingFiles[i]?.url,
+          name: x.name || pendingFiles[i]?.file?.name,
+          type: x.type || pendingFiles[i]?.file?.type,
+          size: x.size || pendingFiles[i]?.file?.size
         }));
       }catch(e){
         banner('Upload error: ' + (e.message||'unknown'), 'error');
@@ -507,7 +472,7 @@
       }
     }
 
-    // ===== System feedback banners =====
+    // ===== Banners =====
     function banner(text, tone='info'){
       const bar = $('#sysbar');
       const color = tone==='error' ? 'bg-red-50 border-red-200 text-red-800'
@@ -520,28 +485,25 @@
       setTimeout(()=>{ el.remove(); }, 2500);
     }
 
-    // ===== Send flow =====
+    // ===== Send flow (RENAMED to avoid globals) =====
     const area = $('#chatInput');
     const form = $('#composer');
     const sendBtn = $('#sendBtn');
     let lastPrompt = "";
 
-    async function send(text){
+    async function sendMessage(text){
       const trimmed = (text || '').trim();
       if(!trimmed && !pendingFiles.length) return;
 
-      // Upload attachments
-      banner('Uploading attachments…','info');
+      banner(pendingFiles.length ? 'Uploading attachments…' : 'Sending…','info');
       sendBtn.disabled = true; sendBtn.classList.add('opacity-60','cursor-not-allowed');
+
       const uploaded = await uploadFiles(pendingFiles);
-      pendingFiles.forEach(p=> URL.revokeObjectURL(p.url));
+      pendingFiles.forEach(p=> p.url && URL.revokeObjectURL(p.url));
       pendingFiles = []; renderPending();
 
-      // Add user message
-      const userMsg = { role:'user', text: trimmed, attachments: uploaded };
-      addMessage(userMsg);
+      addMessage({ role:'user', text: trimmed, attachments: uploaded });
 
-      // Typing indicator
       const wrap = $('#messages');
       wrap.insertAdjacentHTML('beforeend', typingRow());
       wrap.scrollTop = wrap.scrollHeight;
@@ -561,16 +523,10 @@
           else { throw new Error(data.error || 'No reply from server'); }
         }
 
-        // remove typing
         wrap.lastElementChild?.remove();
-
-        // delivery/read status demo
         markLastUserStatus('delivered');
         setTimeout(()=> markLastUserStatus('read'), 800);
-
-        // assistant reply
         addMessage({ role:'assistant', text: replyText });
-
         lastPrompt = trimmed;
       } catch (err) {
         wrap.lastElementChild?.remove();
@@ -598,11 +554,14 @@
     area.addEventListener('keydown', (e)=>{
       if(e.key==='Enter' && !e.shiftKey){
         e.preventDefault();
-        send(area.value);
+        sendMessage(area.value);
         area.value=''; area.style.height='auto';
       }
     });
-    form.addEventListener('submit', (e)=>{ e.preventDefault(); send(area.value); area.value=''; area.style.height='auto'; });
+
+    // EXPLICIT: click & submit both call sendMessage
+    sendBtn.addEventListener('click', (e)=>{ e.preventDefault(); sendMessage(area.value); area.value=''; area.style.height='auto'; });
+    form.addEventListener('submit', (e)=>{ e.preventDefault(); sendMessage(area.value); area.value=''; area.style.height='auto'; });
 
     // quick chips
     [...$$('.demo-btn'), ...$$('.qa-btn')].forEach(b=> b.onclick = ()=>{
