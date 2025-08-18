@@ -25,28 +25,38 @@
 </head>
 <body class="bg-gray-50 text-gray-900">
 
+  <!-- If already logged in, go straight to dashboard -->
+  <script>
+    (function(){
+      try {
+        const u = JSON.parse(localStorage.getItem('chadaddy_user')||'null');
+        if(u && u.email){ window.location.href = 'dashboard.html'; }
+      } catch(e){}
+    })();
+  </script>
+
   <!-- Topbar -->
   <header class="fixed top-0 inset-x-0 z-50 border-b border-gray-200 bg-white/90 backdrop-blur">
     <div class="max-w-7xl mx-auto px-4 py-3 flex items-center justify-between">
-      <a href="/" class="flex items-center gap-2" aria-label="Home">
+      <a href="index.html" class="flex items-center gap-2" aria-label="Home">
         <span class="grid h-9 w-9 place-items-center rounded-xl bg-gradient-to-tr from-cyanBright to-emerald text-white font-extrabold shadow">◆</span>
         <span class="text-xl font-bold text-indigoDeep">Ledgerdaddy</span>
         <span class="ml-2 hidden sm:inline-flex text-[11px] px-2 py-0.5 rounded-full border border-cyanBright/40 text-cyanBright">AI Customs</span>
       </a>
       <nav class="hidden md:flex items-center gap-6 text-sm font-medium" aria-label="Main">
-        <a href="/#marketplace" class="hover:text-cyanBright">Marketplace</a>
-        <a href="/#calculator" class="hover:text-cyanBright">Calculator</a>
-        <a href="/#hsfinder" class="hover:text-cyanBright">HS Finder</a>
-        <a href="/#chat" class="hover:text-cyanBright">Chat</a>
-        <a href="/#news" class="hover:text-cyanBright">News</a>
-        <a href="/#learn" class="hover:text-cyanBright">Academy</a>
-        <a href="/#pricing" class="hover:text-cyanBright">Pricing</a>
+        <a href="index.html#marketplace" class="hover:text-cyanBright">Marketplace</a>
+        <a href="index.html#calculator" class="hover:text-cyanBright">Calculator</a>
+        <a href="index.html#hsfinder" class="hover:text-cyanBright">HS Finder</a>
+        <a href="index.html#chat" class="hover:text-cyanBright">Chat</a>
+        <a href="index.html#news" class="hover:text-cyanBright">News</a>
+        <a href="index.html#learn" class="hover:text-cyanBright">Academy</a>
+        <a href="index.html#pricing" class="hover:text-cyanBright">Pricing</a>
       </nav>
       <div class="hidden md:flex items-center gap-2">
-        <a href="/log-in" class="border px-4 py-2 rounded-lg">Log in</a>
-        <a href="/personal-sign-up" class="bg-emerald text-white px-4 py-2 rounded-lg hover:opacity-95">Sign up</a>
+        <a href="log-in.html" class="border px-4 py-2 rounded-lg">Log in</a>
+        <a href="personal-sign-up.html" class="bg-emerald text-white px-4 py-2 rounded-lg hover:opacity-95">Sign up</a>
       </div>
-      <a href="/personal-sign-up" class="md:hidden bg-emerald text-white px-3 py-1.5 rounded-lg">Start</a>
+      <a href="personal-sign-up.html" class="md:hidden bg-emerald text-white px-3 py-1.5 rounded-lg">Start</a>
     </div>
   </header>
 
@@ -65,21 +75,21 @@
   <!-- Login card -->
   <main class="max-w-3xl mx-auto px-4 -mt-10">
     <div class="bg-white border border-gray-200 rounded-2xl shadow p-6 md:p-8">
-      <form id="loginForm" class="grid gap-5">
+      <form id="loginForm" class="grid gap-5" autocomplete="on">
         <div class="grid md:grid-cols-2 gap-4">
           <label class="grid gap-1 text-sm">
             <span class="font-medium">Email</span>
-            <input name="email" type="email" class="border rounded-lg px-3 py-2" placeholder="you@example.com" required>
+            <input name="email" id="email" type="email" class="border rounded-lg px-3 py-2" placeholder="you@example.com" required>
           </label>
           <label class="grid gap-1 text-sm">
             <span class="font-medium">Password</span>
-            <input name="password" type="password" class="border rounded-lg px-3 py-2" placeholder="••••••••" required>
+            <input name="password" id="password" type="password" class="border rounded-lg px-3 py-2" placeholder="••••••••" required>
           </label>
         </div>
 
         <div class="flex items-center justify-between text-sm">
           <label class="inline-flex items-center gap-2">
-            <input type="checkbox" class="h-4 w-4 border rounded">
+            <input id="remember" type="checkbox" class="h-4 w-4 border rounded">
             <span>Remember me</span>
           </label>
           <a href="#" class="text-cyanBright hover:underline">Forgot password?</a>
@@ -91,12 +101,12 @@
 
         <p class="text-sm text-gray-600">
           Don’t have an account?
-          <a href="/personal-sign-up" class="text-cyanBright hover:underline">Create one</a>.
+          <a href="personal-sign-up.html" class="text-cyanBright hover:underline">Create one</a>.
         </p>
       </form>
 
       <div class="mt-6 text-sm">
-        <a href="/" class="text-cyanBright">← Back to home</a>
+        <a href="index.html" class="text-cyanBright">← Back to home</a>
       </div>
     </div>
   </main>
@@ -109,14 +119,43 @@
   <script>
     document.getElementById('year').textContent = new Date().getFullYear();
 
-    // Demo submit: toast + go home
+    // Helper to fake a user name from the email (before your real backend)
+    function nameFromEmail(email){
+      const base = (email || '').split('@')[0] || 'User';
+      return base.replace(/[^a-zA-Z0-9 ]/g,' ').trim().replace(/\s+/g,' ');
+    }
+
+    // Handle login and redirect to dashboard
     document.getElementById('loginForm').addEventListener('submit', function(e){
       e.preventDefault();
+
+      const email = document.getElementById('email').value.trim();
+      const password = document.getElementById('password').value; // not used in demo
+      const remember = document.getElementById('remember').checked;
+
+      if(!email || !password){
+        alert('Please enter email and password');
+        return;
+      }
+
+      // Demo session object — same key the dashboard expects
+      const user = {
+        email,
+        name: nameFromEmail(email),
+        remember,               // you can use this later for cookie/session length
+        ts: Date.now()
+      };
+
+      localStorage.setItem('chadaddy_user', JSON.stringify(user));
+
+      // Tiny toast
       const t=document.createElement('div');
-      t.textContent='Logged in (demo). Backend will be added later.';
+      t.textContent='Logged in!';
       t.className='fixed bottom-6 right-6 bg-gray-900 text-white text-sm px-3 py-2 rounded-lg shadow';
       document.body.appendChild(t);
-      setTimeout(()=>{ t.remove(); window.location.href = "/"; }, 1200);
+
+      // Redirect to dashboard
+      setTimeout(()=>{ t.remove(); window.location.href = 'dashboard.html'; }, 600);
     });
   </script>
 </body>
