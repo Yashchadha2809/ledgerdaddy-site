@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en" class="scroll-smooth h-full">
+<html lang="en" class="scroll-smooth">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
@@ -9,23 +9,15 @@
   <script src="https://cdn.tailwindcss.com"></script>
   <script>
     tailwind.config = {
-      darkMode: ["class", '[data-theme="dark"]'],
       theme: {
         extend: {
           colors:{ indigoDeep:"#1A237E", emerald:"#2E7D32", cyanBright:"#00BCD4", accentOrange:"#FF7043" },
-          boxShadow:{ lift:"0 8px 30px rgba(0,0,0,.12)" },
-          borderRadius: { "2xl":"16px" }
+          boxShadow:{ lift:"0 14px 34px rgba(0,0,0,.12)" }
         }
       }
     }
   </script>
   <style>
-    :root{
-      --indigoDeep:#1A237E; --emerald:#2E7D32; --cyanBright:#00BCD4; --accentOrange:#FF7043;
-      --bg:#0B1020; --surface:#11172B; --border:#26324B; --text:#E6EAF2; --muted:#9AA8C7;
-    }
-    html,body{height:100%}
-    .glass{backdrop-filter:saturate(160%) blur(8px)}
     .fade-in{animation:fade .15s ease-out}
     @keyframes fade{from{opacity:.5;transform:translateY(2px)}to{opacity:1;transform:none}}
     .typing-dot{animation:pulse 1s infinite ease-in-out}
@@ -37,37 +29,29 @@
     .hero-img{background:url('https://images.unsplash.com/photo-1586521995568-39ef16c6934d?q=80&w=1920&auto=format&fit=crop') center/cover no-repeat;}
     pre{background:#0f172a; color:#e5e7eb; padding:12px; border-radius:10px; overflow:auto}
     code{font-family:ui-monospace,SFMono-Regular,Menlo,monospace}
-    .caret{display:inline-block;width:8px;height:1em;translate:0 .2em;background:currentColor;animation:blink 1s steps(1) infinite}
-    @keyframes blink{0%,49%{opacity:1}50%,100%{opacity:.15}}
-    .table-wrap{overflow-x:auto}
-    .hint{color:var(--muted)}
   </style>
 </head>
-
-<body class="h-full bg-[var(--bg)] text-[var(--text)]">
+<body class="bg-gray-50 text-gray-900">
 
   <!-- Topbar -->
-  <header class="fixed top-0 inset-x-0 z-50 border-b border-[var(--border)] bg-[var(--surface)]/75 glass">
-    <div class="max-w-7xl mx-auto px-4 py-3 flex items-center gap-3">
-      <button id="toggleSidebar" class="md:hidden border border-[var(--border)] rounded-xl px-2 py-1">☰</button>
+  <header class="fixed top-0 inset-x-0 z-50 border-b border-gray-200 bg-white/90 backdrop-blur">
+    <div class="max-w-7xl mx-auto px-4 py-3 flex items-center justify-between">
       <a href="/" class="flex items-center gap-2" aria-label="Home">
-        <span class="grid h-9 w-9 place-items-center rounded-2xl bg-gradient-to-tr from-cyanBright to-emerald text-black font-extrabold shadow">◆</span>
-        <span class="text-xl font-bold">Ledgerdaddy</span>
+        <span class="grid h-9 w-9 place-items-center rounded-xl bg-gradient-to-tr from-cyanBright to-emerald text-white font-extrabold shadow">◆</span>
+        <span class="text-xl font-bold text-indigoDeep">Ledgerdaddy</span>
         <span class="ml-2 hidden sm:inline-flex text-[11px] px-2 py-0.5 rounded-full border border-cyanBright/40 text-cyanBright">AI Customs</span>
       </a>
-      <nav class="hidden md:flex items-center gap-6 text-sm font-medium ml-4">
+      <nav class="hidden md:flex items-center gap-6 text-sm font-medium">
         <a href="/marketplace.html" class="hover:text-cyanBright">Marketplace</a>
         <a href="/calculator.html" class="hover:text-cyanBright">Calculator</a>
         <a href="/hs-finder.html" class="hover:text-cyanBright">HS Finder</a>
         <a href="/dashboard.html" class="hover:text-cyanBright">Dashboard</a>
       </nav>
-      <div class="ml-auto hidden md:flex items-center gap-2">
-        <button id="newChatTop" class="border border-[var(--border)] px-3 py-1.5 rounded-xl hover:bg-white/5">New Chat</button>
-        <a href="/log-in.html" class="border border-[var(--border)] px-3 py-1.5 rounded-xl">Log in</a>
-        <a href="/personal-sign-up.html" class="bg-emerald text-white px-4 py-2 rounded-xl hover:opacity-95">Sign up</a>
-        <button id="themeToggle" class="border border-[var(--border)] px-3 py-1.5 rounded-xl" title="Light/Dark">🌗</button>
+      <div class="hidden md:flex items-center gap-2">
+        <a href="/log-in.html" class="border px-4 py-2 rounded-lg">Log in</a>
+        <a href="/personal-sign-up.html" class="bg-emerald text-white px-4 py-2 rounded-lg hover:opacity-95">Sign up</a>
       </div>
-      <a href="/personal-sign-up.html" class="md:hidden bg-emerald text-white px-3 py-1.5 rounded-xl">Start</a>
+      <a href="/personal-sign-up.html" class="md:hidden bg-emerald text-white px-3 py-1.5 rounded-lg">Start</a>
     </div>
   </header>
 
@@ -84,80 +68,68 @@
   </section>
 
   <!-- Chat layout -->
-  <main class="max-w-6xl mx-auto px-2 sm:px-4 pb-36 grid md:grid-cols-[260px,1fr] gap-4 -mt-6">
+  <main class="max-w-6xl mx-auto px-2 sm:px-4 pb-28 grid md:grid-cols-[260px,1fr] gap-4 -mt-6">
     <!-- Sidebar -->
-    <aside id="sidebar" class="bg-[var(--surface)] border border-[var(--border)] rounded-2xl shadow-lift p-3 h-fit sticky top-24 transition-all duration-200">
-      <div class="flex items-center gap-2">
+    <aside class="bg-white border border-gray-200 rounded-2xl shadow p-3 h-fit sticky top-24">
+      <div class="flex items-center justify-between">
         <strong>Conversations</strong>
-        <span id="modelDot" class="ml-1 h-2 w-2 rounded-full bg-emerald inline-block" title="Online"></span>
-        <button id="newChat" class="ml-auto text-xs border border-[var(--border)] rounded px-2 py-1 hover:bg-white/5">New chat</button>
+        <button id="newChat" class="text-xs border rounded px-2 py-1">New chat</button>
       </div>
-      <input id="searchThreads" class="mt-2 w-full bg-black/20 border border-[var(--border)] rounded-xl px-3 py-2 text-sm outline-none" placeholder="Search…" />
-      <ul id="chatList" class="mt-3 grid gap-1 text-sm max-h-[50vh] overflow-auto pr-1"></ul>
+      <ul id="chatList" class="mt-3 grid gap-1 text-sm max-h-[50vh] overflow-auto"></ul>
       <div class="mt-3 grid gap-2 text-sm">
-        <a class="border border-[var(--border)] px-2 py-1 rounded text-center hover:bg-white/5" href="/hs-finder.html">Open HS Finder</a>
-        <a class="border border-[var(--border)] px-2 py-1 rounded text-center hover:bg-white/5" href="/calculator.html">Open Calculator</a>
-        <button id="exportBtn" class="border border-[var(--border)] px-2 py-1 rounded hover:bg-white/5">Export current chat</button>
-        <button id="clearAll" class="text-red-300 border border-red-500/30 px-2 py-1 rounded hover:bg-red-500/10">Clear all</button>
+        <a class="border px-2 py-1 rounded text-center" href="/hs-finder.html">Open HS Finder</a>
+        <a class="border px-2 py-1 rounded text-center" href="/calculator.html">Open Calculator</a>
+        <button id="exportBtn" class="border px-2 py-1 rounded">Export current chat</button>
+        <button id="clearAll" class="text-red-600 border border-red-200 px-2 py-1 rounded">Clear all</button>
       </div>
     </aside>
 
     <!-- Conversation -->
-    <section class="bg-[var(--surface)] border border-[var(--border)] rounded-2xl shadow-lift flex flex-col">
-      <div id="messages" class="flex-1 overflow-auto p-4 space-y-4 h-[calc(100vh-260px)] pr-1">
-        <div class="fade-in rounded-2xl bg-white/5 border border-[var(--border)] p-4">
-          <div class="text-sm hint">Assistant</div>
-          <div class="mt-1 whitespace-pre-wrap leading-relaxed">
-            Hey, I’m your customs agent. Ask anything—HS codes, duties, documents. You can also attach files.
-            <ul class="list-disc ml-5 mt-3">
-              <li><button class="demo-btn text-cyanBright hover:underline" data-q="Find HS code for wireless earbuds in IN">Find HS code for wireless earbuds in IN</button></li>
-              <li><button class="demo-btn text-cyanBright hover:underline" data-q="Duty for IN 851713 CIF 100000">Duty for IN 851713 CIF 100000</button></li>
-              <li><button class="demo-btn text-cyanBright hover:underline" data-q="Docs to import wooden furniture into EU">Docs to import wooden furniture into EU</button></li>
+    <section class="bg-white border border-gray-200 rounded-2xl shadow flex flex-col">
+      <div id="messages" class="flex-1 overflow-auto p-4 space-y-4">
+        <div class="fade-in rounded-xl bg-gray-50 p-4">
+          <div class="text-sm text-gray-600">Assistant</div>
+          <div class="mt-1 whitespace-pre-wrap">
+            Hi! Ask me anything about HS codes, import duty, or customs docs.
+            Try:
+            <ul class="list-disc ml-5 mt-2">
+              <li><button class="demo-btn text-cyanBright" data-q="Find HS code for wireless earbuds in IN">Find HS code for wireless earbuds in IN</button></li>
+              <li><button class="demo-btn text-cyanBright" data-q="Duty for IN 851713 CIF 100000">Duty for IN 851713 CIF 100000</button></li>
+              <li><button class="demo-btn text-cyanBright" data-q="List docs needed to import furniture into EU">List docs needed to import furniture into EU</button></li>
             </ul>
           </div>
         </div>
       </div>
 
       <!-- Composer -->
-      <div class="border-t border-[var(--border)] p-3 bg-[var(--surface)]/90 backdrop-blur sticky bottom-0">
+      <div class="border-t p-3">
         <form id="composer" class="flex flex-col gap-2">
-          <div class="flex items-center gap-2 text-xs hint">
-            <label for="modeSel">Mode</label>
-            <select id="modeSel" class="border border-[var(--border)] bg-black/20 rounded-lg px-2 py-1 text-sm">
+          <div class="flex items-center gap-2">
+            <label for="modeSel" class="text-xs text-gray-600">Mode</label>
+            <select id="modeSel" class="border rounded-lg px-2 py-1 text-sm">
               <option value="core">Core</option>
               <option value="learn">Learn</option>
               <option value="calculate">Calculate</option>
               <option value="earn">Earn</option>
               <option value="business">Business</option>
             </select>
-            <span class="ml-auto">Enter to send • Shift+Enter newline • <kbd>Ctrl/Cmd + /</kbd> focus</span>
           </div>
-
           <div class="flex items-end gap-2">
-            <!-- Upload -->
-            <label class="cursor-pointer border border-[var(--border)] rounded-xl px-3 py-2 hover:bg-white/5" title="Attach files">
-              <input type="file" id="fileInput" multiple class="hidden" />
-              📎
-            </label>
-
-            <textarea id="chatInput" rows="1" placeholder="Hey, I’m your customs agent. Ask anything—HS codes, duties, documents. You can also attach files."
-              class="flex-1 border border-[var(--border)] bg-black/20 rounded-2xl px-3 py-2 resize-none max-h-40 outline-none"
+            <textarea id="chatInput" rows="1" placeholder="Message Ledgerdaddy…"
+              class="flex-1 border rounded-xl px-3 py-2 resize-none max-h-40"
             ></textarea>
-
-            <button id="sendBtn" class="rounded-2xl px-4 py-2 bg-gradient-to-r from-cyanBright to-emerald text-black font-semibold hover:scale-[1.01] transition">Send</button>
+            <button id="sendBtn" class="bg-emerald text-white px-4 py-2 rounded-xl">Send</button>
           </div>
-
-          <!-- Attachment pills -->
-          <div id="attPills" class="flex flex-wrap gap-2"></div>
         </form>
+        <p class="text-[11px] text-gray-500 mt-1">Enter to send • Shift+Enter for new line</p>
       </div>
     </section>
   </main>
 
   <!-- Toast -->
-  <div id="toast" class="hidden fixed bottom-6 right-6 bg-black text-white text-sm px-3 py-2 rounded-lg shadow"></div>
+  <div id="toast" class="hidden fixed bottom-6 right-6 bg-gray-900 text-white text-sm px-3 py-2 rounded-lg shadow"></div>
 
-  <footer class="text-center text-xs hint my-8">
+  <footer class="text-center text-xs text-gray-500 my-8">
     © <span id="year"></span> Ledgerdaddy
   </footer>
 
@@ -172,29 +144,7 @@
     const toast = (msg) => { const t = $('#toast'); t.textContent = msg; t.classList.remove('hidden'); setTimeout(()=>t.classList.add('hidden'), 1600); };
     const uid = () => Math.random().toString(36).slice(2)+Date.now().toString(36);
 
-    // Theme toggle (persist)
-    const THEME_KEY = 'ld_theme_pref';
-    const themeToggle = $('#themeToggle');
-    function applyTheme(v){
-      if(v==='light'){ document.documentElement.removeAttribute('data-theme'); }
-      else { document.documentElement.setAttribute('data-theme','dark'); }
-      localStorage.setItem(THEME_KEY, v);
-    }
-    applyTheme(localStorage.getItem(THEME_KEY) || (matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light'));
-    themeToggle?.addEventListener('click', ()=> applyTheme(document.documentElement.getAttribute('data-theme')==='dark'?'light':'dark'));
-
-    // Sidebar toggle (persist)
-    const SIDEBAR_KEY = 'ld_sidebar_open';
-    const toggleSidebarBtn = $('#toggleSidebar');
-    const sidebar = $('#sidebar');
-    function setSidebar(open){
-      sidebar.style.display = open ? '' : 'none';
-      localStorage.setItem(SIDEBAR_KEY, open ? '1' : '0');
-    }
-    setSidebar(localStorage.getItem(SIDEBAR_KEY)!=='0');
-    toggleSidebarBtn?.addEventListener('click', ()=> setSidebar(sidebar.style.display==='none'));
-
-    // Sticky session id
+    // sticky session id
     function getSessionId(){
       const k="ld_chat_session_id";
       let v = localStorage.getItem(k);
@@ -218,24 +168,21 @@
     function getCurrent(){ return threads.find(t=>t.id===currentId); }
     function setTitleFromFirstUserMessage(thread){
       const first = thread.messages.find(m=>m.role==='user');
-      if(first){ thread.title = (first.text || 'Conversation').slice(0, 60); }
+      if(first){ thread.title = (first.text || 'Conversation').slice(0, 50); }
     }
 
     // ===== Sidebar =====
-    const searchThreads = $('#searchThreads');
     function renderSidebar(){
       const list = $('#chatList');
       if(!threads.length){
-        list.innerHTML = '<li class="text-[11px] p-2 rounded bg-white/5 border border-[var(--border)] hint">No conversations yet</li>'; return;
+        list.innerHTML = '<li class="text-gray-500 text-xs p-2 rounded bg-gray-50">No conversations yet</li>'; return;
       }
-      const q = (searchThreads?.value||'').toLowerCase();
-      const filtered = threads.filter(t => (t.title||'').toLowerCase().includes(q));
-      list.innerHTML = filtered.map(t=>`
+      list.innerHTML = threads.map(t=>`
         <li>
           <button data-id="${t.id}"
-            class="w-full text-left px-2 py-2 rounded-2xl hover:bg-white/5 border border-transparent hover:border-[var(--border)] ${t.id===currentId?'bg-white/10 border-[var(--border)]':''}">
+            class="w-full text-left px-2 py-2 rounded hover:bg-gray-50 ${t.id===currentId?'bg-gray-100':''}">
             <div class="truncate">${t.title || 'Conversation'}</div>
-            <div class="text-[11px] hint">${(t.messages?.length||0)} messages • ${(t.mode||'core').toUpperCase()}</div>
+            <div class="text-[11px] text-gray-500">${(t.messages?.length||0)} messages • ${(t.mode||'core').toUpperCase()}</div>
           </button>
         </li>
       `).join('');
@@ -243,28 +190,27 @@
         btn.onclick = ()=>{ currentId = btn.getAttribute('data-id'); renderSidebar(); renderMessages(); renderMode(); };
       });
     }
-    searchThreads?.addEventListener('input', renderSidebar);
 
     // ===== Messages UI =====
     function msgBubble(role, text){
       const isUser = role==='user';
       const avatar = isUser ? '👤' : '◆';
-      const bg = isUser ? 'bg-white/5' : 'bg-white/5';
+      const bg = isUser ? 'bg-white' : 'bg-gray-50';
       return `
-        <div class="fade-in rounded-2xl ${bg} border border-[var(--border)] p-4">
-          <div class="text-sm hint flex items-center gap-2">
-            <span class="grid w-6 h-6 place-items-center rounded-full ${isUser?'bg-white/10':'bg-indigoDeep text-white'} text-[12px]">${avatar}</span>
+        <div class="fade-in rounded-xl ${bg} p-4">
+          <div class="text-sm text-gray-600 flex items-center gap-2">
+            <span class="grid w-6 h-6 place-items-center rounded-full ${isUser?'bg-gray-200':'bg-indigoDeep text-white'} text-[12px]">${avatar}</span>
             <span>${isUser?'You':'Assistant'}</span>
-            <button class="ml-auto text-[11px] underline copy-btn" data-copy="${encodeURIComponent(text)}">Copy</button>
+            <button class="ml-auto text-[11px] text-gray-500 copy-btn" data-copy="${encodeURIComponent(text)}">Copy</button>
           </div>
-          <div class="mt-2 whitespace-pre-wrap leading-relaxed">${renderMarkdownLite(text)}</div>
+          <div class="mt-1 whitespace-pre-wrap leading-relaxed">${renderMarkdownLite(text)}</div>
         </div>
       `;
     }
     function typingBubble(){
       return `
-        <div class="rounded-2xl bg-white/5 border border-[var(--border)] p-4">
-          <div class="text-sm hint flex items-center gap-2">
+        <div class="rounded-xl bg-gray-50 p-4">
+          <div class="text-sm text-gray-600 flex items-center gap-2">
             <span class="grid w-6 h-6 place-items-center rounded-full bg-indigoDeep text-white text-[12px]">◆</span>
             <span>Assistant</span>
           </div>
@@ -280,18 +226,16 @@
       let out = (text || '').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
       out = out.replace(/```([\s\S]*?)```/g, (_,code)=>`<pre><code>${code}</code></pre>`);
       out = out.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>');
-      out = out.replace(/`([^`]+)`/g, '<code class="bg-black/40 px-1 py-0.5 rounded text-[90%]">$1</code>');
-      // Tables → scrollable on mobile
-      out = out.replace(/((?:^|\\n)\\|.*\\|(?:.|\\n)*?)(?=\\n\\n|$)/g, '<div class="table-wrap">$1</div>');
+      out = out.replace(/`([^`]+)`/g, '<code class="bg-gray-100 px-1 py-0.5 rounded text-[90%]">$1</code>');
       return out;
     }
     function renderMessages(){
       const wrap = $('#messages');
       const t = getCurrent();
-      if(!t){ wrap.innerHTML = '<div class="p-4 hint">Start a new chat.</div>'; return; }
+      if(!t){ wrap.innerHTML = '<div class="p-4 text-gray-500">Start a new chat.</div>'; return; }
       wrap.innerHTML = t.messages.map(m=>msgBubble(m.role, m.text)).join('') || `
-        <div class="rounded-2xl bg-white/5 border border-[var(--border)] p-4">
-          <div class="text-sm hint">Assistant</div>
+        <div class="rounded-xl bg-gray-50 p-4">
+          <div class="text-sm text-gray-600">Assistant</div>
           <div class="mt-1">How can I help today?</div>
         </div>
       `;
@@ -301,9 +245,7 @@
           catch{ toast('Copy failed'); }
         };
       });
-      // Auto-scroll if near bottom
-      const nearBottom = wrap.scrollHeight - wrap.scrollTop - wrap.clientHeight < 60;
-      if (nearBottom) wrap.scrollTop = wrap.scrollHeight;
+      wrap.scrollTop = wrap.scrollHeight;
     }
 
     // ===== Mode handling =====
@@ -333,8 +275,7 @@
 
       const wrap = $('#messages');
       wrap.insertAdjacentHTML('beforeend', typingBubble());
-      const bottomBefore = wrap.scrollHeight - wrap.scrollTop - wrap.clientHeight < 60;
-      if (bottomBefore) wrap.scrollTop = wrap.scrollHeight;
+      wrap.scrollTop = wrap.scrollHeight;
 
       try {
         const thread = getCurrent();
@@ -359,7 +300,7 @@
         const last = wrap.lastElementChild; if(last) last.remove();
 
         if (res.ok && data.reply){
-          addMessage('assistant', data.reply + ' <span class="caret"></span>');
+          addMessage('assistant', data.reply);
         } else {
           addMessage('assistant', "⚠️ Error: " + (data.error || `API ${res.status}`));
         }
@@ -369,7 +310,7 @@
       }
     }
 
-    // ===== Composer behaviour & shortcuts =====
+    // ===== Composer behaviour =====
     const area = $('#chatInput');
     const form = $('#composer');
 
@@ -384,9 +325,6 @@
         send(area.value);
         area.value=''; area.style.height='auto';
       }
-      if ((e.metaKey||e.ctrlKey) && e.key === '/') {
-        e.preventDefault(); area.focus();
-      }
     });
     form.addEventListener('submit', (e)=>{ e.preventDefault(); send(area.value); area.value=''; area.style.height='auto'; });
 
@@ -396,11 +334,8 @@
       area.focus();
     });
 
-    // New Chat (header + sidebar)
     $('#newChat').onclick = ()=> newThread();
-    $('#newChatTop')?.addEventListener('click', ()=> newThread());
 
-    // Export / Clear
     $('#exportBtn').onclick = ()=>{
       const t = getCurrent(); if(!t) return toast('No chat');
       const blob = new Blob([JSON.stringify(t, null, 2)], {type:'application/json'});
@@ -416,46 +351,8 @@
       }
     };
 
-    // ===== Optional uploads (graceful if backend lacks /api/upload) =====
-    const fileInput = $('#fileInput');
-    const attPills = $('#attPills');
-    let attachments = [];
-    function renderPills(){
-      attPills.innerHTML = attachments.map(a => `
-        <span class="text-xs border border-[var(--border)] rounded-full px-2 py-1">
-          ${a.name} · ${(a.size/1024).toFixed(1)} KB
-          <button class="ml-2 opacity-70 hover:opacity-100" data-x="${a.id}">✕</button>
-        </span>
-      `).join('');
-      attPills.querySelectorAll('button[data-x]').forEach(btn=>{
-        btn.onclick = ()=>{ attachments = attachments.filter(x => x.id !== btn.getAttribute('data-x')); renderPills(); };
-      });
-    }
-    fileInput?.addEventListener('change', async (e)=>{
-      const files = [...e.target.files];
-      // If your server supports /api/upload, uncomment to actually upload:
-      // try{
-      //   const form = new FormData(); files.forEach(f=>form.append('file', f, f.name));
-      //   const res = await fetch(`${API_BASE}/api/upload`, { method:'POST', body: form });
-      //   const list = await res.json();
-      //   attachments = [...attachments, ...list];
-      // }catch{ toast('Upload failed'); return; }
-      // For now just show pills (no send):
-      attachments = [...attachments, ...files.map((f,i)=>({id: uid()+i, name:f.name, size:f.size}))];
-      renderPills();
-      fileInput.value = '';
-    });
-
     // ===== Init =====
     if(!threads.length){ newThread(); } else { renderSidebar(); renderMessages(); renderMode(); }
-
-    // Keyboard: focus input via Cmd/Ctrl+K as well
-    window.addEventListener('keydown', (e)=>{
-      if ((e.metaKey||e.ctrlKey) && e.key.toLowerCase()==='k') {
-        e.preventDefault(); area.focus();
-      }
-      if (e.key==='Escape') { /* close future dialogs if any */ }
-    });
   </script>
 </body>
 </html>
