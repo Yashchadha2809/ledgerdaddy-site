@@ -1,0 +1,265 @@
+<!DOCTYPE html>
+<html lang="en" class="scroll-smooth">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Dashboard – Chadaddy</title>
+  <meta name="description" content="Welcome to your Chadaddy dashboard. Jump back into calculator, HS finder, and broker quotes." />
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors:{ indigoDeep:"#1A237E", emerald:"#2E7D32", cyanBright:"#00BCD4", accentOrange:"#FF7043" }
+        }
+      }
+    }
+  </script>
+  <style>
+    .card{transition:transform .12s ease, box-shadow .2s ease}
+    .card:hover{transform:translateY(-2px); box-shadow:0 14px 34px rgba(0,0,0,.14)}
+  </style>
+</head>
+<body class="bg-gray-50 text-gray-900">
+
+  <!-- Auth guard: if no user, bounce to sign-in -->
+  <script>
+    (function(){
+      try{
+        const u = JSON.parse(localStorage.getItem('chadaddy_user')||'null');
+        if(!u){ window.location.href = 'auth.html#signin'; }
+      }catch(e){ window.location.href = 'auth.html#signin'; }
+    })();
+  </script>
+
+  <!-- Header -->
+  <header class="sticky top-0 z-40 border-b bg-white/90 backdrop-blur">
+    <div class="max-w-7xl mx-auto px-4 py-3 flex items-center justify-between">
+      <a href="index.html" class="flex items-center gap-2" aria-label="Chadaddy home">
+        <span class="grid h-9 w-9 place-items-center rounded-xl bg-gradient-to-tr from-cyanBright to-emerald text-white font-extrabold shadow">◆</span>
+        <span class="text-xl font-bold text-indigoDeep">Chadaddy</span>
+        <span class="ml-2 hidden sm:inline-flex text-[11px] px-2 py-0.5 rounded-full border border-cyanBright/40 text-cyanBright">Dashboard</span>
+      </a>
+      <nav class="hidden md:flex items-center gap-5 text-sm">
+        <a href="index.html#calculator" class="hover:text-cyanBright">Calculator</a>
+        <a href="index.html#hsfinder" class="hover:text-cyanBright">HS Finder</a>
+        <a href="marketplace.html" class="hover:text-cyanBright">Marketplace</a>
+        <button id="logoutBtn" class="border rounded-lg px-3 py-1.5">Sign out</button>
+      </nav>
+    </div>
+  </header>
+
+  <!-- Welcome -->
+  <section class="bg-white border-b">
+    <div class="max-w-7xl mx-auto px-6 py-10 grid md:grid-cols-[1fr,320px] gap-6 items-start">
+      <div>
+        <h1 class="text-2xl md:text-3xl font-extrabold">Welcome back, <span id="uName">Trader</span> 👋</h1>
+        <p class="text-gray-600 mt-1">Continue where you left off or start something new.</p>
+
+        <!-- Quick actions -->
+        <div class="mt-6 grid sm:grid-cols-2 lg:grid-cols-3 gap-4">
+          <a href="index.html#calculator" class="card p-4 bg-gray-50 border rounded-xl block">
+            <div class="font-semibold">Duty Calculator</div>
+            <p class="text-sm text-gray-600 mt-1">Compute BCD, IGST/VAT & landed cost.</p>
+          </a>
+          <a href="index.html#hsfinder" class="card p-4 bg-gray-50 border rounded-xl block">
+            <div class="font-semibold">HS / HSN Finder</div>
+            <p class="text-sm text-gray-600 mt-1">Describe your product and get candidate codes.</p>
+          </a>
+          <a href="marketplace.html" class="card p-4 bg-gray-50 border rounded-xl block">
+            <div class="font-semibold">Find a Broker</div>
+            <p class="text-sm text-gray-600 mt-1">Compare verified CHAs by port & rating.</p>
+          </a>
+        </div>
+
+        <!-- Recent activity -->
+        <div class="mt-8">
+          <h2 class="text-lg font-semibold">Recent activity</h2>
+          <div id="activity" class="mt-3 grid gap-3">
+            <!-- Filled by JS -->
+          </div>
+          <div id="noActivity" class="hidden text-sm text-gray-500 mt-2">
+            No recent items yet. Try the calculator or HS Finder to see them here.
+          </div>
+        </div>
+      </div>
+
+      <!-- Sidebar: profile / session -->
+      <aside class="bg-white border rounded-xl p-4">
+        <div class="flex items-center gap-3">
+          <div class="h-12 w-12 grid place-items-center rounded-full bg-gradient-to-tr from-cyanBright to-emerald text-white font-bold">U</div>
+          <div>
+            <div id="uNameSide" class="font-semibold">User</div>
+            <div id="uEmail" class="text-xs text-gray-500">user@example.com</div>
+          </div>
+        </div>
+
+        <div class="mt-4 grid gap-2 text-sm">
+          <div class="flex items-center justify-between">
+            <span>Lead access</span>
+            <span id="leadStatus" class="px-2 py-0.5 rounded-full text-xs border">Checking…</span>
+          </div>
+          <div class="flex items-center justify-between">
+            <span>Saved chats</span>
+            <span id="chatCount" class="text-gray-600">0</span>
+          </div>
+          <div class="flex items-center justify-between">
+            <span>Saved calcs/docs</span>
+            <span id="docCount" class="text-gray-600">0</span>
+          </div>
+        </div>
+
+        <div class="mt-4 grid gap-2">
+          <a href="index.html#chat" class="border rounded-lg px-3 py-2 text-center">Open Chat</a>
+          <button id="logoutBtn2" class="bg-gray-900 text-white rounded-lg px-3 py-2">Sign out</button>
+        </div>
+
+        <!-- Danger zone (local only) -->
+        <details class="mt-4 p-3 border rounded-lg">
+          <summary class="cursor-pointer font-medium text-red-700">Danger zone</summary>
+          <p class="text-xs text-gray-600 mt-2">This clears your local session & demo data from your browser.</p>
+          <button id="deleteAccount" class="mt-2 border border-red-500 text-red-600 rounded-lg px-3 py-1.5 text-sm">Delete local account</button>
+        </details>
+      </aside>
+    </div>
+  </section>
+
+  <!-- Suggested brokers (teaser) -->
+  <section class="max-w-7xl mx-auto px-6 py-10">
+    <h2 class="text-lg font-semibold">Suggested brokers</h2>
+    <div id="suggested" class="mt-4 grid sm:grid-cols-2 lg:grid-cols-3 gap-6">
+      <!-- Filled by JS -->
+    </div>
+  </section>
+
+  <!-- Footer -->
+  <footer class="mt-8 border-t bg-white">
+    <div class="max-w-7xl mx-auto px-6 py-8 text-sm text-gray-600">
+      © <span id="year"></span> Chadaddy.
+    </div>
+  </footer>
+
+  <!-- App JS -->
+  <script>
+    const $ = s => document.querySelector(s);
+    const $$ = s => Array.from(document.querySelectorAll(s));
+    $('#year').textContent = new Date().getFullYear();
+
+    // Load session user
+    const user = JSON.parse(localStorage.getItem('chadaddy_user')||'{}');
+    const name = user.name || 'Trader';
+    const email = user.email || 'user@example.com';
+    $('#uName').textContent = name.split(' ')[0] || name;
+    $('#uNameSide').textContent = name;
+    $('#uEmail').textContent = email;
+    $('.h-12.w-12').textContent = (name[0] || 'U').toUpperCase();
+
+    // Lead gate status (from index.html demo)
+    const lead = JSON.parse(localStorage.getItem('chadaddy_lead')||'null');
+    const ls = $('#leadStatus');
+    if(lead){ ls.textContent = 'Active'; ls.className='px-2 py-0.5 rounded-full text-xs border border-emerald text-emerald'; }
+    else { ls.textContent = 'Locked'; ls.className='px-2 py-0.5 rounded-full text-xs border border-yellow-500 text-yellow-700'; }
+
+    // Recent activity: pull from demo storages if present
+    const msgs = JSON.parse(localStorage.getItem('chadaddy_thread_v2')||'[]'); // from Chat
+    const docs = JSON.parse(localStorage.getItem('chadaddy_docs')||'[]');      // optional key if you store PDFs later
+    $('#chatCount').textContent = msgs.length;
+    $('#docCount').textContent = docs.length;
+
+    function renderActivity(){
+      const actBox = $('#activity');
+      actBox.innerHTML = '';
+
+      // Last 5 chat prompts
+      const lastPrompts = msgs.filter(m=>m.role==='user').slice(-5).reverse();
+      if(lastPrompts.length){
+        const block = document.createElement('div');
+        block.className = 'bg-white border rounded-xl p-4';
+        block.innerHTML = '<div class="font-medium">Recent chats</div>'
+          + lastPrompts.map(m=>`<div class="mt-2 text-sm text-gray-700">• ${escapeHTML(m.text).slice(0,120)}</div>`).join('');
+        const cta = document.createElement('a');
+        cta.href = 'index.html#chat';
+        cta.textContent = 'Open chat →';
+        cta.className = 'inline-block mt-3 text-cyanBright text-sm';
+        block.appendChild(cta);
+        actBox.appendChild(block);
+      }
+
+      // Last 3 mock calculator runs (optional: if you saved a key)
+      const calcs = JSON.parse(localStorage.getItem('chadaddy_calcs')||'[]').slice(-3).reverse();
+      if(calcs.length){
+        const block = document.createElement('div');
+        block.className = 'bg-white border rounded-xl p-4';
+        block.innerHTML = '<div class="font-medium">Recent duty calculations</div>'
+          + calcs.map(c=>`<div class="mt-2 text-sm text-gray-700">• ${c.country} • HS ${c.hs} • Total ${Number(c.total||0).toLocaleString()}</div>`).join('');
+        const cta = document.createElement('a');
+        cta.href = 'index.html#calculator';
+        cta.textContent = 'Open calculator →';
+        cta.className = 'inline-block mt-3 text-cyanBright text-sm';
+        block.appendChild(cta);
+        actBox.appendChild(block);
+      }
+
+      if(!actBox.children.length){
+        $('#noActivity').classList.remove('hidden');
+      }
+    }
+
+    function escapeHTML(s){
+      return String(s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+    }
+
+    renderActivity();
+
+    // Suggested brokers (simple static picks, matches your marketplace cards)
+    const PICKS = [
+      {name:'Pacific Global', loc:'IN • JNPT • Mundra', rating:4.9, price:'₹ 6,500',
+        img:'https://images.unsplash.com/photo-1556761175-4b46a572b786?q=80&w=800&auto=format&fit=crop'},
+      {name:'Astra Customs', loc:'IN • Mundra • Chennai', rating:4.7, price:'₹ 5,500',
+        img:'https://images.unsplash.com/photo-1515879218367-8466d910aaa4?q=80&w=800&auto=format&fit=crop'},
+      {name:'Metro ACI', loc:'US • Los Angeles', rating:4.6, price:'$ 120',
+        img:'https://images.unsplash.com/photo-1517433456452-f9633a875f6f?q=80&w=800&auto=format&fit=crop'}
+    ];
+    $('#suggested').innerHTML = PICKS.map(p=>`
+      <article class="card bg-white border rounded-xl overflow-hidden">
+        <img class="h-36 w-full object-cover" src="${p.img}" alt="${p.name}">
+        <div class="p-3">
+          <div class="flex items-center justify-between">
+            <div class="font-semibold">${p.name}</div>
+            <div class="text-xs px-2 py-0.5 rounded-full border border-emerald text-emerald">Verified</div>
+          </div>
+          <div class="text-xs text-gray-500 mt-1">${p.loc}</div>
+          <div class="flex items-center justify-between mt-2 text-sm">
+            <div>★ ${p.rating.toFixed(1)}</div>
+            <div>From <strong>${p.price}</strong></div>
+          </div>
+          <div class="mt-3 grid grid-cols-2 gap-2 text-sm">
+            <a class="border rounded-lg px-2 py-1 text-center" href="marketplace.html">Compare</a>
+            <a class="bg-cyanBright text-black rounded-lg px-2 py-1 text-center" href="auth.html#signup">Get Quote</a>
+          </div>
+        </div>
+      </article>
+    `).join('');
+
+    // Sign out
+    function doLogout(){
+      localStorage.removeItem('chadaddy_user');
+      window.location.href = 'auth.html#signin';
+    }
+    $('#logoutBtn').addEventListener('click', doLogout);
+    $('#logoutBtn2').addEventListener('click', doLogout);
+
+    // Delete account (local demo only)
+    $('#deleteAccount').addEventListener('click', ()=>{
+      if(confirm('This will clear your local session and demo data from this browser. Continue?')){
+        localStorage.removeItem('chadaddy_user');
+        localStorage.removeItem('chadaddy_lead');
+        localStorage.removeItem('chadaddy_thread_v2');
+        localStorage.removeItem('chadaddy_docs');
+        localStorage.removeItem('chadaddy_calcs');
+        window.location.href = 'auth.html#signup';
+      }
+    });
+  </script>
+</body>
+</html>
