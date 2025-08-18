@@ -61,7 +61,7 @@
       <div class="backdrop-brightness-90 bg-gradient-to-r from-indigoDeep/70 to-cyanBright/60">
         <div class="max-w-6xl mx-auto px-4 py-8 text-white">
           <h1 class="text-3xl md:text-4xl font-extrabold">Ask in Chat</h1>
-          <p class="mt-2 text-white/95">Chat assistant for HS, duties, valuation & more — connected to backend.</p>
+          <p class="mt-2 text-white/95">ChatGPT-style assistant for HS, duties, valuation & more. (Connected to backend)</p>
         </div>
       </div>
     </div>
@@ -107,9 +107,9 @@
         <form id="composer" class="flex flex-col gap-2">
           <div class="flex items-center gap-2">
             <label for="modeSel" class="text-xs text-gray-600">Mode</label>
-            <!-- Removed 'core' to avoid missing cha_genius_core.txt -->
             <select id="modeSel" class="border rounded-lg px-2 py-1 text-sm">
-              <option value="learn" selected>Learn</option>
+              <option value="core">Core</option>
+              <option value="learn">Learn</option>
               <option value="calculate">Calculate</option>
               <option value="earn">Earn</option>
               <option value="business">Business</option>
@@ -135,9 +135,9 @@
   </footer>
 
   <script>
-    // ===== Bridge config =====
-    const BRIDGE_BASE  = "https://chadaddy.onrender.com/bridge";
-    const BRIDGE_TOKEN = "sh7f83n2dk9asjdn23ks9asjd83"; // must match BRIDGE_TOKEN on server
+    // ===== Backend URL =====
+    // Your Flask on Render:
+    const API_BASE = "https://chadaddy.onrender.com";  // change if your domain differs
 
     // ===== Utilities =====
     const $  = s => document.querySelector(s);
@@ -146,7 +146,7 @@
     const toast = (msg) => { const t = $('#toast'); t.textContent = msg; t.classList.remove('hidden'); setTimeout(()=>t.classList.add('hidden'), 1400); };
     const uid = () => Math.random().toString(36).slice(2)+Date.now().toString(36);
 
-    // Sticky session id per browser
+    // Sticky session id per browser (optional)
     function getSessionId(){
       const k="ld_chat_session_id";
       let v = localStorage.getItem(k);
@@ -162,7 +162,7 @@
     function saveThreads(){ localStorage.setItem(STORE_KEY, JSON.stringify(threads)); }
     function newThread(){
       const id = uid();
-      const t = { id, title: 'New chat', mode: "learn", messages: [] }; // default to learn
+      const t = { id, title: 'New chat', mode: "core", messages: [] };
       threads.unshift(t);
       currentId = id;
       saveThreads(); renderSidebar(); renderMessages(); renderMode();
@@ -184,7 +184,7 @@
           <button data-id="${t.id}"
             class="w-full text-left px-2 py-2 rounded hover:bg-gray-50 ${t.id===currentId?'bg-gray-100':''}">
             <div class="truncate">${t.title || 'Conversation'}</div>
-            <div class="text-[11px] text-gray-500">${(t.messages?.length||0)} messages • ${(t.mode||'learn').toUpperCase()}</div>
+            <div class="text-[11px] text-gray-500">${(t.messages?.length||0)} messages • ${(t.mode||'core').toUpperCase()}</div>
           </button>
         </li>
       `).join('');
@@ -254,15 +254,15 @@
     function renderMode(){
       const t = getCurrent(); if(!t) return;
       const sel = $('#modeSel'); if(!sel) return;
-      sel.value = t.mode || "learn";
+      sel.value = t.mode || "core";
     }
     $('#modeSel')?.addEventListener('change', (e)=>{
       const t = getCurrent(); if(!t) return;
-      t.mode = e.target.value || "learn";
+      t.mode = e.target.value || "core";
       saveThreads(); renderSidebar();
     });
 
-    // ===== Send flow (calls Bridge) =====
+    // ===== Send flow (calls backend /api/chat) =====
     function addMessage(role, text){
       const t = getCurrent(); if(!t) return;
       t.messages.push({role, text, ts: Date.now()});
@@ -281,24 +281,21 @@
 
       try {
         const thread = getCurrent();
-        const mode   = (thread?.mode) || "learn";
+        const mode   = (thread?.mode) || "core";
 
-        const res = await fetch(`${BRIDGE_BASE}/chat`, {
+        const res = await fetch(`${API_BASE}/api/chat`, {
           method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-            ...(BRIDGE_TOKEN ? { "X-Bridge-Token": BRIDGE_TOKEN } : {})
-          },
+          headers: { "Content-Type": "application/json" },
           body: JSON.stringify({ message: trimmed, mode, session_id: SESSION_ID })
         });
 
         const data = await res.json().catch(()=>({}));
         const last = wrap.lastElementChild; if(last) last.remove();
 
-        if (res.ok && (data.reply || data.ok)) {
-          addMessage('assistant', data.reply || "(empty)");
+        if (res.ok && data.reply){
+          addMessage('assistant', data.reply);
         } else {
-          addMessage('assistant', "⚠️ Error: " + (data.error || `Bridge ${res.status}`));
+          addMessage('assistant', "⚠️ Error: " + (data.error || `API ${res.status}`));
         }
       } catch (err) {
         const last = wrap.lastElementChild; if(last) last.remove();
@@ -324,17 +321,14 @@
     });
     form.addEventListener('submit', (e)=>{ e.preventDefault(); send(area.value); area.value=''; area.style.height='auto'; });
 
-    // demo quick buttons
     $$('.demo-btn').forEach(b=> b.onclick = ()=>{
       area.value = b.getAttribute('data-q');
       area.dispatchEvent(new Event('input'));
       area.focus();
     });
 
-    // new chat
     $('#newChat').onclick = ()=> newThread();
 
-    // export & clear
     $('#exportBtn').onclick = ()=>{
       const t = getCurrent(); if(!t) return toast('No chat');
       const blob = new Blob([JSON.stringify(t, null, 2)], {type:'application/json'});
