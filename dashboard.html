@@ -4,52 +4,45 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <title>Dashboard – Ledgerdaddy</title>
-  <meta name="theme-color" content="#16a34a" />
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <meta name="theme-color" content="#1A237E" />
   <script src="https://cdn.tailwindcss.com"></script>
   <script>
     tailwind.config = {
       theme: {
         extend: {
-          fontFamily: { sans: ["Inter", "ui-sans-serif", "system-ui"] },
-          colors: {
-            brandPrimary: "#16a34a",     // green
-            brandLight: "#86efac",       // light mint
-            brandMid: "#34d399",         // gradient start
-            brandAccent: "#0ea5a4",      // teal accent
-            brandGray: "#f8fafc"
+          colors:{
+            indigoDeep:"#1A237E",
+            emerald:"#2E7D32",
+            cyanBright:"#00BCD4",
+            accentOrange:"#FF7043",
+            brandGray:"#f8fafc"
           },
-          boxShadow: { lift: "0 10px 25px rgba(0,0,0,.08)" },
-          backgroundImage: {
-            'soft-gradient': 'linear-gradient(135deg, #34d399 0%, #16a34a 100%)'
-          },
-          borderRadius: { xl2: '14px' }
+          boxShadow:{ lift:"0 14px 34px rgba(0,0,0,.12)" },
+          backgroundImage:{
+            "soft-gradient":"linear-gradient(135deg, #00BCD4 0%, #1A237E 100%)"
+          }
         }
       }
     }
   </script>
   <style>
-    :root{--radius:14px}
-    .card{transition:transform .15s ease, box-shadow .25s ease}
-    .card:hover{transform:translateY(-2px); box-shadow:0 16px 32px rgba(0,0,0,.1)}
-    .kpi{background:#ffffff}
-    .btn{display:inline-flex;align-items:center;gap:.5rem;padding:.6rem 1rem;border-radius:12px;font-weight:600}
-    .btn-primary{background:linear-gradient(135deg,#34d399,#16a34a);color:#fff;box-shadow:0 8px 20px rgba(22,163,74,.25)}
-    .btn-primary:hover{filter:brightness(1.03);transform:translateY(-1px)}
-    .btn-outline{border:1px solid #d1d5db}
-    .nav-link{position:relative}
-    .nav-link:focus-visible{outline:2px solid #16a34a;outline-offset:4px;border-radius:8px}
-    .focus-ring:focus-visible{outline:2px solid #16a34a;outline-offset:2px;border-radius:12px}
-    .skeleton{background:linear-gradient(90deg,#eee, #f6f7f9, #eee);background-size:200% 100%;animation:shimmer 1.1s infinite}
-    @keyframes shimmer{0%{background-position:200% 0}100%{background-position:-200% 0}}
+    .card{transition:transform .12s ease, box-shadow .2s ease}
+    .card:hover{transform:translateY(-2px); box-shadow:0 14px 34px rgba(0,0,0,.14)}
+    .kpi{background:#fff}
+    .btn-primary{
+      background:linear-gradient(135deg,#00BCD4,#1A237E);
+      color:#fff;
+      font-weight:600;
+      padding:.5rem 1rem;
+      border-radius:.5rem;
+      transition:all .15s ease;
+    }
+    .btn-primary:hover{filter:brightness(1.05);transform:translateY(-1px)}
+    .focus-ring:focus-visible{outline:2px solid #1A237E;outline-offset:2px;border-radius:12px}
   </style>
 </head>
-<body class="min-h-screen bg-brandGray text-gray-900">
-  <a href="#main" class="sr-only focus:not-sr-only focus:fixed focus:top-2 focus:left-2 focus:bg-white focus:text-brandPrimary focus:px-3 focus:py-2 focus:rounded-md">Skip to content</a>
-
-  <!-- Auth gate -->
+<body class="bg-brandGray text-gray-900">
+  <!-- ===== Auth gate: if no user, redirect to login ===== -->
   <script>
     (function(){
       try{
@@ -59,164 +52,99 @@
     })();
   </script>
 
-  <!-- Topbar -->
-  <header class="fixed top-0 inset-x-0 z-50 border-b border-gray-200 bg-white/90 backdrop-blur supports-[backdrop-filter]:bg-white/70">
+  <!-- ===== Topbar ===== -->
+  <header class="fixed top-0 inset-x-0 z-50 border-b border-gray-200 bg-white/90 backdrop-blur">
     <div class="max-w-7xl mx-auto px-4 py-3 flex items-center justify-between">
       <a href="/index.html" class="flex items-center gap-2" aria-label="Home">
         <span class="grid h-9 w-9 place-items-center rounded-xl bg-soft-gradient text-white font-extrabold shadow">◆</span>
-        <span class="text-xl font-bold text-brandPrimary">Ledgerdaddy</span>
-        <span class="ml-2 hidden sm:inline-flex text-[11px] px-2 py-0.5 rounded-full border border-brandLight text-brandPrimary">AI Customs</span>
+        <span class="text-xl font-bold text-indigoDeep">Ledgerdaddy</span>
+        <span class="ml-2 hidden sm:inline-flex text-[11px] px-2 py-0.5 rounded-full border border-cyanBright/40 text-cyanBright">AI Customs</span>
       </a>
-      <nav class="hidden md:flex items-center gap-2 text-sm font-medium">
-        <a href="/marketplace.html" class="nav-link px-3 py-2 rounded-lg hover:text-brandPrimary hover:bg-brandLight/30">Marketplace</a>
-        <a href="/calculator.html" class="nav-link px-3 py-2 rounded-lg hover:text-brandPrimary hover:bg-brandLight/30">Calculator</a>
-        <a href="/hs-finder.html" class="nav-link px-3 py-2 rounded-lg hover:text-brandPrimary hover:bg-brandLight/30">HS Finder</a>
-        <a href="/chat.html" class="nav-link px-3 py-2 rounded-lg hover:text-brandPrimary hover:bg-brandLight/30">Ask in Chat</a>
+      <nav class="hidden md:flex items-center gap-6 text-sm font-medium">
+        <a href="/marketplace.html" class="hover:text-cyanBright">Marketplace</a>
+        <a href="/calculator.html" class="hover:text-cyanBright">Calculator</a>
+        <a href="/hs-finder.html" class="hover:text-cyanBright">HS Finder</a>
+        <a href="/chat.html" class="hover:text-cyanBright">Ask in Chat</a>
       </nav>
-      <div class="flex items-center gap-2 relative">
-        <button id="quickStart" class="btn btn-primary">Quick Start</button>
-        <!-- Avatar with dropdown (top-right corner account menu) -->
-        <button id="acctBtn" aria-haspopup="menu" aria-expanded="false" class="h-9 w-9 grid place-items-center rounded-full bg-brandLight/60 text-brandPrimary font-bold border border-brandLight focus-ring" title="Account">
-          <span>YC</span>
-        </button>
-        <div id="acctMenu" role="menu" class="hidden absolute right-0 top-12 w-64 bg-white border border-gray-200 rounded-xl shadow-xl p-2">
-          <a role="menuitem" href="/profile.html" class="flex items-center gap-3 px-3 py-2 rounded-lg hover:bg-gray-50">
-            <span class="h-7 w-7 grid place-items-center rounded bg-gray-100">👤</span>
-            <div><div class="text-sm font-semibold">Profile</div><div class="text-xs text-gray-500">Name, email, company</div></div>
-          </a>
-          <a role="menuitem" href="/security.html" class="flex items-center gap-3 px-3 py-2 rounded-lg hover:bg-gray-50">
-            <span class="h-7 w-7 grid place-items-center rounded bg-gray-100">🔒</span>
-            <div><div class="text-sm font-semibold">Security & Privacy</div><div class="text-xs text-gray-500">Password, 2FA, data</div></div>
-          </a>
-          <a role="menuitem" href="/payments.html" class="flex items-center gap-3 px-3 py-2 rounded-lg hover:bg-gray-50">
-            <span class="h-7 w-7 grid place-items-center rounded bg-gray-100">💳</span>
-            <div><div class="text-sm font-semibold">Payment Methods</div><div class="text-xs text-gray-500">Cards & UPI</div></div>
-          </a>
-          <a role="menuitem" href="/billing.html" class="flex items-center gap-3 px-3 py-2 rounded-lg hover:bg-gray-50">
-            <span class="h-7 w-7 grid place-items-center rounded bg-gray-100">📄</span>
-            <div><div class="text-sm font-semibold">Billing & Invoices</div><div class="text-xs text-gray-500">History & downloads</div></div>
-          </a>
-          <a role="menuitem" href="/integrations.html" class="flex items-center gap-3 px-3 py-2 rounded-lg hover:bg-gray-50">
-            <span class="h-7 w-7 grid place-items-center rounded bg-gray-100">🔗</span>
-            <div><div class="text-sm font-semibold">Integrations</div><div class="text-xs text-gray-500">Zoho/QuickBooks, WhatsApp</div></div>
-          </a>
-          <div class="my-1 h-px bg-gray-100"></div>
-          <button id="logoutBtn" class="w-full text-left flex items-center gap-3 px-3 py-2 rounded-lg hover:bg-red-50 text-red-600" role="menuitem">Sign out</button>
+      <div class="flex items-center gap-2">
+        <!-- Account dropdown -->
+        <div class="relative group">
+          <button class="btn-primary">Account ▾</button>
+          <div class="absolute right-0 mt-2 hidden group-hover:block bg-white border border-gray-200 rounded-xl shadow-lg w-48">
+            <a href="#" class="block px-4 py-2 text-sm hover:bg-cyanBright/10">Profile</a>
+            <a href="#" class="block px-4 py-2 text-sm hover:bg-cyanBright/10">Security & Privacy</a>
+            <a href="#" class="block px-4 py-2 text-sm hover:bg-cyanBright/10">Payment Methods</a>
+            <a href="#" class="block px-4 py-2 text-sm hover:bg-cyanBright/10">Integrations</a>
+            <a href="#" class="block px-4 py-2 text-sm text-red-600 hover:bg-red-50">Sign out</a>
+          </div>
         </div>
-      </div>
-    </div>
-    <!-- Mobile nav -->
-    <div class="md:hidden border-t border-gray-200 bg-white/90">
-      <div class="max-w-7xl mx-auto px-2 py-2 grid grid-cols-4 gap-2 text-xs">
-        <a class="text-center py-2 rounded-lg hover:bg-brandLight/30" href="/calculator.html">Calc</a>
-        <a class="text-center py-2 rounded-lg hover:bg-brandLight/30" href="/hs-finder.html">HS</a>
-        <a class="text-center py-2 rounded-lg hover:bg-brandLight/30" href="/marketplace.html">Brokers</a>
-        <a class="text-center py-2 rounded-lg hover:bg-brandLight/30" href="/chat.html">Chat</a>
       </div>
     </div>
   </header>
 
-  <!-- Heading -->
+  <!-- ===== Heading ===== -->
   <section class="pt-24 md:pt-28">
     <div class="max-w-7xl mx-auto px-4">
-      <div class="flex items-center justify-between gap-3 flex-wrap">
-        <div>
-          <h1 class="text-3xl md:text-4xl font-extrabold">Welcome, <span id="name">there</span> 👋</h1>
-          <p class="text-gray-600 mt-2">Quick access to your tools and recent activity.</p>
-        </div>
-        <div class="flex items-center gap-2">
-          <a href="/chat.html" class="btn btn-primary">Ask something</a>
-          <a href="/calculator.html" class="btn btn-outline">New estimate</a>
-        </div>
-      </div>
+      <h1 class="text-3xl md:text-4xl font-extrabold text-indigoDeep">Welcome, <span id="name">there</span> 👋</h1>
+      <p class="text-gray-600 mt-2">Quick access to your tools and recent activity.</p>
     </div>
   </section>
 
-  <!-- KPIs -->
+  <!-- ===== KPIs ===== -->
   <section class="max-w-7xl mx-auto px-4 mt-6 grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
     <div class="kpi border border-gray-200 rounded-2xl p-4">
       <div class="text-xs uppercase text-gray-500">Saved Estimates</div>
-      <div class="mt-1 text-3xl font-extrabold text-brandPrimary tracking-tight">3</div>
-      <div class="mt-2 text-xs text-gray-500">Last: 2 days ago</div>
+      <div class="mt-1 text-2xl font-extrabold text-indigoDeep">3</div>
     </div>
     <div class="kpi border border-gray-200 rounded-2xl p-4">
       <div class="text-xs uppercase text-gray-500">HS Lookups</div>
-      <div class="mt-1 text-3xl font-extrabold text-brandPrimary tracking-tight">2</div>
-      <div class="mt-2 text-xs text-gray-500">This week</div>
+      <div class="mt-1 text-2xl font-extrabold text-indigoDeep">2</div>
     </div>
     <div class="kpi border border-gray-200 rounded-2xl p-4">
       <div class="text-xs uppercase text-gray-500">Broker Shortlists</div>
-      <div class="mt-1 text-3xl font-extrabold text-brandPrimary tracking-tight">1</div>
-      <div class="mt-2 text-xs text-gray-500">JNPT</div>
+      <div class="mt-1 text-2xl font-extrabold text-indigoDeep">1</div>
     </div>
     <div class="kpi border border-gray-200 rounded-2xl p-4">
       <div class="text-xs uppercase text-gray-500">Chat Threads</div>
-      <div class="mt-1 text-3xl font-extrabold text-brandPrimary tracking-tight" id="kpiThreads">0</div>
-      <div class="mt-2 text-xs text-gray-500">Active</div>
+      <div class="mt-1 text-2xl font-extrabold text-indigoDeep" id="kpiThreads">0</div>
     </div>
   </section>
 
-  <!-- Content -->
-  <main id="main" class="max-w-7xl mx-auto px-4 mt-8 grid gap-6 lg:grid-cols-[1fr,360px]">
+  <!-- ===== Content ===== -->
+  <main class="max-w-7xl mx-auto px-4 mt-8 grid gap-6 lg:grid-cols-[1fr,360px]">
     <!-- Left column -->
     <div class="grid gap-6">
       <!-- Quick actions -->
       <section class="bg-white border border-gray-200 rounded-2xl p-5 card">
-        <div class="flex items-center justify-between">
-          <h2 class="text-xl font-semibold">Quick actions</h2>
-          <div class="text-xs text-gray-500">Common tasks</div>
-        </div>
+        <h2 class="text-xl font-semibold text-indigoDeep">Quick actions</h2>
         <div class="mt-4 grid grid-cols-2 md:grid-cols-4 gap-3">
-          <a href="/calculator.html" class="group border rounded-xl p-4 text-left hover:border-brandPrimary focus-ring">
-            <div class="flex items-center gap-3">
-              <div class="h-10 w-10 rounded-lg bg-brandLight text-brandPrimary grid place-items-center">∑</div>
-              <div>
-                <div class="text-sm font-semibold text-brandPrimary">Open Calculator</div>
-                <div class="text-xs text-gray-500">Start a new estimate</div>
-              </div>
-            </div>
+          <a href="/calculator.html" class="border rounded-xl p-4 text-center hover:border-cyanBright focus-ring">
+            <div class="text-sm font-semibold">Open Calculator</div>
+            <div class="text-xs text-gray-500">Start a new estimate</div>
           </a>
-          <a href="/hs-finder.html" class="group border rounded-xl p-4 text-left hover:border-brandPrimary focus-ring">
-            <div class="flex items-center gap-3">
-              <div class="h-10 w-10 rounded-lg bg-emerald-50 text-emerald-600 grid place-items-center">HS</div>
-              <div>
-                <div class="text-sm font-semibold text-brandPrimary">HS Finder</div>
-                <div class="text-xs text-gray-500">Get code suggestions</div>
-              </div>
-            </div>
+          <a href="/hs-finder.html" class="border rounded-xl p-4 text-center hover:border-cyanBright focus-ring">
+            <div class="text-sm font-semibold">HS Finder</div>
+            <div class="text-xs text-gray-500">Get code suggestions</div>
           </a>
-          <a href="/marketplace.html" class="group border rounded-xl p-4 text-left hover:border-brandPrimary focus-ring">
-            <div class="flex items-center gap-3">
-              <div class="h-10 w-10 rounded-lg bg-amber-50 text-amber-600 grid place-items-center">🏬</div>
-              <div>
-                <div class="text-sm font-semibold text-brandPrimary">Find Broker</div>
-                <div class="text-xs text-gray-500">Compare verified CHAs</div>
-              </div>
-            </div>
+          <a href="/marketplace.html" class="border rounded-xl p-4 text-center hover:border-cyanBright focus-ring">
+            <div class="text-sm font-semibold">Find Broker</div>
+            <div class="text-xs text-gray-500">Compare verified CHAs</div>
           </a>
-          <a href="/chat.html" class="group border rounded-xl p-4 text-left hover:border-brandPrimary focus-ring">
-            <div class="flex items-center gap-3">
-              <div class="h-10 w-10 rounded-lg bg-brandLight text-brandPrimary grid place-items-center">💬</div>
-              <div>
-                <div class="text-sm font-semibold text-brandPrimary">Ask in Chat</div>
-                <div class="text-xs text-gray-500">ChatGPT-style helper</div>
-              </div>
-            </div>
+          <a href="/chat.html" class="border rounded-xl p-4 text-center hover:border-cyanBright focus-ring">
+            <div class="text-sm font-semibold">Ask in Chat</div>
+            <div class="text-xs text-gray-500">ChatGPT-style helper</div>
           </a>
         </div>
       </section>
 
       <!-- Pinned tools -->
       <section class="bg-white border border-gray-200 rounded-2xl p-5 card">
-        <div class="flex items-center justify-between">
-          <h2 class="text-xl font-semibold">Pinned tools</h2>
-          <button id="customizePins" class="text-sm text-brandPrimary hover:underline">Customize</button>
-        </div>
+        <h2 class="text-xl font-semibold text-indigoDeep">Pinned tools</h2>
         <div class="mt-4 grid md:grid-cols-2 gap-4">
           <article class="border rounded-xl p-4">
             <div class="flex items-center justify-between">
               <h3 class="font-semibold">Calculator</h3>
-              <a href="/calculator.html" class="text-brandPrimary text-sm">Open →</a>
+              <a href="/calculator.html" class="text-cyanBright text-sm">Open →</a>
             </div>
             <p class="text-sm text-gray-600 mt-1">Estimate BCD, IGST/VAT and landed cost.</p>
             <div class="text-xs text-gray-500 mt-2">Last used: 2 days ago</div>
@@ -224,7 +152,7 @@
           <article class="border rounded-xl p-4">
             <div class="flex items-center justify-between">
               <h3 class="font-semibold">HS Finder</h3>
-              <a href="/hs-finder.html" class="text-brandPrimary text-sm">Open →</a>
+              <a href="/hs-finder.html" class="text-cyanBright text-sm">Open →</a>
             </div>
             <p class="text-sm text-gray-600 mt-1">Describe product → get HS suggestions.</p>
             <div class="text-xs text-gray-500 mt-2">Last used: 4 days ago</div>
@@ -232,7 +160,7 @@
           <article class="border rounded-xl p-4">
             <div class="flex items-center justify-between">
               <h3 class="font-semibold">Marketplace</h3>
-              <a href="/marketplace.html" class="text-brandPrimary text-sm">Open →</a>
+              <a href="/marketplace.html" class="text-cyanBright text-sm">Open →</a>
             </div>
             <p class="text-sm text-gray-600 mt-1">Browse & compare verified customs brokers.</p>
             <div class="text-xs text-gray-500 mt-2">Last used: 1 week ago</div>
@@ -240,7 +168,7 @@
           <article class="border rounded-xl p-4">
             <div class="flex items-center justify-between">
               <h3 class="font-semibold">Ask in Chat</h3>
-              <a href="/chat.html" class="text-brandPrimary text-sm">Open →</a>
+              <a href="/chat.html" class="text-cyanBright text-sm">Open →</a>
             </div>
             <p class="text-sm text-gray-600 mt-1">Get instant help, ChatGPT-style.</p>
             <div class="text-xs text-gray-500 mt-2">Active: <span id="chatThreadsText">0 threads</span></div>
@@ -250,89 +178,35 @@
 
       <!-- Recent items -->
       <section class="bg-white border border-gray-200 rounded-2xl p-5 card">
-        <div class="flex items-center justify-between">
-          <h2 class="text-xl font-semibold">Recent items</h2>
-          <div class="text-xs text-gray-500">Demo</div>
-        </div>
+        <h2 class="text-xl font-semibold text-indigoDeep">Recent items (demo)</h2>
         <ul id="recentList" class="mt-3 grid gap-3 text-sm"></ul>
-        <div id="recentEmpty" class="hidden mt-3 text-center text-sm text-gray-500 border border-dashed rounded-xl p-6">No recent activity yet. Start with the <a class="text-brandPrimary" href="/calculator.html">Calculator</a>.</div>
       </section>
     </div>
 
     <!-- Right column -->
     <aside class="grid gap-6">
       <section class="bg-white border border-gray-200 rounded-2xl p-5 card">
-        <h3 class="text-lg font-semibold">Account</h3>
+        <h3 class="text-lg font-semibold text-indigoDeep">Account</h3>
         <dl class="mt-3 text-sm">
-          <div class="flex justify-between py-2 border-b border-gray-100">
+          <div class="flex justify-between py-1 border-b border-gray-100">
             <dt class="text-gray-500">Email</dt>
             <dd id="email" class="font-medium">—</dd>
           </div>
-          <div class="flex justify-between py-2 border-b border-gray-100">
+          <div class="flex justify-between py-1 border-b border-gray-100">
             <dt class="text-gray-500">Member since</dt>
             <dd id="memberSince" class="font-medium">—</dd>
           </div>
         </dl>
-        <div class="mt-4 flex items-center gap-3">
-          <button id="clearData" class="text-xs underline">Clear local data</button>
-          <a href="/settings.html" class="text-xs text-brandPrimary hover:underline">Account settings</a>
-        </div>
-      </section>
-
-      <!-- New: Account options quick panel -->
-      <section class="bg-white border border-gray-200 rounded-2xl p-5 card">
-        <h3 class="text-lg font-semibold">Manage account</h3>
-        <div class="mt-3 grid gap-2 text-sm">
-          <a href="/payments.html" class="flex items-center justify-between border rounded-xl p-3 hover:border-brandPrimary">
-            <div class="flex items-center gap-3">
-              <span class="h-9 w-9 grid place-items-center rounded-lg bg-brandLight text-brandPrimary">💳</span>
-              <div>
-                <div class="font-medium">Payment methods</div>
-                <div class="text-xs text-gray-500">Cards, UPI, default method</div>
-              </div>
-            </div>
-            <span class="text-brandPrimary text-sm">Manage →</span>
-          </a>
-          <a href="/billing.html" class="flex items-center justify-between border rounded-xl p-3 hover:border-brandPrimary">
-            <div class="flex items-center gap-3">
-              <span class="h-9 w-9 grid place-items-center rounded-lg bg-green-50 text-green-700">📄</span>
-              <div>
-                <div class="font-medium">Billing & invoices</div>
-                <div class="text-xs text-gray-500">View history & downloads</div>
-              </div>
-            </div>
-            <span class="text-brandPrimary text-sm">Open →</span>
-          </a>
-          <a href="/security.html" class="flex items-center justify-between border rounded-xl p-3 hover:border-brandPrimary">
-            <div class="flex items-center gap-3">
-              <span class="h-9 w-9 grid place-items-center rounded-lg bg-emerald-50 text-emerald-700">🔒</span>
-              <div>
-                <div class="font-medium">Security & privacy</div>
-                <div class="text-xs text-gray-500">Password, 2FA, data export</div>
-              </div>
-            </div>
-            <span class="text-brandPrimary text-sm">Review →</span>
-          </a>
-          <a href="/integrations.html" class="flex items-center justify-between border rounded-xl p-3 hover:border-brandPrimary">
-            <div class="flex items-center gap-3">
-              <span class="h-9 w-9 grid place-items-center rounded-lg bg-teal-50 text-teal-700">🔗</span>
-              <div>
-                <div class="font-medium">Integrations</div>
-                <div class="text-xs text-gray-500">Zoho/QuickBooks, WhatsApp</div>
-              </div>
-            </div>
-            <span class="text-brandPrimary text-sm">Configure →</span>
-          </a>
-        </div>
+        <button id="clearData" class="mt-4 text-xs underline text-cyanBright">Clear local data</button>
       </section>
 
       <section class="bg-white border border-gray-200 rounded-2xl p-5 card">
-        <h3 class="text-lg font-semibold">What’s next?</h3>
+        <h3 class="text-lg font-semibold text-indigoDeep">What’s next?</h3>
         <ul class="mt-2 list-disc ml-5 text-sm text-gray-700">
-          <li>Create a landed cost estimate in the <a class="text-brandPrimary" href="/calculator.html">Calculator</a></li>
-          <li>Try <a class="text-brandPrimary" href="/hs-finder.html">HS Finder</a> with a product description</li>
-          <li>Browse verified brokers in the <a class="text-brandPrimary" href="/marketplace.html">Marketplace</a></li>
-          <li>Ask quick questions in <a class="text-brandPrimary" href="/chat.html">Chat</a></li>
+          <li>Create a landed cost estimate in the <a class="text-cyanBright" href="/calculator.html">Calculator</a></li>
+          <li>Try <a class="text-cyanBright" href="/hs-finder.html">HS Finder</a> with a product description</li>
+          <li>Browse verified brokers in the <a class="text-cyanBright" href="/marketplace.html">Marketplace</a></li>
+          <li>Ask quick questions in <a class="text-cyanBright" href="/chat.html">Chat</a></li>
         </ul>
       </section>
     </aside>
@@ -353,70 +227,37 @@
       document.getElementById('email').textContent = user.email || '—';
       const d = new Date(user.ts || Date.now());
       document.getElementById('memberSince').textContent = d.toLocaleDateString();
-      // Initials for avatar
-      const initials = (user.name||'').split(/\s+/).map(x=>x[0]).join('').slice(0,2).toUpperCase() || 'U';
-      document.getElementById('acctBtn').textContent = initials;
     }
 
-    // Recent skeleton -> items
-    const recentEl = document.getElementById('recentList');
-    const recentEmpty = document.getElementById('recentEmpty');
-    const skeleton = Array.from({length:3}).map(()=>`<li class=\"border rounded-lg px-3 py-3 flex items-center justify-between\">
-      <div class=\"h-4 w-48 rounded skeleton\"></div><div class=\"h-4 w-16 rounded skeleton\"></div></li>`).join('');
-    recentEl.innerHTML = skeleton;
+    // Demo "recent" list
     const recent = [
       { t:'Estimate • IN • HS 851713 • CIF', time:'2 days ago', link:'/calculator.html' },
       { t:'HS Finder • “LED downlight”', time:'4 days ago', link:'/hs-finder.html' },
       { t:'Broker shortlist • JNPT', time:'1 week ago', link:'/marketplace.html' },
       { t:'Chat • “Docs for EU furniture”', time:'1 week ago', link:'/chat.html' },
     ];
-    setTimeout(()=>{
-      if(!recent.length){
-        recentEl.innerHTML = '';
-        recentEmpty.classList.remove('hidden');
-      } else {
-        recentEl.innerHTML = recent.map(r => `<li class=\"border rounded-lg px-3 py-2 flex items-center justify-between bg-white\">
-          <a class=\"hover:text-brandPrimary\" href=\"${r.link}\">${r.t}</a>
-          <span class=\"text-gray-500\">${r.time}</span></li>`).join('');
-      }
-    }, 400);
+    document.getElementById('recentList').innerHTML = recent
+      .map(r => `<li class="border rounded-lg px-3 py-2 flex items-center justify-between">
+        <a class="hover:text-cyanBright" href="${r.link}">${r.t}</a>
+        <span class="text-gray-500">${r.time}</span></li>`).join('');
 
-    // Chat threads
+    // Pull chat thread count
     try{
       const t = JSON.parse(localStorage.getItem('ld_chat_threads_v1')||'[]');
       const n = Array.isArray(t) ? t.length : 0;
       document.getElementById('kpiThreads').textContent = n;
-      const chatThreadsText = document.getElementById('chatThreadsText');
-      if(chatThreadsText) chatThreadsText.textContent = n + (n===1?' thread':' threads');
+      document.getElementById('chatThreadsText').textContent = n + (n===1?' thread':' threads');
     }catch{}
 
-    // Quick start
-    document.getElementById('quickStart').addEventListener('click',()=>{
-      window.location.href = '/calculator.html';
-    });
-
-    // Account dropdown
-    const acctBtn = document.getElementById('acctBtn');
-    const acctMenu = document.getElementById('acctMenu');
-    acctBtn.addEventListener('click', ()=>{
-      const open = acctMenu.classList.toggle('hidden') === false;
-      acctBtn.setAttribute('aria-expanded', String(open));
-    });
-    document.addEventListener('click', (e)=>{
-      if(!acctMenu.contains(e.target) && !acctBtn.contains(e.target)){
-        acctMenu.classList.add('hidden');
-        acctBtn.setAttribute('aria-expanded','false');
-      }
-    });
-
-    // Sign out from dropdown
-    document.getElementById('logoutBtn').addEventListener('click', () => {
+    // Logout
+    const logoutBtn = document.createElement("button");
+    logoutBtn.addEventListener('click', () => {
       localStorage.removeItem('chadaddy_user');
       window.location.replace('/log-in.html');
     });
 
-    // Clear data
-    document.getElementById('clearData')?.addEventListener('click', () => {
+    // Clear local demo data
+    document.getElementById('clearData').addEventListener('click', () => {
       localStorage.removeItem('chadaddy_user');
       localStorage.removeItem('ld_chat_threads_v1');
       alert('Local demo data cleared. You may need to sign in again.');
