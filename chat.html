@@ -86,7 +86,6 @@
 
     <!-- Conversation -->
     <section class="bg-white border border-gray-200 rounded-2xl shadow flex flex-col">
-      <!-- Stream -->
       <div id="messages" class="flex-1 overflow-auto p-4 space-y-4">
         <div class="fade-in rounded-xl bg-gray-50 p-4">
           <div class="text-sm text-gray-600">Assistant</div>
@@ -136,17 +135,16 @@
 
   <script>
     // ===== Backend URL =====
-    // Your Flask on Render:
-    const API_BASE = "https://chadaddy.onrender.com";  // change if your domain differs
+    const API_BASE = "https://chadaddy.onrender.com"; // your Flask service on Render
 
     // ===== Utilities =====
     const $  = s => document.querySelector(s);
     const $$ = s => Array.from(document.querySelectorAll(s));
     const yearEl = $('#year'); if (yearEl) yearEl.textContent = new Date().getFullYear();
-    const toast = (msg) => { const t = $('#toast'); t.textContent = msg; t.classList.remove('hidden'); setTimeout(()=>t.classList.add('hidden'), 1400); };
+    const toast = (msg) => { const t = $('#toast'); t.textContent = msg; t.classList.remove('hidden'); setTimeout(()=>t.classList.add('hidden'), 1600); };
     const uid = () => Math.random().toString(36).slice(2)+Date.now().toString(36);
 
-    // Sticky session id per browser (optional)
+    // sticky session id
     function getSessionId(){
       const k="ld_chat_session_id";
       let v = localStorage.getItem(k);
@@ -286,10 +284,19 @@
         const res = await fetch(`${API_BASE}/api/chat`, {
           method: "POST",
           headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ message: trimmed, mode, session_id: SESSION_ID })
+          body: JSON.stringify({ message: trimmed, mode, session_id: SESSION_ID }),
+          cache: "no-store"
         });
 
-        const data = await res.json().catch(()=>({}));
+        let data = {};
+        const ct = res.headers.get("content-type") || "";
+        if (ct.includes("application/json")) {
+          data = await res.json();
+        } else {
+          const txt = await res.text();
+          data = { error: txt || `HTTP ${res.status}` };
+        }
+
         const last = wrap.lastElementChild; if(last) last.remove();
 
         if (res.ok && data.reply){
