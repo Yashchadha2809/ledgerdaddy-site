@@ -1,0 +1,221 @@
+<!DOCTYPE html>
+<html lang="en" class="scroll-smooth">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>HS Finder – Ledgerdaddy</title>
+  <meta name="theme-color" content="#1A237E" />
+  <link rel="preconnect" href="https://images.unsplash.com" />
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors:{ indigoDeep:"#1A237E", emerald:"#2E7D32", cyanBright:"#00BCD4", accentOrange:"#FF7043" },
+          boxShadow:{ lift:"0 14px 34px rgba(0,0,0,.12)" }
+        }
+      }
+    }
+  </script>
+  <style>
+    .card{transition:transform .12s ease, box-shadow .2s ease}
+    .card:hover{transform:translateY(-2px); box-shadow:0 14px 34px rgba(0,0,0,.14)}
+    .hero-img{
+      background:url('https://images.unsplash.com/photo-1586521995568-39ef16c6934d?q=80&w=1920&auto=format&fit=crop') center/cover no-repeat;
+    }
+  </style>
+</head>
+<body class="bg-gray-50 text-gray-900">
+
+  <!-- Topbar -->
+  <header class="fixed top-0 inset-x-0 z-50 border-b border-gray-200 bg-white/90 backdrop-blur">
+    <div class="max-w-7xl mx-auto px-4 py-3 flex items-center justify-between">
+      <a href="/" class="flex items-center gap-2" aria-label="Home">
+        <span class="grid h-9 w-9 place-items-center rounded-xl bg-gradient-to-tr from-cyanBright to-emerald text-white font-extrabold shadow">◆</span>
+        <span class="text-xl font-bold text-indigoDeep">Ledgerdaddy</span>
+        <span class="ml-2 hidden sm:inline-flex text-[11px] px-2 py-0.5 rounded-full border border-cyanBright/40 text-cyanBright">AI Customs</span>
+      </a>
+      <nav class="hidden md:flex items-center gap-6 text-sm font-medium">
+        <a href="/marketplace.html" class="hover:text-cyanBright">Marketplace</a>
+        <a href="/calculator.html" class="hover:text-cyanBright">Calculator</a>
+        <a href="/hs-finder.html" class="text-cyanBright">HS Finder</a>
+        <a href="/dashboard.html" class="hover:text-cyanBright">Dashboard</a>
+      </nav>
+      <div class="hidden md:flex items-center gap-2">
+        <a href="/log-in.html" class="border px-4 py-2 rounded-lg">Log in</a>
+        <a href="/personal-sign-up.html" class="bg-emerald text-white px-4 py-2 rounded-lg hover:opacity-95">Sign up</a>
+      </div>
+      <a href="/personal-sign-up.html" class="md:hidden bg-emerald text-white px-3 py-1.5 rounded-lg">Start</a>
+    </div>
+  </header>
+
+  <!-- Hero -->
+  <section class="pt-24 md:pt-28">
+    <div class="hero-img">
+      <div class="backdrop-brightness-90 bg-gradient-to-r from-indigoDeep/70 to-cyanBright/60">
+        <div class="max-w-4xl mx-auto px-4 py-12 text-white">
+          <h1 class="text-4xl md:text-5xl font-extrabold leading-tight">HS / HSN Finder</h1>
+          <p class="mt-3 text-white/95">Describe your product. Get suggested HS codes with confidence. Send one click to the calculator.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Finder -->
+  <main class="max-w-6xl mx-auto px-4 -mt-10 pb-16 grid md:grid-cols-2 gap-6">
+    <!-- Left: form -->
+    <section class="bg-white border border-gray-200 rounded-2xl shadow p-6 md:p-8">
+      <h2 class="text-xl font-semibold">Describe your product</h2>
+      <form id="hsForm" class="mt-4 grid gap-3">
+        <label class="grid gap-1 text-sm">
+          <span class="font-medium">Country</span>
+          <select id="hsCountry" class="border rounded-lg px-3 py-2">
+            <option>IN</option><option>US</option><option>EU</option><option>UK</option>
+            <option>AE</option><option>SG</option><option>AU</option><option>CA</option>
+          </select>
+        </label>
+        <label class="grid gap-1 text-sm">
+          <span class="font-medium">Product description</span>
+          <textarea id="hsDesc" rows="6" class="border rounded-lg px-3 py-2" placeholder="Materials, function, main use, key specs… e.g. Wireless earbuds with mic, Bluetooth 5.3, lithium battery"></textarea>
+        </label>
+
+        <div class="grid md:grid-cols-2 gap-3">
+          <label class="grid gap-1 text-sm">
+            <span class="font-medium">Key attributes (optional)</span>
+            <input id="hsAttr" class="border rounded-lg px-3 py-2" placeholder="e.g., lithium-ion battery, plastic body" />
+          </label>
+          <label class="grid gap-1 text-sm">
+            <span class="font-medium">Similar product (optional)</span>
+            <input id="hsSimilar" class="border rounded-lg px-3 py-2" placeholder="e.g., AirPods Pro" />
+          </label>
+        </div>
+
+        <div class="flex gap-3 pt-2">
+          <button id="hsRun" class="bg-emerald text-white px-4 py-2 rounded-lg">Find HS codes</button>
+          <button id="hsReset" type="button" class="border px-4 py-2 rounded-lg">Reset</button>
+        </div>
+        <p class="text-xs text-gray-500">These are demo suggestions. Always confirm with your customs broker.</p>
+      </form>
+    </section>
+
+    <!-- Right: results -->
+    <section class="grid gap-3" id="hsResults" aria-live="polite">
+      <div class="p-4 rounded-xl border border-dashed text-gray-500 bg-gray-50">
+        No results yet — describe your product and click “Find HS codes”.
+      </div>
+    </section>
+  </main>
+
+  <!-- Footer -->
+  <footer class="text-center text-xs text-gray-500 mt-6 mb-8">
+    © <span id="year"></span> Ledgerdaddy
+  </footer>
+
+  <script>
+    document.getElementById('year').textContent = new Date().getFullYear();
+
+    // Demo HS suggestion generator (front-end only).
+    function fakeHsSuggest(desc){
+      const d = desc.toLowerCase();
+      // A few simple demo branches
+      if(d.includes('earbud') || d.includes('headphone') || d.includes('tws')){
+        return [
+          {code:'851830', title:'Headphones & Earphones', conf:0.82, examples:['TWS earbuds','Wired headset']},
+          {code:'851762', title:'Communication equipment', conf:0.63, examples:['BT module','Wi-Fi adapter']},
+          {code:'392690', title:'Plastics articles (parts)', conf:0.38, examples:['Plastic housing']}
+        ];
+      }
+      if(d.includes('phone') || d.includes('smartphone')){
+        return [
+          {code:'851713', title:'Smartphones', conf:0.88, examples:['Android phone','iPhone']},
+          {code:'851762', title:'Communication equipment', conf:0.66, examples:['Cellular modules']},
+          {code:'850760', title:'Lithium-ion batteries', conf:0.44, examples:['Rechargeable cell']}
+        ];
+      }
+      if(d.includes('router') || d.includes('wifi') || d.includes('wi-fi')){
+        return [
+          {code:'851762', title:'Data/communication equipment', conf:0.86, examples:['Wi-Fi router','LTE CPE']},
+          {code:'851769', title:'Other telephony apparatus', conf:0.47, examples:['Adapters, parts']},
+          {code:'847330', title:'Parts for computers', conf:0.31, examples:['Network card']}
+        ];
+      }
+      // Default generic
+      return [
+        {code:'847989', title:'Machines & mechanical appliances (other)', conf:0.52, examples:['General machinery']},
+        {code:'902780', title:'Instruments for physical analysis', conf:0.41, examples:['Test meter']},
+        {code:'903180', title:'Measuring/checking instruments', conf:0.36, examples:['Sensor module']}
+      ];
+    }
+
+    function resultCard(r, country){
+      const conf = Math.round(r.conf * 100);
+      // Build calculator link with prefilled HS + country (your calculator can read these query params)
+      const calcUrl = `/calculator.html?hs=${encodeURIComponent(r.code)}&country=${encodeURIComponent(country||'IN')}`;
+      return `
+        <article class="p-4 border rounded-xl bg-white">
+          <div class="flex items-center justify-between gap-3">
+            <div>
+              <div class="text-lg font-semibold">${r.code} — ${r.title}</div>
+              <div class="text-xs text-gray-500">Examples: ${r.examples.join(', ')}</div>
+            </div>
+            <div class="text-xs px-2 py-0.5 rounded-full border ${conf>=75?'border-emerald text-emerald':conf>=50?'border-yellow-500 text-yellow-600':'border-gray-300 text-gray-500'}">${conf}%</div>
+          </div>
+          <div class="mt-3 flex flex-wrap gap-2">
+            <button class="copy-btn border px-3 py-1 rounded-lg text-sm" data-code="${r.code}">Copy code</button>
+            <a href="${calcUrl}" class="bg-cyanBright text-black px-3 py-1 rounded-lg text-sm">Open in Calculator</a>
+            <a href="/dashboard.html" class="border px-3 py-1 rounded-lg text-sm">Save to Dashboard</a>
+          </div>
+        </article>
+      `;
+    }
+
+    const resEl = document.getElementById('hsResults');
+    document.getElementById('hsRun').addEventListener('click', function(e){
+      e.preventDefault();
+      const desc = document.getElementById('hsDesc').value.trim();
+      const attr = document.getElementById('hsAttr').value.trim();
+      const similar = document.getElementById('hsSimilar').value.trim();
+      const country = document.getElementById('hsCountry').value;
+
+      if(!desc){
+        alert('Please describe your product');
+        return;
+      }
+
+      // Combine hints (simple demo)
+      const query = [desc, attr, similar].filter(Boolean).join(' ');
+      const suggestions = fakeHsSuggest(query);
+
+      resEl.innerHTML = suggestions.map(r => resultCard(r, country)).join('');
+
+      // Wire copy buttons
+      resEl.querySelectorAll('.copy-btn').forEach(btn=>{
+        btn.addEventListener('click', async ()=>{
+          const code = btn.getAttribute('data-code');
+          try{
+            await navigator.clipboard.writeText(code);
+            toast('HS code copied');
+          }catch{
+            toast('Copy failed');
+          }
+        });
+      });
+    });
+
+    document.getElementById('hsReset').addEventListener('click', ()=>{
+      document.getElementById('hsDesc').value = '';
+      document.getElementById('hsAttr').value = '';
+      document.getElementById('hsSimilar').value = '';
+      resEl.innerHTML = '<div class="p-4 rounded-xl border border-dashed text-gray-500 bg-gray-50">Cleared. Enter a description to get suggestions.</div>';
+    });
+
+    function toast(msg){
+      const t=document.createElement('div');
+      t.textContent=msg;
+      t.className='fixed bottom-6 right-6 bg-gray-900 text-white text-sm px-3 py-2 rounded-lg shadow';
+      document.body.appendChild(t);
+      setTimeout(()=>t.remove(),1400);
+    }
+  </script>
+</body>
+</html>
