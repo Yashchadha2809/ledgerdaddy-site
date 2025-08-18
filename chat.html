@@ -1,675 +1,643 @@
 <!DOCTYPE html>
-<html lang="en" class="h-full scroll-smooth">
+<html lang="en" class="h-full">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Ledgerdaddy — Chat with Customs Agent</title>
-  <meta name="theme-color" content="#1A237E" />
+  <title>Chat Demo – Channels • Messages • Threads</title>
+  <meta name="theme-color" content="#0ea5e9" />
   <script src="https://cdn.tailwindcss.com"></script>
   <script>
-    // Tailwind theme: brand palette you shared (Indigo Deep, Emerald, Cyan Bright, Accent Orange)
     tailwind.config = {
       theme: {
         extend: {
-          colors:{
-            indigoDeep:"#1A237E",
-            emerald:"#2E7D32",
-            cyanBright:"#00BCD4",
-            accentOrange:"#FF7043",
-            ink:"#0B1020",
-            soft:"#F5F7FA",
-            card:"#FFFFFF",
-            line:"#E6E8EE",
-            mute:"#6B7280",
-            codeBg:"#0F172A"
+          colors: {
+            brand: {
+              50: "#ecfeff",
+              100: "#cffafe",
+              200: "#a5f3fc",
+              300: "#67e8f9",
+              400: "#22d3ee",
+              500: "#06b6d4",
+              600: "#0891b2",
+              700: "#0e7490",
+              800: "#155e75",
+              900: "#164e63",
+            },
           },
-          boxShadow:{
-            soft:"0 10px 30px rgba(3,7,18,.06)",
-            lift:"0 14px 40px rgba(17, 24, 39, .10)"
-          },
-          borderRadius:{ xl2:"16px", pill:"999px" }
-        }
-      }
-    }
+          boxShadow: { soft: "0 10px 30px rgba(2,6,23,.08)" },
+          borderRadius: { xl2: "16px" },
+        },
+      },
+    };
   </script>
   <style>
-    /* micro-interactions */
-    .fade-in{animation:fade .14s ease-out}
+    .scrollbar-thin::-webkit-scrollbar{height:8px;width:8px}
+    .scrollbar-thin::-webkit-scrollbar-thumb{background:#e5e7eb;border-radius:8px}
+    .fade-in{animation:fade .12s ease-out}
     @keyframes fade{from{opacity:.5;transform:translateY(2px)}to{opacity:1;transform:none}}
     .typing-dot{animation:pulse 1s infinite ease-in-out}
     .typing-dot:nth-child(2){animation-delay:.15s}
     .typing-dot:nth-child(3){animation-delay:.3s}
     @keyframes pulse{0%,80%,100%{opacity:.25}40%{opacity:1}}
-
-    .btn{display:inline-flex;align-items:center;gap:.5rem;padding:.58rem 1rem;border-radius:12px;font-weight:600}
-    .btn-ghost{background:transparent;border:1px solid #E6E8EE}
-    .btn-ghost:hover{background:#F9FAFB}
-    .btn-accent{background:#2E7D32;color:#fff}
-    .btn-accent:hover{filter:brightness(1.05)}
-
-    .chip{font-size:12px;border:1px solid #E6E8EE;border-radius:999px;padding:.35rem .7rem;background:#FFF}
-    .chip:hover{border-color:#00BCD4;color:#006D74}
-
-    .thumb{width:56px;height:56px;border-radius:10px;object-fit:cover;border:1px solid #E6E8EE}
-    .file-pill{border:1px solid #E6E8EE;border-radius:10px;padding:.4rem .6rem;font-size:12px;display:flex;align-items:center;gap:.5rem;background:#fff}
-    .drop-target{outline:2px dashed #A7F3D0; outline-offset:4px}
-
-    .sr-only-focusable:focus{position:static;width:auto;height:auto;clip:auto;clip-path:none;padding:.25rem .5rem;border-radius:6px;background:#ECFDF5}
-
-    /* nicer bubbles */
-    .bubble{max-width:min(78vw,780px);}
-    .bubble-user{background:#1A237E;color:#fff;box-shadow:0 8px 20px rgba(26,35,126,.18)}
-    .bubble-bot{background:#FFFFFF;border:1px solid #E6E8EE;box-shadow:0 8px 24px rgba(2,6,23,.06)}
-    #dropOverlay{backdrop-filter: blur(2px);}
+    .btn{display:inline-flex;align-items:center;gap:.5rem;padding:.55rem .9rem;border-radius:10px;font-weight:600}
+    .btn-ghost{background:transparent;border:1px solid #e5e7eb}
+    .btn-ghost:hover{background:#f9fafb}
+    .btn-brand{background:#06b6d4;color:#fff}
+    .btn-brand:hover{filter:brightness(1.05)}
+    .chip{font-size:12px;border:1px solid #e5e7eb;border-radius:999px;padding:.3rem .6rem;background:#fff}
+    .chip:hover{border-color:#06b6d4;color:#0e7490}
+    .bubble{max-width:min(80vw,760px)}
+    .bubble-user{background:#0ea5e9;color:#fff;box-shadow:0 8px 22px rgba(14,165,233,.22)}
+    .bubble-other{background:#fff;border:1px solid #e5e7eb;box-shadow:0 8px 22px rgba(2,6,23,.06)}
+    .file-pill{border:1px solid #e5e7eb;border-radius:10px;padding:.35rem .6rem;font-size:12px;display:inline-flex;align-items:center;gap:.4rem;background:#fff}
+    .emoji{cursor:pointer;user-select:none}
   </style>
 </head>
-<body class="h-full bg-soft text-ink">
-  <!-- Skip link -->
-  <a href="#composer" class="sr-only sr-only-focusable absolute left-2 top-2 -translate-y-12 focus:translate-y-0 focus:outline-none">
-    Skip to message composer
-  </a>
-
+<body class="h-full bg-slate-50 text-slate-900">
   <!-- Header -->
-  <header class="sticky top-0 z-50 border-b border-line bg-gradient-to-r from-indigoDeep via-indigo-700 to-cyanBright text-white">
-    <div class="max-w-6xl mx-auto px-4 py-3 flex items-center justify-between">
-      <a href="/" class="flex items-center gap-2" aria-label="Home">
-        <span class="grid h-9 w-9 place-items-center rounded-xl bg-white/10 font-extrabold">◆</span>
-        <span class="text-lg font-semibold tracking-tight">Ledgerdaddy</span>
-        <span class="ml-2 hidden sm:inline-flex text-[11px] px-2 py-0.5 rounded-full border border-white/40">AI Customs</span>
-      </a>
-      <nav class="hidden md:flex items-center gap-1 text-sm">
-        <a href="/marketplace.html" class="px-3 py-2 rounded-pill hover:bg-white/10 aria-[current=page]:underline" aria-current="false">Marketplace</a>
-        <a href="/calculator.html" class="px-3 py-2 rounded-pill hover:bg-white/10" aria-current="false">Calculator</a>
-        <a href="/hs-finder.html" class="px-3 py-2 rounded-pill hover:bg-white/10" aria-current="false">HS Finder</a>
-        <a href="/dashboard.html" class="px-3 py-2 rounded-pill hover:bg-white/10" aria-current="false">Dashboard</a>
-        <span class="px-3 py-2 rounded-pill bg-white/15 border border-white/25">Chat</span>
-      </nav>
-      <div class="hidden md:flex items-center gap-2">
-        <a href="/log-in.html" class="btn btn-ghost text-white/90 border-white/30 hover:bg-white/10">Log in</a>
-        <a href="/personal-sign-up.html" class="btn bg-cyanBright text-ink hover:brightness-110">Sign up</a>
+  <header class="sticky top-0 z-40 bg-white/90 backdrop-blur border-b border-slate-200">
+    <div class="max-w-7xl mx-auto px-4 py-3 flex items-center gap-3">
+      <div class="flex items-center gap-2">
+        <div class="h-9 w-9 grid place-items-center rounded-xl bg-gradient-to-tr from-brand-500 to-sky-500 text-white font-bold">◆</div>
+        <div>
+          <div class="font-bold leading-none">Chat Demo</div>
+          <div class="text-[11px] text-slate-500 leading-none">Channels • Messages • Threads</div>
+        </div>
       </div>
-      <a href="/personal-sign-up.html" class="md:hidden btn bg-cyanBright text-ink text-sm px-3 py-1.5">Start</a>
+      <div class="ml-auto relative w-64 hidden md:block">
+        <input id="globalSearch" placeholder="Search channels or users" class="w-full text-sm rounded-lg border border-slate-200 px-3 py-2 focus:outline-none focus:ring-2 focus:ring-brand-200" />
+        <div class="absolute right-2 top-1.5 text-slate-400">⌘K</div>
+      </div>
+      <button id="newChat" class="btn btn-brand">New Chat</button>
     </div>
   </header>
 
-  <!-- Layout -->
-  <main class="max-w-6xl mx-auto px-2 sm:px-4 grid md:grid-cols-[260px,1fr] gap-4">
-    <!-- Sidebar (conversations) -->
-    <aside class="hidden md:block h-[calc(100vh-64px)] sticky top-[64px]">
-      <div class="bg-card border border-line rounded-xl shadow-soft p-3 h-full flex flex-col">
-        <div class="flex items-center justify-between">
-          <strong>Conversations</strong>
-          <button id="newChat" class="text-xs btn btn-ghost" aria-label="Start new chat">New</button>
+  <!-- App -->
+  <main class="max-w-7xl mx-auto grid grid-rows-[1fr,auto] md:grid-rows-1 md:grid-cols-[300px,1fr,320px] gap-3 p-3 md:py-4">
+    <!-- Channels -->
+    <aside class="bg-white border border-slate-200 rounded-xl shadow-soft overflow-hidden flex flex-col h-[calc(100vh-110px)]">
+      <div class="p-3 border-b border-slate-200">
+        <div class="text-sm font-semibold flex items-center justify-between">
+          Channels
+          <button id="addChannel" class="chip">+ Create</button>
         </div>
-        <ul id="chatList" class="mt-3 grid gap-1 text-sm overflow-auto pr-1" role="listbox" aria-label="Conversation list"></ul>
-        <div class="mt-3 grid gap-2 text-sm">
-          <a class="btn btn-ghost justify-center" href="/hs-finder.html">Open HS Finder</a>
-          <a class="btn btn-ghost justify-center" href="/calculator.html">Open Calculator</a>
-          <div class="grid grid-cols-2 gap-2">
-            <button id="exportBtn" class="btn btn-ghost justify-center" aria-label="Download chat transcript">Download</button>
-            <button id="emailBtn" class="btn btn-ghost justify-center" aria-label="Email chat transcript">Email</button>
-          </div>
-          <button id="clearAll" class="btn btn-ghost justify-center text-red-600 border-red-200">Clear all</button>
+        <div class="mt-2">
+          <input id="channelSearch" placeholder="Search…" class="w-full text-sm rounded-lg border border-slate-200 px-3 py-2 focus:outline-none focus:ring-2 focus:ring-brand-200" />
         </div>
       </div>
+      <ul id="channelList" class="flex-1 overflow-auto scrollbar-thin divide-y divide-slate-100"></ul>
     </aside>
 
-    <!-- Chat Column -->
-    <section class="flex flex-col h-[calc(100vh-64px)]">
-      <!-- System banners -->
-      <div id="sysbar" class="mx-auto w-full max-w-3xl px-2 pt-3"></div>
-
-      <!-- Drag & Drop Overlay -->
-      <div id="dropOverlay" class="hidden fixed inset-0 z-40 bg-white/50">
-        <div class="absolute inset-0 border-4 border-dashed border-cyanBright/60 rounded-xl m-8 grid place-items-center">
-          <div class="bg-white rounded-xl border border-cyanBright/40 shadow-soft px-4 py-3 text-center">
-            <div class="text-ink font-semibold">Drop files to upload</div>
-            <div class="text-sm text-mute">Images, PDFs, spreadsheets, docs (max 25MB each)</div>
+    <!-- Messages -->
+    <section class="bg-white border border-slate-200 rounded-xl shadow-soft overflow-hidden flex flex-col h-[calc(100vh-110px)]">
+      <!-- Channel header -->
+      <div id="roomHeader" class="p-3 border-b border-slate-200 flex items-center justify-between">
+        <div class="flex items-center gap-3">
+          <div class="h-9 w-9 grid place-items-center rounded-xl bg-brand-100 text-brand-700 font-bold">#</div>
+          <div>
+            <div id="roomName" class="font-semibold">Welcome</div>
+            <div id="roomMeta" class="text-xs text-slate-500">0 online • 0 members</div>
           </div>
+        </div>
+        <div class="flex items-center gap-2">
+          <button id="pinRoom" class="chip">📌 Pin</button>
+          <button id="muteRoom" class="chip">🔕 Mute</button>
+          <button id="moreRoom" class="chip">⋯</button>
         </div>
       </div>
 
-      <!-- Messages stream -->
-      <div id="messages" class="flex-1 overflow-auto px-0 sm:px-2 py-4" role="log" aria-live="polite" aria-relevant="additions">
-        <!-- Conversational onboarding -->
-        <section id="welcome" class="max-w-2xl mx-auto bg-card border border-line rounded-xl2 p-5 shadow-soft">
-          <div class="text-sm text-mute">AI</div>
-          <div class="mt-1">
-            <p class="text-[15px] leading-relaxed">
-              Hey! I’m your <strong>customs agent</strong> — ask me about HS codes, duties, or import/export documents.
-              What would you like to do today?
-            </p>
-            <div class="mt-3 flex flex-wrap gap-2">
-              <button class="chip demo-btn" data-q="Estimate duty for HS 851713 (IN) CIF 100000">Estimate Duty</button>
-              <button class="chip demo-btn" data-q="Find HS code for wireless earbuds in India">Find HS Code</button>
-              <button class="chip demo-btn" data-q="List documents to import wooden furniture into EU">Docs Checklist</button>
-              <button class="chip demo-btn" data-q="Calculate landed cost for 500 LED lights to USA">Landed Cost</button>
-            </div>
-          </div>
-        </section>
+      <!-- Stream -->
+      <div id="messageWrap" class="flex-1 overflow-auto p-3 md:p-4 space-y-3 scrollbar-thin bg-slate-50/60">
+        <!-- date divider + messages injected here -->
+      </div>
+
+      <!-- Typing indicator -->
+      <div id="typing" class="px-4 pb-2 text-xs text-slate-500 hidden">
+        <span class="typing-dot inline-block w-2 h-2 rounded-full bg-slate-400"></span>
+        <span class="typing-dot inline-block w-2 h-2 rounded-full bg-slate-400"></span>
+        <span class="typing-dot inline-block w-2 h-2 rounded-full bg-slate-400"></span>
+        <span class="ml-2">Someone is typing…</span>
       </div>
 
       <!-- Composer -->
-      <div class="border-t border-line bg-card sticky bottom-0">
-        <div class="max-w-3xl mx-auto px-3 pt-3">
+      <div class="border-t border-slate-200 p-2 md:p-3 bg-white">
+        <form id="composer" class="flex items-end gap-2">
+          <input id="fileInput" type="file" class="hidden" multiple accept="image/*,.pdf,.csv,.txt,.json,.doc,.docx,.xls,.xlsx,.ppt,.pptx" />
+          <label for="fileInput" class="btn btn-ghost" title="Upload files">📎</label>
 
-          <!-- Attachments tray -->
-          <div id="attachRow" class="hidden mb-3 flex items-center gap-3 flex-wrap">
-            <div class="text-[12px] text-mute pr-1">Attachments</div>
-            <!-- pills injected here -->
-            <button id="clearAttach" class="chip text-red-600 border-red-200 hover:text-red-700 hidden">Clear all</button>
-          </div>
-
-          <!-- Input row -->
-          <form id="composer" class="flex items-end gap-2" aria-label="Message composer" novalidate>
-            <!-- Hidden native input -->
-            <input id="fileInput" type="file" class="hidden" multiple
-                   accept="image/*,.pdf,.csv,.txt,.json,.doc,.docx,.xls,.xlsx,.ppt,.pptx" capture="environment"/>
-
-            <!-- Upload button: label for bulletproof trigger -->
-            <label for="fileInput" title="Upload files"
-              class="btn btn-ghost hover:shadow-soft focus-visible:ring-2 focus-visible:ring-cyanBright cursor-pointer select-none"
-              aria-label="Upload files">
-              <svg width="18" height="18" viewBox="0 0 24 24" fill="none"><path d="M12 16V4m0 0l-4 4m4-4l4 4M4 16v2a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-2" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>
-              Upload
-            </label>
-
-            <!-- Textarea -->
-            <label for="chatInput" class="sr-only">Message</label>
-            <textarea id="chatInput" rows="1" placeholder="Message your customs agent…"
-              class="flex-1 border border-line rounded-xl px-3 py-2 resize-none max-h-40 focus:outline-none focus:ring-2 focus:ring-cyanBright/40"
-              aria-multiline="true" aria-label="Type your message"></textarea>
-
-            <!-- Send -->
-            <button id="sendBtn" type="submit"
-              class="btn btn-accent hover:shadow-soft focus-visible:ring-2 focus-visible:ring-cyanBright"
-              aria-label="Send message">
-              <svg width="18" height="18" viewBox="0 0 24 24" fill="none"><path d="M5 12h9M12 5l7 7-7 7" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>
-              Send
-            </button>
-          </form>
-
-          <!-- Quick actions under input -->
-          <div class="mt-2 flex items-center justify-between pb-3">
-            <div class="flex flex-wrap gap-2">
-              <button class="chip qa-btn" data-q="Estimate duty">Estimate Duty</button>
-              <button class="chip qa-btn" data-q="Find HS code">Find HS Code</button>
-              <button class="chip qa-btn" data-q="Documents required">Docs</button>
-              <button class="chip qa-btn" data-q="Landed cost calculator">Landed Cost</button>
+          <div class="relative flex-1">
+            <textarea id="chatInput" rows="1" placeholder="Message #welcome" class="w-full rounded-lg border border-slate-200 px-3 py-2 pr-20 resize-none max-h-40 focus:outline-none focus:ring-2 focus:ring-brand-200"></textarea>
+            <div class="absolute right-2 top-1.5 flex items-center gap-1">
+              <button type="button" id="emojiBtn" class="chip" title="Emoji">😊</button>
+              <button type="button" id="giphyBtn" class="chip" title="GIF">GIF</button>
             </div>
-            <div class="text-[11px] text-mute">Enter to send • Shift+Enter = new line • Drag, paste, or upload files</div>
           </div>
+
+          <button id="sendBtn" type="submit" class="btn btn-brand">Send</button>
+        </form>
+
+        <!-- attachment tray -->
+        <div id="attachTray" class="hidden mt-2 flex flex-wrap items-center gap-2">
+          <div class="text-xs text-slate-500">Attachments:</div>
+          <!-- pills injected -->
+          <button id="clearAttach" class="chip text-red-600 border-red-200 hidden">Clear all</button>
+        </div>
+
+        <!-- quick replies -->
+        <div class="mt-2 flex flex-wrap gap-2">
+          <button class="chip qa" data-q="When will the shipment arrive?">ETA?</button>
+          <button class="chip qa" data-q="Share HS code for LED bulbs">HS code LED</button>
+          <button class="chip qa" data-q="What duty applies to HS 851713 in IN?">Duty 851713</button>
+          <button class="chip qa" data-q="Required docs for wooden furniture to EU">Docs EU</button>
         </div>
       </div>
     </section>
+
+    <!-- Right panel (thread / info) -->
+    <aside class="bg-white border border-slate-200 rounded-xl shadow-soft overflow-hidden h-[calc(100vh-110px)] hidden lg:flex lg:flex-col">
+      <div class="p-3 border-b border-slate-200 flex items-center justify-between">
+        <div class="font-semibold">Details</div>
+        <button id="closeThread" class="chip">Close</button>
+      </div>
+      <div id="threadWrap" class="flex-1 overflow-auto p-3 space-y-3 scrollbar-thin">
+        <div class="text-sm text-slate-500">Select a message to open its thread, reactions, and attachments.</div>
+      </div>
+    </aside>
   </main>
 
-  <!-- Toast -->
-  <div id="toast" class="hidden fixed bottom-6 right-6 bg-ink text-white text-sm px-3 py-2 rounded-lg shadow" role="status" aria-live="polite"></div>
+  <!-- Templates -->
+  <template id="dateDividerTpl">
+    <div class="sticky top-1 z-10 w-full text-center">
+      <span class="inline-block text-[11px] text-slate-600 bg-white/80 backdrop-blur border border-slate-200 rounded-full px-2 py-0.5">DATE</span>
+    </div>
+  </template>
 
-  <footer class="text-center text-xs text-mute my-6">
-    © <span id="year"></span> Ledgerdaddy
-  </footer>
+  <template id="msgTpl">
+    <article class="fade-in flex gap-2 md:gap-3">
+      <img class="h-8 w-8 rounded-full ring-2 ring-white shadow" />
+      <div class="bubble bubble-other rounded-2xl px-3 py-2 flex-1">
+        <div class="flex items-center gap-2 text-xs text-slate-500">
+          <span class="name font-semibold">Name</span>
+          <span class="time">time</span>
+          <span class="ml-auto receipt hidden">✓✓ Read</span>
+        </div>
+        <div class="content prose prose-sm max-w-none"></div>
+        <div class="mt-2 flex items-center gap-2">
+          <button class="chip react">😀</button>
+          <button class="chip reply">↩︎ Reply</button>
+          <button class="chip more">⋯</button>
+        </div>
+        <div class="mt-2 hidden attachments"></div>
+        <div class="mt-2 hidden reactions"></div>
+        <div class="mt-2 hidden thread"></div>
+      </div>
+    </article>
+  </template>
+
+  <template id="attachPillTpl">
+    <a target="_blank" class="file-pill">
+      <span>📄</span>
+      <span class="name truncate max-w-[160px]"></span>
+      <span class="size text-slate-500"></span>
+    </a>
+  </template>
 
   <script>
-    // ===== Config =====
-    const API_BASE = window.NEXT_PUBLIC_API_BASE || window.VITE_API_BASE || ""; // eg: "http://localhost:5001"
-    const USE_WS   = false;
+    // -----------------------------------
+    // Mock data + Realtime stub
+    // -----------------------------------
+    const me = { id: "u_me", name: "You", avatar: "https://i.pravatar.cc/64?img=12" };
+    const users = [
+      me,
+      { id:"u_amy", name:"Amy", avatar:"https://i.pravatar.cc/64?img=5"},
+      { id:"u_max", name:"Max", avatar:"https://i.pravatar.cc/64?img=20"},
+      { id:"u_lee", name:"Lee", avatar:"https://i.pravatar.cc/64?img=33"},
+    ];
+    let channels = [
+      { id: "c_welcome", name:"#welcome", members: ["u_me","u_amy","u_max"], online: ["u_amy","u_me"], pinned:false, muted:false, messages: [] },
+      { id: "c_ops", name:"#ops", members: ["u_me","u_amy","u_max","u_lee"], online: ["u_lee"], pinned:true, muted:false, messages: [] },
+      { id: "c_random", name:"#random", members: ["u_me","u_amy"], online: [], pinned:false, muted:true, messages: [] },
+    ];
 
-    // ===== Helpers =====
+    const realtime = {
+      subscribe(channelId, cb){
+        // simulate deliveries
+        setInterval(()=>{
+          if(Math.random()<0.2){
+            const sender = users[Math.floor(Math.random()*(users.length-1))+1];
+            cb({ type:"message.new", message: {
+              id: crypto.randomUUID(), userId: sender.id, text: randomBotLine(),
+              createdAt: Date.now(), attachments:[], reactions:{}, thread:[] }
+            });
+          }
+        }, 5000);
+      },
+      send(channelId, message){
+        // echo "delivered" and "read"
+        setTimeout(()=> events.emit({ type:"message.delivered", messageId:message.id }), 500);
+        setTimeout(()=> events.emit({ type:"message.read", messageId:message.id }), 1200);
+      },
+      typing(channelId, on){ events.emit({ type:"typing", on }); }
+    };
+
+    function randomBotLine(){
+      const lines = [
+        "Got it — checking that now.",
+        "Can you share the invoice as a PDF?",
+        "HS 851713 usually applies here.",
+        "ETA looks like 4–6 days via air.",
+        "Let me calculate the duty for you.",
+      ];
+      return lines[Math.floor(Math.random()*lines.length)];
+    }
+
+    // Simple event bus
+    const events = {
+      _cbs: [],
+      on(cb){ this._cbs.push(cb); },
+      emit(p){ this._cbs.forEach(fn=>fn(p)); }
+    };
+
+    // -----------------------------------
+    // DOM helpers
+    // -----------------------------------
     const $ = s => document.querySelector(s);
     const $$ = s => Array.from(document.querySelectorAll(s));
-    const toast = (msg) => { const t = $('#toast'); t.textContent = msg; t.classList.remove('hidden'); setTimeout(()=>t.classList.add('hidden'), 1600); };
-    const uid = () => Math.random().toString(36).slice(2)+Date.now().toString(36);
-    $('#year').textContent = new Date().getFullYear();
+    const fmtTime = ts => new Date(ts).toLocaleString([], {hour:'2-digit', minute:'2-digit'});
+    const fmtDate = ts => new Date(ts).toLocaleDateString([], {day:"2-digit", month:"short", year:"numeric"});
+    const sizeStr = b => (b/1024/1024).toFixed(1) + "MB";
 
-    // ===== Storage (threads) =====
-    const STORE_KEY='ld_chat_threads_v1';
-    let threads = JSON.parse(localStorage.getItem(STORE_KEY) || '[]');
-    let currentId = threads[0]?.id || null;
-    function saveThreads(){ localStorage.setItem(STORE_KEY, JSON.stringify(threads)); }
-    function getCurrent(){ return threads.find(t=>t.id===currentId); }
-    function ensureThread(){
-      if(!currentId){ const id = uid(); const t = { id, title:'New chat', messages: [] }; threads.unshift(t); currentId=id; saveThreads(); }
-    }
-    function setTitleFromFirstUserMessage(thread){
-      const first = thread.messages.find(m=>m.role==='user');
-      if(first){ thread.title = (first.text || 'Conversation').slice(0, 50); }
-    }
-    function newThread(){
-      const id = uid();
-      const t = { id, title:'New chat', messages: [] };
-      threads.unshift(t);
-      currentId = id;
-      saveThreads(); renderSidebar(); renderMessages();
-    }
+    // -----------------------------------
+    // State
+    // -----------------------------------
+    let currentChannelId = channels[0].id;
+    let pendingFiles = []; // {file, url, id}
 
-    // ===== Sidebar =====
-    function renderSidebar(){
-      const list = $('#chatList');
-      if(!list) return;
-      if(!threads.length){
-        list.innerHTML = '<li class="text-mute text-xs p-2 rounded bg-soft">No conversations yet</li>'; return;
-      }
-      list.innerHTML = threads.map(t=>`
-        <li>
-          <button data-id="${t.id}"
-            class="w-full text-left px-2 py-2 rounded hover:bg-soft ${t.id===currentId?'bg-soft':''}" role="option" aria-selected="${t.id===currentId}">
-            <div class="truncate">${t.title || 'Conversation'}</div>
-            <div class="text-[11px] text-mute">${(t.messages?.length||0)} messages</div>
-          </button>
-        </li>
-      `).join('');
-      list.querySelectorAll('button[data-id]').forEach(btn=>{
-        btn.onclick = ()=>{ currentId = btn.getAttribute('data-id'); renderSidebar(); renderMessages(); };
-      });
-    }
-
-    // ===== Markdown-lite =====
-    function mdLite(text){
-      let out = (text || '').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
-      out = out.replace(/```([\s\S]*?)```/g, (_,code)=>`<pre class="bg-[var(--tw-prose-pre-bg,#0F172A)] text-white rounded-xl p-3 overflow-auto"><code>${code}</code></pre>`);
-      out = out.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>');
-      out = out.replace(/`([^`]+)`/g, '<code class="px-1 rounded bg-gray-100">$1</code>');
-      out = out.replace(/\n\n/g, '<br/><br/>');
-      return out;
-    }
-    const fmtTime = ts => new Date(ts).toLocaleString([], {hour:'2-digit', minute:'2-digit', day:'2-digit', month:'short'});
-
-    // ===== Message bubbles =====
-    function fileIcon(name){ const ext=(name.split('.').pop()||'').toLowerCase();
-      if(['png','jpg','jpeg','gif','webp','heic','heif','bmp'].includes(ext)) return '🖼️';
-      if(['pdf'].includes(ext)) return '📄';
-      if(['csv','xls','xlsx'].includes(ext)) return '📊';
-      if(['doc','docx'].includes(ext)) return '📝';
-      if(['ppt','pptx'].includes(ext)) return '📽️';
-      if(['txt','json','md'].includes(ext)) return '📃';
-      return '📎';
-    }
-    function attachBlock(attachments=[]){
-      if(!attachments.length) return '';
-      return `
-        <div class="mt-2 flex flex-wrap gap-2">
-          ${attachments.map(a=>{
-            const isImg = /^image\\//.test(a.type);
-            return isImg
-              ? `<a href="${a.url}" target="_blank" class="inline-flex items-center gap-2">
-                   <img src="${a.url}" alt="${a.name||'image'}" class="thumb"/><span class="text-[12px] text-mute truncate max-w-[160px]">${a.name||'image'}</span>
-                 </a>`
-              : `<a href="${a.url}" target="_blank" class="file-pill">
-                   <span>${fileIcon(a.name||'file')}</span>
-                   <span class="truncate max-w-[160px]">${a.name||'file'}</span>
-                   ${a.size ? `<span class="text-mute">${(a.size/1024/1024).toFixed(1)}MB</span>`:''}
-                 </a>`;
-          }).join('')}
-        </div>
-      `;
-    }
-
-    function bubble(m){
-      const { role, text, attachments, ts, status, kind } = m; // kind: 'system'|'message'
-      const isUser = role==='user';
-      const isSystem = kind === 'system';
-      const who = isSystem ? 'System' : (isUser ? 'You' : 'AI');
-      const avatar = isSystem ? '⚙️' : (isUser ? '👤' : '◆');
-      const statusText = isUser ? (status==='read' ? 'Read ✓✓' : status==='delivered' ? 'Delivered ✓' : 'Sending…') : '';
-
-      return `
-        <article class="fade-in max-w-3xl mx-auto message" aria-label="${who} message">
-          <div class="flex ${isUser?'justify-end':''}">
-            <div class="flex ${isUser?'flex-row-reverse':''} gap-3 items-end">
-              <span class="mt-1 inline-flex w-8 h-8 shrink-0 items-center justify-center rounded-full ${isSystem?'bg-accentOrange text-white':(isUser?'bg-indigoDeep text-white':'bg-emerald text-white')}" aria-hidden="true">${avatar}</span>
-              <div class="bubble ${isUser?'bubble-user text-white':'bubble-bot'} rounded-2xl px-4 py-3">
-                <div class="flex items-center justify-between gap-3 mb-1">
-                  <div class="text-sm ${isUser?'text-white/80':(isSystem?'text-amber-800':'text-mute')}">${who}</div>
-                  <div class="text-[11px] ${isUser?'text-white/80':(isSystem?'text-amber-700':'text-mute')}">${fmtTime(ts||Date.now())}${statusText?` • ${statusText}`:''}</div>
-                </div>
-                ${attachments?.length ? attachBlock(attachments) : ''}
-                <div class="prose prose-sm max-w-none">${mdLite(text)}</div>
-                ${!isSystem ? `
-                <div class="mt-2 flex items-center gap-2">
-                  <button class="copy-btn text-[11px] px-2 py-1 rounded border ${isUser?'border-white/30 text-white/90 hover:bg-white/10':'border-line hover:bg-soft'}" data-copy="${encodeURIComponent(text)}" aria-label="Copy message">Copy</button>
-                </div>`:''}
+    // -----------------------------------
+    // Channel UI
+    // -----------------------------------
+    function renderChannels(filter=""){
+      const ul = $("#channelList");
+      const q = filter.toLowerCase();
+      ul.innerHTML = channels
+        .filter(c=> c.name.toLowerCase().includes(q))
+        .map(c=>{
+          const unread = Math.random()<0.35 ? Math.floor(Math.random()*7)+1 : 0; // demo
+          const active = c.id===currentChannelId ? "bg-slate-50" : "hover:bg-slate-50";
+          const pin = c.pinned ? "📌" : "";
+          const mute = c.muted ? "🔕" : "";
+          return `
+          <li>
+            <button data-id="${c.id}" class="w-full px-3 py-2 ${active} text-left">
+              <div class="flex items-center justify-between">
+                <div class="font-medium">${c.name} <span class="text-slate-400">${pin}${mute}</span></div>
+                ${unread?`<span class="text-[11px] bg-brand-500 text-white rounded-full px-1.5">${unread}</span>`:""}
               </div>
-            </div>
-          </div>
-        </article>
-      `;
-    }
+              <div class="text-[11px] text-slate-500">${c.online.length} online • ${c.members.length} members</div>
+            </button>
+          </li>`;
+        }).join("");
 
-    function typingRow(){
-      return `
-        <div class="max-w-3xl mx-auto" aria-live="polite">
-          <div class="flex gap-3 items-start">
-            <span class="mt-1 inline-flex w-8 h-8 items-center justify-center rounded-full bg-emerald text-white">◆</span>
-            <div class="bubble bubble-bot rounded-2xl px-4 py-3">
-              <div class="flex items-center gap-1" aria-label="AI is typing">
-                <span class="typing-dot w-2 h-2 rounded-full bg-gray-400"></span>
-                <span class="typing-dot w-2 h-2 rounded-full bg-gray-400"></span>
-                <span class="typing-dot w-2 h-2 rounded-full bg-gray-400"></span>
-              </div>
-            </div>
-          </div>
-        </div>
-      `;
-    }
-
-    // ===== Render =====
-    function renderMessages(){
-      const wrap = $('#messages');
-      const t = getCurrent();
-      const welcome = $('#welcome');
-      if(!t || !t.messages.length){ wrap.innerHTML = ''; welcome?.classList.remove('hidden'); return; }
-      welcome?.classList.add('hidden');
-      wrap.innerHTML = t.messages.map(bubble).join('');
-      $$('.copy-btn').forEach(b=>{
-        b.onclick = async ()=>{
-          try{ await navigator.clipboard.writeText(decodeURIComponent(b.getAttribute('data-copy'))); toast('Copied'); }
-          catch{ toast('Copy failed'); }
+      ul.querySelectorAll("button[data-id]").forEach(btn=>{
+        btn.onclick = ()=> {
+          currentChannelId = btn.getAttribute("data-id");
+          loadChannel(currentChannelId);
+          renderChannels($("#channelSearch").value);
         };
       });
+    }
+
+    function loadChannel(id){
+      const ch = channels.find(c=>c.id===id);
+      $("#roomName").textContent = ch.name;
+      $("#roomMeta").textContent = `${ch.online.length} online • ${ch.members.length} members`;
+      $("#chatInput").placeholder = `Message ${ch.name}`;
+      renderMessages();
+    }
+
+    // -----------------------------------
+    // Messages
+    // -----------------------------------
+    function ensureDateDivider(wrap, ts, prevTs){
+      const d1 = fmtDate(ts), d2 = prevTs?fmtDate(prevTs):"";
+      if(d1!==d2){
+        const t = $("#dateDividerTpl").content.cloneNode(true);
+        t.querySelector("span").textContent = d1;
+        wrap.appendChild(t);
+      }
+    }
+
+    function renderMessages(){
+      const wrap = $("#messageWrap");
+      const ch = channels.find(c=>c.id===currentChannelId);
+      wrap.innerHTML = "";
+      let lastTs = 0;
+      ch.messages.forEach(m=>{
+        ensureDateDivider(wrap, m.createdAt, lastTs);
+        lastTs = m.createdAt;
+        wrap.appendChild(renderMessageNode(m));
+      });
       wrap.scrollTop = wrap.scrollHeight;
-      toggleScrollBtn();
     }
 
-    // ===== Mutate =====
-    function addMessage(m){
-      ensureThread();
-      const t = getCurrent(); if(!t) return;
-      t.messages.push({ kind:'message', ts: Date.now(), status: m.role==='user'?'sending':undefined, ...m });
-      if(t.title==='New chat'){ setTitleFromFirstUserMessage(t); }
-      saveThreads(); renderSidebar(); renderMessages();
-    }
-    function addSystem(text, tone='info'){
-      ensureThread();
-      const t = getCurrent(); if(!t) return;
-      t.messages.push({ role:'system', kind:'system', ts: Date.now(), text });
-      saveThreads(); renderMessages();
-      banner(text, tone);
-    }
+    function renderMessageNode(m){
+      const tpl = $("#msgTpl").content.cloneNode(true);
+      const root = tpl.querySelector("article");
+      const avatar = tpl.querySelector("img");
+      const name = tpl.querySelector(".name");
+      const time = tpl.querySelector(".time");
+      const content = tpl.querySelector(".content");
+      const receipt = tpl.querySelector(".receipt");
+      const attachWrap = tpl.querySelector(".attachments");
+      const reactBtn = tpl.querySelector(".react");
+      const replyBtn = tpl.querySelector(".reply");
+      const moreBtn = tpl.querySelector(".more");
+      const bubble = tpl.querySelector(".bubble");
 
-    // ===== Upload handling =====
-    const MAX_FILES = 10;
-    const MAX_MB = 25;
-    let pendingFiles = []; // {file, url, id, progress}
+      const user = users.find(u=>u.id===m.userId) || me;
+      avatar.src = user.avatar;
+      avatar.alt = user.name;
+      name.textContent = user.id===me.id ? "You" : user.name;
+      time.textContent = fmtTime(m.createdAt);
+      content.innerHTML = linkify(m.text);
 
-    const fileInput   = $('#fileInput');
-    const attachRow   = $('#attachRow');
-    const clearAttach = $('#clearAttach');
-    const msgWrap     = $('#messages');
-    const dropOverlay = $('#dropOverlay');
-
-    // file input (label triggers click)
-    fileInput.addEventListener('change', (e)=> addPendingFiles([...e.target.files]));
-
-    // Drag & drop overlay
-    ;['dragenter','dragover'].forEach(ev=>{
-      document.addEventListener(ev, (e)=>{ e.preventDefault(); dropOverlay.classList.remove('hidden'); });
-    });
-    ;['dragleave','drop'].forEach(ev=>{
-      document.addEventListener(ev, (e)=>{ e.preventDefault(); dropOverlay.classList.add('hidden'); });
-    });
-    document.addEventListener('drop', (e)=>{
-      const files = [...(e.dataTransfer?.files||[])];
-      if(files.length) addPendingFiles(files);
-    });
-
-    // Paste to upload (screenshots, files)
-    document.addEventListener('paste', (e)=>{
-      const items = [...(e.clipboardData?.items||[])];
-      const files = items.map(i=> i.getAsFile()).filter(Boolean);
-      if(files.length) addPendingFiles(files);
-    });
-
-    function addPendingFiles(files){
-      const all = [...pendingFiles];
-      for(const f of files){
-        if(all.length >= MAX_FILES){ toast('Max 10 files'); break; }
-        if(f.size > MAX_MB*1024*1024){ toast(`${f.name} is over ${MAX_MB}MB`); continue; }
-        all.push({ file:f, id:uid(), url: URL.createObjectURL(f), progress:0 });
+      if(m.userId===me.id){
+        root.classList.add("flex-row-reverse");
+        bubble.classList.remove("bubble-other");
+        bubble.classList.add("bubble-user");
+        receipt.classList.remove("hidden");
       }
-      pendingFiles = all;
-      renderPending();
-    }
 
-    function removePending(id){
-      const p = pendingFiles.find(x=>x.id===id);
-      if(p){ URL.revokeObjectURL(p.url); }
-      pendingFiles = pendingFiles.filter(p=>p.id!==id);
-      renderPending();
-    }
-
-    function renderPending(){
-      if(!pendingFiles.length){
-        attachRow.classList.add('hidden'); attachRow.innerHTML=''; clearAttach.classList.add('hidden'); return;
-      }
-      attachRow.classList.remove('hidden');
-      clearAttach.classList.remove('hidden');
-      attachRow.innerHTML = `
-        <div class="text-[12px] text-mute pr-1">Attachments</div>
-        ${pendingFiles.map(p=>{
-          const isImg = p.file.type.startsWith('image/');
-          const size = (p.file.size/1024/1024).toFixed(1)+'MB';
-          return isImg
-            ? `<div class="relative">
-                 <img src="${p.url}" class="thumb" alt="${p.file.name}"/>
-                 <button title="Remove" class="absolute -top-2 -right-2 bg-white border border-line rounded-full w-6 h-6 text-xs"
-                   onclick="removePending('${p.id}')">×</button>
-                 <div class="absolute left-0 right-0 -bottom-2 h-1 bg-gray-100 rounded-full overflow-hidden"><div style="width:${p.progress||0}%;" class="h-full bg-emerald"></div></div>
-               </div>`
-            : `<div class="file-pill">
-                 <span>${fileIcon(p.file.name)}</span>
-                 <span class="truncate max-w-[160px]" title="${p.file.name}">${p.file.name}</span>
-                 <span class="text-mute">${size}</span>
-                 <div class="w-20 h-1 bg-gray-100 rounded-full overflow-hidden"><div style="width:${p.progress||0}%;" class="h-full bg-emerald"></div></div>
-                 <button title="Remove" class="ml-1 border border-line rounded px-1 text-[11px]" onclick="removePending('${p.id}')">×</button>
-               </div>`;
-        }).join('')}
-      `;
-      window.removePending = removePending;
-    }
-
-    // Upload with progress (works even if API_BASE is empty—then we just keep blob URLs)
-    async function uploadFiles(files){
-      if(!files.length || !API_BASE) {
-        // No backend configured: just echo local blob URLs
-        return files.map(f=>({ url:f.url, name:f.file.name, type:f.file.type, size:f.file.size }));
-      }
-      try{
-        const form = new FormData();
-        files.forEach(f => form.append('files', f.file, f.file.name));
-
-        const resp = await new Promise((resolve, reject)=>{
-          const xhr = new XMLHttpRequest();
-          xhr.open('POST', `${API_BASE}/api/upload`);
-          xhr.onload = () => {
-            try{
-              const data = JSON.parse(xhr.responseText || '[]');
-              resolve({ ok: xhr.status>=200 && xhr.status<300, data });
-            }catch(e){ reject(e); }
-          };
-          xhr.onerror = () => reject(new Error('Network error'));
-
-          xhr.upload.onprogress = (e)=>{
-            const ratio = e.lengthComputable ? (e.loaded / e.total) : 0.5;
-            pendingFiles.forEach(p=>{ p.progress = Math.max(p.progress||0, Math.floor(ratio*100)); });
-            renderPending();
-          };
-          xhr.send(form);
+      // attachments
+      if(m.attachments?.length){
+        attachWrap.classList.remove("hidden");
+        m.attachments.forEach(a=>{
+          const pill = $("#attachPillTpl").content.cloneNode(true);
+          const link = pill.querySelector("a");
+          link.href = a.url;
+          pill.querySelector(".name").textContent = a.name;
+          pill.querySelector(".size").textContent = a.size ? sizeStr(a.size) : "";
+          attachWrap.appendChild(pill);
         });
-
-        if(!resp.ok) throw new Error('Upload failed');
-
-        const data = resp.data;
-        const listRaw = Array.isArray(data) ? data : (data.files || [data]);
-
-        pendingFiles.forEach(p=>{ p.progress = 100; });
-        renderPending();
-
-        return listRaw.map((x,i)=>({
-          url: x.url || pendingFiles[i]?.url,
-          name: x.name || pendingFiles[i]?.file?.name,
-          type: x.type || pendingFiles[i]?.file?.type,
-          size: x.size || pendingFiles[i]?.file?.size
-        }));
-      }catch(e){
-        banner('Upload error: ' + (e.message||'unknown'), 'error');
-        return [];
       }
-    }
 
-    // ===== Banners =====
-    function banner(text, tone='info'){
-      const bar = $('#sysbar');
-      const color = tone==='error' ? 'bg-red-50 border-red-200 text-red-800'
-                   : tone==='warn' ? 'bg-yellow-50 border-yellow-200 text-amber-800'
-                   : 'bg-cyanBright/10 border-cyanBright/40 text-ink';
-      const el = document.createElement('div');
-      el.className = `mb-2 rounded-lg border px-3 py-2 text-[13px] ${color}`;
-      el.textContent = text;
-      bar.appendChild(el);
-      setTimeout(()=>{ el.remove(); }, 2400);
-    }
-
-    // ===== Send flow =====
-    const area = $('#chatInput');
-    const form = $('#composer');
-    const sendBtn = $('#sendBtn');
-    let lastPrompt = "";
-
-    async function sendMessage(text){
-      const trimmed = (text || '').trim();
-      if(!trimmed && !pendingFiles.length) return;
-
-      ensureThread();
-
-      banner(pendingFiles.length ? 'Uploading attachments…' : 'Sending…','info');
-      sendBtn.disabled = true; sendBtn.classList.add('opacity-60','cursor-not-allowed');
-
-      // 1) Upload
-      const uploaded = await uploadFiles(pendingFiles);
-      // release blobs
-      pendingFiles.forEach(p=> p.url && URL.revokeObjectURL(p.url));
-      pendingFiles = []; renderPending();
-
-      // 2) Add user message
-      addMessage({ role:'user', text: trimmed, attachments: uploaded });
-
-      // 3) Typing indicator
-      const wrap = $('#messages');
-      wrap.insertAdjacentHTML('beforeend', typingRow());
-      wrap.scrollTop = wrap.scrollHeight;
-
-      // 4) Ask backend or simulate
-      try {
-        let replyText = '';
-        if (USE_WS) {
-          replyText = "Streaming via WebSocket is not wired yet.";
-        } else if (API_BASE) {
-          const res = await fetch(`${API_BASE}/api/chat`, {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ message: trimmed, mode: "learn", attachments: uploaded })
-          });
-          const data = await res.json();
-          if (res.ok && data.reply){ replyText = data.reply; }
-          else { throw new Error(data.error || 'No reply from server'); }
-        } else {
-          // offline demo
-          replyText = "📦 I’ll calculate duties / check HS codes for that. (Connect API_BASE for live answers.)";
-        }
-
-        // remove typing
-        wrap.lastElementChild?.remove();
-
-        // delivery/read status demo
-        markLastUserStatus('delivered');
-        setTimeout(()=> markLastUserStatus('read'), 800);
-
-        // assistant reply
-        addMessage({ role:'assistant', text: replyText });
-
-        lastPrompt = trimmed;
-      } catch (err) {
-        wrap.lastElementChild?.remove();
-        markLastUserStatus('sending');
-        addSystem('Error: ' + err.message, 'error');
-        addMessage({ role:'assistant', text: "⚠️ " + err.message });
-      } finally {
-        sendBtn.disabled = false; sendBtn.classList.remove('opacity-60','cursor-not-allowed');
+      // reactions
+      const reactionsEl = tpl.querySelector(".reactions");
+      if(m.reactions && Object.keys(m.reactions).length){
+        reactionsEl.classList.remove("hidden");
+        reactionsEl.innerHTML = Object.entries(m.reactions).map(([emo, ids])=>{
+          const mine = ids.includes(me.id) ? "ring-2 ring-brand-200" : "";
+          return `<button class="chip emoji ${mine}" data-id="${m.id}" data-emoji="${emo}">${emo} <span class="text-slate-500">${ids.length}</span></button>`;
+        }).join(" ");
       }
-    }
 
-    function markLastUserStatus(st){
-      const t = getCurrent(); if(!t) return;
-      for(let i=t.messages.length-1;i>=0;i--){
-        if(t.messages[i].role==='user'){ t.messages[i].status = st; break; }
+      // thread
+      const threadEl = tpl.querySelector(".thread");
+      if(m.thread?.length){
+        threadEl.classList.remove("hidden");
+        threadEl.innerHTML = m.thread.map(t=>`
+          <div class="text-sm text-slate-700 flex items-start gap-2">
+            <img src="${(users.find(u=>u.id===t.userId)||me).avatar}" class="h-5 w-5 rounded-full" />
+            <div><strong class="mr-1">${(users.find(u=>u.id===t.userId)||me).name}:</strong>${linkify(t.text)}</div>
+          </div>
+        `).join("");
       }
-      saveThreads(); renderMessages();
+
+      // actions
+      reactBtn.onclick = ()=> openReactions(m.id, reactionsEl);
+      replyBtn.onclick = ()=> openThread(m.id);
+      moreBtn.onclick = (e)=> openMoreMenu(e, m.id);
+
+      return root;
     }
 
-    // autoresize + key handling + submit
-    area.addEventListener('input', ()=>{
-      area.style.height = 'auto';
-      area.style.height = Math.min(area.scrollHeight, 160) + 'px';
+    function linkify(text=""){
+      const esc = text.replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;");
+      return esc.replace(/(https?:\/\/[^\s]+)/g, '<a class="text-sky-600 underline" target="_blank" href="$1">$1</a>');
+    }
+
+    // -----------------------------------
+    // Composer + Uploads
+    // -----------------------------------
+    const area = $("#chatInput");
+    const form = $("#composer");
+    const sendBtn = $("#sendBtn");
+    const fileInput = $("#fileInput");
+    const attachTray = $("#attachTray");
+    const clearAttach = $("#clearAttach");
+
+    let attach = []; // {name, url, type, size}
+
+    fileInput.addEventListener("change", e=>{
+      const files = [...e.target.files];
+      files.forEach(f=> attach.push({ name:f.name, url: URL.createObjectURL(f), type:f.type, size:f.size }));
+      renderAttachTray();
     });
-    area.addEventListener('keydown', (e)=>{
-      if(e.key==='Enter' && !e.shiftKey){
+
+    function renderAttachTray(){
+      if(!attach.length){ attachTray.classList.add("hidden"); clearAttach.classList.add("hidden"); attachTray.innerHTML=""; return; }
+      attachTray.classList.remove("hidden"); clearAttach.classList.remove("hidden");
+      attachTray.innerHTML = `<div class="text-xs text-slate-500">Attachments:</div>` + attach.map((a,i)=>`
+        <span class="file-pill">
+          <span>${fileIcon(a.name)}</span>
+          <span class="truncate max-w-[160px]" title="${a.name}">${a.name}</span>
+          <span class="text-slate-500">${sizeStr(a.size)}</span>
+          <button class="ml-1 chip" onclick="removeAttach(${i})">×</button>
+        </span>
+      `).join("");
+    }
+    window.removeAttach = (i)=>{ 
+      try{ URL.revokeObjectURL(attach[i].url); }catch{}
+      attach.splice(i,1); 
+      renderAttachTray(); 
+    };
+    clearAttach.onclick = ()=>{
+      attach.forEach(a=> URL.revokeObjectURL(a.url));
+      attach=[]; renderAttachTray();
+    };
+
+    function fileIcon(name){
+      const ext = (name.split(".").pop()||"").toLowerCase();
+      if(["png","jpg","jpeg","gif","webp","heic"].includes(ext)) return "🖼️";
+      if(["pdf"].includes(ext)) return "📄";
+      if(["csv","xls","xlsx"].includes(ext)) return "📊";
+      if(["doc","docx"].includes(ext)) return "📝";
+      if(["ppt","pptx"].includes(ext)) return "📽️";
+      if(["txt","json","md"].includes(ext)) return "📃";
+      return "📎";
+    }
+
+    area.addEventListener("input", ()=>{
+      area.style.height = "auto";
+      area.style.height = Math.min(area.scrollHeight, 160) + "px";
+      realtime.typing(currentChannelId, true);
+      debouncedStopTyping();
+    });
+
+    const debouncedStopTyping = debounce(()=> realtime.typing(currentChannelId, false), 800);
+
+    form.addEventListener("submit", (e)=>{
+      e.preventDefault();
+      send();
+    });
+    $("#emojiBtn").onclick = ()=> insertAtCursor(area, " 🙂");
+    $("#giphyBtn").onclick  = ()=> insertAtCursor(area, " /giphy shipment");
+    $$(".qa").forEach(b=> b.onclick = ()=> { area.value = b.getAttribute("data-q"); area.dispatchEvent(new Event("input")); area.focus(); });
+
+    function send(){
+      const text = area.value.trim();
+      if(!text && !attach.length) return;
+      const ch = channels.find(c=>c.id===currentChannelId);
+      const msg = { id: crypto.randomUUID(), userId: me.id, text, createdAt: Date.now(), attachments: attach.slice(), reactions:{}, thread:[] };
+      ch.messages.push(msg);
+      renderMessages();
+      area.value=""; area.style.height="auto";
+      attach = []; renderAttachTray();
+      realtime.send(currentChannelId, msg);
+    }
+
+    // -----------------------------------
+    // Reactions + Thread
+    // -----------------------------------
+    function openReactions(messageId, container){
+      const pop = document.createElement("div");
+      pop.className = "fixed inset-0 z-50";
+      pop.innerHTML = `
+        <div class="absolute inset-0" onclick="this.parentElement.remove()"></div>
+        <div class="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 bg-white border border-slate-200 rounded-xl shadow-soft p-3">
+          <div class="text-sm font-semibold mb-2">Add reaction</div>
+          <div class="grid grid-cols-8 gap-1 text-2xl">
+            ${["👍","😀","🎉","🙏","🔥","😮","❤️","🤝","🧠","📦","🕒","📝","✅","❗","📎","🧾"].map(e=>`<button class="emoji" data-emoji="${e}">${e}</button>`).join("")}
+          </div>
+        </div>`;
+      document.body.appendChild(pop);
+      pop.querySelectorAll(".emoji").forEach(btn=>{
+        btn.onclick = ()=>{
+          addReaction(messageId, btn.dataset.emoji);
+          pop.remove();
+        };
+      });
+    }
+
+    function addReaction(messageId, emoji){
+      const ch = channels.find(c=>c.id===currentChannelId);
+      const m = ch.messages.find(x=>x.id===messageId);
+      if(!m.reactions[emoji]) m.reactions[emoji] = [];
+      const idx = m.reactions[emoji].indexOf(me.id);
+      if(idx===-1) m.reactions[emoji].push(me.id); else m.reactions[emoji].splice(idx,1);
+      renderMessages();
+    }
+
+    function openThread(messageId){
+      const panel = $("#threadWrap");
+      const ch = channels.find(c=>c.id===currentChannelId);
+      const m = ch.messages.find(x=>x.id===messageId);
+      document.querySelector("aside.lg\\:flex").classList.remove("hidden");
+      panel.innerHTML = `
+        <div class="text-sm text-slate-500">Thread in <strong>${ch.name}</strong></div>
+        <div class="mt-2 border border-slate-200 rounded-xl p-3 bg-slate-50/50">
+          <div class="font-semibold mb-1">Original message</div>
+          <div>${linkify(m.text)}</div>
+          ${m.attachments?.length? `<div class="mt-2">${m.attachments.map(a=>`<a class="file-pill" target="_blank" href="${a.url}">📄 ${a.name}</a>`).join(" ")}</div>`:""}
+        </div>
+        <div class="mt-3 font-semibold">Thread</div>
+        <div id="threadMsgs" class="space-y-2 mt-1">
+          ${(m.thread||[]).map(t=>`
+          <div class="flex gap-2">
+            <img src="${(users.find(u=>u.id===t.userId)||me).avatar}" class="h-6 w-6 rounded-full" />
+            <div class="bg-white border border-slate-200 rounded-lg px-2 py-1">${linkify(t.text)}</div>
+          </div>`).join("")}
+        </div>
+        <form id="threadComposer" class="mt-2 flex gap-2">
+          <input id="threadInput" class="flex-1 border border-slate-200 rounded-lg px-3 py-2 text-sm" placeholder="Reply in thread…" />
+          <button class="btn btn-brand text-sm">Send</button>
+        </form>
+      `;
+      $("#threadComposer").onsubmit = (e)=>{
         e.preventDefault();
-        sendMessage(area.value);
-        area.value=''; area.style.height='auto';
-      }
-    });
-    form.addEventListener('submit', (e)=>{ e.preventDefault(); sendMessage(area.value); area.value=''; area.style.height='auto'; });
-
-    // quick chips
-    [...$$('.demo-btn'), ...$$('.qa-btn')].forEach(b=> b.onclick = ()=>{
-      area.value = b.getAttribute('data-q') || b.textContent.trim();
-      area.dispatchEvent(new Event('input'));
-      area.focus();
-    });
-
-    // Sidebar actions
-    $('#newChat')?.addEventListener('click', ()=> newThread());
-    function downloadCurrent(){
-      const t = getCurrent(); if(!t) return toast('No chat');
-      const blob = new Blob([JSON.stringify(t, null, 2)], {type:'application/json'});
-      const a = document.createElement('a');
-      a.href = URL.createObjectURL(blob);
-      a.download = (t.title||'chat') + '.json';
-      a.click(); URL.revokeObjectURL(a.href);
+        const t = $("#threadInput").value.trim();
+        if(!t) return;
+        m.thread = m.thread || [];
+        m.thread.push({ userId: me.id, text: t, createdAt: Date.now() });
+        $("#threadInput").value="";
+        openThread(messageId); // re-render
+        renderMessages();
+      };
+      $("#closeThread").onclick = ()=> document.querySelector("aside.lg\\:flex").classList.add("hidden");
     }
-    $('#exportBtn')?.addEventListener('click', downloadCurrent);
-    $('#emailBtn')?.addEventListener('click', ()=>{
-      const t = getCurrent(); if(!t) return toast('No chat');
-      const body = encodeURIComponent(t.messages.map(m=>`[${fmtTime(m.ts)}] ${m.role.toUpperCase()}: ${m.text}`).join('\n\n'));
-      const subject = encodeURIComponent('Ledgerdaddy Chat Transcript');
-      window.location.href = `mailto:?subject=${subject}&body=${body}`;
-    });
-    $('#clearAll')?.addEventListener('click', ()=>{
-      if(confirm('Delete all conversations?')){
-        threads=[]; currentId=null; saveThreads(); renderSidebar(); renderMessages(); toast('Cleared');
+
+    // -----------------------------------
+    // Typing + receipts (mock)
+    // -----------------------------------
+    events.on(p=>{
+      if(p.type==="typing"){ $("#typing").classList.toggle("hidden", !p.on); }
+      if(p.type==="message.delivered" || p.type==="message.read"){
+        const ch = channels.find(c=>c.id===currentChannelId);
+        const m = ch.messages.find(x=>x.id===p.messageId);
+        if(!m) return;
+        const wrap = $("#messageWrap");
+        // naive re-render for demo (receipts visible on my messages)
+        renderMessages();
+      }
+      if(p.type==="message.new"){
+        const ch = channels.find(c=>c.id===currentChannelId);
+        ch.messages.push(p.message);
+        renderMessages();
       }
     });
 
-    // scroll-to-bottom helper
-    const toBottomBtn = document.createElement('button');
-    toBottomBtn.id = 'toBottom';
-    toBottomBtn.className = 'hidden fixed bottom-24 right-6 chip shadow-soft bg-white';
-    toBottomBtn.textContent = 'Scroll to bottom';
-    document.body.appendChild(toBottomBtn);
-    const msgWrapEl = $('#messages');
-    function toggleScrollBtn(){
-      if(!msgWrapEl) return;
-      const nearBottom = (msgWrapEl.scrollHeight - msgWrapEl.scrollTop - msgWrapEl.clientHeight) < 140;
-      if(nearBottom) toBottomBtn.classList.add('hidden'); else toBottomBtn.classList.remove('hidden');
-    }
-    msgWrapEl.addEventListener('scroll', toggleScrollBtn);
-    toBottomBtn.addEventListener('click', ()=>{ msgWrapEl.scrollTop = msgWrapEl.scrollHeight; toggleScrollBtn(); });
+    // -----------------------------------
+    // Channel actions / search
+    // -----------------------------------
+    $("#channelSearch").addEventListener("input", e=> renderChannels(e.target.value));
+    $("#globalSearch").addEventListener("keydown", e=>{
+      if((e.metaKey || e.ctrlKey) && e.key.toLowerCase()==="k"){ e.preventDefault(); $("#globalSearch").focus(); }
+    });
+    $("#addChannel").onclick = ()=>{
+      const name = prompt("Channel name (with #):", "#new-channel");
+      if(!name) return;
+      const id = "c_" + crypto.randomUUID().slice(0,6);
+      channels.unshift({ id, name, members:[me.id], online:[me.id], pinned:false, muted:false, messages:[] });
+      renderChannels($("#channelSearch").value);
+    };
+    $("#newChat").onclick = ()=>{
+      const uname = prompt("Start DM with who? (Amy/Max/Lee)");
+      const u = users.find(x=> x.name.toLowerCase()===String(uname||"").toLowerCase());
+      if(!u) return alert("User not found");
+      const id = "dm_" + crypto.randomUUID().slice(0,6);
+      channels.unshift({ id, name:`@${u.name}`, members:[me.id,u.id], online:[me.id], pinned:false, muted:false, messages:[] });
+      currentChannelId = id;
+      loadChannel(id);
+      renderChannels($("#channelSearch").value);
+    };
 
-    // Init
-    if(!threads.length){ ensureThread(); }
-    renderSidebar(); renderMessages();
+    // -----------------------------------
+    // Utilities
+    // -----------------------------------
+    function insertAtCursor(el, text){
+      const start = el.selectionStart, end = el.selectionEnd;
+      el.value = el.value.slice(0,start) + text + el.value.slice(end);
+      el.selectionStart = el.selectionEnd = start + text.length;
+      el.dispatchEvent(new Event("input"));
+    }
+    function debounce(fn, ms){ let t; return (...args)=>{ clearTimeout(t); t=setTimeout(()=>fn(...args), ms); }; }
+
+    // -----------------------------------
+    // Bootstrap
+    // -----------------------------------
+    function seed(){
+      const ch = channels.find(c=>c.id===currentChannelId);
+      ch.messages.push(
+        { id:crypto.randomUUID(), userId:"u_amy", text:"Welcome to the channel! 🎉", createdAt:Date.now()-1000*60*60*24, attachments:[], reactions:{"🎉":["u_me","u_max"]}, thread:[] },
+        { id:crypto.randomUUID(), userId:"u_me", text:"Hey team — I’ll share the HS codes list shortly.", createdAt:Date.now()-1000*60*50, attachments:[], reactions:{}, thread:[] },
+        { id:crypto.randomUUID(), userId:"u_max", text:"Anyone knows the ETA for PO-1021?", createdAt:Date.now()-1000*60*30, attachments:[], reactions:{}, thread:[] },
+      );
+    }
+
+    seed();
+    renderChannels();
+    loadChannel(currentChannelId);
+    realtime.subscribe(currentChannelId, ev=> events.emit(ev));
   </script>
 </body>
 </html>
