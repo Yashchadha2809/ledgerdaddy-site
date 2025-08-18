@@ -1,146 +1,174 @@
 <!DOCTYPE html>
-<html lang="en" class="scroll-smooth">
+<html lang="en" class="scroll-smooth h-full">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Ask in Chat – Ledgerdaddy</title>
-  <meta name="theme-color" content="#1A237E" />
-  <link rel="preconnect" href="https://images.unsplash.com" />
+  <meta name="theme-color" content="#0B1020" />
   <script src="https://cdn.tailwindcss.com"></script>
   <script>
+    // Neutral, ChatGPT-like palette
     tailwind.config = {
       theme: {
         extend: {
-          colors:{ indigoDeep:"#1A237E", emerald:"#2E7D32", cyanBright:"#00BCD4", accentOrange:"#FF7043" },
-          boxShadow:{ lift:"0 14px 34px rgba(0,0,0,.12)" }
+          colors:{
+            ink:"#0B1020",                // deep text
+            soft:"#F5F7FA",              // app bg
+            card:"#FFFFFF",              // surfaces
+            line:"#E6E8EE",              // borders
+            mute:"#6B7280",              // secondary text
+            accent:"#10B981",            // action (emerald-ish)
+            accentSoft:"#ECFDF5",
+            codeBg:"#0F172A"             // code block
+          },
+          boxShadow:{
+            soft:"0 10px 30px rgba(3,7,18,.06)"
+          },
+          typography: {
+            DEFAULT: {
+              css: {
+                h1:{fontWeight:'700'},
+                h2:{fontWeight:'700'},
+                code: { background:'#F3F4F6', padding:'2px 6px', borderRadius:'6px' }
+              }
+            }
+          }
         }
       }
     }
   </script>
   <style>
-    .fade-in{animation:fade .15s ease-out}
+    .fade-in{animation:fade .12s ease-out}
     @keyframes fade{from{opacity:.5;transform:translateY(2px)}to{opacity:1;transform:none}}
     .typing-dot{animation:pulse 1s infinite ease-in-out}
     .typing-dot:nth-child(2){animation-delay:.15s}
     .typing-dot:nth-child(3){animation-delay:.3s}
     @keyframes pulse{0%,80%,100%{opacity:.25}40%{opacity:1}}
-    .card{transition:transform .12s ease, box-shadow .2s ease}
-    .card:hover{transform:translateY(-2px); box-shadow:0 14px 34px rgba(0,0,0,.14)}
-    .hero-img{background:url('https://images.unsplash.com/photo-1586521995568-39ef16c6934d?q=80&w=1920&auto=format&fit=crop') center/cover no-repeat;}
-    pre{background:#0f172a; color:#e5e7eb; padding:12px; border-radius:10px; overflow:auto}
-    code{font-family:ui-monospace,SFMono-Regular,Menlo,monospace}
+    .btn{display:inline-flex;align-items:center;gap:.5rem;padding:.56rem .9rem;border-radius:10px;font-weight:600}
+    .btn-accent{background:#10B981;color:#fff}
+    .btn-accent:hover{filter:brightness(1.03)}
+    .btn-ghost{background:transparent;border:1px solid #E6E8EE}
+    .btn-ghost:hover{background:#F9FAFB}
+    .chip{font-size:12px;border:1px solid #E6E8EE;border-radius:999px;padding:.35rem .7rem;background:#FFF}
+    .chip:hover{border-color:#10B981;color:#10B981}
+    .message a{color:#0EA5E9}
+    .message pre{background:#0F172A;color:#E5E7EB;padding:12px;border-radius:12px;overflow:auto}
+    .message code{font-family:ui-monospace,SFMono-Regular,Menlo,monospace}
+    .scroll-btn{position:fixed;right:20px;bottom:96px;z-index:40}
   </style>
 </head>
-<body class="bg-gray-50 text-gray-900">
-
+<body class="h-full bg-soft text-ink">
   <!-- Topbar -->
-  <header class="fixed top-0 inset-x-0 z-50 border-b border-gray-200 bg-white/90 backdrop-blur">
-    <div class="max-w-7xl mx-auto px-4 py-3 flex items-center justify-between">
+  <header class="sticky top-0 z-50 border-b border-line bg-card/90 backdrop-blur">
+    <div class="max-w-6xl mx-auto px-4 py-3 flex items-center justify-between">
       <a href="/" class="flex items-center gap-2" aria-label="Home">
-        <span class="grid h-9 w-9 place-items-center rounded-xl bg-gradient-to-tr from-cyanBright to-emerald text-white font-extrabold shadow">◆</span>
-        <span class="text-xl font-bold text-indigoDeep">Ledgerdaddy</span>
-        <span class="ml-2 hidden sm:inline-flex text-[11px] px-2 py-0.5 rounded-full border border-cyanBright/40 text-cyanBright">AI Customs</span>
+        <span class="grid h-8 w-8 place-items-center rounded-lg bg-accent text-white font-bold">◆</span>
+        <span class="text-lg font-semibold">Ledgerdaddy</span>
+        <span class="ml-2 hidden sm:inline-flex text-[11px] px-2 py-0.5 rounded-full border border-accent/30 text-accent">AI Customs</span>
       </a>
-      <nav class="hidden md:flex items-center gap-6 text-sm font-medium">
-        <a href="/marketplace.html" class="hover:text-cyanBright">Marketplace</a>
-        <a href="/calculator.html" class="hover:text-cyanBright">Calculator</a>
-        <a href="/hs-finder.html" class="hover:text-cyanBright">HS Finder</a>
-        <a href="/dashboard.html" class="hover:text-cyanBright">Dashboard</a>
+      <nav class="hidden md:flex items-center gap-2 text-sm">
+        <a href="/marketplace.html" class="px-3 py-2 rounded-lg hover:bg-accentSoft hover:text-accent">Marketplace</a>
+        <a href="/calculator.html" class="px-3 py-2 rounded-lg hover:bg-accentSoft hover:text-accent">Calculator</a>
+        <a href="/hs-finder.html" class="px-3 py-2 rounded-lg hover:bg-accentSoft hover:text-accent">HS Finder</a>
+        <a href="/dashboard.html" class="px-3 py-2 rounded-lg hover:bg-accentSoft hover:text-accent">Dashboard</a>
       </nav>
       <div class="hidden md:flex items-center gap-2">
-        <a href="/log-in.html" class="border px-4 py-2 rounded-lg">Log in</a>
-        <a href="/personal-sign-up.html" class="bg-emerald text-white px-4 py-2 rounded-lg hover:opacity-95">Sign up</a>
+        <a href="/log-in.html" class="btn btn-ghost">Log in</a>
+        <a href="/personal-sign-up.html" class="btn btn-accent">Sign up</a>
       </div>
-      <a href="/personal-sign-up.html" class="md:hidden bg-emerald text-white px-3 py-1.5 rounded-lg">Start</a>
+      <a href="/personal-sign-up.html" class="md:hidden btn btn-accent text-sm px-3 py-1.5">Start</a>
     </div>
   </header>
 
-  <!-- Hero strip -->
-  <section class="pt-20 md:pt-24">
-    <div class="hero-img">
-      <div class="backdrop-brightness-90 bg-gradient-to-r from-indigoDeep/70 to-cyanBright/60">
-        <div class="max-w-6xl mx-auto px-4 py-8 text-white">
-          <h1 class="text-3xl md:text-4xl font-extrabold">Ask in Chat</h1>
-          <p class="mt-2 text-white/95">ChatGPT-style assistant for HS, duties, valuation & more. (Connected to backend)</p>
-        </div>
-      </div>
-    </div>
-  </section>
-
-  <!-- Chat layout -->
-  <main class="max-w-6xl mx-auto px-2 sm:px-4 pb-28 grid md:grid-cols-[260px,1fr] gap-4 -mt-6">
+  <!-- Page -->
+  <main class="max-w-6xl mx-auto px-2 sm:px-4 grid md:grid-cols-[260px,1fr] gap-4">
     <!-- Sidebar -->
-    <aside class="bg-white border border-gray-200 rounded-2xl shadow p-3 h-fit sticky top-24">
-      <div class="flex items-center justify-between">
-        <strong>Conversations</strong>
-        <button id="newChat" class="text-xs border rounded px-2 py-1">New chat</button>
-      </div>
-      <ul id="chatList" class="mt-3 grid gap-1 text-sm max-h-[50vh] overflow-auto"></ul>
-      <div class="mt-3 grid gap-2 text-sm">
-        <a class="border px-2 py-1 rounded text-center" href="/hs-finder.html">Open HS Finder</a>
-        <a class="border px-2 py-1 rounded text-center" href="/calculator.html">Open Calculator</a>
-        <button id="exportBtn" class="border px-2 py-1 rounded">Export current chat</button>
-        <button id="clearAll" class="text-red-600 border border-red-200 px-2 py-1 rounded">Clear all</button>
+    <aside class="hidden md:block h-[calc(100vh-64px)] sticky top-[64px]">
+      <div class="bg-card border border-line rounded-xl shadow-soft p-3 h-full flex flex-col">
+        <div class="flex items-center justify-between">
+          <strong>Conversations</strong>
+          <button id="newChat" class="text-xs btn btn-ghost">New</button>
+        </div>
+        <ul id="chatList" class="mt-3 grid gap-1 text-sm overflow-auto pr-1"></ul>
+        <div class="mt-3 grid gap-2 text-sm">
+          <a class="btn btn-ghost justify-center" href="/hs-finder.html">Open HS Finder</a>
+          <a class="btn btn-ghost justify-center" href="/calculator.html">Open Calculator</a>
+          <button id="exportBtn" class="btn btn-ghost justify-center">Export current</button>
+          <button id="clearAll" class="btn btn-ghost justify-center text-red-600 border-red-200">Clear all</button>
+        </div>
       </div>
     </aside>
 
-    <!-- Conversation -->
-    <section class="bg-white border border-gray-200 rounded-2xl shadow flex flex-col">
+    <!-- Chat column -->
+    <section class="flex flex-col h-[calc(100vh-64px)]">
       <!-- Stream -->
-      <div id="messages" class="flex-1 overflow-auto p-4 space-y-4">
-        <!-- Welcome -->
-        <div class="fade-in rounded-xl bg-gray-50 p-4">
-          <div class="text-sm text-gray-600">Assistant</div>
-          <div class="mt-1 whitespace-pre-wrap">
-            Hi! Ask me anything about HS codes, import duty, or customs docs.
-            Try:
-            <ul class="list-disc ml-5 mt-2">
-              <li><button class="demo-btn text-cyanBright" data-q="Find HS code for wireless earbuds in IN">Find HS code for wireless earbuds in IN</button></li>
-              <li><button class="demo-btn text-cyanBright" data-q="Duty for IN 851713 CIF 100000">Duty for IN 851713 CIF 100000</button></li>
-              <li><button class="demo-btn text-cyanBright" data-q="List docs needed to import furniture into EU">List docs needed to import furniture into EU</button></li>
-            </ul>
+      <div id="messages" class="flex-1 overflow-auto px-0 sm:px-2 py-4">
+        <!-- Empty state with suggestions -->
+        <div id="welcome" class="max-w-2xl mx-auto bg-card border border-line rounded-xl p-4 shadow-soft">
+          <div class="text-sm text-mute">Assistant</div>
+          <div class="mt-1">
+            <p class="text-[15px] leading-relaxed">
+              Hi! Ask me anything about HS codes, duties, or customs docs. Try one:
+            </p>
+            <div class="mt-3 flex flex-wrap gap-2">
+              <button class="chip demo-btn" data-q="Find HS code for wireless earbuds in IN">Find HS code for wireless earbuds in IN</button>
+              <button class="chip demo-btn" data-q="Duty for IN 851713 CIF 100000">Duty for IN 851713 CIF 100000</button>
+              <button class="chip demo-btn" data-q="Documents to import wooden furniture into EU">Documents to import wooden furniture into EU</button>
+              <button class="chip demo-btn" data-q="Best Incoterm for electronics from CN to IN?">Best Incoterm for electronics from CN to IN?</button>
+            </div>
           </div>
         </div>
       </div>
 
       <!-- Composer -->
-      <div class="border-t p-3">
-        <form id="composer" class="flex items-end gap-2">
-          <textarea id="chatInput" rows="1" placeholder="Message Ledgerdaddy…"
-            class="flex-1 border rounded-xl px-3 py-2 resize-none max-h-40"
-          ></textarea>
-          <button id="sendBtn" class="bg-emerald text-white px-4 py-2 rounded-xl">Send</button>
-        </form>
-        <p class="text-[11px] text-gray-500 mt-1">Enter to send • Shift+Enter for new line</p>
+      <div class="border-t border-line bg-card sticky bottom-0">
+        <div class="max-w-3xl mx-auto px-3 py-3">
+          <form id="composer" class="flex items-end gap-2">
+            <textarea id="chatInput" rows="1" placeholder="Message Ledgerdaddy…"
+              class="flex-1 border border-line rounded-xl px-3 py-2 resize-none max-h-40 focus:outline-none focus:ring-2 focus:ring-accent/30"
+            ></textarea>
+            <button id="sendBtn" class="btn btn-accent">Send</button>
+          </form>
+          <div class="mt-2 flex items-center justify-between">
+            <div class="text-[11px] text-mute">Enter to send • Shift+Enter for new line</div>
+            <div class="flex items-center gap-2">
+              <button id="regenBtn" class="chip">Regenerate</button>
+              <button id="toBottom" class="chip hidden">Scroll to bottom</button>
+            </div>
+          </div>
+        </div>
       </div>
     </section>
   </main>
 
   <!-- Toast -->
-  <div id="toast" class="hidden fixed bottom-6 right-6 bg-gray-900 text-white text-sm px-3 py-2 rounded-lg shadow"></div>
+  <div id="toast" class="hidden fixed bottom-6 right-6 bg-ink text-white text-sm px-3 py-2 rounded-lg shadow"></div>
 
-  <footer class="text-center text-xs text-gray-500 my-8">
+  <footer class="text-center text-xs text-mute my-6">
     © <span id="year"></span> Ledgerdaddy
   </footer>
 
   <script>
     // ===== Backend URL =====
-    // For local dev, your chadaddy Flask app should run on http://localhost:5001
-    // In production, replace with your deployed backend: e.g. https://chadaddy.onrender.com
     const API_BASE = window.NEXT_PUBLIC_API_BASE || window.VITE_API_BASE || "http://localhost:5001";
 
     // ===== Utilities =====
     const $ = s => document.querySelector(s);
     const $$ = s => Array.from(document.querySelectorAll(s));
-    const yearEl = $('#year'); if (yearEl) yearEl.textContent = new Date().getFullYear();
     const toast = (msg) => { const t = $('#toast'); t.textContent = msg; t.classList.remove('hidden'); setTimeout(()=>t.classList.add('hidden'), 1400); };
     const uid = () => Math.random().toString(36).slice(2)+Date.now().toString(36);
+    $('#year').textContent = new Date().getFullYear();
 
     // ===== Storage (threads) =====
     const STORE_KEY='ld_chat_threads_v1';
     let threads = JSON.parse(localStorage.getItem(STORE_KEY) || '[]');
     let currentId = threads[0]?.id || null;
     function saveThreads(){ localStorage.setItem(STORE_KEY, JSON.stringify(threads)); }
+    function getCurrent(){ return threads.find(t=>t.id===currentId); }
+    function setTitleFromFirstUserMessage(thread){
+      const first = thread.messages.find(m=>m.role==='user');
+      if(first){ thread.title = (first.text || 'Conversation').slice(0, 50); }
+    }
     function newThread(){
       const id = uid();
       const t = { id, title: 'New chat', messages: [] };
@@ -148,24 +176,20 @@
       currentId = id;
       saveThreads(); renderSidebar(); renderMessages();
     }
-    function getCurrent(){ return threads.find(t=>t.id===currentId); }
-    function setTitleFromFirstUserMessage(thread){
-      const first = thread.messages.find(m=>m.role==='user');
-      if(first){ thread.title = (first.text || 'Conversation').slice(0, 50); }
-    }
 
     // ===== Sidebar =====
     function renderSidebar(){
       const list = $('#chatList');
+      if(!list) return;
       if(!threads.length){
-        list.innerHTML = '<li class="text-gray-500 text-xs p-2 rounded bg-gray-50">No conversations yet</li>'; return;
+        list.innerHTML = '<li class="text-mute text-xs p-2 rounded bg-soft">No conversations yet</li>'; return;
       }
       list.innerHTML = threads.map(t=>`
         <li>
           <button data-id="${t.id}"
-            class="w-full text-left px-2 py-2 rounded hover:bg-gray-50 ${t.id===currentId?'bg-gray-100':''}">
+            class="w-full text-left px-2 py-2 rounded hover:bg-soft ${t.id===currentId?'bg-soft':''}">
             <div class="truncate">${t.title || 'Conversation'}</div>
-            <div class="text-[11px] text-gray-500">${(t.messages?.length||0)} messages</div>
+            <div class="text-[11px] text-mute">${(t.messages?.length||0)} messages</div>
           </button>
         </li>
       `).join('');
@@ -175,63 +199,83 @@
     }
 
     // ===== Messages UI =====
-    function msgBubble(role, text){
-      const isUser = role==='user';
-      const avatar = isUser ? '👤' : '◆';
-      const bg = isUser ? 'bg-white' : 'bg-gray-50';
-      return `
-        <div class="fade-in rounded-xl ${bg} p-4">
-          <div class="text-sm ${isUser?'text-gray-600':'text-gray-600'} flex items-center gap-2">
-            <span class="grid w-6 h-6 place-items-center rounded-full ${isUser?'bg-gray-200':'bg-indigoDeep text-white'} text-[12px]">${avatar}</span>
-            <span>${isUser?'You':'Assistant'}</span>
-            <button class="ml-auto text-[11px] text-gray-500 copy-btn" data-copy="${encodeURIComponent(text)}">Copy</button>
-          </div>
-          <div class="mt-1 whitespace-pre-wrap leading-relaxed">${renderMarkdownLite(text)}</div>
-        </div>
-      `;
-    }
-    function typingBubble(){
-      return `
-        <div class="rounded-xl bg-gray-50 p-4">
-          <div class="text-sm text-gray-600 flex items-center gap-2">
-            <span class="grid w-6 h-6 place-items-center rounded-full bg-indigoDeep text-white text-[12px]">◆</span>
-            <span>Assistant</span>
-          </div>
-          <div class="mt-2 flex items-center gap-1">
-            <span class="typing-dot w-2 h-2 rounded-full bg-gray-400"></span>
-            <span class="typing-dot w-2 h-2 rounded-full bg-gray-400"></span>
-            <span class="typing-dot w-2 h-2 rounded-full bg-gray-400"></span>
-          </div>
-        </div>
-      `;
-    }
-    function renderMarkdownLite(text){
+    function mdLite(text){
       let out = (text || '').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
-      out = out.replace(/```([\s\S]*?)```/g, (_,code)=>`<pre><code>${code}</code></pre>`);
-      out = out.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>');
-      out = out.replace(/`([^`]+)`/g, '<code class="bg-gray-100 px-1 py-0.5 rounded text-[90%]">$1</code>');
+      out = out.replace(/```([\\s\\S]*?)```/g, (_,code)=>`<pre><code>${code}</code></pre>`);
+      out = out.replace(/\\*\\*(.*?)\\*\\*/g, '<strong>$1</strong>');
+      out = out.replace(/`([^`]+)`/g, '<code>$1</code>');
+      out = out.replace(/\\n\\n/g, '<br/><br/>');
       return out;
     }
+
+    function bubble(role, text){
+      const isUser = role==='user';
+      return `
+        <div class="fade-in max-w-3xl mx-auto message">
+          <div class="flex ${isUser?'justify-end':''}">
+            <div class="flex gap-3 items-start ${isUser?'flex-row-reverse':''}">
+              <span class="mt-1 inline-flex w-8 h-8 shrink-0 items-center justify-center rounded-full ${isUser?'bg-ink text-white':'bg-accent text-white'}">${isUser?'👤':'◆'}</span>
+              <div class="bg-card border border-line rounded-2xl px-4 py-3 max-w-[min(78vw,720px)]">
+                <div class="text-sm text-mute mb-1">${isUser?'You':'Assistant'}</div>
+                <div class="prose prose-sm max-w-none">${mdLite(text)}</div>
+                <div class="mt-2 flex items-center gap-2">
+                  <button class="copy-btn text-[11px] px-2 py-1 rounded border border-line hover:bg-soft" data-copy="${encodeURIComponent(text)}">Copy</button>
+                  ${isUser?'<button class="del-btn text-[11px] px-2 py-1 rounded border border-line hover:bg-soft">Delete</button>':''}
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      `;
+    }
+
+    function typingRow(){
+      return `
+        <div class="max-w-3xl mx-auto">
+          <div class="flex gap-3 items-start">
+            <span class="mt-1 inline-flex w-8 h-8 items-center justify-center rounded-full bg-accent text-white">◆</span>
+            <div class="bg-card border border-line rounded-2xl px-4 py-3">
+              <div class="flex items-center gap-1">
+                <span class="typing-dot w-2 h-2 rounded-full bg-gray-400"></span>
+                <span class="typing-dot w-2 h-2 rounded-full bg-gray-400"></span>
+                <span class="typing-dot w-2 h-2 rounded-full bg-gray-400"></span>
+              </div>
+            </div>
+          </div>
+        </div>
+      `;
+    }
+
     function renderMessages(){
       const wrap = $('#messages');
       const t = getCurrent();
-      if(!t){ wrap.innerHTML = '<div class="p-4 text-gray-500">Start a new chat.</div>'; return; }
-      wrap.innerHTML = t.messages.map(m=>msgBubble(m.role, m.text)).join('') || `
-        <div class="rounded-xl bg-gray-50 p-4">
-          <div class="text-sm text-gray-600">Assistant</div>
-          <div class="mt-1">How can I help today?</div>
-        </div>
-      `;
+      const welcome = $('#welcome');
+      if(!t){ wrap.innerHTML = ''; welcome?.classList.remove('hidden'); return; }
+      welcome?.classList.add('hidden');
+      wrap.innerHTML = t.messages.map(m=>bubble(m.role, m.text)).join('');
+      // copy / delete
       $$('.copy-btn').forEach(b=>{
         b.onclick = async ()=>{
           try{ await navigator.clipboard.writeText(decodeURIComponent(b.getAttribute('data-copy'))); toast('Copied'); }
           catch{ toast('Copy failed'); }
         };
       });
+      $$('.del-btn').forEach((btn, idx)=>{
+        btn.onclick = ()=>{
+          const cur = getCurrent(); if(!cur) return;
+          // find the nth user message
+          let userIndex = -1, target = -1;
+          for(let i=0;i<cur.messages.length;i++){
+            if(cur.messages[i].role==='user'){ userIndex++; if(userIndex===idx){ target=i; break; } }
+          }
+          if(target>-1){ cur.messages.splice(target,1); saveThreads(); renderMessages(); renderSidebar(); }
+        };
+      });
       wrap.scrollTop = wrap.scrollHeight;
+      toggleScrollBtn();
     }
 
-    // ===== Send flow (calls backend) =====
+    // ===== Send flow =====
     function addMessage(role, text){
       const t = getCurrent(); if(!t) return;
       t.messages.push({role, text, ts: Date.now()});
@@ -245,25 +289,25 @@
       addMessage('user', trimmed);
 
       const wrap = $('#messages');
-      wrap.insertAdjacentHTML('beforeend', typingBubble());
+      wrap.insertAdjacentHTML('beforeend', typingRow());
       wrap.scrollTop = wrap.scrollHeight;
 
       try {
         const res = await fetch(`${API_BASE}/api/chat`, {
           method: "POST",
           headers: { "Content-Type": "application/json" },
-          // Change mode if needed: "learn" | "calculate" | "earn" | "business" | "core"
           body: JSON.stringify({ message: trimmed, mode: "learn" })
         });
         const data = await res.json();
-        const last = wrap.lastElementChild; if(last) last.remove();
+        wrap.lastElementChild?.remove();
         if (res.ok && data.reply){
           addMessage('assistant', data.reply);
+          lastPrompt = trimmed;
         } else {
           addMessage('assistant', "⚠️ Error: " + (data.error || "No reply from server"));
         }
       } catch (err) {
-        const last = wrap.lastElementChild; if(last) last.remove();
+        wrap.lastElementChild?.remove();
         addMessage('assistant', "⚠️ Network error: " + err.message);
       }
     }
@@ -272,6 +316,7 @@
     const area = $('#chatInput');
     const form = $('#composer');
     const sendBtn = $('#sendBtn');
+    let lastPrompt = "";
 
     // autoresize
     area.addEventListener('input', ()=>{
@@ -289,7 +334,7 @@
     });
     form.addEventListener('submit', (e)=>{ e.preventDefault(); send(area.value); area.value=''; area.style.height='auto'; });
 
-    // demo quick buttons (just fill input)
+    // demo quick chips
     $$('.demo-btn').forEach(b=> b.onclick = ()=>{
       area.value = b.getAttribute('data-q');
       area.dispatchEvent(new Event('input'));
@@ -297,10 +342,10 @@
     });
 
     // new chat
-    $('#newChat').onclick = ()=> newThread();
+    $('#newChat')?.addEventListener('click', ()=> newThread());
 
     // export & clear
-    $('#exportBtn').onclick = ()=>{
+    $('#exportBtn')?.addEventListener('click', ()=>{
       const t = getCurrent(); if(!t) return toast('No chat');
       const blob = new Blob([JSON.stringify(t, null, 2)], {type:'application/json'});
       const a = document.createElement('a');
@@ -308,12 +353,28 @@
       a.download = (t.title||'chat') + '.json';
       a.click();
       URL.revokeObjectURL(a.href);
-    };
-    $('#clearAll').onclick = ()=>{
+    });
+    $('#clearAll')?.addEventListener('click', ()=>{
       if(confirm('Delete all conversations?')){
         threads=[]; currentId=null; saveThreads(); renderSidebar(); renderMessages(); toast('Cleared');
       }
-    };
+    });
+
+    // regenerate
+    $('#regenBtn')?.addEventListener('click', ()=>{
+      if(lastPrompt){ send(lastPrompt); } else { toast('Nothing to regenerate yet'); }
+    });
+
+    // scroll-to-bottom button
+    const toBottomBtn = $('#toBottom');
+    const msgWrap = $('#messages');
+    function toggleScrollBtn(){
+      if(!msgWrap) return;
+      const nearBottom = (msgWrap.scrollHeight - msgWrap.scrollTop - msgWrap.clientHeight) < 120;
+      if(nearBottom) toBottomBtn?.classList.add('hidden'); else toBottomBtn?.classList.remove('hidden');
+    }
+    msgWrap.addEventListener('scroll', toggleScrollBtn);
+    toBottomBtn?.addEventListener('click', ()=>{ msgWrap.scrollTop = msgWrap.scrollHeight; toggleScrollBtn(); });
 
     // ===== Init =====
     if(!threads.length){ newThread(); } else { renderSidebar(); renderMessages(); }
