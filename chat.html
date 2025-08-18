@@ -295,6 +295,7 @@
           },
           body: JSON.stringify({ message: trimmed, mode, session_id: SESSION_ID })
         });
+        
 
         const data = await res.json().catch(()=>({}));
         const last = wrap.lastElementChild; if(last) last.remove();
