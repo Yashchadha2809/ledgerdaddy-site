@@ -20,9 +20,7 @@
   <style>
     .card{transition:transform .12s ease, box-shadow .2s ease}
     .card:hover{transform:translateY(-2px); box-shadow:0 14px 34px rgba(0,0,0,.14)}
-    .hero-img{
-      background:url('https://images.unsplash.com/photo-1586521995568-39ef16c6934d?q=80&w=1920&auto=format&fit=crop') center/cover no-repeat;
-    }
+    .hero-img{background:url('https://images.unsplash.com/photo-1586521995568-39ef16c6934d?q=80&w=1920&auto=format&fit=crop') center/cover no-repeat;}
   </style>
 </head>
 <body class="bg-gray-50 text-gray-900">
@@ -80,22 +78,21 @@
           <textarea id="hsDesc" rows="6" class="border rounded-lg px-3 py-2" placeholder="Materials, function, main use, key specs… e.g. Wireless earbuds with mic, Bluetooth 5.3, lithium battery"></textarea>
         </label>
 
-        <!-- Image scanner (NEW) -->
+        <!-- Image scanner (VISIBLE) -->
         <div class="mt-2 grid gap-2 text-sm">
           <span class="font-medium">Upload product image (optional)</span>
 
-          <!-- Dropzone -->
+          <!-- Dropzone (click to browse or drag & drop) -->
           <label id="imgDrop" class="card cursor-pointer border border-dashed rounded-xl p-4 grid place-items-center text-center bg-gray-50/60">
             <input id="hsImage" type="file" accept="image/*" capture="environment" class="hidden" />
-            <div class="grid gap-2">
-              <div class="text-gray-500">
-                Drag & drop an image here, or <span class="underline">browse</span>
-              </div>
-              <div class="text-[11px] text-gray-500">JPG, PNG. Max ~5MB</div>
+            <div class="grid gap-1">
+              <div class="text-gray-700 font-medium">Upload image</div>
+              <div class="text-gray-500">Drag & drop here, or <span class="underline">click to browse</span></div>
+              <div class="text-[11px] text-gray-500">JPG/PNG up to 5 MB</div>
             </div>
           </label>
 
-          <!-- Preview row -->
+          <!-- Preview + Scan -->
           <div id="imgPreviewWrap" class="hidden items-center gap-3">
             <img id="imgPreview" alt="preview" class="h-16 w-16 rounded-lg object-cover border" />
             <div class="text-xs text-gray-600 truncate" id="imgName"></div>
@@ -103,7 +100,7 @@
           </div>
 
           <p class="text-xs text-gray-500">
-            Tip: Use clear, front-facing photos. We’ll try to extract hints (labels/OCR) and auto-fill your description.
+            Tip: Use clear front photos. We’ll try to extract text/labels and auto-fill the description.
           </p>
         </div>
         <!-- /Image scanner -->
@@ -141,12 +138,12 @@
   </footer>
 
   <script>
+    // Footer year
     document.getElementById('year').textContent = new Date().getFullYear();
 
-    // Demo HS suggestion generator (front-end only).
+    // -------- Demo HS suggestion generator --------
     function fakeHsSuggest(desc){
       const d = desc.toLowerCase();
-      // A few simple demo branches
       if(d.includes('earbud') || d.includes('headphone') || d.includes('tws')){
         return [
           {code:'851830', title:'Headphones & Earphones', conf:0.82, examples:['TWS earbuds','Wired headset']},
@@ -168,7 +165,6 @@
           {code:'847330', title:'Parts for computers', conf:0.31, examples:['Network card']}
         ];
       }
-      // Default generic
       return [
         {code:'847989', title:'Machines & mechanical appliances (other)', conf:0.52, examples:['General machinery']},
         {code:'902780', title:'Instruments for physical analysis', conf:0.41, examples:['Test meter']},
@@ -178,7 +174,6 @@
 
     function resultCard(r, country){
       const conf = Math.round(r.conf * 100);
-      // Build calculator link with prefilled HS + country (your calculator can read these query params)
       const calcUrl = `/calculator.html?hs=${encodeURIComponent(r.code)}&country=${encodeURIComponent(country||'IN')}`;
       return `
         <article class="p-4 border rounded-xl bg-white">
@@ -206,27 +201,18 @@
       const similar = document.getElementById('hsSimilar').value.trim();
       const country = document.getElementById('hsCountry').value;
 
-      if(!desc){
-        alert('Please describe your product');
-        return;
-      }
+      if(!desc){ alert('Please describe your product'); return; }
 
-      // Combine hints (simple demo)
       const query = [desc, attr, similar].filter(Boolean).join(' ');
       const suggestions = fakeHsSuggest(query);
 
       resEl.innerHTML = suggestions.map(r => resultCard(r, country)).join('');
 
-      // Wire copy buttons
       resEl.querySelectorAll('.copy-btn').forEach(btn=>{
         btn.addEventListener('click', async ()=>{
           const code = btn.getAttribute('data-code');
-          try{
-            await navigator.clipboard.writeText(code);
-            toast('HS code copied');
-          }catch{
-            toast('Copy failed');
-          }
+          try{ await navigator.clipboard.writeText(code); toast('HS code copied'); }
+          catch{ toast('Copy failed'); }
         });
       });
     });
@@ -235,7 +221,6 @@
       document.getElementById('hsDesc').value = '';
       document.getElementById('hsAttr').value = '';
       document.getElementById('hsSimilar').value = '';
-      // also reset image UI
       resetImageState();
       resEl.innerHTML = '<div class="p-4 rounded-xl border border-dashed text-gray-500 bg-gray-50">Cleared. Enter a description to get suggestions.</div>';
     });
@@ -248,7 +233,7 @@
       setTimeout(()=>t.remove(),1400);
     }
 
-    // --- Image upload + scan wiring ---
+    // -------- Image upload + scan wiring --------
     const imgInput = document.getElementById('hsImage');
     const drop = document.getElementById('imgDrop');
     const previewWrap = document.getElementById('imgPreviewWrap');
@@ -257,83 +242,84 @@
     const scanBtn = document.getElementById('hsScan');
     let selectedFile = null;
 
-    // Click-to-open file dialog
-    drop.addEventListener('click', () => imgInput.click());
+    // Guard: only wire if the elements exist
+    if (imgInput && drop && previewWrap && previewImg && imgNameEl && scanBtn) {
 
-    // Drag & drop styling
-    ;['dragenter','dragover'].forEach(evt =>
-      drop.addEventListener(evt, e => {
-        e.preventDefault(); e.stopPropagation();
-        drop.classList.add('ring-2','ring-cyanBright/50','bg-white');
-      })
-    );
-    ;['dragleave','drop'].forEach(evt =>
-      drop.addEventListener(evt, e => {
-        e.preventDefault(); e.stopPropagation();
-        drop.classList.remove('ring-2','ring-cyanBright/50','bg-white');
-      })
-    );
+      // Click -> open file dialog
+      drop.addEventListener('click', () => imgInput.click());
 
-    drop.addEventListener('drop', e => {
-      const file = (e.dataTransfer && e.dataTransfer.files && e.dataTransfer.files[0]) || null;
-      handlePickedFile(file);
-    });
+      // Drag & drop styling
+      ;['dragenter','dragover'].forEach(evt =>
+        drop.addEventListener(evt, e => { e.preventDefault(); e.stopPropagation();
+          drop.classList.add('ring-2','ring-cyanBright/50','bg-white'); })
+      );
+      ;['dragleave','drop'].forEach(evt =>
+        drop.addEventListener(evt, e => { e.preventDefault(); e.stopPropagation();
+          drop.classList.remove('ring-2','ring-cyanBright/50','bg-white'); })
+      );
 
-    imgInput.addEventListener('change', e => {
-      handlePickedFile(e.target.files && e.target.files[0]);
-    });
+      drop.addEventListener('drop', e => {
+        const file = (e.dataTransfer && e.dataTransfer.files && e.dataTransfer.files[0]) || null;
+        handlePickedFile(file);
+      });
 
-    function handlePickedFile(file){
-      if(!file) return;
-      if(!file.type.startsWith('image/')) { toast('Please choose an image'); return; }
-      if(file.size > 5 * 1024 * 1024){ toast('Image too large (>5MB)'); return; }
+      imgInput.addEventListener('change', e => {
+        handlePickedFile(e.target.files && e.target.files[0]);
+      });
 
-      selectedFile = file;
-      const url = URL.createObjectURL(file);
-      previewImg.src = url;
-      imgNameEl.textContent = file.name;
-      previewWrap.classList.remove('hidden');
-      scanBtn.disabled = false;
-    }
+      function handlePickedFile(file){
+        if(!file) return;
+        if(!file.type.startsWith('image/')) { toast('Please choose an image'); return; }
+        if(file.size > 5 * 1024 * 1024){ toast('Image too large (>5MB)'); return; }
 
-    scanBtn.addEventListener('click', async () => {
-      if(!selectedFile) return toast('No image selected');
-      scanBtn.disabled = true;
-      const oldText = scanBtn.textContent;
-      scanBtn.textContent = 'Scanning…';
-      previewImg.classList.add('opacity-60');
-
-      try {
-        const {desc, attributes, similar, guessed} = await scanImage(selectedFile);
-
-        // Auto-fill text fields with what we found
-        const descEl = document.getElementById('hsDesc');
-        const attrEl = document.getElementById('hsAttr');
-        const simEl  = document.getElementById('hsSimilar');
-
-        const mergedDesc = [descEl.value.trim(), desc].filter(Boolean).join(' ');
-        if(mergedDesc) descEl.value = mergedDesc;
-        if(attributes) attrEl.value = attributes;
-        if(similar)    simEl.value = similar;
-
-        // Trigger suggestions using whatever we inferred
-        document.getElementById('hsRun').click();
-
-        toast(guessed ? 'Scanned (demo guess)' : 'Scanned successfully');
-      } catch(err){
-        console.error(err);
-        toast('Scan failed');
-      } finally {
-        scanBtn.textContent = oldText;
+        selectedFile = file;
+        const url = URL.createObjectURL(file);
+        previewImg.src = url;
+        imgNameEl.textContent = file.name;
+        previewWrap.classList.remove('hidden');
         scanBtn.disabled = false;
-        previewImg.classList.remove('opacity-60');
       }
-    });
+
+      scanBtn.addEventListener('click', async () => {
+        if(!selectedFile) return toast('No image selected');
+        scanBtn.disabled = true;
+        const oldText = scanBtn.textContent;
+        scanBtn.textContent = 'Scanning…';
+        previewImg.classList.add('opacity-60');
+
+        try {
+          const {desc, attributes, similar, guessed} = await scanImage(selectedFile);
+
+          const descEl = document.getElementById('hsDesc');
+          const attrEl = document.getElementById('hsAttr');
+          const simEl  = document.getElementById('hsSimilar');
+
+          const mergedDesc = [descEl.value.trim(), desc].filter(Boolean).join(' ');
+          if(mergedDesc) descEl.value = mergedDesc;
+          if(attributes) attrEl.value = attributes;
+          if(similar)    simEl.value = similar;
+
+          // Auto-run suggestions
+          document.getElementById('hsRun').click();
+
+          toast(guessed ? 'Scanned (demo guess)' : 'Scanned successfully');
+        } catch(err){
+          console.error(err);
+          toast('Scan failed');
+        } finally {
+          scanBtn.textContent = oldText;
+          scanBtn.disabled = false;
+          previewImg.classList.remove('opacity-60');
+        }
+      });
+    } else {
+      console.warn('Image UI elements not found — upload/scan disabled.');
+    }
 
     async function scanImage(file){
       const base64 = await fileToBase64(file);
 
-      // Try backend vision endpoint first
+      // Try backend endpoint first (optional)
       try{
         const country = document.getElementById('hsCountry').value || 'IN';
         const resp = await fetch('/api/hs-scan', {
@@ -341,7 +327,6 @@
           headers: {'Content-Type':'application/json'},
           body: JSON.stringify({ image_base64: base64, country })
         });
-
         if(resp.ok){
           const data = await resp.json();
           return {
@@ -355,7 +340,7 @@
         console.warn('Backend scan unavailable, using demo fallback', e);
       }
 
-      // Fallback demo: guess from filename
+      // Fallback demo guess (based on filename)
       const name = (file.name || '').toLowerCase();
       let desc = '';
       if(/earbud|headphone|tws/.test(name)) desc = 'Wireless earbuds with mic, Bluetooth, lithium battery';
@@ -369,21 +354,24 @@
     function fileToBase64(file){
       return new Promise((resolve,reject)=>{
         const reader = new FileReader();
-        reader.onload = () => resolve(String(reader.result).split(',')[1]); // remove data URL prefix
+        reader.onload = () => resolve(String(reader.result).split(',')[1]);
         reader.onerror = reject;
         reader.readAsDataURL(file);
       });
     }
 
     function resetImageState(){
-      selectedFile = null;
       const input = document.getElementById('hsImage');
-      input.value = '';
-      document.getElementById('imgPreview').src = '';
-      document.getElementById('imgName').textContent = '';
-      document.getElementById('imgPreviewWrap').classList.add('hidden');
+      if(input) input.value = '';
+      const wrap = document.getElementById('imgPreviewWrap');
+      if(wrap) wrap.classList.add('hidden');
+      const img = document.getElementById('imgPreview');
+      if(img) img.src = '';
+      const name = document.getElementById('imgName');
+      if(name) name.textContent = '';
+      selectedFile = null;
     }
-    // --- end image upload + scan wiring ---
+    // -------- end image wiring --------
   </script>
 </body>
 </html>
