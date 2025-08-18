@@ -1,965 +1,461 @@
-// ================================
-// package.json
-// ================================
-{
-  "name": "ledgerdaddy-chat",
-  "version": "1.0.0",
-  "private": true,
-  "type": "module",
-  "scripts": {
-    "dev": "vite",
-    "build": "vite build",
-    "preview": "vite preview",
-    "mock": "node mock/server.mjs"
-  },
-  "dependencies": {
-    "react": "^18.3.1",
-    "react-dom": "^18.3.1",
-    "react-markdown": "^9.0.3",
-    "remark-gfm": "^4.0.0",
-    "rehype-raw": "^7.0.0",
-    "rehype-highlight": "^7.0.0",
-    "highlight.js": "^11.9.0",
-    "clsx": "^2.1.1"
-  },
-  "devDependencies": {
-    "@vitejs/plugin-react": "^4.3.1",
-    "vite": "^5.4.2"
-  }
-}
-
-// ================================
-// vite.config.js
-// ================================
-import { defineConfig } from 'vite'
-import react from '@vitejs/plugin-react'
-
-export default defineConfig({
-  plugins: [react()],
-  server: {
-    port: 5173,
-    proxy: {
-      // When using the mock server: `npm run mock` (port 8787)
-      '/api': {
-        target: 'http://localhost:8787',
-        changeOrigin: true,
-        ws: false,
-      }
-    }
-  }
-})
-
-// ================================
-// index.html
-// ================================
-<!doctype html>
-<html lang="en" class="h-full">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <meta name="theme-color" content="#1A237E" />
-    <title>LedgerDaddy AI – Chat</title>
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <script>
-      tailwind.config = {
-        darkMode: ['class', '[data-theme="dark"]'],
-        theme: {
-          extend: {
-            colors: {
-              indigoDeep: '#1A237E',
-              emerald: '#2E7D32',
-              cyanBright: '#00BCD4',
-              accentOrange: '#FF7043',
-            },
-            boxShadow: {
-              lift: '0 8px 30px rgba(0,0,0,.12)'
-            },
-            borderRadius: {
-              '2xl': '16px'
-            }
-          }
+<!DOCTYPE html>
+<html lang="en" class="scroll-smooth h-full">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Ask in Chat – Ledgerdaddy</title>
+  <meta name="theme-color" content="#1A237E" />
+  <link rel="preconnect" href="https://images.unsplash.com" />
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      darkMode: ["class", '[data-theme="dark"]'],
+      theme: {
+        extend: {
+          colors:{ indigoDeep:"#1A237E", emerald:"#2E7D32", cyanBright:"#00BCD4", accentOrange:"#FF7043" },
+          boxShadow:{ lift:"0 8px 30px rgba(0,0,0,.12)" },
+          borderRadius: { "2xl":"16px" }
         }
       }
-    </script>
-    <style>
-      :root {
-        --indigoDeep:#1A237E; --emerald:#2E7D32; --cyanBright:#00BCD4; --accentOrange:#FF7043;
-        --bg:#0B1020; --surface:#11172B; --border:#26324B; --text:#E6EAF2; --muted:#9AA8C7;
-      }
-      html, body, #root { height: 100%; }
-      .glass { backdrop-filter: saturate(160%) blur(8px); background: rgba(17,23,43,.6) }
-      .scrollbar-thin { scrollbar-width: thin }
-      .caret { display:inline-block; width:8px; height:1em; translate: 0 .2em; background: currentColor; animation: blink 1s steps(1) infinite }
-      @keyframes blink { 0%,49%{opacity:1} 50%,100%{opacity:.15} }
-      .table-wrap { overflow-x:auto }
-      /* High contrast toggle */
-      [data-contrast="high"] * { letter-spacing: .2px }
-      [data-contrast="high"] .hc-border { border-color: #8ea2c6 !important }
-    </style>
-  </head>
-  <body class="h-full bg-[var(--bg)] text-[var(--text)]">
-    <div id="root"></div>
-    <script type="module" src="/src/main.jsx"></script>
-  </body>
-</html>
-
-// ================================
-// src/main.jsx
-// ================================
-import React from 'react'
-import { createRoot } from 'react-dom/client'
-import App from './App.jsx'
-
-createRoot(document.getElementById('root')).render(
-  <React.StrictMode>
-    <App />
-  </React.StrictMode>
-)
-
-// ================================
-// src/lib/storage.js
-// ================================
-export const ls = {
-  get(key, fallback) {
-    try { const v = localStorage.getItem(key); return v ? JSON.parse(v) : fallback } catch { return fallback }
-  },
-  set(key, value) {
-    try { localStorage.setItem(key, JSON.stringify(value)) } catch {}
-  }
-}
-
-export const KEYS = {
-  threads: 'ld_threads_v2',
-  theme: 'ld_theme',
-  contrast: 'ld_contrast',
-  sidebar: 'ld_sidebar_open',
-}
-
-// ================================
-// src/lib/chatClient.js
-// Swappable client. Default points to your Flask API on Render, but supports
-// SSE/streaming and a built-in mock for offline usage.
-// ================================
-const DEFAULT_BASE = import.meta.env.VITE_API_BASE || 'https://chadaddy.onrender.com'
-
-export function createChatClient() {
-  let controller = null
-
-  async function send({ messages, attachments = [], onDelta, onDone, mode = 'core', sessionId }) {
-    if (controller) controller.abort()
-    controller = new AbortController()
-
-    const base = DEFAULT_BASE
-    const url = base === 'mock' ? '/api/chat' : base + '/api/chat'
-
-    // Prefer backend streaming via SSE/text; otherwise fall back to JSON then simulate streaming
-    try {
-      // If using Render Flask (non-stream JSON: {reply})
-      const payload = (base.includes('onrender') || base.includes('http'))
-        ? { message: messages[messages.length - 1]?.content || '', mode, session_id: sessionId }
-        : { messages, attachments }
-
-      const res = await fetch(url, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(payload),
-        signal: controller.signal,
-      })
-
-      const ctype = res.headers.get('content-type') || ''
-      if (!res.ok) throw new Error(`HTTP ${res.status}`)
-
-      if (ctype.includes('text/event-stream')) {
-        // SSE: parse lines starting with "data:"
-        const reader = res.body.getReader()
-        const decoder = new TextDecoder()
-        let buffer = ''
-        while (true) {
-          const { value, done } = await reader.read()
-          if (done) break
-          buffer += decoder.decode(value, { stream: true })
-          const parts = buffer.split('\n\n')
-          for (let i = 0; i < parts.length - 1; i++) {
-            const line = parts[i]
-            if (line.startsWith('data: ')) {
-              onDelta?.(line.slice(6))
-            }
-          }
-          buffer = parts[parts.length - 1]
-        }
-        onDone?.()
-        return
-      }
-
-      if (res.body && !ctype.includes('application/json')) {
-        // Chunked text/ReadableStream
-        const reader = res.body.getReader()
-        const decoder = new TextDecoder()
-        while (true) {
-          const { value, done } = await reader.read()
-          if (done) break
-          onDelta?.(decoder.decode(value))
-        }
-        onDone?.()
-        return
-      }
-
-      // JSON fallback (Flask on Render)
-      const json = await res.json()
-      const reply = json.reply || json.text || ''
-      // Simulate streaming for UX
-      for (const ch of reply) {
-        await new Promise(r => setTimeout(r, 8))
-        onDelta?.(ch)
-      }
-      onDone?.()
-    } catch (err) {
-      if (err.name === 'AbortError') return
-      throw err
     }
-  }
-
-  function stop() {
-    if (controller) controller.abort()
-    controller = null
-  }
-
-  async function upload(files) {
-    const base = DEFAULT_BASE
-    const url = base === 'mock' ? '/api/upload' : base + '/api/upload'
-    const form = new FormData()
-    for (const f of files) form.append('file', f, f.name)
-    const res = await fetch(url, { method: 'POST', body: form })
-    if (!res.ok) throw new Error('Upload failed')
-    return res.json() // [{id,name,size,mime,url},...]
-  }
-
-  return { send, stop, upload }
-}
-
-// ================================
-// src/lib/useAutoScroll.js
-// ================================
-import { useEffect, useRef, useState } from 'react'
-export function useAutoScroll(dep) {
-  const ref = useRef(null)
-  const [paused, setPaused] = useState(false)
-  useEffect(() => {
-    const el = ref.current
-    if (!el) return
-    const onScroll = () => {
-      const nearBottom = el.scrollHeight - el.scrollTop - el.clientHeight < 60
-      setPaused(!nearBottom)
+  </script>
+  <style>
+    :root{
+      --indigoDeep:#1A237E; --emerald:#2E7D32; --cyanBright:#00BCD4; --accentOrange:#FF7043;
+      --bg:#0B1020; --surface:#11172B; --border:#26324B; --text:#E6EAF2; --muted:#9AA8C7;
     }
-    el.addEventListener('scroll', onScroll)
-    return () => el.removeEventListener('scroll', onScroll)
-  }, [])
-  useEffect(() => {
-    const el = ref.current
-    if (!el || paused) return
-    el.scrollTop = el.scrollHeight
-  }, [dep, paused])
-  return ref
-}
+    html,body{height:100%}
+    .glass{backdrop-filter:saturate(160%) blur(8px)}
+    .fade-in{animation:fade .15s ease-out}
+    @keyframes fade{from{opacity:.5;transform:translateY(2px)}to{opacity:1;transform:none}}
+    .typing-dot{animation:pulse 1s infinite ease-in-out}
+    .typing-dot:nth-child(2){animation-delay:.15s}
+    .typing-dot:nth-child(3){animation-delay:.3s}
+    @keyframes pulse{0%,80%,100%{opacity:.25}40%{opacity:1}}
+    .card{transition:transform .12s ease, box-shadow .2s ease}
+    .card:hover{transform:translateY(-2px); box-shadow:0 14px 34px rgba(0,0,0,.14)}
+    .hero-img{background:url('https://images.unsplash.com/photo-1586521995568-39ef16c6934d?q=80&w=1920&auto=format&fit=crop') center/cover no-repeat;}
+    pre{background:#0f172a; color:#e5e7eb; padding:12px; border-radius:10px; overflow:auto}
+    code{font-family:ui-monospace,SFMono-Regular,Menlo,monospace}
+    .caret{display:inline-block;width:8px;height:1em;translate:0 .2em;background:currentColor;animation:blink 1s steps(1) infinite}
+    @keyframes blink{0%,49%{opacity:1}50%,100%{opacity:.15}}
+    .table-wrap{overflow-x:auto}
+    .hint{color:var(--muted)}
+  </style>
+</head>
 
-// ================================
-// src/components/CodeBlock.jsx
-// ================================
-import React, { useEffect, useRef } from 'react'
-import hljs from 'highlight.js'
-import 'highlight.js/styles/github-dark.css'
+<body class="h-full bg-[var(--bg)] text-[var(--text)]">
 
-export default function CodeBlock({ language, value }) {
-  const preRef = useRef()
-  useEffect(() => {
-    if (preRef.current) hljs.highlightElement(preRef.current)
-  }, [value])
-  return (
-    <div className="relative">
-      <button
-        className="absolute right-2 top-2 text-xs border border-[var(--border)] bg-[var(--surface)] rounded px-2 py-1 hover:opacity-90"
-        onClick={() => navigator.clipboard.writeText(value)}
-        aria-label="Copy code"
-      >Copy</button>
-      <pre className="rounded-2xl border border-[var(--border)] bg-[#0f172a] text-slate-200 overflow-auto">
-        <code ref={preRef} className={`language-${language || ''}`}>{value}</code>
-      </pre>
-    </div>
-  )
-}
-
-// ================================
-// src/components/MessageItem.jsx
-// ================================
-import React from 'react'
-import ReactMarkdown from 'react-markdown'
-import remarkGfm from 'remark-gfm'
-import rehypeRaw from 'rehype-raw'
-import rehypeHighlight from 'rehype-highlight'
-import CodeBlock from './CodeBlock.jsx'
-
-export default function MessageItem({ m, onCopy, onDelete, onEdit }) {
-  const isUser = m.role === 'user'
-  return (
-    <div className={`rounded-2xl border hc-border border-[var(--border)] bg-[var(--surface)] p-4 shadow-lift ${isUser ? '' : ''}`} role="listitem" aria-label={`${isUser ? 'User' : 'Assistant'} message`}>
-      <div className="flex items-center gap-2 text-sm text-[var(--muted)]">
-        <span className={`grid h-7 w-7 place-items-center rounded-full ${isUser ? 'bg-gray-600/30' : 'bg-indigoDeep text-white'}`}>{isUser ? '👤' : '◆'}</span>
-        <span>{isUser ? 'You' : 'Assistant'}</span>
-        <div className="ml-auto flex items-center gap-2 opacity-80">
-          {isUser && (
-            <button className="text-xs underline" onClick={() => onEdit?.(m)} aria-label="Edit message">Edit</button>
-          )}
-          <button className="text-xs underline" onClick={() => onCopy?.(m)} aria-label="Copy message">Copy</button>
-          <button className="text-xs underline text-red-400" onClick={() => onDelete?.(m)} aria-label="Delete message">Delete</button>
-        </div>
+  <!-- Topbar -->
+  <header class="fixed top-0 inset-x-0 z-50 border-b border-[var(--border)] bg-[var(--surface)]/75 glass">
+    <div class="max-w-7xl mx-auto px-4 py-3 flex items-center gap-3">
+      <button id="toggleSidebar" class="md:hidden border border-[var(--border)] rounded-xl px-2 py-1">☰</button>
+      <a href="/" class="flex items-center gap-2" aria-label="Home">
+        <span class="grid h-9 w-9 place-items-center rounded-2xl bg-gradient-to-tr from-cyanBright to-emerald text-black font-extrabold shadow">◆</span>
+        <span class="text-xl font-bold">Ledgerdaddy</span>
+        <span class="ml-2 hidden sm:inline-flex text-[11px] px-2 py-0.5 rounded-full border border-cyanBright/40 text-cyanBright">AI Customs</span>
+      </a>
+      <nav class="hidden md:flex items-center gap-6 text-sm font-medium ml-4">
+        <a href="/marketplace.html" class="hover:text-cyanBright">Marketplace</a>
+        <a href="/calculator.html" class="hover:text-cyanBright">Calculator</a>
+        <a href="/hs-finder.html" class="hover:text-cyanBright">HS Finder</a>
+        <a href="/dashboard.html" class="hover:text-cyanBright">Dashboard</a>
+      </nav>
+      <div class="ml-auto hidden md:flex items-center gap-2">
+        <button id="newChatTop" class="border border-[var(--border)] px-3 py-1.5 rounded-xl hover:bg-white/5">New Chat</button>
+        <a href="/log-in.html" class="border border-[var(--border)] px-3 py-1.5 rounded-xl">Log in</a>
+        <a href="/personal-sign-up.html" class="bg-emerald text-white px-4 py-2 rounded-xl hover:opacity-95">Sign up</a>
+        <button id="themeToggle" class="border border-[var(--border)] px-3 py-1.5 rounded-xl" title="Light/Dark">🌗</button>
       </div>
-      <div className="mt-2 prose prose-invert max-w-none">
-        <ReactMarkdown
-          remarkPlugins={[remarkGfm]}
-          rehypePlugins={[rehypeRaw, rehypeHighlight]}
-          components={{
-            code({ inline, className, children, ...props }) {
-              const m = /language-(\w+)/.exec(className || '')
-              const language = m?.[1]
-              const content = String(children).replace(/\n$/, '')
-              if (inline) {
-                return <code className="bg-black/30 px-1.5 py-0.5 rounded text-[90%]" {...props}>{children}</code>
-              }
-              return <CodeBlock language={language} value={content} />
-            },
-            table({ children }) {
-              return <div className="table-wrap">{children}</div>
-            }
-          }}
-        >{m.content}</ReactMarkdown>
-        {m.attachments?.length ? (
-          <div className="mt-3 flex flex-wrap gap-2">
-            {m.attachments.map(att => (
-              <a key={att.id} href={att.url} target="_blank" rel="noreferrer" className="text-xs border border-[var(--border)] rounded-full px-2 py-1 hover:bg-white/5" aria-label={`Open attachment ${att.name}`}>{att.name} · {(att.size/1024).toFixed(1)} KB</a>
-            ))}
-          </div>
-        ) : null}
+      <a href="/personal-sign-up.html" class="md:hidden bg-emerald text-white px-3 py-1.5 rounded-xl">Start</a>
+    </div>
+  </header>
+
+  <!-- Hero strip -->
+  <section class="pt-20 md:pt-24">
+    <div class="hero-img">
+      <div class="backdrop-brightness-90 bg-gradient-to-r from-indigoDeep/70 to-cyanBright/60">
+        <div class="max-w-6xl mx-auto px-4 py-8 text-white">
+          <h1 class="text-3xl md:text-4xl font-extrabold">Ask in Chat</h1>
+          <p class="mt-2 text-white/95">ChatGPT-style assistant for HS, duties, valuation & more. (Connected to backend)</p>
+        </div>
       </div>
     </div>
-  )
-}
+  </section>
 
-// ================================
-// src/components/Sidebar.jsx
-// ================================
-import React, { useMemo, useState } from 'react'
-import { clsx } from 'clsx'
-
-function groupByDate(threads) {
-  const today = []
-  const week = []
-  const older = []
-  const now = new Date()
-  for (const t of threads) {
-    const d = new Date(t.createdAt || t.updatedAt || Date.now())
-    const diff = (now - d) / (1000*60*60*24)
-    if (diff < 1) today.push(t)
-    else if (diff < 7) week.push(t)
-    else older.push(t)
-  }
-  return { today, week, older }
-}
-
-export default function Sidebar({
-  open,
-  setOpen,
-  threads,
-  currentId,
-  onNew,
-  onSelect,
-  onRename,
-  onDelete,
-  onPin,
-}) {
-  const [q, setQ] = useState('')
-  const filtered = useMemo(() => {
-    const f = (threads || []).filter(t => t.title?.toLowerCase().includes(q.toLowerCase()))
-    // pinned to top
-    return [...f.filter(t => t.pinned), ...f.filter(t => !t.pinned)]
-  }, [threads, q])
-  const { today, week, older } = useMemo(() => groupByDate(filtered), [filtered])
-
-  const Section = ({ title, items }) => (
-    items.length ? (
-      <div className="mt-3">
-        <div className="text-xs uppercase tracking-wide text-[var(--muted)] mb-1">{title}</div>
-        <ul role="list" className="grid gap-1">
-          {items.map(t => (
-            <li key={t.id}>
-              <button
-                className={clsx(
-                  'w-full text-left px-2 py-2 rounded-2xl hover:bg-white/5 border border-transparent hover:border-[var(--border)]',
-                  t.id === currentId && 'bg-white/10 border-[var(--border)]'
-                )}
-                onClick={() => onSelect(t.id)}
-                aria-label={`Open conversation ${t.title}`}
-              >
-                <div className="flex items-center gap-2">
-                  {t.pinned ? <span title="Pinned">📌</span> : <span className="opacity-50">💬</span>}
-                  <div className="truncate">{t.title || 'Conversation'}</div>
-                </div>
-                <div className="text-[11px] opacity-70 mt-0.5">{(t.messages?.length||0)} messages</div>
-              </button>
-              <div className="flex gap-2 mt-1 ml-6">
-                <button className="text-[11px] underline" onClick={() => onRename(t.id)}>Rename</button>
-                <button className="text-[11px] underline" onClick={() => onPin(t.id)}>{t.pinned?'Unpin':'Pin'}</button>
-                <button className="text-[11px] underline text-red-400" onClick={() => onDelete(t.id)}>Delete</button>
-              </div>
-            </li>
-          ))}
-        </ul>
+  <!-- Chat layout -->
+  <main class="max-w-6xl mx-auto px-2 sm:px-4 pb-36 grid md:grid-cols-[260px,1fr] gap-4 -mt-6">
+    <!-- Sidebar -->
+    <aside id="sidebar" class="bg-[var(--surface)] border border-[var(--border)] rounded-2xl shadow-lift p-3 h-fit sticky top-24 transition-all duration-200">
+      <div class="flex items-center gap-2">
+        <strong>Conversations</strong>
+        <span id="modelDot" class="ml-1 h-2 w-2 rounded-full bg-emerald inline-block" title="Online"></span>
+        <button id="newChat" class="ml-auto text-xs border border-[var(--border)] rounded px-2 py-1 hover:bg-white/5">New chat</button>
       </div>
-    ) : null
-  )
-
-  return (
-    <aside className={clsx(
-      'h-[calc(100vh-64px)] sticky top-16 p-3 rounded-2xl border border-[var(--border)] glass overflow-hidden',
-      open ? 'w-72' : 'w-0 md:w-16',
-      'transition-all duration-200'
-    )} aria-label="Sidebar">
-      <div className={clsx('h-full flex flex-col', open ? 'opacity-100' : 'opacity-0 md:opacity-100')}>
-        <div className="flex items-center gap-2">
-          <button className="text-sm border border-[var(--border)] rounded-xl px-2 py-1" onClick={onNew}>New Chat</button>
-          <button className="ml-auto text-sm border border-[var(--border)] rounded-xl px-2 py-1" onClick={() => setOpen(!open)} aria-label="Toggle sidebar">{open?'Hide':'Show'}</button>
-        </div>
-        <input
-          value={q}
-          onChange={e=>setQ(e.target.value)}
-          placeholder="Search…"
-          className="mt-3 w-full bg-black/20 border border-[var(--border)] rounded-xl px-3 py-2 outline-none"
-          aria-label="Search conversations"
-        />
-        <div className="flex-1 overflow-auto mt-2 pr-1 scrollbar-thin">
-          <Section title="Today" items={today} />
-          <Section title="Previous 7 days" items={week} />
-          <Section title="Older" items={older} />
-        </div>
+      <input id="searchThreads" class="mt-2 w-full bg-black/20 border border-[var(--border)] rounded-xl px-3 py-2 text-sm outline-none" placeholder="Search…" />
+      <ul id="chatList" class="mt-3 grid gap-1 text-sm max-h-[50vh] overflow-auto pr-1"></ul>
+      <div class="mt-3 grid gap-2 text-sm">
+        <a class="border border-[var(--border)] px-2 py-1 rounded text-center hover:bg-white/5" href="/hs-finder.html">Open HS Finder</a>
+        <a class="border border-[var(--border)] px-2 py-1 rounded text-center hover:bg-white/5" href="/calculator.html">Open Calculator</a>
+        <button id="exportBtn" class="border border-[var(--border)] px-2 py-1 rounded hover:bg-white/5">Export current chat</button>
+        <button id="clearAll" class="text-red-300 border border-red-500/30 px-2 py-1 rounded hover:bg-red-500/10">Clear all</button>
       </div>
     </aside>
-  )
-}
 
-// ================================
-// src/components/ChatHeader.jsx
-// ================================
-import React from 'react'
-
-export default function ChatHeader({ sidebarOpen, setSidebarOpen, status = 'online', onNewChat, onOpenSettings }) {
-  return (
-    <header className="fixed top-0 inset-x-0 z-40 border-b border-[var(--border)] glass">
-      <div className="max-w-5xl mx-auto px-4 h-16 flex items-center gap-3">
-        <button className="md:hidden border border-[var(--border)] rounded-xl px-2 py-1" onClick={()=>setSidebarOpen(!sidebarOpen)} aria-label="Toggle sidebar">☰</button>
-        <div className="flex items-center gap-2 select-none">
-          <span className="grid h-9 w-9 place-items-center rounded-2xl bg-gradient-to-tr from-cyanBright to-emerald text-white font-extrabold shadow">◆</span>
-          <div>
-            <div className="font-bold">LedgerDaddy AI</div>
-            <div className="text-xs opacity-70 flex items-center gap-1"><span className={`h-2 w-2 rounded-full ${status==='online'?'bg-emerald':'bg-accentOrange'}`}></span>{status==='online'?'Ready':'Offline'}</div>
+    <!-- Conversation -->
+    <section class="bg-[var(--surface)] border border-[var(--border)] rounded-2xl shadow-lift flex flex-col">
+      <div id="messages" class="flex-1 overflow-auto p-4 space-y-4 h-[calc(100vh-260px)] pr-1">
+        <div class="fade-in rounded-2xl bg-white/5 border border-[var(--border)] p-4">
+          <div class="text-sm hint">Assistant</div>
+          <div class="mt-1 whitespace-pre-wrap leading-relaxed">
+            Hey, I’m your customs agent. Ask anything—HS codes, duties, documents. You can also attach files.
+            <ul class="list-disc ml-5 mt-3">
+              <li><button class="demo-btn text-cyanBright hover:underline" data-q="Find HS code for wireless earbuds in IN">Find HS code for wireless earbuds in IN</button></li>
+              <li><button class="demo-btn text-cyanBright hover:underline" data-q="Duty for IN 851713 CIF 100000">Duty for IN 851713 CIF 100000</button></li>
+              <li><button class="demo-btn text-cyanBright hover:underline" data-q="Docs to import wooden furniture into EU">Docs to import wooden furniture into EU</button></li>
+            </ul>
           </div>
         </div>
-        <div className="ml-auto flex items-center gap-2">
-          <button className="border border-[var(--border)] rounded-xl px-3 py-1.5 hover:bg-white/5" onClick={onNewChat}>New Chat</button>
-          <button className="border border-[var(--border)] rounded-xl px-3 py-1.5" onClick={onOpenSettings} aria-label="Open settings">⚙️</button>
-        </div>
       </div>
-    </header>
-  )
-}
 
-// ================================
-// src/components/Composer.jsx
-// ================================
-import React, { useEffect, useRef, useState } from 'react'
-
-export default function Composer({
-  value, setValue, onSend, uploading, onUpload, attachments, onRemoveAttachment,
-  streaming, onStop, onRegenerate, suggested = []
-}) {
-  const areaRef = useRef(null)
-  const [chars, setChars] = useState(0)
-
-  useEffect(() => {
-    if (!areaRef.current) return
-    const el = areaRef.current
-    el.style.height = 'auto'
-    el.style.height = Math.min(el.scrollHeight, 180) + 'px'
-    setChars(el.value.length)
-  }, [value])
-
-  const approxTokens = Math.ceil(chars / 4)
-
-  function onKeyDown(e) {
-    if (e.key === 'Enter' && !e.shiftKey) {
-      e.preventDefault()
-      onSend()
-    }
-    if ((e.metaKey || e.ctrlKey) && e.key === '/') {
-      e.preventDefault(); areaRef.current?.focus()
-    }
-  }
-
-  return (
-    <div className="fixed bottom-0 inset-x-0 border-t border-[var(--border)] bg-[var(--surface)]/95 backdrop-blur p-3">
-      <div className="max-w-3xl mx-auto">
-        <div className="flex flex-wrap gap-2 mb-2">
-          {suggested.map((s, i) => (
-            <button key={i} className="text-xs border border-[var(--border)] rounded-full px-2 py-1 hover:bg-white/5" onClick={() => setValue(v => (v ? v + '\n' : '') + s)}>{s}</button>
-          ))}
-        </div>
-        <div className="flex items-end gap-2">
-          <label className="cursor-pointer border border-[var(--border)] rounded-xl px-3 py-2 hover:bg-white/5">
-            <input type="file" multiple className="hidden" onChange={e => onUpload([...e.target.files])} />📎
-          </label>
-          <textarea
-            ref={areaRef}
-            value={value}
-            onChange={e=>setValue(e.target.value)}
-            onKeyDown={onKeyDown}
-            placeholder="Hey, I’m your customs agent. Ask anything—HS codes, duties, documents. You can also attach files."
-            className="flex-1 rounded-2xl border border-[var(--border)] bg-black/20 px-3 py-2 resize-none outline-none"
-            rows={1}
-            aria-label="Message input"
-          />
-          {!streaming ? (
-            <button className="rounded-2xl px-4 py-2 bg-gradient-to-r from-cyanBright to-emerald text-black font-semibold hover:scale-[1.01] transition" onClick={onSend} aria-label="Send message">Send</button>
-          ) : (
-            <>
-              <button className="rounded-2xl px-4 py-2 bg-accentOrange text-black font-semibold" onClick={onStop}>Stop</button>
-              <button className="rounded-2xl px-4 py-2 border border-[var(--border)]" onClick={onRegenerate}>Regenerate</button>
-            </>
-          )}
-        </div>
-        <div className="mt-2 flex items-center gap-2 flex-wrap">
-          {attachments.map(att => (
-            <span key={att.id} className="text-xs border border-[var(--border)] rounded-full px-2 py-1">
-              {att.name} · {(att.size/1024).toFixed(1)} KB
-              <button className="ml-2 opacity-70 hover:opacity-100" onClick={() => onRemoveAttachment(att.id)} aria-label={`Remove ${att.name}`}>✕</button>
-            </span>
-          ))}
-          <span className="ml-auto text-[11px] opacity-70">{chars} chars · ~{approxTokens} tokens</span>
-        </div>
-      </div>
-    </div>
-  )
-}
-
-// ================================
-// src/components/SettingsModal.jsx
-// ================================
-import React from 'react'
-
-export default function SettingsModal({ open, onClose, theme, setTheme, contrast, setContrast }) {
-  if (!open) return null
-  return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center">
-      <div className="absolute inset-0 bg-black/60" onClick={onClose} aria-hidden="true"></div>
-      <div className="relative w-full max-w-md rounded-2xl border border-[var(--border)] bg-[var(--surface)] p-4">
-        <div className="text-lg font-semibold">Settings</div>
-        <div className="mt-3 grid gap-3">
-          <label className="flex items-center justify-between">
-            <span>Theme</span>
-            <select value={theme} onChange={e => setTheme(e.target.value)} className="border border-[var(--border)] bg-black/20 rounded px-2 py-1">
-              <option value="dark">Dark</option>
-              <option value="light">Light</option>
-              <option value="system">System</option>
+      <!-- Composer -->
+      <div class="border-t border-[var(--border)] p-3 bg-[var(--surface)]/90 backdrop-blur sticky bottom-0">
+        <form id="composer" class="flex flex-col gap-2">
+          <div class="flex items-center gap-2 text-xs hint">
+            <label for="modeSel">Mode</label>
+            <select id="modeSel" class="border border-[var(--border)] bg-black/20 rounded-lg px-2 py-1 text-sm">
+              <option value="core">Core</option>
+              <option value="learn">Learn</option>
+              <option value="calculate">Calculate</option>
+              <option value="earn">Earn</option>
+              <option value="business">Business</option>
             </select>
-          </label>
-          <label className="flex items-center justify-between">
-            <span>High contrast</span>
-            <select value={contrast} onChange={e => setContrast(e.target.value)} className="border border-[var(--border)] bg-black/20 rounded px-2 py-1">
-              <option value="normal">Normal</option>
-              <option value="high">High</option>
-            </select>
-          </label>
-        </div>
-        <div className="mt-4 text-right">
-          <button className="border border-[var(--border)] rounded-xl px-3 py-1.5" onClick={onClose}>Close</button>
-        </div>
+            <span class="ml-auto">Enter to send • Shift+Enter newline • <kbd>Ctrl/Cmd + /</kbd> focus</span>
+          </div>
+
+          <div class="flex items-end gap-2">
+            <!-- Upload -->
+            <label class="cursor-pointer border border-[var(--border)] rounded-xl px-3 py-2 hover:bg-white/5" title="Attach files">
+              <input type="file" id="fileInput" multiple class="hidden" />
+              📎
+            </label>
+
+            <textarea id="chatInput" rows="1" placeholder="Hey, I’m your customs agent. Ask anything—HS codes, duties, documents. You can also attach files."
+              class="flex-1 border border-[var(--border)] bg-black/20 rounded-2xl px-3 py-2 resize-none max-h-40 outline-none"
+            ></textarea>
+
+            <button id="sendBtn" class="rounded-2xl px-4 py-2 bg-gradient-to-r from-cyanBright to-emerald text-black font-semibold hover:scale-[1.01] transition">Send</button>
+          </div>
+
+          <!-- Attachment pills -->
+          <div id="attPills" class="flex flex-wrap gap-2"></div>
+        </form>
       </div>
-    </div>
-  )
-}
+    </section>
+  </main>
 
-// ================================
-// src/components/CommandPalette.jsx
-// ================================
-import React, { useEffect } from 'react'
+  <!-- Toast -->
+  <div id="toast" class="hidden fixed bottom-6 right-6 bg-black text-white text-sm px-3 py-2 rounded-lg shadow"></div>
 
-export default function CommandPalette({ open, setOpen, onInsert }) {
-  useEffect(() => {
-    const onKey = (e) => {
-      if ((e.metaKey || e.ctrlKey) && e.key.toLowerCase() === 'k') {
-        e.preventDefault(); setOpen(v => !v)
+  <footer class="text-center text-xs hint my-8">
+    © <span id="year"></span> Ledgerdaddy
+  </footer>
+
+  <script>
+    // ===== Backend URL =====
+    const API_BASE = "https://chadaddy.onrender.com"; // your Flask service on Render
+
+    // ===== Utilities =====
+    const $  = s => document.querySelector(s);
+    const $$ = s => Array.from(document.querySelectorAll(s));
+    const yearEl = $('#year'); if (yearEl) yearEl.textContent = new Date().getFullYear();
+    const toast = (msg) => { const t = $('#toast'); t.textContent = msg; t.classList.remove('hidden'); setTimeout(()=>t.classList.add('hidden'), 1600); };
+    const uid = () => Math.random().toString(36).slice(2)+Date.now().toString(36);
+
+    // Theme toggle (persist)
+    const THEME_KEY = 'ld_theme_pref';
+    const themeToggle = $('#themeToggle');
+    function applyTheme(v){
+      if(v==='light'){ document.documentElement.removeAttribute('data-theme'); }
+      else { document.documentElement.setAttribute('data-theme','dark'); }
+      localStorage.setItem(THEME_KEY, v);
+    }
+    applyTheme(localStorage.getItem(THEME_KEY) || (matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light'));
+    themeToggle?.addEventListener('click', ()=> applyTheme(document.documentElement.getAttribute('data-theme')==='dark'?'light':'dark'));
+
+    // Sidebar toggle (persist)
+    const SIDEBAR_KEY = 'ld_sidebar_open';
+    const toggleSidebarBtn = $('#toggleSidebar');
+    const sidebar = $('#sidebar');
+    function setSidebar(open){
+      sidebar.style.display = open ? '' : 'none';
+      localStorage.setItem(SIDEBAR_KEY, open ? '1' : '0');
+    }
+    setSidebar(localStorage.getItem(SIDEBAR_KEY)!=='0');
+    toggleSidebarBtn?.addEventListener('click', ()=> setSidebar(sidebar.style.display==='none'));
+
+    // Sticky session id
+    function getSessionId(){
+      const k="ld_chat_session_id";
+      let v = localStorage.getItem(k);
+      if(!v){ v=(crypto?.randomUUID?.() || `sess_${uid()}`); localStorage.setItem(k, v); }
+      return v;
+    }
+    const SESSION_ID = getSessionId();
+
+    // ===== Storage (threads) =====
+    const STORE_KEY='ld_chat_threads_v1';
+    let threads = JSON.parse(localStorage.getItem(STORE_KEY) || '[]');
+    let currentId = threads[0]?.id || null;
+    function saveThreads(){ localStorage.setItem(STORE_KEY, JSON.stringify(threads)); }
+    function newThread(){
+      const id = uid();
+      const t = { id, title: 'New chat', mode: "core", messages: [] };
+      threads.unshift(t);
+      currentId = id;
+      saveThreads(); renderSidebar(); renderMessages(); renderMode();
+    }
+    function getCurrent(){ return threads.find(t=>t.id===currentId); }
+    function setTitleFromFirstUserMessage(thread){
+      const first = thread.messages.find(m=>m.role==='user');
+      if(first){ thread.title = (first.text || 'Conversation').slice(0, 60); }
+    }
+
+    // ===== Sidebar =====
+    const searchThreads = $('#searchThreads');
+    function renderSidebar(){
+      const list = $('#chatList');
+      if(!threads.length){
+        list.innerHTML = '<li class="text-[11px] p-2 rounded bg-white/5 border border-[var(--border)] hint">No conversations yet</li>'; return;
       }
-      if (e.key === 'Escape') setOpen(false)
+      const q = (searchThreads?.value||'').toLowerCase();
+      const filtered = threads.filter(t => (t.title||'').toLowerCase().includes(q));
+      list.innerHTML = filtered.map(t=>`
+        <li>
+          <button data-id="${t.id}"
+            class="w-full text-left px-2 py-2 rounded-2xl hover:bg-white/5 border border-transparent hover:border-[var(--border)] ${t.id===currentId?'bg-white/10 border-[var(--border)]':''}">
+            <div class="truncate">${t.title || 'Conversation'}</div>
+            <div class="text-[11px] hint">${(t.messages?.length||0)} messages • ${(t.mode||'core').toUpperCase()}</div>
+          </button>
+        </li>
+      `).join('');
+      list.querySelectorAll('button[data-id]').forEach(btn=>{
+        btn.onclick = ()=>{ currentId = btn.getAttribute('data-id'); renderSidebar(); renderMessages(); renderMode(); };
+      });
     }
-    window.addEventListener('keydown', onKey)
-    return () => window.removeEventListener('keydown', onKey)
-  }, [setOpen])
+    searchThreads?.addEventListener('input', renderSidebar);
 
-  if (!open) return null
-  const items = [
-    'Find HS code for wireless earbuds in IN',
-    'Duty for IN 851713 CIF 100000',
-    'Docs to import wooden furniture into EU',
-  ]
-  return (
-    <div className="fixed inset-0 z-50">
-      <div className="absolute inset-0 bg-black/50" onClick={()=>setOpen(false)}></div>
-      <div className="relative max-w-xl mx-auto mt-24 rounded-2xl border border-[var(--border)] bg-[var(--surface)] p-3">
-        <div className="text-sm opacity-80 mb-2">Command Palette</div>
-        <ul className="grid gap-1">
-          {items.map((t,i)=> (
-            <li key={i}>
-              <button className="w-full text-left px-3 py-2 rounded-xl hover:bg-white/5" onClick={()=>{onInsert(t); setOpen(false)}}>{t}</button>
-            </li>
-          ))}
-        </ul>
-        <div className="text-[11px] opacity-70 mt-2">Press Esc to close</div>
-      </div>
-    </div>
-  )
-}
-
-// ================================
-// src/components/MessageList.jsx
-// ================================
-import React from 'react'
-import MessageItem from './MessageItem.jsx'
-
-export default function MessageList({ items, streaming }) {
-  return (
-    <div aria-live="polite" aria-busy={streaming} className="space-y-3">
-      {items.map(m => <MessageItem key={m.id} m={m} />)}
-      {streaming && (
-        <div className="rounded-2xl border border-[var(--border)] bg-[var(--surface)] p-4 text-sm opacity-80">Assistant is typing <span className="caret"></span></div>
-      )}
-    </div>
-  )
-}
-
-// ================================
-// src/App.jsx
-// ================================
-import React, { useEffect, useMemo, useState } from 'react'
-import ChatHeader from './components/ChatHeader.jsx'
-import Sidebar from './components/Sidebar.jsx'
-import MessageList from './components/MessageList.jsx'
-import Composer from './components/Composer.jsx'
-import SettingsModal from './components/SettingsModal.jsx'
-import CommandPalette from './components/CommandPalette.jsx'
-import { createChatClient } from './lib/chatClient.js'
-import { useAutoScroll } from './lib/useAutoScroll.js'
-import { ls, KEYS } from './lib/storage.js'
-
-const client = createChatClient()
-
-function uid() { return Math.random().toString(36).slice(2) + Date.now().toString(36) }
-
-export default function App() {
-  // Theme + contrast (persist)
-  const [theme, setTheme] = useState(ls.get(KEYS.theme, 'dark'))
-  const [contrast, setContrast] = useState(ls.get(KEYS.contrast, 'normal'))
-  useEffect(() => { ls.set(KEYS.theme, theme) }, [theme])
-  useEffect(() => { ls.set(KEYS.contrast, contrast) }, [contrast])
-  useEffect(() => {
-    if (theme === 'dark') document.documentElement.setAttribute('data-theme','dark')
-    if (theme === 'light') document.documentElement.removeAttribute('data-theme')
-    if (theme === 'system') {
-      const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches
-      if (prefersDark) document.documentElement.setAttribute('data-theme','dark')
-      else document.documentElement.removeAttribute('data-theme')
+    // ===== Messages UI =====
+    function msgBubble(role, text){
+      const isUser = role==='user';
+      const avatar = isUser ? '👤' : '◆';
+      const bg = isUser ? 'bg-white/5' : 'bg-white/5';
+      return `
+        <div class="fade-in rounded-2xl ${bg} border border-[var(--border)] p-4">
+          <div class="text-sm hint flex items-center gap-2">
+            <span class="grid w-6 h-6 place-items-center rounded-full ${isUser?'bg-white/10':'bg-indigoDeep text-white'} text-[12px]">${avatar}</span>
+            <span>${isUser?'You':'Assistant'}</span>
+            <button class="ml-auto text-[11px] underline copy-btn" data-copy="${encodeURIComponent(text)}">Copy</button>
+          </div>
+          <div class="mt-2 whitespace-pre-wrap leading-relaxed">${renderMarkdownLite(text)}</div>
+        </div>
+      `;
     }
-    document.documentElement.setAttribute('data-contrast', contrast)
-  }, [theme, contrast])
-
-  // Sidebar state
-  const [sidebarOpen, setSidebarOpen] = useState(ls.get(KEYS.sidebar, true))
-  useEffect(() => { ls.set(KEYS.sidebar, sidebarOpen) }, [sidebarOpen])
-
-  // Conversations
-  const [threads, setThreads] = useState(ls.get(KEYS.threads, []))
-  const [currentId, setCurrentId] = useState(threads[0]?.id || '')
-  useEffect(() => { ls.set(KEYS.threads, threads) }, [threads])
-
-  const current = useMemo(() => threads.find(t => t.id === currentId), [threads, currentId])
-
-  function newThread() {
-    const id = uid()
-    const t = { id, title: 'New chat', pinned: false, createdAt: Date.now(), updatedAt: Date.now(), messages: [] }
-    setThreads(s => [t, ...s]); setCurrentId(id)
-  }
-
-  function setTitleFromFirstUserMessage(t) {
-    const first = t.messages.find(m => m.role === 'user')
-    if (first) t.title = (first.content || 'Conversation').slice(0, 60)
-  }
-
-  // Messaging
-  const [input, setInput] = useState('')
-  const [attachments, setAttachments] = useState([])
-  const [streaming, setStreaming] = useState(false)
-  const [settingsOpen, setSettingsOpen] = useState(false)
-  const [paletteOpen, setPaletteOpen] = useState(false)
-
-  const listRef = useAutoScroll(current?.messages?.length || 0)
-
-  useEffect(() => { if (!threads.length) newThread() }, [])
-
-  function pushMessage(role, content, extra = {}) {
-    setThreads(s => s.map(t => t.id !== currentId ? t : {
-      ...t,
-      messages: [...t.messages, { id: uid(), role, content, ...extra }],
-      updatedAt: Date.now()
-    }))
-  }
-
-  function replaceLastAssistant(content) {
-    setThreads(s => s.map(t => t.id !== currentId ? t : {
-      ...t,
-      messages: t.messages.map((m, i, arr) => i === arr.length - 1 ? { ...m, content } : m),
-      updatedAt: Date.now()
-    }))
-  }
-
-  function onCopy(m) { navigator.clipboard.writeText(m.content) }
-  function onDelete(m) { setThreads(s => s.map(t => t.id !== currentId ? t : { ...t, messages: t.messages.filter(x => x.id !== m.id), updatedAt: Date.now() })) }
-  function onEdit(m) {
-    const edited = prompt('Edit your message:', m.content)
-    if (edited == null) return
-    // Replace from this message onward and resend
-    setThreads(s => s.map(t => {
-      if (t.id !== currentId) return t
-      const idx = t.messages.findIndex(x => x.id === m.id)
-      const newMsgs = [...t.messages.slice(0, idx), { ...m, content: edited }]
-      return { ...t, messages: newMsgs, updatedAt: Date.now() }
-    }))
-    // After state flush, send again
-    setTimeout(() => sendNow(edited, true), 0)
-  }
-
-  async function onUpload(files) {
-    try {
-      const items = await client.upload(files)
-      setAttachments(a => [...a, ...items])
-    } catch (e) {
-      alert('Upload failed: ' + e.message)
+    function typingBubble(){
+      return `
+        <div class="rounded-2xl bg-white/5 border border-[var(--border)] p-4">
+          <div class="text-sm hint flex items-center gap-2">
+            <span class="grid w-6 h-6 place-items-center rounded-full bg-indigoDeep text-white text-[12px]">◆</span>
+            <span>Assistant</span>
+          </div>
+          <div class="mt-2 flex items-center gap-1">
+            <span class="typing-dot w-2 h-2 rounded-full bg-gray-400"></span>
+            <span class="typing-dot w-2 h-2 rounded-full bg-gray-400"></span>
+            <span class="typing-dot w-2 h-2 rounded-full bg-gray-400"></span>
+          </div>
+        </div>
+      `;
     }
-  }
-
-  function removeAttachment(id) { setAttachments(a => a.filter(x => x.id !== id)) }
-
-  async function sendNow(text = input, editedFlow = false) {
-    const trimmed = (text || '').trim()
-    if (!trimmed) return
-    if (!current) return
-
-    // new user message
-    const msgAttachments = attachments
-    setAttachments([])
-    pushMessage('user', trimmed, { attachments: msgAttachments })
-
-    // Title auto-generate
-    setThreads(s => s.map(t => { if (t.id === currentId && t.title === 'New chat') { setTitleFromFirstUserMessage(t) } return t }))
-
-    // assistant placeholder
-    pushMessage('assistant', '')
-    setStreaming(true)
-
-    const onDelta = (chunk) => {
-      replaceLastAssistant((current => current + chunk)(threads.find(t => t.id===currentId)?.messages?.at(-1)?.content || ''))
+    function renderMarkdownLite(text){
+      let out = (text || '').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+      out = out.replace(/```([\s\S]*?)```/g, (_,code)=>`<pre><code>${code}</code></pre>`);
+      out = out.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>');
+      out = out.replace(/`([^`]+)`/g, '<code class="bg-black/40 px-1 py-0.5 rounded text-[90%]">$1</code>');
+      // Tables → scrollable on mobile
+      out = out.replace(/((?:^|\\n)\\|.*\\|(?:.|\\n)*?)(?=\\n\\n|$)/g, '<div class="table-wrap">$1</div>');
+      return out;
+    }
+    function renderMessages(){
+      const wrap = $('#messages');
+      const t = getCurrent();
+      if(!t){ wrap.innerHTML = '<div class="p-4 hint">Start a new chat.</div>'; return; }
+      wrap.innerHTML = t.messages.map(m=>msgBubble(m.role, m.text)).join('') || `
+        <div class="rounded-2xl bg-white/5 border border-[var(--border)] p-4">
+          <div class="text-sm hint">Assistant</div>
+          <div class="mt-1">How can I help today?</div>
+        </div>
+      `;
+      $$('.copy-btn').forEach(b=>{
+        b.onclick = async ()=>{
+          try{ await navigator.clipboard.writeText(decodeURIComponent(b.getAttribute('data-copy'))); toast('Copied'); }
+          catch{ toast('Copy failed'); }
+        };
+      });
+      // Auto-scroll if near bottom
+      const nearBottom = wrap.scrollHeight - wrap.scrollTop - wrap.clientHeight < 60;
+      if (nearBottom) wrap.scrollTop = wrap.scrollHeight;
     }
 
-    const onDone = () => setStreaming(false)
-
-    try {
-      const history = threads.find(t => t.id === currentId)?.messages || []
-      const messages = editedFlow ? history : [...history, { role: 'user', content: trimmed }]
-      await client.send({ messages, attachments: msgAttachments, onDelta, onDone, mode: 'core', sessionId: sessionStorage.getItem('ld_session') || ensureSession() })
-    } catch (e) {
-      replaceLastAssistant('⚠️ Error: ' + e.message)
-      setStreaming(false)
+    // ===== Mode handling =====
+    function renderMode(){
+      const t = getCurrent(); if(!t) return;
+      const sel = $('#modeSel'); if(!sel) return;
+      sel.value = t.mode || "core";
     }
-  }
+    $('#modeSel')?.addEventListener('change', (e)=>{
+      const t = getCurrent(); if(!t) return;
+      t.mode = e.target.value || "core";
+      saveThreads(); renderSidebar();
+    });
 
-  function ensureSession() {
-    let v = sessionStorage.getItem('ld_session')
-    if (!v) { v = crypto?.randomUUID?.() || 'sess_' + uid(); sessionStorage.setItem('ld_session', v) }
-    return v
-  }
+    // ===== Send flow (calls backend /api/chat) =====
+    function addMessage(role, text){
+      const t = getCurrent(); if(!t) return;
+      t.messages.push({role, text, ts: Date.now()});
+      if(t.title==='New chat'){ setTitleFromFirstUserMessage(t); }
+      saveThreads(); renderSidebar(); renderMessages();
+    }
 
-  function stop() { client.stop(); setStreaming(false) }
-  function regenerate() {
-    const lastUser = [...(current?.messages||[])].reverse().find(m => m.role === 'user')
-    if (!lastUser) return
-    sendNow(lastUser.content, true)
-  }
+    async function send(text){
+      const trimmed = (text || '').trim();
+      if(!trimmed) return;
+      addMessage('user', trimmed);
 
-  const suggested = [
-    'Find HS code for wireless earbuds in IN',
-    'Duty for IN 851713 CIF 100000',
-    'Docs to import wooden furniture into EU',
-  ]
+      const wrap = $('#messages');
+      wrap.insertAdjacentHTML('beforeend', typingBubble());
+      const bottomBefore = wrap.scrollHeight - wrap.scrollTop - wrap.clientHeight < 60;
+      if (bottomBefore) wrap.scrollTop = wrap.scrollHeight;
 
-  return (
-    <div className="min-h-full pb-40" data-theme={theme==='dark'?'dark':undefined} data-contrast={contrast}>
-      <ChatHeader sidebarOpen={sidebarOpen} setSidebarOpen={setSidebarOpen} onNewChat={newThread} onOpenSettings={()=>setSettingsOpen(true)} />
-      <main className="max-w-5xl mx-auto pt-20 px-3 md:px-6 grid grid-cols-1 md:grid-cols-[280px,1fr] gap-4">
-        <Sidebar
-          open={sidebarOpen}
-          setOpen={setSidebarOpen}
-          threads={threads}
-          currentId={currentId}
-          onNew={newThread}
-          onSelect={setCurrentId}
-          onRename={(id)=>{
-            const name = prompt('Rename conversation:')
-            if (name == null) return
-            setThreads(s => s.map(t => t.id===id?{...t,title:name}:t))
-          }}
-          onDelete={(id)=>setThreads(s => s.filter(t => t.id!==id))}
-          onPin={(id)=>setThreads(s => s.map(t => t.id===id?{...t,pinned:!t.pinned}:t))}
-        />
-        <section className="min-h-[60vh] rounded-2xl border border-[var(--border)] bg-[var(--surface)] p-4">
-          {current?.messages?.length ? (
-            <div ref={listRef} className="h-[calc(100vh-220px)] overflow-auto pr-1 scrollbar-thin">
-              <MessageList items={current.messages} streaming={streaming} />
-            </div>
-          ) : (
-            <div className="h-[calc(100vh-220px)] grid place-items-center text-center">
-              <div>
-                <div className="text-2xl font-bold">Welcome to LedgerDaddy AI</div>
-                <p className="mt-2 opacity-80">Ask about HS codes, duties, valuation, documents, or attach invoices for parsing.</p>
-                <div className="mt-4 flex flex-wrap gap-2 justify-center">
-                  {suggested.map((s,i)=>(
-                    <button key={i} className="text-sm border border-[var(--border)] rounded-full px-3 py-1.5 hover:bg-white/5" onClick={()=>setInput(s)}>{s}</button>
-                  ))}
-                </div>
-              </div>
-            </div>
-          )}
-        </section>
-      </main>
+      try {
+        const thread = getCurrent();
+        const mode   = (thread?.mode) || "core";
 
-      <Composer
-        value={input}
-        setValue={setInput}
-        onSend={()=>sendNow()}
-        uploading={false}
-        onUpload={onUpload}
-        attachments={attachments}
-        onRemoveAttachment={removeAttachment}
-        streaming={streaming}
-        onStop={stop}
-        onRegenerate={regenerate}
-        suggested={suggested}
-      />
+        const res = await fetch(`${API_BASE}/api/chat`, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ message: trimmed, mode, session_id: SESSION_ID }),
+          cache: "no-store"
+        });
 
-      <SettingsModal open={settingsOpen} onClose={()=>setSettingsOpen(false)} theme={theme} setTheme={setTheme} contrast={contrast} setContrast={setContrast} />
-      <CommandPalette open={paletteOpen} setOpen={setPaletteOpen} onInsert={setInput} />
-    </div>
-  )
-}
+        let data = {};
+        const ct = res.headers.get("content-type") || "";
+        if (ct.includes("application/json")) {
+          data = await res.json();
+        } else {
+          const txt = await res.text();
+          data = { error: txt || `HTTP ${res.status}` };
+        }
 
-// ================================
-// mock/server.mjs
-// Simple Express mock that streams SSE for /api/chat and accepts uploads.
-// Run: npm run mock (starts on :8787), and `npm run dev` in another terminal (or use vite proxy)
-// ================================
-import express from 'express'
-import cors from 'cors'
-import multer from 'multer'
+        const last = wrap.lastElementChild; if(last) last.remove();
 
-const app = express()
-const upload = multer({ storage: multer.memoryStorage() })
-app.use(cors())
-app.use(express.json())
+        if (res.ok && data.reply){
+          addMessage('assistant', data.reply + ' <span class="caret"></span>');
+        } else {
+          addMessage('assistant', "⚠️ Error: " + (data.error || `API ${res.status}`));
+        }
+      } catch (err) {
+        const last = wrap.lastElementChild; if(last) last.remove();
+        addMessage('assistant', "⚠️ Network error: " + err.message);
+      }
+    }
 
-app.post('/api/chat', (req, res) => {
-  const { message, messages } = req.body || {}
-  const prompt = message || messages?.at(-1)?.content || 'Hello'
-  res.setHeader('Content-Type', 'text/event-stream')
-  res.setHeader('Cache-Control', 'no-cache')
-  res.setHeader('Connection', 'keep-alive')
-  const text = `Sure! You asked: **${prompt}**.\n\nHere is a *mock streamed* reply with a table and code.\n\n| Step | Action |\n| --- | --- |\n| 1 | Parse input |\n| 2 | Call API |\n| 3 | Stream back |\n\n\`\`\`js\nconsole.log('Hello from mock stream')\n\`\`\``
-  let i = 0
-  const timer = setInterval(() => {
-    if (i >= text.length) { clearInterval(timer); res.write(`data: [DONE]\n\n`); res.end(); return }
-    res.write('data: ' + text[i++] + '\n\n')
-  }, 6)
-})
+    // ===== Composer behaviour & shortcuts =====
+    const area = $('#chatInput');
+    const form = $('#composer');
 
-app.post('/api/upload', upload.array('file'), (req, res) => {
-  const out = (req.files || []).map((f, i) => ({ id: Date.now()+''+i, name: f.originalname, size: f.size, mime: f.mimetype, url: `blob:${f.originalname}` }))
-  res.json(out)
-})
+    area.addEventListener('input', ()=>{
+      area.style.height = 'auto';
+      area.style.height = Math.min(area.scrollHeight, 160) + 'px';
+    });
 
-const PORT = 8787
-app.listen(PORT, () => console.log('Mock server on http://localhost:' + PORT))
+    area.addEventListener('keydown', (e)=>{
+      if(e.key==='Enter' && !e.shiftKey){
+        e.preventDefault();
+        send(area.value);
+        area.value=''; area.style.height='auto';
+      }
+      if ((e.metaKey||e.ctrlKey) && e.key === '/') {
+        e.preventDefault(); area.focus();
+      }
+    });
+    form.addEventListener('submit', (e)=>{ e.preventDefault(); send(area.value); area.value=''; area.style.height='auto'; });
 
-// ================================
-// README.md (quick)
-// ================================
-# LedgerDaddy Chat (React + Vite)
+    $$('.demo-btn').forEach(b=> b.onclick = ()=>{
+      area.value = b.getAttribute('data-q');
+      area.dispatchEvent(new Event('input'));
+      area.focus();
+    });
 
-**Run dev (mock backend)**
+    // New Chat (header + sidebar)
+    $('#newChat').onclick = ()=> newThread();
+    $('#newChatTop')?.addEventListener('click', ()=> newThread());
 
-```bash
-npm i
-npm run mock   # terminal A – SSE mock on :8787
-npm run dev    # terminal B – Vite on :5173 (proxy /api → :8787)
-```
+    // Export / Clear
+    $('#exportBtn').onclick = ()=>{
+      const t = getCurrent(); if(!t) return toast('No chat');
+      const blob = new Blob([JSON.stringify(t, null, 2)], {type:'application/json'});
+      const a = document.createElement('a');
+      a.href = URL.createObjectURL(blob);
+      a.download = (t.title||'chat') + '.json';
+      a.click();
+      URL.revokeObjectURL(a.href);
+    };
+    $('#clearAll').onclick = ()=>{
+      if(confirm('Delete all conversations?')){
+        threads=[]; currentId=null; saveThreads(); renderSidebar(); renderMessages(); toast('Cleared');
+      }
+    };
 
-Open http://localhost:5173
+    // ===== Optional uploads (graceful if backend lacks /api/upload) =====
+    const fileInput = $('#fileInput');
+    const attPills = $('#attPills');
+    let attachments = [];
+    function renderPills(){
+      attPills.innerHTML = attachments.map(a => `
+        <span class="text-xs border border-[var(--border)] rounded-full px-2 py-1">
+          ${a.name} · ${(a.size/1024).toFixed(1)} KB
+          <button class="ml-2 opacity-70 hover:opacity-100" data-x="${a.id}">✕</button>
+        </span>
+      `).join('');
+      attPills.querySelectorAll('button[data-x]').forEach(btn=>{
+        btn.onclick = ()=>{ attachments = attachments.filter(x => x.id !== btn.getAttribute('data-x')); renderPills(); };
+      });
+    }
+    fileInput?.addEventListener('change', async (e)=>{
+      const files = [...e.target.files];
+      // If your server supports /api/upload, uncomment to actually upload:
+      // try{
+      //   const form = new FormData(); files.forEach(f=>form.append('file', f, f.name));
+      //   const res = await fetch(`${API_BASE}/api/upload`, { method:'POST', body: form });
+      //   const list = await res.json();
+      //   attachments = [...attachments, ...list];
+      // }catch{ toast('Upload failed'); return; }
+      // For now just show pills (no send):
+      attachments = [...attachments, ...files.map((f,i)=>({id: uid()+i, name:f.name, size:f.size}))];
+      renderPills();
+      fileInput.value = '';
+    });
 
-**Point to real Flask (Render)**
+    // ===== Init =====
+    if(!threads.length){ newThread(); } else { renderSidebar(); renderMessages(); renderMode(); }
 
-- Stop the mock. Start only `npm run dev`.
-- Create `.env` with:
-
-```
-VITE_API_BASE=https://chadaddy.onrender.com
-```
-
-- Rebuild/refresh. The app will call `POST https://chadaddy.onrender.com/api/chat` with `{ message, mode, session_id }` to preserve your existing connection. If the server returns JSON `{reply: "..."}`, the UI simulates streaming for an authentic ChatGPT feel.
-
-**Production build**
-
-```bash
-npm run build
-npm run preview
-```
-
-**Keyboard shortcuts**
-- **Enter** send, **Shift+Enter** newline
-- **Cmd/Ctrl+/** focus composer
-- **Cmd/Ctrl+K** command palette
-- **Esc** closes dialogs / palette
-
-**Exact ChatGPT UX pieces implemented**
-- Sidebar (collapsible, persists), sections (Today/7 days/Older), search, pin/rename/delete
-- Sticky header & composer; auto-grow textarea; drag-drop/upload; pills; remove
-- Streaming with blinking caret; Stop/Regenerate replaces Send
-- Edit last message (prompt), copy/delete actions
-- Markdown with tables and syntax-highlighted code + Copy
-- Auto-scroll with pause when scrolled up
-- Light/Dark + High-contrast toggles (persist), respects system
-- Local persistence for conversations, titles (first user line, 60 chars)
-- Accessibility: proper roles, aria-live for stream, focusable controls
-- Mobile safe-area-friendly bottom composer
-
-**Swap API**
-- All network logic is in `src/lib/chatClient.js` → `send(messages, attachments, onDelta)` and `upload(files)`.
-- For backends that accept `messages[]` and stream SSE, it will consume directly. For your Flask on Render, it sends `{ message, mode, session_id }`.
-
-// ================================
-// (Optional) KEEP YOUR EXISTING HTML PAGE WORKING
-// If you need to embed this SPA into your current site without breaking other routes,
-// host the Vite build at /chat/ and link to it. The API endpoint stays the same.
-// ================================
+    // Keyboard: focus input via Cmd/Ctrl+K as well
+    window.addEventListener('keydown', (e)=>{
+      if ((e.metaKey||e.ctrlKey) && e.key.toLowerCase()==='k') {
+        e.preventDefault(); area.focus();
+      }
+      if (e.key==='Escape') { /* close future dialogs if any */ }
+    });
+  </script>
+</body>
+</html>
