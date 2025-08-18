@@ -7,32 +7,16 @@
   <meta name="theme-color" content="#0B1020" />
   <script src="https://cdn.tailwindcss.com"></script>
   <script>
-    // Neutral, ChatGPT-like palette
     tailwind.config = {
       theme: {
         extend: {
           colors:{
-            ink:"#0B1020",                // deep text
-            soft:"#F5F7FA",              // app bg
-            card:"#FFFFFF",              // surfaces
-            line:"#E6E8EE",              // borders
-            mute:"#6B7280",              // secondary text
-            accent:"#10B981",            // action (emerald-ish)
-            accentSoft:"#ECFDF5",
-            codeBg:"#0F172A"             // code block
+            ink:"#0B1020", soft:"#F5F7FA", card:"#FFFFFF",
+            line:"#E6E8EE", mute:"#6B7280",
+            accent:"#10B981", accentSoft:"#ECFDF5",
+            codeBg:"#0F172A"
           },
-          boxShadow:{
-            soft:"0 10px 30px rgba(3,7,18,.06)"
-          },
-          typography: {
-            DEFAULT: {
-              css: {
-                h1:{fontWeight:'700'},
-                h2:{fontWeight:'700'},
-                code: { background:'#F3F4F6', padding:'2px 6px', borderRadius:'6px' }
-              }
-            }
-          }
+          boxShadow:{ soft:"0 10px 30px rgba(3,7,18,.06)" }
         }
       }
     }
@@ -54,7 +38,9 @@
     .message a{color:#0EA5E9}
     .message pre{background:#0F172A;color:#E5E7EB;padding:12px;border-radius:12px;overflow:auto}
     .message code{font-family:ui-monospace,SFMono-Regular,Menlo,monospace}
-    .scroll-btn{position:fixed;right:20px;bottom:96px;z-index:40}
+    .drop-target{outline:2px dashed #A7F3D0; outline-offset:4px}
+    .thumb{width:56px;height:56px;border-radius:10px;object-fit:cover;border:1px solid #E6E8EE}
+    .file-pill{border:1px solid #E6E8EE;border-radius:10px;padding:.4rem .6rem;font-size:12px;display:flex;align-items:center;gap:.5rem;background:#fff}
   </style>
 </head>
 <body class="h-full bg-soft text-ink">
@@ -101,20 +87,18 @@
 
     <!-- Chat column -->
     <section class="flex flex-col h-[calc(100vh-64px)]">
-      <!-- Stream -->
+      <!-- Stream (also acts as drop zone) -->
       <div id="messages" class="flex-1 overflow-auto px-0 sm:px-2 py-4">
-        <!-- Empty state with suggestions -->
         <div id="welcome" class="max-w-2xl mx-auto bg-card border border-line rounded-xl p-4 shadow-soft">
           <div class="text-sm text-mute">Assistant</div>
           <div class="mt-1">
             <p class="text-[15px] leading-relaxed">
-              Hi! Ask me anything about HS codes, duties, or customs docs. Try one:
+              Hi! Ask anything about HS codes, duties, or customs docs. You can also attach files (photos, PDFs, spreadsheets).
             </p>
             <div class="mt-3 flex flex-wrap gap-2">
               <button class="chip demo-btn" data-q="Find HS code for wireless earbuds in IN">Find HS code for wireless earbuds in IN</button>
               <button class="chip demo-btn" data-q="Duty for IN 851713 CIF 100000">Duty for IN 851713 CIF 100000</button>
               <button class="chip demo-btn" data-q="Documents to import wooden furniture into EU">Documents to import wooden furniture into EU</button>
-              <button class="chip demo-btn" data-q="Best Incoterm for electronics from CN to IN?">Best Incoterm for electronics from CN to IN?</button>
             </div>
           </div>
         </div>
@@ -122,15 +106,27 @@
 
       <!-- Composer -->
       <div class="border-t border-line bg-card sticky bottom-0">
-        <div class="max-w-3xl mx-auto px-3 py-3">
+        <div class="max-w-3xl mx-auto px-3 pt-3">
+          <!-- Attachments preview row -->
+          <div id="attachRow" class="hidden mb-2 flex items-center gap-2 flex-wrap"></div>
+
           <form id="composer" class="flex items-end gap-2">
+            <!-- Attach -->
+            <input id="fileInput" type="file" class="hidden" multiple
+                   accept="image/*,.pdf,.csv,.txt,.json,.doc,.docx,.xls,.xlsx,.ppt,.pptx"/>
+            <button type="button" id="attachBtn" title="Attach files"
+              class="btn btn-ghost" aria-label="Attach files">📎</button>
+
+            <!-- Text -->
             <textarea id="chatInput" rows="1" placeholder="Message Ledgerdaddy…"
               class="flex-1 border border-line rounded-xl px-3 py-2 resize-none max-h-40 focus:outline-none focus:ring-2 focus:ring-accent/30"
             ></textarea>
+
+            <!-- Send -->
             <button id="sendBtn" class="btn btn-accent">Send</button>
           </form>
-          <div class="mt-2 flex items-center justify-between">
-            <div class="text-[11px] text-mute">Enter to send • Shift+Enter for new line</div>
+          <div class="mt-2 flex items-center justify-between pb-3">
+            <div class="text-[11px] text-mute">Enter to send • Shift+Enter for new line • Drag & drop files anywhere</div>
             <div class="flex items-center gap-2">
               <button id="regenBtn" class="chip">Regenerate</button>
               <button id="toBottom" class="chip hidden">Scroll to bottom</button>
@@ -198,17 +194,46 @@
       });
     }
 
-    // ===== Messages UI =====
+    // ===== Markdown-lite =====
     function mdLite(text){
       let out = (text || '').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
-      out = out.replace(/```([\\s\\S]*?)```/g, (_,code)=>`<pre><code>${code}</code></pre>`);
-      out = out.replace(/\\*\\*(.*?)\\*\\*/g, '<strong>$1</strong>');
+      out = out.replace(/```([\s\S]*?)```/g, (_,code)=>`<pre><code>${code}</code></pre>`);
+      out = out.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>');
       out = out.replace(/`([^`]+)`/g, '<code>$1</code>');
-      out = out.replace(/\\n\\n/g, '<br/><br/>');
+      out = out.replace(/\n\n/g, '<br/><br/>');
       return out;
     }
 
-    function bubble(role, text){
+    // ===== Message bubbles (now support attachments) =====
+    function fileIcon(name){ const ext=(name.split('.').pop()||'').toLowerCase();
+      if(['png','jpg','jpeg','gif','webp','heic','heif','bmp'].includes(ext)) return '🖼️';
+      if(['pdf'].includes(ext)) return '📄';
+      if(['csv','xls','xlsx'].includes(ext)) return '📊';
+      if(['doc','docx'].includes(ext)) return '📝';
+      if(['ppt','pptx'].includes(ext)) return '📽️';
+      if(['txt','json','md'].includes(ext)) return '📃';
+      return '📎';
+    }
+    function attachBlock(attachments=[]){
+      if(!attachments.length) return '';
+      return `
+        <div class="mt-2 flex flex-wrap gap-2">
+          ${attachments.map(a=>{
+            const isImg = /^image\\//.test(a.type);
+            return isImg
+              ? `<a href="${a.url}" target="_blank" class="inline-flex items-center gap-2">
+                   <img src="${a.url}" alt="${a.name||'image'}" class="thumb"/><span class="text-[12px] text-mute truncate max-w-[160px]">${a.name||'image'}</span>
+                 </a>`
+              : `<a href="${a.url}" target="_blank" class="file-pill">
+                   <span>${fileIcon(a.name||'file')}</span>
+                   <span class="truncate max-w-[160px]">${a.name||'file'}</span>
+                   ${a.size ? `<span class="text-mute">${(a.size/1024/1024).toFixed(1)}MB</span>`:''}
+                 </a>`;
+          }).join('')}
+        </div>
+      `;
+    }
+    function bubble(role, text, attachments){
       const isUser = role==='user';
       return `
         <div class="fade-in max-w-3xl mx-auto message">
@@ -217,10 +242,10 @@
               <span class="mt-1 inline-flex w-8 h-8 shrink-0 items-center justify-center rounded-full ${isUser?'bg-ink text-white':'bg-accent text-white'}">${isUser?'👤':'◆'}</span>
               <div class="bg-card border border-line rounded-2xl px-4 py-3 max-w-[min(78vw,720px)]">
                 <div class="text-sm text-mute mb-1">${isUser?'You':'Assistant'}</div>
+                ${attachments?.length ? attachBlock(attachments) : ''}
                 <div class="prose prose-sm max-w-none">${mdLite(text)}</div>
                 <div class="mt-2 flex items-center gap-2">
                   <button class="copy-btn text-[11px] px-2 py-1 rounded border border-line hover:bg-soft" data-copy="${encodeURIComponent(text)}">Copy</button>
-                  ${isUser?'<button class="del-btn text-[11px] px-2 py-1 rounded border border-line hover:bg-soft">Delete</button>':''}
                 </div>
               </div>
             </div>
@@ -228,7 +253,6 @@
         </div>
       `;
     }
-
     function typingRow(){
       return `
         <div class="max-w-3xl mx-auto">
@@ -246,57 +270,153 @@
       `;
     }
 
+    // ===== Render =====
     function renderMessages(){
       const wrap = $('#messages');
       const t = getCurrent();
       const welcome = $('#welcome');
       if(!t){ wrap.innerHTML = ''; welcome?.classList.remove('hidden'); return; }
       welcome?.classList.add('hidden');
-      wrap.innerHTML = t.messages.map(m=>bubble(m.role, m.text)).join('');
-      // copy / delete
+      wrap.innerHTML = t.messages.map(m=>bubble(m.role, m.text, m.attachments)).join('');
+      // copy
       $$('.copy-btn').forEach(b=>{
         b.onclick = async ()=>{
           try{ await navigator.clipboard.writeText(decodeURIComponent(b.getAttribute('data-copy'))); toast('Copied'); }
           catch{ toast('Copy failed'); }
         };
       });
-      $$('.del-btn').forEach((btn, idx)=>{
-        btn.onclick = ()=>{
-          const cur = getCurrent(); if(!cur) return;
-          // find the nth user message
-          let userIndex = -1, target = -1;
-          for(let i=0;i<cur.messages.length;i++){
-            if(cur.messages[i].role==='user'){ userIndex++; if(userIndex===idx){ target=i; break; } }
-          }
-          if(target>-1){ cur.messages.splice(target,1); saveThreads(); renderMessages(); renderSidebar(); }
-        };
-      });
       wrap.scrollTop = wrap.scrollHeight;
       toggleScrollBtn();
     }
 
-    // ===== Send flow =====
-    function addMessage(role, text){
+    // ===== Message mutate =====
+    function addMessage(role, text, attachments=[]){
       const t = getCurrent(); if(!t) return;
-      t.messages.push({role, text, ts: Date.now()});
+      t.messages.push({role, text, attachments, ts: Date.now()});
       if(t.title==='New chat'){ setTitleFromFirstUserMessage(t); }
       saveThreads(); renderSidebar(); renderMessages();
     }
 
+    // ===== Upload handling =====
+    const MAX_FILES = 10;
+    const MAX_MB = 25; // per file
+    let pendingFiles = []; // {file, url, id}
+
+    const fileInput = $('#fileInput');
+    const attachBtn  = $('#attachBtn');
+    const attachRow  = $('#attachRow');
+    const msgWrap    = $('#messages');
+
+    attachBtn.addEventListener('click', ()=> fileInput.click());
+    fileInput.addEventListener('change', (e)=> addPendingFiles([...e.target.files]));
+
+    // Drag & drop
+    ;['dragenter','dragover'].forEach(ev=>{
+      document.addEventListener(ev, (e)=>{ e.preventDefault(); msgWrap.classList.add('drop-target'); });
+    });
+    ;['dragleave','drop'].forEach(ev=>{
+      document.addEventListener(ev, (e)=>{ e.preventDefault(); msgWrap.classList.remove('drop-target'); });
+    });
+    document.addEventListener('drop', (e)=>{
+      const files = [...(e.dataTransfer?.files||[])];
+      if(files.length) addPendingFiles(files);
+    });
+
+    function addPendingFiles(files){
+      const all = [...pendingFiles];
+      for(const f of files){
+        if(all.length >= MAX_FILES){ toast('Max 10 files'); break; }
+        if(f.size > MAX_MB*1024*1024){ toast(`${f.name} is over ${MAX_MB}MB`); continue; }
+        all.push({ file:f, id:uid(), url: URL.createObjectURL(f) });
+      }
+      pendingFiles = all;
+      renderPending();
+    }
+
+    function removePending(id){
+      pendingFiles = pendingFiles.filter(p=>p.id!==id);
+      renderPending();
+    }
+
+    function renderPending(){
+      if(!pendingFiles.length){ attachRow.classList.add('hidden'); attachRow.innerHTML=''; return; }
+      attachRow.classList.remove('hidden');
+      attachRow.innerHTML = pendingFiles.map(p=>{
+        const isImg = p.file.type.startsWith('image/');
+        const size = (p.file.size/1024/1024).toFixed(1)+'MB';
+        return isImg
+          ? `<div class="relative">
+               <img src="${p.url}" class="thumb" alt="${p.file.name}"/>
+               <button title="Remove" class="absolute -top-2 -right-2 bg-white border border-line rounded-full w-6 h-6 text-xs"
+                 onclick="removePending('${p.id}')">×</button>
+             </div>`
+          : `<div class="file-pill">
+               <span>${fileIcon(p.file.name)}</span>
+               <span class="truncate max-w-[160px]">${p.file.name}</span>
+               <span class="text-mute">${size}</span>
+               <button title="Remove" class="ml-1 border border-line rounded px-1 text-[11px]" onclick="removePending('${p.id}')">×</button>
+             </div>`;
+      }).join('');
+      // expose removePending to window for inline onclick
+      window.removePending = removePending;
+    }
+
+    async function uploadFiles(files){
+      // expects backend endpoint: POST /api/upload (multipart) -> [{url,name,type,size}]
+      if(!files.length) return [];
+      const form = new FormData();
+      files.forEach(f => form.append('files', f.file, f.file.name));
+      try{
+        const res = await fetch(`${API_BASE}/api/upload`, { method:'POST', body:form });
+        if(!res.ok) throw new Error('Upload failed');
+        const data = await res.json();
+        // Fallback: if backend returns a single object
+        const list = Array.isArray(data) ? data : (data.files || [data]);
+        return list.map((x,i)=>({
+          url: x.url || files[i].url, // use server URL; fallback to blob url
+          name: x.name || files[i].file.name,
+          type: x.type || files[i].file.type,
+          size: x.size || files[i].file.size
+        }));
+      }catch(e){
+        toast(e.message || 'Upload error');
+        return [];
+      }
+    }
+
+    // ===== Send flow =====
+    const area = $('#chatInput');
+    const form = $('#composer');
+    let lastPrompt = "";
+
     async function send(text){
       const trimmed = (text || '').trim();
-      if(!trimmed) return;
-      addMessage('user', trimmed);
+      if(!trimmed && !pendingFiles.length) return;
 
+      // 1) upload attachments first
+      const uploaded = await uploadFiles(pendingFiles);
+      // clear local blob urls
+      pendingFiles.forEach(p=> URL.revokeObjectURL(p.url));
+      pendingFiles = []; renderPending();
+
+      // 2) add user message with attachments
+      addMessage('user', trimmed, uploaded);
+
+      // 3) typing placeholder
       const wrap = $('#messages');
       wrap.insertAdjacentHTML('beforeend', typingRow());
       wrap.scrollTop = wrap.scrollHeight;
 
+      // 4) call chat with attachments
       try {
         const res = await fetch(`${API_BASE}/api/chat`, {
           method: "POST",
           headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ message: trimmed, mode: "learn" })
+          body: JSON.stringify({
+            message: trimmed,
+            mode: "learn",
+            attachments: uploaded   // [{url,name,type,size}]
+          })
         });
         const data = await res.json();
         wrap.lastElementChild?.remove();
@@ -312,19 +432,11 @@
       }
     }
 
-    // ===== Composer behaviour =====
-    const area = $('#chatInput');
-    const form = $('#composer');
-    const sendBtn = $('#sendBtn');
-    let lastPrompt = "";
-
-    // autoresize
+    // autoresize + key handling
     area.addEventListener('input', ()=>{
       area.style.height = 'auto';
       area.style.height = Math.min(area.scrollHeight, 160) + 'px';
     });
-
-    // enter to send
     area.addEventListener('keydown', (e)=>{
       if(e.key==='Enter' && !e.shiftKey){
         e.preventDefault();
@@ -334,25 +446,22 @@
     });
     form.addEventListener('submit', (e)=>{ e.preventDefault(); send(area.value); area.value=''; area.style.height='auto'; });
 
-    // demo quick chips
+    // quick chips
     $$('.demo-btn').forEach(b=> b.onclick = ()=>{
       area.value = b.getAttribute('data-q');
       area.dispatchEvent(new Event('input'));
       area.focus();
     });
 
-    // new chat
+    // sidebar actions
     $('#newChat')?.addEventListener('click', ()=> newThread());
-
-    // export & clear
     $('#exportBtn')?.addEventListener('click', ()=>{
       const t = getCurrent(); if(!t) return toast('No chat');
       const blob = new Blob([JSON.stringify(t, null, 2)], {type:'application/json'});
       const a = document.createElement('a');
       a.href = URL.createObjectURL(blob);
       a.download = (t.title||'chat') + '.json';
-      a.click();
-      URL.revokeObjectURL(a.href);
+      a.click(); URL.revokeObjectURL(a.href);
     });
     $('#clearAll')?.addEventListener('click', ()=>{
       if(confirm('Delete all conversations?')){
@@ -360,12 +469,8 @@
       }
     });
 
-    // regenerate
-    $('#regenBtn')?.addEventListener('click', ()=>{
-      if(lastPrompt){ send(lastPrompt); } else { toast('Nothing to regenerate yet'); }
-    });
-
-    // scroll-to-bottom button
+    // regenerate + scroll-to-bottom
+    $('#regenBtn')?.addEventListener('click', ()=> lastPrompt ? send(lastPrompt) : toast('Nothing to regenerate yet'));
     const toBottomBtn = $('#toBottom');
     const msgWrap = $('#messages');
     function toggleScrollBtn(){
@@ -376,8 +481,11 @@
     msgWrap.addEventListener('scroll', toggleScrollBtn);
     toBottomBtn?.addEventListener('click', ()=>{ msgWrap.scrollTop = msgWrap.scrollHeight; toggleScrollBtn(); });
 
-    // ===== Init =====
+    // init
     if(!threads.length){ newThread(); } else { renderSidebar(); renderMessages(); }
+
+    // expose for inline removePending
+    window.removePending = (id)=>removePending(id);
   </script>
 </body>
 </html>
