@@ -1,0 +1,452 @@
+<!DOCTYPE html>
+<html lang="en" class="scroll-smooth">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Marketplace – Chadaddy</title>
+  <meta name="description" content="Find and compare verified customs brokers and CHAs by port, specialty, and ratings." />
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors:{ indigoDeep:"#1A237E", emerald:"#2E7D32", cyanBright:"#00BCD4", accentOrange:"#FF7043" }
+        }
+      }
+    }
+  </script>
+  <style>
+    .card{transition:transform .12s ease, box-shadow .2s ease}
+    .card:hover{transform:translateY(-2px); box-shadow:0 14px 34px rgba(0,0,0,.14)}
+  </style>
+</head>
+<body class="bg-gray-50 text-gray-900">
+  <!-- Header -->
+  <header class="sticky top-0 z-40 border-b bg-white/90 backdrop-blur">
+    <div class="max-w-7xl mx-auto px-4 py-3 flex items-center justify-between">
+      <a href="index.html" class="flex items-center gap-2" aria-label="Chadaddy home">
+        <span class="grid h-9 w-9 place-items-center rounded-xl bg-gradient-to-tr from-cyanBright to-emerald text-white font-extrabold shadow">◆</span>
+        <span class="text-xl font-bold text-indigoDeep">Chadaddy</span>
+        <span class="ml-2 hidden sm:inline-flex text-[11px] px-2 py-0.5 rounded-full border border-cyanBright/40 text-cyanBright">Marketplace</span>
+      </a>
+      <nav class="hidden md:flex items-center gap-5 text-sm">
+        <a href="index.html#calculator" class="hover:text-cyanBright">Calculator</a>
+        <a href="index.html#hsfinder" class="hover:text-cyanBright">HS Finder</a>
+        <a href="auth.html#signin" class="border rounded-lg px-3 py-1.5">Sign in</a>
+        <a href="auth.html#signup" class="bg-emerald text-white rounded-lg px-4 py-1.5">Sign up</a>
+      </nav>
+    </div>
+  </header>
+
+  <!-- Hero -->
+  <section class="bg-white border-b">
+    <div class="max-w-7xl mx-auto px-6 py-10 grid md:grid-cols-[280px,1fr] gap-6 items-start">
+      <div class="hidden md:block">
+        <h1 class="text-2xl font-bold">Find Your Customs Broker</h1>
+        <p class="text-gray-600 mt-1 text-sm">Search by port, HS specialty, rating, and response time.</p>
+      </div>
+      <form id="searchBar" class="w-full">
+        <div class="flex gap-2">
+          <input id="q" class="flex-1 border rounded-lg px-3 py-2" placeholder="Search broker, port, or HS (e.g. 8517, JNPT, electronics)" />
+          <select id="sort" class="border rounded-lg px-3 py-2">
+            <option value="featured">Sort: Featured</option>
+            <option value="rating">Sort: Rating</option>
+            <option value="price">Sort: Price</option>
+            <option value="response">Sort: Response time</option>
+          </select>
+          <button class="bg-cyanBright text-black rounded-lg px-4">Search</button>
+        </div>
+      </form>
+    </div>
+  </section>
+
+  <!-- Main -->
+  <main class="max-w-7xl mx-auto px-6 py-8 grid md:grid-cols-[280px,1fr] gap-6">
+    <!-- Filters -->
+    <aside class="bg-white border rounded-xl p-4 h-fit">
+      <div class="flex items-center justify-between">
+        <h2 class="font-semibold">Filters</h2>
+        <button id="clearFilters" class="text-xs underline">Clear</button>
+      </div>
+
+      <div class="mt-4 grid gap-4">
+        <div>
+          <label class="text-sm font-medium">Country</label>
+          <select id="fCountry" class="mt-1 w-full border rounded-lg px-3 py-2">
+            <option value="">Any</option>
+            <option>IN</option><option>US</option><option>EU</option><option>UK</option><option>AE</option><option>SG</option>
+          </select>
+        </div>
+
+        <div>
+          <label class="text-sm font-medium">Port</label>
+          <select id="fPort" class="mt-1 w-full border rounded-lg px-3 py-2">
+            <option value="">Any</option>
+            <option>JNPT</option><option>Mundra</option><option>Chennai</option>
+            <option>Rotterdam</option><option>Los Angeles</option><option>Felixstowe</option>
+            <option>Dubai</option><option>Singapore</option>
+          </select>
+        </div>
+
+        <div>
+          <label class="text-sm font-medium">Specialties</label>
+          <div class="mt-2 grid grid-cols-2 gap-2 text-sm">
+            <label class="flex items-center gap-2"><input type="checkbox" class="fSpec" value="Electronics" />Electronics</label>
+            <label class="flex items-center gap-2"><input type="checkbox" class="fSpec" value="Chemicals" />Chemicals</label>
+            <label class="flex items-center gap-2"><input type="checkbox" class="fSpec" value="Apparel" />Apparel</label>
+            <label class="flex items-center gap-2"><input type="checkbox" class="fSpec" value="Furniture" />Furniture</label>
+            <label class="flex items-center gap-2"><input type="checkbox" class="fSpec" value="Food" />Food</label>
+            <label class="flex items-center gap-2"><input type="checkbox" class="fSpec" value="Auto" />Auto</label>
+          </div>
+        </div>
+
+        <div>
+          <label class="text-sm font-medium">Min rating</label>
+          <input id="fRating" type="range" min="0" max="5" step="0.1" value="0" class="w-full">
+          <div class="text-xs text-gray-600">Current: <span id="ratingVal">0.0</span>+</div>
+        </div>
+
+        <div>
+          <label class="text-sm font-medium">Max price (₹)</label>
+          <input id="fPrice" type="number" class="mt-1 w-full border rounded-lg px-3 py-2" placeholder="e.g. 7000" />
+        </div>
+
+        <button id="apply" class="mt-2 w-full bg-emerald text-white rounded-lg py-2">Apply filters</button>
+      </div>
+    </aside>
+
+    <!-- Results -->
+    <section class="min-h-[60vh]">
+      <div class="flex items-center justify-between">
+        <h2 class="text-xl font-semibold">Results</h2>
+        <button id="openCompare" class="text-sm border rounded-lg px-3 py-1">Compare (<span id="compareCount">0</span>)</button>
+      </div>
+
+      <div id="grid" class="mt-4 grid sm:grid-cols-2 lg:grid-cols-3 gap-6"></div>
+
+      <!-- Pagination (stub) -->
+      <div class="mt-8 flex items-center justify-center gap-2">
+        <button class="px-3 py-1 border rounded disabled:opacity-50" id="prevPage">Prev</button>
+        <div class="text-sm">Page <span id="pageNo">1</span></div>
+        <button class="px-3 py-1 border rounded disabled:opacity-50" id="nextPage">Next</button>
+      </div>
+    </section>
+  </main>
+
+  <!-- Compare Drawer -->
+  <aside id="compareDrawer" class="fixed right-0 top-0 h-full w-[340px] bg-white border-l shadow-xl translate-x-full transition-transform">
+    <div class="p-4 border-b flex items-center justify-between">
+      <h3 class="font-semibold">Compare</h3>
+      <button id="closeCompare" class="text-sm border rounded px-2 py-1">Close</button>
+    </div>
+    <div id="compareList" class="p-4 grid gap-3 text-sm"></div>
+    <div class="p-4 border-t grid gap-2">
+      <a href="auth.html#signup" class="bg-emerald text-white rounded-lg py-2 text-center">Contact selected</a>
+      <button id="clearCompare" class="border rounded-lg py-2">Clear</button>
+    </div>
+  </aside>
+
+  <!-- Broker Details Modal -->
+  <div id="modal" class="hidden fixed inset-0 z-50 items-center justify-center bg-black/50 p-3">
+    <div class="max-w-2xl w-full bg-white rounded-xl overflow-hidden">
+      <div class="p-4 border-b flex items-center justify-between">
+        <h3 id="mTitle" class="font-semibold">Broker</h3>
+        <button id="mClose" class="border rounded px-2 py-1">✕</button>
+      </div>
+      <div class="p-4 grid md:grid-cols-[1fr,320px] gap-4">
+        <div>
+          <img id="mImg" class="w-full h-48 object-cover rounded-lg" alt="">
+          <p id="mDesc" class="mt-3 text-sm text-gray-700"></p>
+          <div id="mTags" class="mt-2 flex flex-wrap gap-2 text-xs"></div>
+        </div>
+        <div class="bg-gray-50 border rounded-lg p-3">
+          <div class="text-sm">Ports: <span id="mPorts" class="font-medium"></span></div>
+          <div class="text-sm mt-1">Country: <span id="mCountry" class="font-medium"></span></div>
+          <div class="text-sm mt-1">Rating: <span id="mRating" class="font-medium"></span> ★</div>
+          <div class="text-sm mt-1">From: <span id="mPrice" class="font-medium"></span></div>
+          <a href="auth.html#signup" class="mt-3 block bg-cyanBright text-black rounded-lg py-2 text-center">Get Quote</a>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Footer -->
+  <footer class="mt-16 border-t bg-white">
+    <div class="max-w-7xl mx-auto px-6 py-10 grid sm:grid-cols-2 md:grid-cols-4 gap-6 text-sm">
+      <div>
+        <div class="font-semibold text-indigoDeep">Chadaddy</div>
+        <p class="text-gray-600 mt-1">AI-powered customs platform to ship smarter worldwide.</p>
+      </div>
+      <div>
+        <div class="font-semibold">Explore</div>
+        <ul class="mt-2 space-y-1">
+          <li><a href="index.html#calculator" class="hover:text-cyanBright">Calculator</a></li>
+          <li><a href="index.html#hsfinder" class="hover:text-cyanBright">HS Finder</a></li>
+          <li><a href="index.html#learn" class="hover:text-cyanBright">Academy</a></li>
+        </ul>
+      </div>
+      <div>
+        <div class="font-semibold">Account</div>
+        <ul class="mt-2 space-y-1">
+          <li><a href="auth.html#signin" class="hover:text-cyanBright">Sign in</a></li>
+          <li><a href="auth.html#signup" class="hover:text-cyanBright">Sign up</a></li>
+        </ul>
+      </div>
+      <div>
+        <div class="font-semibold">Contact</div>
+        <p class="text-gray-600 mt-1">support@chadaddy.example</p>
+      </div>
+    </div>
+  </footer>
+
+  <!-- App JS -->
+  <script>
+    // ---- Sample dataset (replace with API later) ----
+    const BROKERS = [
+      {
+        id: 1,
+        name: "Pacific Global",
+        country: "IN",
+        ports: ["JNPT","Mundra"],
+        specs: ["Electronics","Chemicals"],
+        rating: 4.9,
+        price: 6500,
+        response: 2, // hours
+        img: "https://images.unsplash.com/photo-1556761175-4b46a572b786?q=80&w=1000&auto=format&fit=crop",
+        desc: "Top-tier CHA focused on electronics and hazardous chemical compliance with nationwide partner network."
+      },
+      {
+        id: 2,
+        name: "Astra Customs",
+        country: "IN",
+        ports: ["Mundra","Chennai"],
+        specs: ["Apparel","Furniture"],
+        rating: 4.7,
+        price: 5500,
+        response: 4,
+        img: "https://images.unsplash.com/photo-1515879218367-8466d910aaa4?q=80&w=1000&auto=format&fit=crop",
+        desc: "Mid-market broker known for apparel and furniture HS classification and fast TAT."
+      },
+      {
+        id: 3,
+        name: "Metro ACI",
+        country: "US",
+        ports: ["Los Angeles"],
+        specs: ["Electronics","Auto"],
+        rating: 4.6,
+        price: 120,
+        response: 3,
+        img: "https://images.unsplash.com/photo-1517433456452-f9633a875f6f?q=80&w=1000&auto=format&fit=crop",
+        desc: "US customs expert at LA/LB terminals with 24x7 FDA/USDA coordination."
+      },
+      {
+        id: 4,
+        name: "Seaport Partners",
+        country: "EU",
+        ports: ["Rotterdam","Felixstowe"],
+        specs: ["Food","Electronics"],
+        rating: 4.8,
+        price: 95,
+        response: 6,
+        img: "https://images.unsplash.com/photo-1501555088652-021faa106b9b?q=80&w=1000&auto=format&fit=crop",
+        desc: "EU broker collective covering NL+UK with strong port community ties."
+      },
+      {
+        id: 5,
+        name: "DXB Clear",
+        country: "AE",
+        ports: ["Dubai"],
+        specs: ["Electronics","Auto","Apparel"],
+        rating: 4.5,
+        price: 350,
+        response: 5,
+        img: "https://images.unsplash.com/photo-1539185441755-769473a23570?q=80&w=1000&auto=format&fit=crop",
+        desc: "Dubai-based brokerage with bonded warehouse and re-export support."
+      },
+      {
+        id: 6,
+        name: "Lion City Brokers",
+        country: "SG",
+        ports: ["Singapore"],
+        specs: ["Electronics","Chemicals","Food"],
+        rating: 4.9,
+        price: 140,
+        response: 1,
+        img: "https://images.unsplash.com/photo-1529429612779-c8e40ef2f36e?q=80&w=1000&auto=format&fit=crop",
+        desc: "Singapore specialists with AEO certification and pharma cold chain know-how."
+      }
+    ];
+
+    // ---- DOM helpers ----
+    const $ = s => document.querySelector(s);
+    const $$ = s => Array.from(document.querySelectorAll(s));
+
+    // ---- State ----
+    let page = 1;
+    const PAGE_SIZE = 6;
+    let compareSet = new Set();
+
+    // ---- Render cards ----
+    function cardHTML(b) {
+      const specs = b.specs.join(", ");
+      const ports = b.ports.join(" • ");
+      return `
+        <article class="card bg-white border rounded-xl overflow-hidden">
+          <img class="h-36 w-full object-cover" src="${b.img}" alt="${b.name}">
+          <div class="p-3">
+            <div class="flex items-center justify-between">
+              <div class="font-semibold">${b.name}</div>
+              <div class="text-xs px-2 py-0.5 rounded-full border border-emerald text-emerald">Verified</div>
+            </div>
+            <div class="text-xs text-gray-500 mt-1">${b.country} • ${ports}</div>
+            <div class="text-xs mt-1">${specs}</div>
+            <div class="flex items-center justify-between mt-2">
+              <div class="text-sm">★ ${b.rating.toFixed(1)}</div>
+              <div class="text-sm">From <strong>${fmtPrice(b.price, b.country)}</strong></div>
+            </div>
+            <div class="mt-3 grid grid-cols-3 gap-2 text-sm">
+              <button class="border rounded-lg px-2 py-1" data-action="details" data-id="${b.id}">Details</button>
+              <button class="bg-cyanBright text-black rounded-lg px-2 py-1" onclick="location.href='auth.html#signup'">Get Quote</button>
+              <button class="border rounded-lg px-2 py-1" data-action="compare" data-id="${b.id}">
+                ${compareSet.has(b.id) ? '✓ In Compare' : 'Compare'}
+              </button>
+            </div>
+          </div>
+        </article>
+      `;
+    }
+
+    function fmtPrice(p, c) {
+      if (c === "IN") return "₹ " + p.toLocaleString("en-IN");
+      if (["EU","UK","SG","AE"].includes(c)) return "€ " + p.toLocaleString();
+      return "$ " + p.toLocaleString();
+    }
+
+    // ---- Filtering logic ----
+    function applyFilters(data) {
+      const q = $("#q").value.trim().toLowerCase();
+      const ctry = $("#fCountry").value;
+      const port = $("#fPort").value;
+      const minRating = parseFloat($("#fRating").value || "0");
+      const maxPrice = parseFloat($("#fPrice").value || "0");
+      const specs = $$(".fSpec:checked").map(c => c.value);
+
+      let out = data.filter(b => {
+        if (ctry && b.country !== ctry) return false;
+        if (port && !b.ports.includes(port)) return false;
+        if (specs.length && !specs.every(s => b.specs.includes(s))) return false;
+        if (b.rating < minRating) return false;
+        if (maxPrice && b.price > maxPrice) return false;
+
+        if (q) {
+          const hay = `${b.name} ${b.country} ${b.ports.join(" ")} ${b.specs.join(" ")}`.toLowerCase();
+          if (!hay.includes(q)) return false;
+        }
+        return true;
+      });
+
+      // sort
+      const sort = $("#sort").value;
+      out.sort((a,b) => {
+        if (sort === "rating") return b.rating - a.rating;
+        if (sort === "price") return a.price - b.price;
+        if (sort === "response") return a.response - b.response;
+        return b.rating * 1000 - a.price; // "featured" heuristic
+      });
+
+      return out;
+    }
+
+    function render() {
+      const filtered = applyFilters(BROKERS);
+      const start = (page-1)*PAGE_SIZE;
+      const slice = filtered.slice(start, start + PAGE_SIZE);
+
+      $("#grid").innerHTML = slice.map(cardHTML).join("") || `
+        <div class="col-span-full text-center text-gray-500 py-10">No brokers found. Try changing filters.</div>
+      `;
+
+      $("#pageNo").textContent = String(page);
+      $("#prevPage").disabled = page === 1;
+      $("#nextPage").disabled = start + PAGE_SIZE >= filtered.length;
+      $("#compareCount").textContent = String(compareSet.size);
+    }
+
+    // ---- Events ----
+    $("#searchBar").addEventListener("submit", e => { e.preventDefault(); page = 1; render(); });
+    $("#apply").addEventListener("click", () => { page = 1; render(); });
+    $("#clearFilters").addEventListener("click", () => {
+      $("#fCountry").value = "";
+      $("#fPort").value = "";
+      $("#fRating").value = 0; $("#ratingVal").textContent = "0.0";
+      $("#fPrice").value = "";
+      $$(".fSpec").forEach(c => c.checked = false);
+      $("#q").value = "";
+      $("#sort").value = "featured";
+      page = 1; render();
+    });
+    $("#fRating").addEventListener("input", e => $("#ratingVal").textContent = parseFloat(e.target.value).toFixed(1));
+    $("#prevPage").addEventListener("click", () => { if (page>1) { page--; render(); } });
+    $("#nextPage").addEventListener("click", () => { page++; render(); });
+
+    // Delegate clicks inside grid for details / compare
+    $("#grid").addEventListener("click", e => {
+      const btn = e.target.closest("button[data-action]");
+      if (!btn) return;
+      const id = Number(btn.dataset.id);
+      const action = btn.dataset.action;
+      const broker = BROKERS.find(b => b.id === id);
+      if (!broker) return;
+
+      if (action === "details") openModal(broker);
+      if (action === "compare") {
+        if (compareSet.has(id)) compareSet.delete(id); else compareSet.add(id);
+        render();
+      }
+    });
+
+    // Compare drawer
+    $("#openCompare").addEventListener("click", () => openCompare());
+    $("#closeCompare").addEventListener("click", () => closeCompare());
+    $("#clearCompare").addEventListener("click", () => { compareSet.clear(); render(); openCompare(); });
+
+    function openCompare() {
+      const list = Array.from(compareSet).map(id => BROKERS.find(b => b.id === id)).filter(Boolean);
+      $("#compareList").innerHTML = list.length ? list.map(b => `
+        <div class="border rounded-lg p-3">
+          <div class="font-semibold">${b.name}</div>
+          <div class="text-xs text-gray-600">${b.country} • ${b.ports.join(" • ")}</div>
+          <div class="mt-1 grid grid-cols-3 gap-2 text-xs">
+            <div>★ ${b.rating.toFixed(1)}</div>
+            <div>From ${fmtPrice(b.price,b.country)}</div>
+            <div>${b.response}h resp.</div>
+          </div>
+          <button class="mt-2 text-xs underline" onclick="location.href='auth.html#signup'">Contact</button>
+        </div>
+      ").join("") : '<div class="text-gray-500 text-sm">No items selected.</div>';
+      $("#compareDrawer").style.transform = "translateX(0)";
+      $("#compareCount").textContent = String(compareSet.size);
+    }
+    function closeCompare(){ $("#compareDrawer").style.transform = "translateX(100%)"; }
+
+    // Modal
+    function openModal(b){
+      $("#mTitle").textContent = b.name;
+      $("#mImg").src = b.img;
+      $("#mImg").alt = b.name;
+      $("#mDesc").textContent = b.desc;
+      $("#mPorts").textContent = b.ports.join(" • ");
+      $("#mCountry").textContent = b.country;
+      $("#mRating").textContent = b.rating.toFixed(1);
+      $("#mPrice").textContent = fmtPrice(b.price, b.country);
+      $("#mTags").innerHTML = b.specs.map(s => `<span class="px-2 py-0.5 rounded-full border text-xs">${s}</span>`).join(" ");
+      $("#modal").classList.remove("hidden"); $("#modal").classList.add("flex");
+    }
+    $("#mClose").addEventListener("click", () => { $("#modal").classList.add("hidden"); $("#modal").classList.remove("flex"); });
+    $("#modal").addEventListener("click", e => { if(e.target.id === "modal"){ $("#mClose").click(); } });
+
+    // First render
+    render();
+  </script>
+</body>
+</html>
