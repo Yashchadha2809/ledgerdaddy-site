@@ -1,13 +1,31 @@
 {
   "builds": [
     { "src": "index.py", "use": "@vercel/python" },
-    { "src": "*.html", "use": "@vercel/static" },
+    { "src": "**/*.html", "use": "@vercel/static" },
     { "src": "assets/**", "use": "@vercel/static" }
   ],
   "routes": [
-    { "src": "^/$", "dest": "/index.html" },
-    { "src": "^/(.*\\.html)$", "dest": "/$1" },
+    { "src": "^/$", "dest": "/home_min.html" },
+
+    { "src": "^/log-in/?$", "dest": "/log_in.html" },
+    { "src": "^/personal-sign-up/?$", "dest": "/personal_sign_up.html" },
+    { "src": "^/dashboard/?$", "dest": "/dashboard.html" },
+    { "src": "^/marketplace/?$", "dest": "/marketplace.html" },
+
+    { "src": "^/privacy/?$", "dest": "/privacy.html" },
+    { "src": "^/terms/?$", "dest": "/terms.html" },
+    { "src": "^/license/?$", "dest": "/license.html" },
+    { "src": "^/cookie-policy/?$", "dest": "/cookie-policy.html" },
+    { "src": "^/acceptable-use/?$", "dest": "/acceptable-use.html" },
+    { "src": "^/security/?$", "dest": "/security.html" },
+    { "src": "^/dpa/?$", "dest": "/dpa.html" },
+    { "src": "^/sla/?$", "dest": "/sla.html" },
+    { "src": "^/subprocessors/?$", "dest": "/subprocessors.html" },
+
     { "src": "^/assets/(.*)$", "dest": "/assets/$1" },
+
+    { "src": "^/(.*\\.html)$", "dest": "/$1" },
+
     { "src": "^/api/(.*)$", "dest": "/index.py" }
   ]
 }
