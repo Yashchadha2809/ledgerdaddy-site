@@ -30,12 +30,24 @@
     }
   </script>
   <style>
+    :root{--radius:14px}
     .card{transition:transform .15s ease, box-shadow .25s ease}
     .card:hover{transform:translateY(-2px); box-shadow:0 16px 32px rgba(0,0,0,.1)}
     .kpi{background:#ffffff}
+    .btn{display:inline-flex;align-items:center;gap:.5rem;padding:.6rem 1rem;border-radius:12px;font-weight:600}
+    .btn-primary{background:linear-gradient(135deg,#60a5fa,#2563eb);color:#fff;box-shadow:0 8px 20px rgba(37,99,235,.25)}
+    .btn-primary:hover{filter:brightness(1.03);transform:translateY(-1px)}
+    .btn-outline{border:1px solid #d1d5db}
+    .nav-link{position:relative}
+    .nav-link:focus-visible{outline:2px solid #2563eb;outline-offset:4px;border-radius:8px}
+    .focus-ring:focus-visible{outline:2px solid #2563eb;outline-offset:2px;border-radius:12px}
+    .skeleton{background:linear-gradient(90deg,#eee, #f6f7f9, #eee);background-size:200% 100%;animation:shimmer 1.1s infinite}
+    @keyframes shimmer{0%{background-position:200% 0}100%{background-position:-200% 0}}
   </style>
 </head>
 <body class="min-h-screen bg-brandGray text-gray-900">
+  <a href="#main" class="sr-only focus:not-sr-only focus:fixed focus:top-2 focus:left-2 focus:bg-white focus:text-brandBlue focus:px-3 focus:py-2 focus:rounded-md">Skip to content</a>
+
   <!-- Auth gate -->
   <script>
     (function(){
@@ -47,21 +59,31 @@
   </script>
 
   <!-- Topbar -->
-  <header class="fixed top-0 inset-x-0 z-50 border-b border-gray-200 bg-white/90 backdrop-blur">
+  <header class="fixed top-0 inset-x-0 z-50 border-b border-gray-200 bg-white/90 backdrop-blur supports-[backdrop-filter]:bg-white/70">
     <div class="max-w-7xl mx-auto px-4 py-3 flex items-center justify-between">
       <a href="/index.html" class="flex items-center gap-2" aria-label="Home">
         <span class="grid h-9 w-9 place-items-center rounded-xl bg-soft-gradient text-white font-extrabold shadow">◆</span>
         <span class="text-xl font-bold text-brandBlue">Ledgerdaddy</span>
         <span class="ml-2 hidden sm:inline-flex text-[11px] px-2 py-0.5 rounded-full border border-brandLight text-brandBlue">AI Customs</span>
       </a>
-      <nav class="hidden md:flex items-center gap-6 text-sm font-medium">
-        <a href="/marketplace.html" class="hover:text-brandBlue">Marketplace</a>
-        <a href="/calculator.html" class="hover:text-brandBlue">Calculator</a>
-        <a href="/hs-finder.html" class="hover:text-brandBlue">HS Finder</a>
-        <a href="/chat.html" class="hover:text-brandBlue">Ask in Chat</a>
+      <nav class="hidden md:flex items-center gap-2 text-sm font-medium">
+        <a href="/marketplace.html" class="nav-link px-3 py-2 rounded-lg hover:text-brandBlue hover:bg-brandLight/10">Marketplace</a>
+        <a href="/calculator.html" class="nav-link px-3 py-2 rounded-lg hover:text-brandBlue hover:bg-brandLight/10">Calculator</a>
+        <a href="/hs-finder.html" class="nav-link px-3 py-2 rounded-lg hover:text-brandBlue hover:bg-brandLight/10">HS Finder</a>
+        <a href="/chat.html" class="nav-link px-3 py-2 rounded-lg hover:text-brandBlue hover:bg-brandLight/10">Ask in Chat</a>
       </nav>
       <div class="flex items-center gap-2">
-        <button id="logoutBtn" class="border px-3 py-1.5 rounded-lg hover:bg-brandLight/20">Log out</button>
+        <button id="logoutBtn" class="btn btn-outline focus-ring">Log out</button>
+        <button id="quickStart" class="btn btn-primary">Quick Start</button>
+      </div>
+    </div>
+    <!-- Mobile nav -->
+    <div class="md:hidden border-t border-gray-200 bg-white/90">
+      <div class="max-w-7xl mx-auto px-2 py-2 grid grid-cols-4 gap-2 text-xs">
+        <a class="text-center py-2 rounded-lg hover:bg-brandLight/10" href="/calculator.html">Calc</a>
+        <a class="text-center py-2 rounded-lg hover:bg-brandLight/10" href="/hs-finder.html">HS</a>
+        <a class="text-center py-2 rounded-lg hover:bg-brandLight/10" href="/marketplace.html">Brokers</a>
+        <a class="text-center py-2 rounded-lg hover:bg-brandLight/10" href="/chat.html">Chat</a>
       </div>
     </div>
   </header>
@@ -69,8 +91,16 @@
   <!-- Heading -->
   <section class="pt-24 md:pt-28">
     <div class="max-w-7xl mx-auto px-4">
-      <h1 class="text-3xl md:text-4xl font-extrabold">Welcome, <span id="name">there</span> 👋</h1>
-      <p class="text-gray-600 mt-2">Quick access to your tools and recent activity.</p>
+      <div class="flex items-center justify-between gap-3 flex-wrap">
+        <div>
+          <h1 class="text-3xl md:text-4xl font-extrabold">Welcome, <span id="name">there</span> 👋</h1>
+          <p class="text-gray-600 mt-2">Quick access to your tools and recent activity.</p>
+        </div>
+        <div class="flex items-center gap-2">
+          <a href="/chat.html" class="btn btn-primary">Ask something</a>
+          <a href="/calculator.html" class="btn btn-outline">New estimate</a>
+        </div>
+      </div>
     </div>
   </section>
 
@@ -78,52 +108,82 @@
   <section class="max-w-7xl mx-auto px-4 mt-6 grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
     <div class="kpi border border-gray-200 rounded-2xl p-4">
       <div class="text-xs uppercase text-gray-500">Saved Estimates</div>
-      <div class="mt-1 text-2xl font-extrabold text-brandBlue">3</div>
+      <div class="mt-1 text-3xl font-extrabold text-brandBlue tracking-tight">3</div>
+      <div class="mt-2 text-xs text-gray-500">Last: 2 days ago</div>
     </div>
     <div class="kpi border border-gray-200 rounded-2xl p-4">
       <div class="text-xs uppercase text-gray-500">HS Lookups</div>
-      <div class="mt-1 text-2xl font-extrabold text-brandBlue">2</div>
+      <div class="mt-1 text-3xl font-extrabold text-brandBlue tracking-tight">2</div>
+      <div class="mt-2 text-xs text-gray-500">This week</div>
     </div>
     <div class="kpi border border-gray-200 rounded-2xl p-4">
       <div class="text-xs uppercase text-gray-500">Broker Shortlists</div>
-      <div class="mt-1 text-2xl font-extrabold text-brandBlue">1</div>
+      <div class="mt-1 text-3xl font-extrabold text-brandBlue tracking-tight">1</div>
+      <div class="mt-2 text-xs text-gray-500">JNPT</div>
     </div>
     <div class="kpi border border-gray-200 rounded-2xl p-4">
       <div class="text-xs uppercase text-gray-500">Chat Threads</div>
-      <div class="mt-1 text-2xl font-extrabold text-brandBlue" id="kpiThreads">0</div>
+      <div class="mt-1 text-3xl font-extrabold text-brandBlue tracking-tight" id="kpiThreads">0</div>
+      <div class="mt-2 text-xs text-gray-500">Active</div>
     </div>
   </section>
 
   <!-- Content -->
-  <main class="max-w-7xl mx-auto px-4 mt-8 grid gap-6 lg:grid-cols-[1fr,360px]">
+  <main id="main" class="max-w-7xl mx-auto px-4 mt-8 grid gap-6 lg:grid-cols-[1fr,360px]">
     <!-- Left column -->
     <div class="grid gap-6">
       <!-- Quick actions -->
       <section class="bg-white border border-gray-200 rounded-2xl p-5 card">
-        <h2 class="text-xl font-semibold">Quick actions</h2>
+        <div class="flex items-center justify-between">
+          <h2 class="text-xl font-semibold">Quick actions</h2>
+          <div class="text-xs text-gray-500">Common tasks</div>
+        </div>
         <div class="mt-4 grid grid-cols-2 md:grid-cols-4 gap-3">
-          <a href="/calculator.html" class="border rounded-xl p-4 text-center hover:border-brandBlue">
-            <div class="text-sm font-semibold text-brandBlue">Open Calculator</div>
-            <div class="text-xs text-gray-500">Start a new estimate</div>
+          <a href="/calculator.html" class="group border rounded-xl p-4 text-left hover:border-brandBlue focus-ring">
+            <div class="flex items-center gap-3">
+              <div class="h-10 w-10 rounded-lg bg-brandLight/20 text-brandBlue grid place-items-center">∑</div>
+              <div>
+                <div class="text-sm font-semibold text-brandBlue">Open Calculator</div>
+                <div class="text-xs text-gray-500">Start a new estimate</div>
+              </div>
+            </div>
           </a>
-          <a href="/hs-finder.html" class="border rounded-xl p-4 text-center hover:border-brandBlue">
-            <div class="text-sm font-semibold text-brandBlue">HS Finder</div>
-            <div class="text-xs text-gray-500">Get code suggestions</div>
+          <a href="/hs-finder.html" class="group border rounded-xl p-4 text-left hover:border-brandBlue focus-ring">
+            <div class="flex items-center gap-3">
+              <div class="h-10 w-10 rounded-lg bg-brandGreen/10 text-brandGreen grid place-items-center">HS</div>
+              <div>
+                <div class="text-sm font-semibold text-brandBlue">HS Finder</div>
+                <div class="text-xs text-gray-500">Get code suggestions</div>
+              </div>
+            </div>
           </a>
-          <a href="/marketplace.html" class="border rounded-xl p-4 text-center hover:border-brandBlue">
-            <div class="text-sm font-semibold text-brandBlue">Find Broker</div>
-            <div class="text-xs text-gray-500">Compare verified CHAs</div>
+          <a href="/marketplace.html" class="group border rounded-xl p-4 text-left hover:border-brandBlue focus-ring">
+            <div class="flex items-center gap-3">
+              <div class="h-10 w-10 rounded-lg bg-brandOrange/10 text-brandOrange grid place-items-center">🏬</div>
+              <div>
+                <div class="text-sm font-semibold text-brandBlue">Find Broker</div>
+                <div class="text-xs text-gray-500">Compare verified CHAs</div>
+              </div>
+            </div>
           </a>
-          <a href="/chat.html" class="border rounded-xl p-4 text-center hover:border-brandBlue">
-            <div class="text-sm font-semibold text-brandBlue">Ask in Chat</div>
-            <div class="text-xs text-gray-500">ChatGPT-style helper</div>
+          <a href="/chat.html" class="group border rounded-xl p-4 text-left hover:border-brandBlue focus-ring">
+            <div class="flex items-center gap-3">
+              <div class="h-10 w-10 rounded-lg bg-brandBlue/10 text-brandBlue grid place-items-center">💬</div>
+              <div>
+                <div class="text-sm font-semibold text-brandBlue">Ask in Chat</div>
+                <div class="text-xs text-gray-500">ChatGPT-style helper</div>
+              </div>
+            </div>
           </a>
         </div>
       </section>
 
       <!-- Pinned tools -->
       <section class="bg-white border border-gray-200 rounded-2xl p-5 card">
-        <h2 class="text-xl font-semibold">Pinned tools</h2>
+        <div class="flex items-center justify-between">
+          <h2 class="text-xl font-semibold">Pinned tools</h2>
+          <button id="customizePins" class="text-sm text-brandBlue hover:underline">Customize</button>
+        </div>
         <div class="mt-4 grid md:grid-cols-2 gap-4">
           <article class="border rounded-xl p-4">
             <div class="flex items-center justify-between">
@@ -141,7 +201,33 @@
             <p class="text-sm text-gray-600 mt-1">Describe product → get HS suggestions.</p>
             <div class="text-xs text-gray-500 mt-2">Last used: 4 days ago</div>
           </article>
+          <article class="border rounded-xl p-4">
+            <div class="flex items-center justify-between">
+              <h3 class="font-semibold">Marketplace</h3>
+              <a href="/marketplace.html" class="text-brandBlue text-sm">Open →</a>
+            </div>
+            <p class="text-sm text-gray-600 mt-1">Browse & compare verified customs brokers.</p>
+            <div class="text-xs text-gray-500 mt-2">Last used: 1 week ago</div>
+          </article>
+          <article class="border rounded-xl p-4">
+            <div class="flex items-center justify-between">
+              <h3 class="font-semibold">Ask in Chat</h3>
+              <a href="/chat.html" class="text-brandBlue text-sm">Open →</a>
+            </div>
+            <p class="text-sm text-gray-600 mt-1">Get instant help, ChatGPT-style.</p>
+            <div class="text-xs text-gray-500 mt-2">Active: <span id="chatThreadsText">0 threads</span></div>
+          </article>
         </div>
+      </section>
+
+      <!-- Recent items -->
+      <section class="bg-white border border-gray-200 rounded-2xl p-5 card">
+        <div class="flex items-center justify-between">
+          <h2 class="text-xl font-semibold">Recent items</h2>
+          <div class="text-xs text-gray-500">Demo</div>
+        </div>
+        <ul id="recentList" class="mt-3 grid gap-3 text-sm"></ul>
+        <div id="recentEmpty" class="hidden mt-3 text-center text-sm text-gray-500 border border-dashed rounded-xl p-6">No recent activity yet. Start with the <a class="text-brandBlue" href="/calculator.html">Calculator</a>.</div>
       </section>
     </div>
 
@@ -150,16 +236,19 @@
       <section class="bg-white border border-gray-200 rounded-2xl p-5 card">
         <h3 class="text-lg font-semibold">Account</h3>
         <dl class="mt-3 text-sm">
-          <div class="flex justify-between py-1 border-b border-gray-100">
+          <div class="flex justify-between py-2 border-b border-gray-100">
             <dt class="text-gray-500">Email</dt>
             <dd id="email" class="font-medium">—</dd>
           </div>
-          <div class="flex justify-between py-1 border-b border-gray-100">
+          <div class="flex justify-between py-2 border-b border-gray-100">
             <dt class="text-gray-500">Member since</dt>
             <dd id="memberSince" class="font-medium">—</dd>
           </div>
         </dl>
-        <button id="clearData" class="mt-4 text-xs underline">Clear local data</button>
+        <div class="mt-4 flex items-center gap-3">
+          <button id="clearData" class="text-xs underline">Clear local data</button>
+          <a href="/settings.html" class="text-xs text-brandBlue hover:underline">Account settings</a>
+        </div>
       </section>
 
       <section class="bg-white border border-gray-200 rounded-2xl p-5 card">
@@ -180,6 +269,8 @@
 
   <script>
     document.getElementById('year').textContent = new Date().getFullYear();
+
+    // Load session
     let user = null;
     try{ user = JSON.parse(localStorage.getItem('chadaddy_user')||'null'); }catch(e){}
     if(user){
@@ -188,18 +279,55 @@
       const d = new Date(user.ts || Date.now());
       document.getElementById('memberSince').textContent = d.toLocaleDateString();
     }
+
+    // Demo "recent" list with skeleton then hydrate
+    const recentEl = document.getElementById('recentList');
+    const recentEmpty = document.getElementById('recentEmpty');
+    const skeleton = Array.from({length:3}).map(()=>`<li class=\"border rounded-lg px-3 py-3 flex items-center justify-between\">
+      <div class=\"h-4 w-48 rounded skeleton\"></div><div class=\"h-4 w-16 rounded skeleton\"></div></li>`).join('');
+    recentEl.innerHTML = skeleton;
+
     const recent = [
       { t:'Estimate • IN • HS 851713 • CIF', time:'2 days ago', link:'/calculator.html' },
-      { t:'HS Finder • “LED downlight”', time:'4 days ago', link:'/hs-finder.html' }
+      { t:'HS Finder • “LED downlight”', time:'4 days ago', link:'/hs-finder.html' },
+      { t:'Broker shortlist • JNPT', time:'1 week ago', link:'/marketplace.html' },
+      { t:'Chat • “Docs for EU furniture”', time:'1 week ago', link:'/chat.html' },
     ];
-    document.getElementById('clearData').addEventListener('click', () => {
-      localStorage.removeItem('chadaddy_user');
-      localStorage.removeItem('ld_chat_threads_v1');
-      alert('Local demo data cleared. You may need to sign in again.');
+
+    setTimeout(()=>{
+      if(!recent.length){
+        recentEl.innerHTML = '';
+        recentEmpty.classList.remove('hidden');
+      } else {
+        recentEl.innerHTML = recent.map(r => `<li class=\"border rounded-lg px-3 py-2 flex items-center justify-between bg-white\">
+          <a class=\"hover:text-brandBlue\" href=\"${r.link}\">${r.t}</a>
+          <span class=\"text-gray-500\">${r.time}</span></li>`).join('');
+      }
+    }, 400);
+
+    // Pull chat thread count from chat page storage (if exists)
+    try{
+      const t = JSON.parse(localStorage.getItem('ld_chat_threads_v1')||'[]');
+      const n = Array.isArray(t) ? t.length : 0;
+      document.getElementById('kpiThreads').textContent = n;
+      const chatThreadsText = document.getElementById('chatThreadsText');
+      if(chatThreadsText) chatThreadsText.textContent = n + (n===1?' thread':' threads');
+    }catch{}
+
+    // Quick start routes to most-used page
+    document.getElementById('quickStart').addEventListener('click',()=>{
+      window.location.href = '/calculator.html';
     });
+
+    // Logout & clear
     document.getElementById('logoutBtn').addEventListener('click', () => {
       localStorage.removeItem('chadaddy_user');
       window.location.replace('/log-in.html');
+    });
+    document.getElementById('clearData')?.addEventListener('click', () => {
+      localStorage.removeItem('chadaddy_user');
+      localStorage.removeItem('ld_chat_threads_v1');
+      alert('Local demo data cleared. You may need to sign in again.');
     });
   </script>
 </body>
