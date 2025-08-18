@@ -4,25 +4,46 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <title>Dashboard – Ledgerdaddy</title>
-  <meta name="theme-color" content="#1A237E" />
+  <meta name="theme-color" content="#0ea5e9" />
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
   <script src="https://cdn.tailwindcss.com"></script>
   <script>
     tailwind.config = {
       theme: {
         extend: {
-          colors:{ indigoDeep:"#1A237E", emerald:"#2E7D32", cyanBright:"#00BCD4", accentOrange:"#FF7043" },
-          boxShadow:{ lift:"0 14px 34px rgba(0,0,0,.12)" }
+          fontFamily: { sans: ["Inter", "ui-sans-serif", "system-ui"] },
+          colors: {
+            indigoDeep: "#1A237E",
+            emerald: "#2E7D32",
+            cyanBright: "#00BCD4",
+            accentOrange: "#FF7043",
+            ink: "#0b1020"
+          },
+          boxShadow: { lift: "0 14px 34px rgba(2,6,23,.12)" },
+          backgroundImage: {
+            'radial': 'radial-gradient(1000px 400px at 0% 0%, rgba(14,165,233,.18), transparent 60%), radial-gradient(800px 300px at 100% 0%, rgba(16,185,129,.18), transparent 60%)',
+            'glass': 'linear-gradient(180deg, rgba(255,255,255,.85), rgba(255,255,255,.6))',
+            'darkglass': 'linear-gradient(180deg, rgba(15,23,42,.6), rgba(15,23,42,.4))'
+          }
         }
       }
     }
   </script>
   <style>
-    .card{transition:transform .12s ease, box-shadow .2s ease}
-    .card:hover{transform:translateY(-2px); box-shadow:0 14px 34px rgba(0,0,0,.14)}
+    .card{transition:transform .15s ease, box-shadow .25s ease}
+    .card:hover{transform:translateY(-2px); box-shadow:0 18px 42px rgba(2,6,23,.16)}
     .kpi{background:linear-gradient(180deg, #fff, #f8fafc)}
+    @media(prefers-color-scheme:dark){
+      body{background:#0b1020; color:#e5e7eb}
+      .kpi{background:linear-gradient(180deg, rgba(30,41,59,.8), rgba(2,6,23,.8))}
+    }
+    .ring-sheen{position:relative}
+    .ring-sheen:before{content:""; position:absolute; inset:-1px; border-radius:16px; padding:1px; background:linear-gradient(135deg, rgba(14,165,233,.35), rgba(16,185,129,.35)); -webkit-mask:linear-gradient(#000 0 0) content-box,linear-gradient(#000 0 0); -webkit-mask-composite: xor; mask-composite: exclude}
   </style>
 </head>
-<body class="bg-gray-50 text-gray-900">
+<body class="min-h-screen bg-gray-50 text-gray-900 dark:bg-ink dark:text-slate-100 bg-radial">
   <!-- ===== Auth gate: if no user, redirect to login ===== -->
   <script>
     (function(){
@@ -33,22 +54,33 @@
     })();
   </script>
 
+  <!-- ===== Top gradient bar ===== -->
+  <div class="fixed inset-x-0 top-0 z-[60] h-1 bg-gradient-to-r from-cyan-500 via-emerald-500 to-indigo-600"></div>
+
   <!-- ===== Topbar ===== -->
-  <header class="fixed top-0 inset-x-0 z-50 border-b border-gray-200 bg-white/90 backdrop-blur">
+  <header class="fixed top-1 inset-x-0 z-50 border-b border-white/20 dark:border-white/10 backdrop-blur-xl bg-white/70 dark:bg-slate-900/60">
     <div class="max-w-7xl mx-auto px-4 py-3 flex items-center justify-between">
-      <a href="/index.html" class="flex items-center gap-2" aria-label="Home">
-        <span class="grid h-9 w-9 place-items-center rounded-xl bg-gradient-to-tr from-cyanBright to-emerald text-white font-extrabold shadow">◆</span>
-        <span class="text-xl font-bold text-indigoDeep">Ledgerdaddy</span>
-        <span class="ml-2 hidden sm:inline-flex text-[11px] px-2 py-0.5 rounded-full border border-cyanBright/40 text-cyanBright">AI Customs</span>
+      <a href="/index.html" class="flex items-center gap-3" aria-label="Home">
+        <span class="relative h-10 w-10 grid place-items-center rounded-2xl text-white font-extrabold shadow lift overflow-hidden ring-sheen">
+          <span class="absolute inset-0 bg-gradient-to-tr from-cyan-500 to-emerald-500"></span>
+          <span class="relative">◆</span>
+        </span>
+        <span class="text-xl font-extrabold tracking-tight">Ledgerdaddy</span>
+        <span class="ml-2 hidden sm:inline-flex text-[11px] px-2 py-0.5 rounded-full border border-cyan-500/40 text-cyan-600 dark:text-cyan-300">AI Customs</span>
       </a>
       <nav class="hidden md:flex items-center gap-6 text-sm font-medium">
-        <a href="/marketplace.html" class="hover:text-cyanBright">Marketplace</a>
-        <a href="/calculator.html" class="hover:text-cyanBright">Calculator</a>
-        <a href="/hs-finder.html" class="hover:text-cyanBright">HS Finder</a>
-        <a href="/chat.html" class="hover:text-cyanBright">Ask in Chat</a>
+        <a href="/marketplace.html" class="hover:text-cyan-600 dark:hover:text-cyan-300">Marketplace</a>
+        <a href="/calculator.html" class="hover:text-cyan-600 dark:hover:text-cyan-300">Calculator</a>
+        <a href="/hs-finder.html" class="hover:text-cyan-600 dark:hover:text-cyan-300">HS Finder</a>
+        <a href="/chat.html" class="hover:text-cyan-600 dark:hover:text-cyan-300">Ask in Chat</a>
       </nav>
       <div class="flex items-center gap-2">
-        <button id="logoutBtn" class="border px-3 py-1.5 rounded-lg">Log out</button>
+        <!-- Theme toggle -->
+        <button id="themeToggle" class="border border-slate-200/70 dark:border-white/10 px-3 py-1.5 rounded-lg text-sm hover:bg-white/60 dark:hover:bg-white/5" aria-label="Toggle theme">
+          <span class="inline md:hidden">Theme</span>
+          <span class="hidden md:inline">Toggle theme</span>
+        </button>
+        <button id="logoutBtn" class="border border-slate-200/70 dark:border-white/10 px-3 py-1.5 rounded-lg text-sm hover:bg-white/60 dark:hover:bg-white/5">Log out</button>
       </div>
     </div>
   </header>
@@ -56,28 +88,54 @@
   <!-- ===== Heading ===== -->
   <section class="pt-24 md:pt-28">
     <div class="max-w-7xl mx-auto px-4">
-      <h1 class="text-3xl md:text-4xl font-extrabold">Welcome, <span id="name">there</span> 👋</h1>
-      <p class="text-gray-600 mt-2">Quick access to your tools and recent activity.</p>
+      <div class="flex items-center justify-between gap-3 flex-wrap">
+        <div>
+          <h1 class="text-3xl md:text-4xl font-extrabold tracking-tight">Welcome, <span id="name">there</span> 👋</h1>
+          <p class="text-gray-600 dark:text-slate-300 mt-2">Quick access to your tools and recent activity.</p>
+        </div>
+        <a href="/chat.html" class="inline-flex items-center gap-2 rounded-xl px-4 py-2 bg-gradient-to-r from-cyan-500 to-emerald-500 text-white font-semibold shadow hover:shadow-lg hover:scale-[1.02] transition">
+          <!-- chat-bubble-left-right icon -->
+          <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8"><path stroke-linecap="round" stroke-linejoin="round" d="M2 8.5A3.5 3.5 0 0 1 5.5 5h9A3.5 3.5 0 0 1 18 8.5v.75A3.75 3.75 0 0 1 14.25 13H9l-4 3v-3.5A4 4 0 0 1 2 8.5Z"/><path stroke-linecap="round" stroke-linejoin="round" d="M22 13.5A3.5 3.5 0 0 0 18.5 10h-1.25"/></svg>
+          Ask something
+        </a>
+      </div>
     </div>
   </section>
 
   <!-- ===== KPIs ===== -->
   <section class="max-w-7xl mx-auto px-4 mt-6 grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
-    <div class="kpi border border-gray-200 rounded-2xl p-4">
-      <div class="text-xs uppercase text-gray-500">Saved Estimates</div>
-      <div class="mt-1 text-2xl font-extrabold">3</div>
+    <!-- KPI card component -->
+    <div class="kpi ring-sheen border border-white/50 dark:border-white/10 rounded-2xl p-4">
+      <div class="text-xs uppercase text-gray-500 dark:text-slate-400 flex items-center gap-2">
+        <!-- bookmark icon -->
+        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.6"><path stroke-linecap="round" stroke-linejoin="round" d="M17 21l-5-3-5 3V5a2 2 0 0 1 2-2h6a2 2 0 0 1 2 2Z"/></svg>
+        Saved Estimates
+      </div>
+      <div class="mt-1 text-3xl font-extrabold tracking-tight">3</div>
     </div>
-    <div class="kpi border border-gray-200 rounded-2xl p-4">
-      <div class="text-xs uppercase text-gray-500">HS Lookups</div>
-      <div class="mt-1 text-2xl font-extrabold">2</div>
+    <div class="kpi ring-sheen border border-white/50 dark:border-white/10 rounded-2xl p-4">
+      <div class="text-xs uppercase text-gray-500 dark:text-slate-400 flex items-center gap-2">
+        <!-- magnifying-glass-circle icon -->
+        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.6"><path stroke-linecap="round" stroke-linejoin="round" d="M10 18a8 8 0 1 0 0-16 8 8 0 0 0 0 16Zm11 3-5.2-5.2"/></svg>
+        HS Lookups
+      </div>
+      <div class="mt-1 text-3xl font-extrabold tracking-tight">2</div>
     </div>
-    <div class="kpi border border-gray-200 rounded-2xl p-4">
-      <div class="text-xs uppercase text-gray-500">Broker Shortlists</div>
-      <div class="mt-1 text-2xl font-extrabold">1</div>
+    <div class="kpi ring-sheen border border-white/50 dark:border-white/10 rounded-2xl p-4">
+      <div class="text-xs uppercase text-gray-500 dark:text-slate-400 flex items-center gap-2">
+        <!-- users icon -->
+        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.6"><path stroke-linecap="round" stroke-linejoin="round" d="M15 19a4 4 0 1 0-6 0m12-1a6 6 0 1 0-12 0a6 6 0 0 0 12 0ZM12 7a4 4 0 1 0 0-8 4 4 0 0 0 0 8Z"/></svg>
+        Broker Shortlists
+      </div>
+      <div class="mt-1 text-3xl font-extrabold tracking-tight">1</div>
     </div>
-    <div class="kpi border border-gray-200 rounded-2xl p-4">
-      <div class="text-xs uppercase text-gray-500">Chat Threads</div>
-      <div class="mt-1 text-2xl font-extrabold" id="kpiThreads">0</div>
+    <div class="kpi ring-sheen border border-white/50 dark:border-white/10 rounded-2xl p-4">
+      <div class="text-xs uppercase text-gray-500 dark:text-slate-400 flex items-center gap-2">
+        <!-- chat icon -->
+        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.6"><path stroke-linecap="round" stroke-linejoin="round" d="M7 8h10M7 12h6m-8 8 4-4h9a3 3 0 0 0 3-3V7a3 3 0 0 0-3-3H6a3 3 0 0 0-3 3v11a2 2 0 0 0 2 2Z"/></svg>
+        Chat Threads
+      </div>
+      <div class="mt-1 text-3xl font-extrabold tracking-tight" id="kpiThreads">0</div>
     </div>
   </section>
 
@@ -86,114 +144,151 @@
     <!-- Left column -->
     <div class="grid gap-6">
       <!-- Quick actions -->
-      <section class="bg-white border border-gray-200 rounded-2xl p-5 card">
+      <section class="bg-glass dark:bg-darkglass border border-white/50 dark:border-white/10 rounded-2xl p-5 card">
         <div class="flex items-center justify-between">
           <h2 class="text-xl font-semibold">Quick actions</h2>
         </div>
         <div class="mt-4 grid grid-cols-2 md:grid-cols-4 gap-3">
-          <a href="/calculator.html" class="border rounded-xl p-4 text-center hover:border-cyanBright">
+          <a href="/calculator.html" class="group border border-slate-200/70 dark:border-white/10 rounded-xl p-4 text-center hover:border-cyan-500/70 bg-white/70 dark:bg-white/5">
+            <div class="flex items-center justify-center h-10 w-10 rounded-lg bg-cyan-50 text-cyan-600 dark:bg-cyan-500/10 dark:text-cyan-300 mx-auto mb-2 group-hover:scale-110 transition">
+              <!-- calculator icon -->
+              <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8"><path stroke-linecap="round" stroke-linejoin="round" d="M6 3h12a1 1 0 0 1 1 1v16a1 1 0 0 1-1 1H6a1 1 0 0 1-1-1V4a1 1 0 0 1 1-1Zm3 5h6M9 13h.01M12 13h.01M15 13h.01M9 17h6"/></svg>
+            </div>
             <div class="text-sm font-semibold">Open Calculator</div>
-            <div class="text-xs text-gray-500">Start a new estimate</div>
+            <div class="text-xs text-gray-500 dark:text-slate-400">Start a new estimate</div>
           </a>
-          <a href="/hs-finder.html" class="border rounded-xl p-4 text-center hover:border-cyanBright">
+          <a href="/hs-finder.html" class="group border border-slate-200/70 dark:border-white/10 rounded-xl p-4 text-center hover:border-cyan-500/70 bg-white/70 dark:bg-white/5">
+            <div class="flex items-center justify-center h-10 w-10 rounded-lg bg-emerald-50 text-emerald-600 dark:bg-emerald-500/10 dark:text-emerald-300 mx-auto mb-2 group-hover:scale-110 transition">
+              <!-- squares-2x2 icon -->
+              <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8"><path stroke-linecap="round" stroke-linejoin="round" d="M4 4h7v7H4zM13 4h7v7h-7zM4 13h7v7H4zM13 13h7v7h-7z"/></svg>
+            </div>
             <div class="text-sm font-semibold">HS Finder</div>
-            <div class="text-xs text-gray-500">Get code suggestions</div>
+            <div class="text-xs text-gray-500 dark:text-slate-400">Get code suggestions</div>
           </a>
-          <a href="/marketplace.html" class="border rounded-xl p-4 text-center hover:border-cyanBright">
+          <a href="/marketplace.html" class="group border border-slate-200/70 dark:border-white/10 rounded-xl p-4 text-center hover:border-cyan-500/70 bg-white/70 dark:bg-white/5">
+            <div class="flex items-center justify-center h-10 w-10 rounded-lg bg-indigo-50 text-indigo-600 dark:bg-indigo-500/10 dark:text-indigo-300 mx-auto mb-2 group-hover:scale-110 transition">
+              <!-- building-storefront icon -->
+              <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8"><path stroke-linecap="round" stroke-linejoin="round" d="M4 7h16l-1 12a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2L4 7Zm0 0 2-4h12l2 4M7 10h10M9 14h6"/></svg>
+            </div>
             <div class="text-sm font-semibold">Find Broker</div>
-            <div class="text-xs text-gray-500">Compare verified CHAs</div>
+            <div class="text-xs text-gray-500 dark:text-slate-400">Compare verified CHAs</div>
           </a>
-          <a href="/chat.html" class="border rounded-xl p-4 text-center hover:border-cyanBright">
+          <a href="/chat.html" class="group border border-slate-200/70 dark:border-white/10 rounded-xl p-4 text-center hover:border-cyan-500/70 bg-white/70 dark:bg-white/5">
+            <div class="flex items-center justify-center h-10 w-10 rounded-lg bg-orange-50 text-orange-600 dark:bg-orange-500/10 dark:text-orange-300 mx-auto mb-2 group-hover:scale-110 transition">
+              <!-- chat icon -->
+              <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8"><path stroke-linecap="round" stroke-linejoin="round" d="M7 8h10M7 12h6m-8 8 4-4h9a3 3 0 0 0 3-3V7a3 3 0 0 0-3-3H6a3 3 0 0 0-3 3v11a2 2 0 0 0 2 2Z"/></svg>
+            </div>
             <div class="text-sm font-semibold">Ask in Chat</div>
-            <div class="text-xs text-gray-500">ChatGPT-style helper</div>
+            <div class="text-xs text-gray-500 dark:text-slate-400">ChatGPT-style helper</div>
           </a>
         </div>
       </section>
 
       <!-- Pinned tools -->
-      <section class="bg-white border border-gray-200 rounded-2xl p-5 card">
-        <h2 class="text-xl font-semibold">Pinned tools</h2>
+      <section class="bg-glass dark:bg-darkglass border border-white/50 dark:border-white/10 rounded-2xl p-5 card">
+        <div class="flex items-center justify-between">
+          <h2 class="text-xl font-semibold">Pinned tools</h2>
+          <a href="#" class="text-sm text-cyan-600 dark:text-cyan-300 hover:underline">Customize</a>
+        </div>
         <div class="mt-4 grid md:grid-cols-2 gap-4">
           <!-- Calculator preview -->
-          <article class="border rounded-xl p-4">
+          <article class="border border-slate-200/70 dark:border-white/10 rounded-xl p-4 bg-white/70 dark:bg-white/5">
             <div class="flex items-center justify-between">
               <h3 class="font-semibold">Calculator</h3>
-              <a href="/calculator.html" class="text-cyanBright text-sm">Open →</a>
+              <a href="/calculator.html" class="text-cyan-600 dark:text-cyan-300 text-sm">Open →</a>
             </div>
-            <p class="text-sm text-gray-600 mt-1">Estimate BCD, IGST/VAT and landed cost.</p>
-            <div class="text-xs text-gray-500 mt-2">Last used: 2 days ago</div>
+            <p class="text-sm text-gray-600 dark:text-slate-400 mt-1">Estimate BCD, IGST/VAT and landed cost.</p>
+            <div class="text-xs text-gray-500 dark:text-slate-500 mt-2">Last used: 2 days ago</div>
           </article>
           <!-- HS Finder preview -->
-          <article class="border rounded-xl p-4">
+          <article class="border border-slate-200/70 dark:border-white/10 rounded-xl p-4 bg-white/70 dark:bg-white/5">
             <div class="flex items-center justify-between">
               <h3 class="font-semibold">HS Finder</h3>
-              <a href="/hs-finder.html" class="text-cyanBright text-sm">Open →</a>
+              <a href="/hs-finder.html" class="text-cyan-600 dark:text-cyan-300 text-sm">Open →</a>
             </div>
-            <p class="text-sm text-gray-600 mt-1">Describe product → get HS suggestions.</p>
-            <div class="text-xs text-gray-500 mt-2">Last used: 4 days ago</div>
+            <p class="text-sm text-gray-600 dark:text-slate-400 mt-1">Describe product → get HS suggestions.</p>
+            <div class="text-xs text-gray-500 dark:text-slate-500 mt-2">Last used: 4 days ago</div>
           </article>
           <!-- Marketplace preview -->
-          <article class="border rounded-xl p-4">
+          <article class="border border-slate-200/70 dark:border-white/10 rounded-xl p-4 bg-white/70 dark:bg-white/5">
             <div class="flex items-center justify-between">
               <h3 class="font-semibold">Marketplace</h3>
-              <a href="/marketplace.html" class="text-cyanBright text-sm">Open →</a>
+              <a href="/marketplace.html" class="text-cyan-600 dark:text-cyan-300 text-sm">Open →</a>
             </div>
-            <p class="text-sm text-gray-600 mt-1">Browse & compare verified customs brokers.</p>
-            <div class="text-xs text-gray-500 mt-2">Last used: 1 week ago</div>
+            <p class="text-sm text-gray-600 dark:text-slate-400 mt-1">Browse & compare verified customs brokers.</p>
+            <div class="text-xs text-gray-500 dark:text-slate-500 mt-2">Last used: 1 week ago</div>
           </article>
           <!-- Chat preview -->
-          <article class="border rounded-xl p-4">
+          <article class="border border-slate-200/70 dark:border-white/10 rounded-xl p-4 bg-white/70 dark:bg-white/5">
             <div class="flex items-center justify-between">
               <h3 class="font-semibold">Ask in Chat</h3>
-              <a href="/chat.html" class="text-cyanBright text-sm">Open →</a>
+              <a href="/chat.html" class="text-cyan-600 dark:text-cyan-300 text-sm">Open →</a>
             </div>
-            <p class="text-sm text-gray-600 mt-1">Get instant help, ChatGPT-style.</p>
-            <div class="text-xs text-gray-500 mt-2">Active: <span id="chatThreadsText">0 threads</span></div>
+            <p class="text-sm text-gray-600 dark:text-slate-400 mt-1">Get instant help, ChatGPT-style.</p>
+            <div class="text-xs text-gray-500 dark:text-slate-500 mt-2">Active: <span id="chatThreadsText">0 threads</span></div>
           </article>
         </div>
       </section>
 
       <!-- Recent items -->
-      <section class="bg-white border border-gray-200 rounded-2xl p-5 card">
-        <h2 class="text-xl font-semibold">Recent items (demo)</h2>
+      <section class="bg-glass dark:bg-darkglass border border-white/50 dark:border-white/10 rounded-2xl p-5 card">
+        <div class="flex items-center justify-between">
+          <h2 class="text-xl font-semibold">Recent items</h2>
+          <div class="text-xs text-gray-500 dark:text-slate-400">Demo data</div>
+        </div>
         <ul id="recentList" class="mt-3 grid gap-3 text-sm"></ul>
       </section>
     </div>
 
     <!-- Right column -->
     <aside class="grid gap-6">
-      <section class="bg-white border border-gray-200 rounded-2xl p-5 card">
+      <section class="bg-glass dark:bg-darkglass border border-white/50 dark:border-white/10 rounded-2xl p-5 card">
         <h3 class="text-lg font-semibold">Account</h3>
         <dl class="mt-3 text-sm">
-          <div class="flex justify-between py-1 border-b border-gray-100">
-            <dt class="text-gray-500">Email</dt>
+          <div class="flex justify-between py-2 border-b border-white/40 dark:border-white/10">
+            <dt class="text-gray-600 dark:text-slate-400">Email</dt>
             <dd id="email" class="font-medium">—</dd>
           </div>
-          <div class="flex justify-between py-1 border-b border-gray-100">
-            <dt class="text-gray-500">Member since</dt>
+          <div class="flex justify-between py-2 border-b border-white/40 dark:border-white/10">
+            <dt class="text-gray-600 dark:text-slate-400">Member since</dt>
             <dd id="memberSince" class="font-medium">—</dd>
           </div>
         </dl>
-        <button id="clearData" class="mt-4 text-xs underline">Clear local data</button>
+        <div class="mt-4 flex items-center gap-3">
+          <button id="clearData" class="text-xs underline">Clear local data</button>
+          <a href="/settings.html" class="text-xs text-cyan-600 dark:text-cyan-300 hover:underline">Account settings</a>
+        </div>
       </section>
 
-      <section class="bg-white border border-gray-200 rounded-2xl p-5 card">
+      <section class="bg-glass dark:bg-darkglass border border-white/50 dark:border-white/10 rounded-2xl p-5 card">
         <h3 class="text-lg font-semibold">What’s next?</h3>
-        <ul class="mt-2 list-disc ml-5 text-sm text-gray-700">
-          <li>Create a landed cost estimate in the <a class="text-cyanBright" href="/calculator.html">Calculator</a></li>
-          <li>Try <a class="text-cyanBright" href="/hs-finder.html">HS Finder</a> with a product description</li>
-          <li>Browse verified brokers in the <a class="text-cyanBright" href="/marketplace.html">Marketplace</a></li>
-          <li>Ask quick questions in <a class="text-cyanBright" href="/chat.html">Chat</a></li>
+        <ul class="mt-2 list-disc ml-5 text-sm text-gray-700 dark:text-slate-300">
+          <li>Create a landed cost estimate in the <a class="text-cyan-600 dark:text-cyan-300" href="/calculator.html">Calculator</a></li>
+          <li>Try <a class="text-cyan-600 dark:text-cyan-300" href="/hs-finder.html">HS Finder</a> with a product description</li>
+          <li>Browse verified brokers in the <a class="text-cyan-600 dark:text-cyan-300" href="/marketplace.html">Marketplace</a></li>
+          <li>Ask quick questions in <a class="text-cyan-600 dark:text-cyan-300" href="/chat.html">Chat</a></li>
         </ul>
       </section>
     </aside>
   </main>
 
-  <footer class="text-center text-xs text-gray-500 mt-10 mb-8">
+  <footer class="text-center text-xs text-gray-500 dark:text-slate-400 mt-10 mb-8">
     © <span id="year"></span> Ledgerdaddy
   </footer>
 
   <script>
+    // theme toggle (persist to localStorage)
+    (function(){
+      const key = 'ld_theme';
+      const apply = (m) => document.documentElement.classList.toggle('dark', m==='dark');
+      const init = localStorage.getItem(key) || (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark':'light');
+      apply(init);
+      document.getElementById('themeToggle').addEventListener('click', () => {
+        const now = document.documentElement.classList.contains('dark') ? 'light':'dark';
+        localStorage.setItem(key, now); apply(now);
+      });
+    })();
+
     document.getElementById('year').textContent = new Date().getFullYear();
 
     // Load session
@@ -214,9 +309,9 @@
       { t:'Chat • “Docs for EU furniture”', time:'1 week ago', link:'/chat.html' },
     ];
     document.getElementById('recentList').innerHTML = recent
-      .map(r => `<li class="border rounded-lg px-3 py-2 flex items-center justify-between">
-        <a class="hover:text-cyanBright" href="${r.link}">${r.t}</a>
-        <span class="text-gray-500">${r.time}</span></li>`).join('');
+      .map(r => `<li class="border border-slate-200/70 dark:border-white/10 rounded-lg px-3 py-2 flex items-center justify-between bg-white/70 dark:bg-white/5">
+        <a class="hover:text-cyan-600 dark:hover:text-cyan-300" href="${r.link}">${r.t}</a>
+        <span class="text-gray-500 dark:text-slate-400">${r.time}</span></li>`).join('');
 
     // Pull chat thread count from chat page storage (if exists)
     try{
