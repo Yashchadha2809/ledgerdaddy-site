@@ -74,10 +74,39 @@
             <option>AE</option><option>SG</option><option>AU</option><option>CA</option>
           </select>
         </label>
+
         <label class="grid gap-1 text-sm">
           <span class="font-medium">Product description</span>
           <textarea id="hsDesc" rows="6" class="border rounded-lg px-3 py-2" placeholder="Materials, function, main use, key specs… e.g. Wireless earbuds with mic, Bluetooth 5.3, lithium battery"></textarea>
         </label>
+
+        <!-- Image scanner (NEW) -->
+        <div class="mt-2 grid gap-2 text-sm">
+          <span class="font-medium">Upload product image (optional)</span>
+
+          <!-- Dropzone -->
+          <label id="imgDrop" class="card cursor-pointer border border-dashed rounded-xl p-4 grid place-items-center text-center bg-gray-50/60">
+            <input id="hsImage" type="file" accept="image/*" capture="environment" class="hidden" />
+            <div class="grid gap-2">
+              <div class="text-gray-500">
+                Drag & drop an image here, or <span class="underline">browse</span>
+              </div>
+              <div class="text-[11px] text-gray-500">JPG, PNG. Max ~5MB</div>
+            </div>
+          </label>
+
+          <!-- Preview row -->
+          <div id="imgPreviewWrap" class="hidden items-center gap-3">
+            <img id="imgPreview" alt="preview" class="h-16 w-16 rounded-lg object-cover border" />
+            <div class="text-xs text-gray-600 truncate" id="imgName"></div>
+            <button id="hsScan" type="button" class="ml-auto bg-cyanBright text-black px-3 py-1.5 rounded-lg disabled:opacity-60">Scan image</button>
+          </div>
+
+          <p class="text-xs text-gray-500">
+            Tip: Use clear, front-facing photos. We’ll try to extract hints (labels/OCR) and auto-fill your description.
+          </p>
+        </div>
+        <!-- /Image scanner -->
 
         <div class="grid md:grid-cols-2 gap-3">
           <label class="grid gap-1 text-sm">
@@ -206,6 +235,8 @@
       document.getElementById('hsDesc').value = '';
       document.getElementById('hsAttr').value = '';
       document.getElementById('hsSimilar').value = '';
+      // also reset image UI
+      resetImageState();
       resEl.innerHTML = '<div class="p-4 rounded-xl border border-dashed text-gray-500 bg-gray-50">Cleared. Enter a description to get suggestions.</div>';
     });
 
@@ -216,6 +247,143 @@
       document.body.appendChild(t);
       setTimeout(()=>t.remove(),1400);
     }
+
+    // --- Image upload + scan wiring ---
+    const imgInput = document.getElementById('hsImage');
+    const drop = document.getElementById('imgDrop');
+    const previewWrap = document.getElementById('imgPreviewWrap');
+    const previewImg = document.getElementById('imgPreview');
+    const imgNameEl = document.getElementById('imgName');
+    const scanBtn = document.getElementById('hsScan');
+    let selectedFile = null;
+
+    // Click-to-open file dialog
+    drop.addEventListener('click', () => imgInput.click());
+
+    // Drag & drop styling
+    ;['dragenter','dragover'].forEach(evt =>
+      drop.addEventListener(evt, e => {
+        e.preventDefault(); e.stopPropagation();
+        drop.classList.add('ring-2','ring-cyanBright/50','bg-white');
+      })
+    );
+    ;['dragleave','drop'].forEach(evt =>
+      drop.addEventListener(evt, e => {
+        e.preventDefault(); e.stopPropagation();
+        drop.classList.remove('ring-2','ring-cyanBright/50','bg-white');
+      })
+    );
+
+    drop.addEventListener('drop', e => {
+      const file = (e.dataTransfer && e.dataTransfer.files && e.dataTransfer.files[0]) || null;
+      handlePickedFile(file);
+    });
+
+    imgInput.addEventListener('change', e => {
+      handlePickedFile(e.target.files && e.target.files[0]);
+    });
+
+    function handlePickedFile(file){
+      if(!file) return;
+      if(!file.type.startsWith('image/')) { toast('Please choose an image'); return; }
+      if(file.size > 5 * 1024 * 1024){ toast('Image too large (>5MB)'); return; }
+
+      selectedFile = file;
+      const url = URL.createObjectURL(file);
+      previewImg.src = url;
+      imgNameEl.textContent = file.name;
+      previewWrap.classList.remove('hidden');
+      scanBtn.disabled = false;
+    }
+
+    scanBtn.addEventListener('click', async () => {
+      if(!selectedFile) return toast('No image selected');
+      scanBtn.disabled = true;
+      const oldText = scanBtn.textContent;
+      scanBtn.textContent = 'Scanning…';
+      previewImg.classList.add('opacity-60');
+
+      try {
+        const {desc, attributes, similar, guessed} = await scanImage(selectedFile);
+
+        // Auto-fill text fields with what we found
+        const descEl = document.getElementById('hsDesc');
+        const attrEl = document.getElementById('hsAttr');
+        const simEl  = document.getElementById('hsSimilar');
+
+        const mergedDesc = [descEl.value.trim(), desc].filter(Boolean).join(' ');
+        if(mergedDesc) descEl.value = mergedDesc;
+        if(attributes) attrEl.value = attributes;
+        if(similar)    simEl.value = similar;
+
+        // Trigger suggestions using whatever we inferred
+        document.getElementById('hsRun').click();
+
+        toast(guessed ? 'Scanned (demo guess)' : 'Scanned successfully');
+      } catch(err){
+        console.error(err);
+        toast('Scan failed');
+      } finally {
+        scanBtn.textContent = oldText;
+        scanBtn.disabled = false;
+        previewImg.classList.remove('opacity-60');
+      }
+    });
+
+    async function scanImage(file){
+      const base64 = await fileToBase64(file);
+
+      // Try backend vision endpoint first
+      try{
+        const country = document.getElementById('hsCountry').value || 'IN';
+        const resp = await fetch('/api/hs-scan', {
+          method: 'POST',
+          headers: {'Content-Type':'application/json'},
+          body: JSON.stringify({ image_base64: base64, country })
+        });
+
+        if(resp.ok){
+          const data = await resp.json();
+          return {
+            desc: (data.desc || '').trim(),
+            attributes: (data.attributes || '').trim(),
+            similar: (data.similar || '').trim(),
+            guessed: false
+          };
+        }
+      } catch(e){
+        console.warn('Backend scan unavailable, using demo fallback', e);
+      }
+
+      // Fallback demo: guess from filename
+      const name = (file.name || '').toLowerCase();
+      let desc = '';
+      if(/earbud|headphone|tws/.test(name)) desc = 'Wireless earbuds with mic, Bluetooth, lithium battery';
+      else if(/router|wifi|wi-?fi/.test(name)) desc = 'Wi-Fi router with ethernet ports and antennas';
+      else if(/phone|smartphone|iphone|android/.test(name)) desc = 'Smartphone with touchscreen, 5G, lithium battery';
+      else desc = 'General electronic device; plastic/metal housing; consumer product';
+
+      return { desc, attributes:'auto-scanned from image (demo)', similar:'', guessed:true };
+    }
+
+    function fileToBase64(file){
+      return new Promise((resolve,reject)=>{
+        const reader = new FileReader();
+        reader.onload = () => resolve(String(reader.result).split(',')[1]); // remove data URL prefix
+        reader.onerror = reject;
+        reader.readAsDataURL(file);
+      });
+    }
+
+    function resetImageState(){
+      selectedFile = null;
+      const input = document.getElementById('hsImage');
+      input.value = '';
+      document.getElementById('imgPreview').src = '';
+      document.getElementById('imgName').textContent = '';
+      document.getElementById('imgPreviewWrap').classList.add('hidden');
+    }
+    // --- end image upload + scan wiring ---
   </script>
 </body>
 </html>
