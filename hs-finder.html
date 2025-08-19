@@ -1,8 +1,8 @@
 <!DOCTYPE html>
-<html lang="en" class="scroll-smooth">
+<html lang="en" class="scroll-smooth h-full">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
   <title>HS Finder – Ledgerdaddy</title>
   <meta name="theme-color" content="#1A237E" />
   <link rel="preconnect" href="https://images.unsplash.com" />
@@ -12,18 +12,30 @@
       theme: {
         extend: {
           colors:{ indigoDeep:"#1A237E", emerald:"#2E7D32", cyanBright:"#00BCD4", accentOrange:"#FF7043" },
-          boxShadow:{ lift:"0 14px 34px rgba(0,0,0,.12)" }
+          boxShadow:{ lift:"0 16px 40px rgba(2,6,23,.12)" },
+          borderRadius:{ xl2:"16px" }
         }
       }
     }
   </script>
   <style>
     .card{transition:transform .12s ease, box-shadow .2s ease}
-    .card:hover{transform:translateY(-2px); box-shadow:0 14px 34px rgba(0,0,0,.14)}
+    .card:hover{transform:translateY(-2px); box-shadow:0 16px 40px rgba(2,6,23,.14)}
     .hero-img{background:url('https://images.unsplash.com/photo-1586521995568-39ef16c6934d?q=80&w=1920&auto=format&fit=crop') center/cover no-repeat;}
+    .input:focus{outline:none; box-shadow:0 0 0 3px rgba(0,188,212,.25)}
+    .badge{font-size:12px;padding:.25rem .5rem;border:1px solid rgba(0,188,212,.35);border-radius:999px;background:#fff}
+    .hint{font-size:12px}
+    .fade-in{animation:fade .14s ease-out}
+    @keyframes fade{from{opacity:.5;transform:translateY(2px)}to{opacity:1;transform:none}}
+    .progress{height:6px;border-radius:999px;background:linear-gradient(90deg,#00BCD4,var(--end,#2E7D32))}
+    .drop-okay{outline:2px dashed #00BCD4; outline-offset:4px}
+    .sr-only-focusable:focus{position:static;width:auto;height:auto;clip:auto;clip-path:none;padding:.25rem .5rem;border-radius:6px;background:#ECFEFF}
   </style>
 </head>
-<body class="bg-gray-50 text-gray-900">
+<body class="bg-gray-50 text-gray-900 h-full">
+
+  <!-- Skip link -->
+  <a href="#hsForm" class="sr-only sr-only-focusable absolute left-2 top-2 -translate-y-12 focus:translate-y-0">Skip to finder form</a>
 
   <!-- Topbar -->
   <header class="fixed top-0 inset-x-0 z-50 border-b border-gray-200 bg-white/90 backdrop-blur">
@@ -33,7 +45,8 @@
         <span class="text-xl font-bold text-indigoDeep">Ledgerdaddy</span>
         <span class="ml-2 hidden sm:inline-flex text-[11px] px-2 py-0.5 rounded-full border border-cyanBright/40 text-cyanBright">AI Customs</span>
       </a>
-      <nav class="hidden md:flex items-center gap-6 text-sm font-medium">
+      <button id="navToggle" class="md:hidden border px-3 py-1.5 rounded-lg" aria-expanded="false" aria-controls="mainNav">Menu</button>
+      <nav id="mainNav" class="hidden md:flex items-center gap-6 text-sm font-medium">
         <a href="/marketplace.html" class="hover:text-cyanBright">Marketplace</a>
         <a href="/calculator.html" class="hover:text-cyanBright">Calculator</a>
         <a href="/hs-finder.html" class="text-cyanBright">HS Finder</a>
@@ -43,52 +56,78 @@
         <a href="/log-in.html" class="border px-4 py-2 rounded-lg">Log in</a>
         <a href="/personal-sign-up.html" class="bg-emerald text-white px-4 py-2 rounded-lg hover:opacity-95">Sign up</a>
       </div>
-      <a href="/personal-sign-up.html" class="md:hidden bg-emerald text-white px-3 py-1.5 rounded-lg">Start</a>
+    </div>
+    <!-- Mobile sheet -->
+    <div id="mobileSheet" class="md:hidden hidden border-t border-gray-200 bg-white">
+      <div class="max-w-7xl mx-auto px-4 py-3 grid gap-2 text-sm">
+        <a href="/marketplace.html" class="px-2 py-2 rounded hover:bg-gray-50">Marketplace</a>
+        <a href="/calculator.html" class="px-2 py-2 rounded hover:bg-gray-50">Calculator</a>
+        <a href="/hs-finder.html" class="px-2 py-2 rounded bg-gray-50">HS Finder</a>
+        <a href="/dashboard.html" class="px-2 py-2 rounded hover:bg-gray-50">Dashboard</a>
+        <div class="pt-2 flex items-center gap-2">
+          <a href="/log-in.html" class="border px-3 py-1.5 rounded-lg">Log in</a>
+          <a href="/personal-sign-up.html" class="bg-emerald text-white px-3 py-1.5 rounded-lg">Sign up</a>
+        </div>
+      </div>
     </div>
   </header>
 
   <!-- Hero -->
   <section class="pt-24 md:pt-28">
     <div class="hero-img">
-      <div class="backdrop-brightness-90 bg-gradient-to-r from-indigoDeep/70 to-cyanBright/60">
-        <div class="max-w-4xl mx-auto px-4 py-12 text-white">
-          <h1 class="text-4xl md:text-5xl font-extrabold leading-tight">HS / HSN Finder</h1>
-          <p class="mt-3 text-white/95">Describe your product. Get suggested HS codes with confidence. Send one click to the calculator.</p>
+      <div class="backdrop-brightness-95 bg-gradient-to-r from-indigoDeep/70 to-cyanBright/60">
+        <div class="max-w-6xl mx-auto px-4 py-10 text-white">
+          <h1 class="text-3xl md:text-5xl font-extrabold leading-tight">HS / HSN Finder</h1>
+          <p class="mt-2 md:mt-3 text-white/95">Describe your product. Get suggested HS codes with confidence. Send in one click to the calculator.</p>
+          <div class="mt-4 flex flex-wrap gap-2">
+            <span id="chipCountry" class="badge text-indigoDeep">Country: IN</span>
+            <span id="chipLen" class="badge text-indigoDeep">Desc length: 0</span>
+            <button id="resetAll" class="badge border-none bg-accentOrange text-white hover:opacity-95">Reset</button>
+          </div>
         </div>
       </div>
     </div>
   </section>
 
   <!-- Finder -->
-  <main class="max-w-6xl mx-auto px-4 -mt-10 pb-16 grid md:grid-cols-2 gap-6">
+  <main class="max-w-6xl mx-auto px-2 sm:px-4 -mt-8 md:-mt-10 pb-16 grid lg:grid-cols-[1.05fr,0.95fr] gap-4 md:gap-6">
     <!-- Left: form -->
-    <section class="bg-white border border-gray-200 rounded-2xl shadow p-6 md:p-8">
+    <section class="bg-white border border-gray-200 rounded-2xl shadow p-4 sm:p-6 md:p-8 card">
       <h2 class="text-xl font-semibold">Describe your product</h2>
-      <form id="hsForm" class="mt-4 grid gap-3">
-        <label class="grid gap-1 text-sm">
-          <span class="font-medium">Country</span>
-          <select id="hsCountry" class="border rounded-lg px-3 py-2">
-            <option>IN</option><option>US</option><option>EU</option><option>UK</option>
-            <option>AE</option><option>SG</option><option>AU</option><option>CA</option>
-          </select>
-        </label>
+      <form id="hsForm" class="mt-4 grid gap-4">
+        <div class="grid sm:grid-cols-3 gap-3">
+          <label class="grid gap-1 text-sm">
+            <span class="font-medium">Country</span>
+            <select id="hsCountry" class="input border rounded-lg px-3 py-2">
+              <option>IN</option><option>US</option><option>EU</option><option>UK</option>
+              <option>AE</option><option>SG</option><option>AU</option><option>CA</option>
+            </select>
+            <span class="hint text-gray-500">Impacts duty/VAT later.</span>
+          </label>
 
-        <label class="grid gap-1 text-sm">
-          <span class="font-medium">Product description</span>
-          <textarea id="hsDesc" rows="6" class="border rounded-lg px-3 py-2" placeholder="Materials, function, main use, key specs… e.g. Wireless earbuds with mic, Bluetooth 5.3, lithium battery"></textarea>
-        </label>
+          <label class="grid gap-1 text-sm sm:col-span-2">
+            <span class="font-medium">Product description</span>
+            <textarea id="hsDesc" rows="5" class="input border rounded-lg px-3 py-2" placeholder="Materials, function, main use, key specs… e.g. Wireless earbuds with mic, Bluetooth 5.3, lithium battery"></textarea>
+            <div class="flex justify-between text-gray-500">
+              <span class="hint">Be specific. Mention materials, power, size, battery, connectivity, use.</span>
+              <span id="descCount" class="hint">0 chars</span>
+            </div>
+          </label>
+        </div>
 
-        <!-- Image scanner (VISIBLE) -->
-        <div class="mt-2 grid gap-2 text-sm">
-          <span class="font-medium">Upload product image (optional)</span>
+        <!-- Image scanner -->
+        <div class="grid gap-2 text-sm">
+          <div class="flex items-center justify-between">
+            <span class="font-medium">Upload product image (optional)</span>
+            <span class="text-[11px] text-gray-500">Helps auto-fill your description</span>
+          </div>
 
-          <!-- Dropzone (click to browse or drag & drop) -->
-          <label id="imgDrop" class="card cursor-pointer border border-dashed rounded-xl p-4 grid place-items-center text-center bg-gray-50/60">
+          <!-- Dropzone -->
+          <label id="imgDrop" class="cursor-pointer border border-dashed rounded-xl2 p-4 grid place-items-center text-center bg-gray-50/60">
             <input id="hsImage" type="file" accept="image/*" capture="environment" class="hidden" />
             <div class="grid gap-1">
-              <div class="text-gray-700 font-medium">Upload image</div>
-              <div class="text-gray-500">Drag & drop here, or <span class="underline">click to browse</span></div>
-              <div class="text-[11px] text-gray-500">JPG/PNG up to 5 MB</div>
+              <div class="text-gray-700 font-medium">Drop an image or click to browse</div>
+              <div class="text-gray-500">JPG/PNG up to 5 MB</div>
             </div>
           </label>
 
@@ -98,36 +137,49 @@
             <div class="text-xs text-gray-600 truncate" id="imgName"></div>
             <button id="hsScan" type="button" class="ml-auto bg-cyanBright text-black px-3 py-1.5 rounded-lg disabled:opacity-60">Scan image</button>
           </div>
-
-          <p class="text-xs text-gray-500">
-            Tip: Use clear front photos. We’ll try to extract text/labels and auto-fill the description.
-          </p>
         </div>
-        <!-- /Image scanner -->
 
+        <!-- Optional fields -->
         <div class="grid md:grid-cols-2 gap-3">
           <label class="grid gap-1 text-sm">
             <span class="font-medium">Key attributes (optional)</span>
-            <input id="hsAttr" class="border rounded-lg px-3 py-2" placeholder="e.g., lithium-ion battery, plastic body" />
+            <input id="hsAttr" class="input border rounded-lg px-3 py-2" placeholder="e.g., lithium-ion battery, plastic body" />
           </label>
           <label class="grid gap-1 text-sm">
             <span class="font-medium">Similar product (optional)</span>
-            <input id="hsSimilar" class="border rounded-lg px-3 py-2" placeholder="e.g., AirPods Pro" />
+            <input id="hsSimilar" class="input border rounded-lg px-3 py-2" placeholder="e.g., AirPods Pro" />
           </label>
         </div>
 
-        <div class="flex gap-3 pt-2">
+        <!-- Actions -->
+        <div class="flex flex-wrap items-center gap-3 pt-2">
           <button id="hsRun" class="bg-emerald text-white px-4 py-2 rounded-lg">Find HS codes</button>
           <button id="hsReset" type="button" class="border px-4 py-2 rounded-lg">Reset</button>
+          <span class="text-xs text-gray-600">These are demo suggestions. Confirm with your customs broker.</span>
         </div>
-        <p class="text-xs text-gray-500">These are demo suggestions. Always confirm with your customs broker.</p>
       </form>
     </section>
 
     <!-- Right: results -->
-    <section class="grid gap-3" id="hsResults" aria-live="polite">
-      <div class="p-4 rounded-xl border border-dashed text-gray-500 bg-gray-50">
-        No results yet — describe your product and click “Find HS codes”.
+    <section class="grid gap-4 content-start">
+      <!-- Sticky helper -->
+      <div class="rounded-2xl border border-gray-200 bg-white p-4 md:sticky md:top-28">
+        <div class="flex items-center justify-between">
+          <strong>Results</strong>
+          <div class="text-xs text-gray-500">Sorted by confidence</div>
+        </div>
+        <div class="mt-2 grid grid-cols-2 gap-2 text-xs">
+          <button data-filter="all" class="filter-btn badge">All</button>
+          <button data-filter="high" class="filter-btn badge">High (&ge; 75%)</button>
+          <button data-filter="mid" class="filter-btn badge">Medium (50–74%)</button>
+          <button data-filter="low" class="filter-btn badge">Low (&lt; 50%)</button>
+        </div>
+      </div>
+
+      <div id="hsResults" class="grid gap-3" aria-live="polite">
+        <div class="p-4 rounded-xl border border-dashed text-gray-500 bg-gray-50">
+          No results yet — describe your product and click “Find HS codes”.
+        </div>
       </div>
     </section>
   </main>
@@ -138,51 +190,75 @@
   </footer>
 
   <script>
-    // Footer year
+    // Year + mobile menu
     document.getElementById('year').textContent = new Date().getFullYear();
+    const navToggle = document.getElementById('navToggle');
+    const mobileSheet = document.getElementById('mobileSheet');
+    navToggle?.addEventListener('click', ()=>{
+      const open = mobileSheet.classList.toggle('hidden') ? false : true;
+      navToggle.setAttribute('aria-expanded', String(open));
+    });
 
-    // -------- Demo HS suggestion generator --------
+    // Helpers
+    const $ = s=>document.querySelector(s);
+    const $$ = s=>Array.from(document.querySelectorAll(s));
+    function toast(msg){
+      const t=document.createElement('div');
+      t.textContent=msg;
+      t.className='fixed bottom-6 right-6 bg-gray-900 text-white text-sm px-3 py-2 rounded-lg shadow';
+      document.body.appendChild(t);
+      setTimeout(()=>t.remove(),1500);
+    }
+
+    // Demo HS suggestion generator
     function fakeHsSuggest(desc){
       const d = desc.toLowerCase();
       if(d.includes('earbud') || d.includes('headphone') || d.includes('tws')){
         return [
-          {code:'851830', title:'Headphones & Earphones', conf:0.82, examples:['TWS earbuds','Wired headset']},
-          {code:'851762', title:'Communication equipment', conf:0.63, examples:['BT module','Wi-Fi adapter']},
-          {code:'392690', title:'Plastics articles (parts)', conf:0.38, examples:['Plastic housing']}
+          {code:'851830', title:'Headphones & Earphones', conf:0.86, examples:['TWS earbuds','Wired headset']},
+          {code:'851762', title:'Communication equipment', conf:0.62, examples:['BT module','Wi-Fi adapter']},
+          {code:'392690', title:'Plastics articles (parts)', conf:0.41, examples:['Plastic housing']}
         ];
       }
       if(d.includes('phone') || d.includes('smartphone')){
         return [
-          {code:'851713', title:'Smartphones', conf:0.88, examples:['Android phone','iPhone']},
-          {code:'851762', title:'Communication equipment', conf:0.66, examples:['Cellular modules']},
-          {code:'850760', title:'Lithium-ion batteries', conf:0.44, examples:['Rechargeable cell']}
+          {code:'851713', title:'Smartphones', conf:0.90, examples:['Android phone','iPhone']},
+          {code:'851762', title:'Communication equipment', conf:0.58, examples:['Cellular modules']},
+          {code:'850760', title:'Lithium-ion batteries', conf:0.45, examples:['Rechargeable cell']}
         ];
       }
-      if(d.includes('router') || d.includes('wifi') || d.includes('wi-fi')){
+      if(/router|wifi|wi-?fi|access point/.test(d)){
         return [
-          {code:'851762', title:'Data/communication equipment', conf:0.86, examples:['Wi-Fi router','LTE CPE']},
-          {code:'851769', title:'Other telephony apparatus', conf:0.47, examples:['Adapters, parts']},
-          {code:'847330', title:'Parts for computers', conf:0.31, examples:['Network card']}
+          {code:'851762', title:'Data/communication equipment', conf:0.88, examples:['Wi-Fi router','LTE CPE']},
+          {code:'851769', title:'Other telephony apparatus', conf:0.53, examples:['Adapters, parts']},
+          {code:'847330', title:'Parts for computers', conf:0.34, examples:['Network card']}
         ];
       }
       return [
-        {code:'847989', title:'Machines & mechanical appliances (other)', conf:0.52, examples:['General machinery']},
-        {code:'902780', title:'Instruments for physical analysis', conf:0.41, examples:['Test meter']},
-        {code:'903180', title:'Measuring/checking instruments', conf:0.36, examples:['Sensor module']}
+        {code:'847989', title:'Machines & mechanical appliances (other)', conf:0.56, examples:['General machinery']},
+        {code:'902780', title:'Instruments for physical analysis', conf:0.44, examples:['Test meter']},
+        {code:'903180', title:'Measuring/checking instruments', conf:0.33, examples:['Sensor module']}
       ];
     }
 
+    // Result card
     function resultCard(r, country){
       const conf = Math.round(r.conf * 100);
       const calcUrl = `/calculator.html?hs=${encodeURIComponent(r.code)}&country=${encodeURIComponent(country||'IN')}`;
+      const band = conf >= 75 ? {cls:'border-emerald text-emerald', end:'#2E7D32'} :
+                   conf >= 50 ? {cls:'border-yellow-500 text-yellow-600', end:'#F59E0B'} :
+                                {cls:'border-gray-300 text-gray-500', end:'#94a3b8'};
       return `
-        <article class="p-4 border rounded-xl bg-white">
-          <div class="flex items-center justify-between gap-3">
-            <div>
-              <div class="text-lg font-semibold">${r.code} — ${r.title}</div>
-              <div class="text-xs text-gray-500">Examples: ${r.examples.join(', ')}</div>
+        <article class="p-4 border rounded-xl bg-white fade-in">
+          <div class="flex items-start justify-between gap-3">
+            <div class="min-w-0">
+              <div class="text-lg font-semibold truncate">${r.code} — ${r.title}</div>
+              <div class="text-xs text-gray-500 truncate">Examples: ${r.examples.join(', ')}</div>
             </div>
-            <div class="text-xs px-2 py-0.5 rounded-full border ${conf>=75?'border-emerald text-emerald':conf>=50?'border-yellow-500 text-yellow-600':'border-gray-300 text-gray-500'}">${conf}%</div>
+            <div class="text-xs px-2 py-0.5 rounded-full border ${band.cls} shrink-0">${conf}%</div>
+          </div>
+          <div class="mt-2 bg-gray-100 rounded-full overflow-hidden">
+            <div class="progress" style="--end:${band.end}; width:${conf}%"></div>
           </div>
           <div class="mt-3 flex flex-wrap gap-2">
             <button class="copy-btn border px-3 py-1 rounded-lg text-sm" data-code="${r.code}">Copy code</button>
@@ -193,21 +269,58 @@
       `;
     }
 
-    const resEl = document.getElementById('hsResults');
+    // Elements
+    const resEl = $('#hsResults');
+    const descEl = $('#hsDesc');
+    const attrEl = $('#hsAttr');
+    const simEl  = $('#hsSimilar');
+    const countryEl = $('#hsCountry');
+    const chipCountry = $('#chipCountry');
+    const chipLen = $('#chipLen');
+    const descCount = $('#descCount');
+
+    function updateChips(){
+      chipCountry.textContent = 'Country: ' + (countryEl.value || 'IN');
+      const len = (descEl.value||'').length;
+      chipLen.textContent = 'Desc length: ' + len;
+      descCount.textContent = len + ' chars';
+    }
+    countryEl.addEventListener('change', updateChips);
+    descEl.addEventListener('input', updateChips);
+
+    // Run suggestions
     document.getElementById('hsRun').addEventListener('click', function(e){
       e.preventDefault();
-      const desc = document.getElementById('hsDesc').value.trim();
-      const attr = document.getElementById('hsAttr').value.trim();
-      const similar = document.getElementById('hsSimilar').value.trim();
-      const country = document.getElementById('hsCountry').value;
+      const desc = descEl.value.trim();
+      const attr = attrEl.value.trim();
+      const similar = simEl.value.trim();
+      const country = countryEl.value;
 
       if(!desc){ alert('Please describe your product'); return; }
 
-      const query = [desc, attr, similar].filter(Boolean).join(' ');
-      const suggestions = fakeHsSuggest(query);
+      // Skeleton while "loading"
+      resEl.innerHTML = `
+        <div class="p-4 rounded-xl border bg-white">
+          <div class="animate-pulse grid gap-2">
+            <div class="h-4 bg-gray-200 rounded w-1/3"></div>
+            <div class="h-3 bg-gray-200 rounded w-2/3"></div>
+            <div class="h-3 bg-gray-200 rounded w-1/2"></div>
+          </div>
+        </div>`;
 
-      resEl.innerHTML = suggestions.map(r => resultCard(r, country)).join('');
+      setTimeout(()=>{
+        const query = [desc, attr, similar].filter(Boolean).join(' ');
+        const suggestions = fakeHsSuggest(query).sort((a,b)=>b.conf-a.conf);
+        renderResults(suggestions, country);
+      }, 300);
+    });
 
+    function renderResults(list, country){
+      resEl.innerHTML = list.map(r => resultCard(r, country)).join('') || `
+        <div class="p-4 rounded-xl border border-dashed text-gray-500 bg-gray-50">
+          No matches. Try adding materials, function and key specs.
+        </div>`;
+      // copy
       resEl.querySelectorAll('.copy-btn').forEach(btn=>{
         btn.addEventListener('click', async ()=>{
           const code = btn.getAttribute('data-code');
@@ -215,25 +328,34 @@
           catch{ toast('Copy failed'); }
         });
       });
-    });
-
-    document.getElementById('hsReset').addEventListener('click', ()=>{
-      document.getElementById('hsDesc').value = '';
-      document.getElementById('hsAttr').value = '';
-      document.getElementById('hsSimilar').value = '';
-      resetImageState();
-      resEl.innerHTML = '<div class="p-4 rounded-xl border border-dashed text-gray-500 bg-gray-50">Cleared. Enter a description to get suggestions.</div>';
-    });
-
-    function toast(msg){
-      const t=document.createElement('div');
-      t.textContent=msg;
-      t.className='fixed bottom-6 right-6 bg-gray-900 text-white text-sm px-3 py-2 rounded-lg shadow';
-      document.body.appendChild(t);
-      setTimeout(()=>t.remove(),1400);
+      // filter buttons
+      $$('.filter-btn').forEach(b=>{
+        b.onclick = ()=>{
+          const f = b.getAttribute('data-filter');
+          const items = fakeHsSuggest([descEl.value, attrEl.value, simEl.value].filter(Boolean).join(' ')).sort((a,b)=>b.conf-a.conf);
+          let filtered = items;
+          if(f==='high') filtered = items.filter(x=>x.conf>=0.75);
+          else if(f==='mid') filtered = items.filter(x=>x.conf>=0.50 && x.conf<0.75);
+          else if(f==='low') filtered = items.filter(x=>x.conf<0.50);
+          renderResults(filtered, countryEl.value);
+        };
+      });
     }
 
-    // -------- Image upload + scan wiring --------
+    // Reset
+    function clearForm(){
+      descEl.value = '';
+      attrEl.value = '';
+      simEl.value = '';
+      countryEl.value = 'IN';
+      updateChips();
+      resetImageState();
+      resEl.innerHTML = '<div class="p-4 rounded-xl border border-dashed text-gray-500 bg-gray-50">Cleared. Enter a description to get suggestions.</div>';
+    }
+    document.getElementById('hsReset').addEventListener('click', clearForm);
+    document.getElementById('resetAll').addEventListener('click', clearForm);
+
+    // Image upload + scan
     const imgInput = document.getElementById('hsImage');
     const drop = document.getElementById('imgDrop');
     const previewWrap = document.getElementById('imgPreviewWrap');
@@ -242,36 +364,25 @@
     const scanBtn = document.getElementById('hsScan');
     let selectedFile = null;
 
-    // Guard: only wire if the elements exist
     if (imgInput && drop && previewWrap && previewImg && imgNameEl && scanBtn) {
-
-      // Click -> open file dialog
       drop.addEventListener('click', () => imgInput.click());
 
-      // Drag & drop styling
-      ;['dragenter','dragover'].forEach(evt =>
-        drop.addEventListener(evt, e => { e.preventDefault(); e.stopPropagation();
-          drop.classList.add('ring-2','ring-cyanBright/50','bg-white'); })
+      ['dragenter','dragover'].forEach(evt =>
+        drop.addEventListener(evt, e => { e.preventDefault(); e.stopPropagation(); drop.classList.add('drop-okay'); })
       );
-      ;['dragleave','drop'].forEach(evt =>
-        drop.addEventListener(evt, e => { e.preventDefault(); e.stopPropagation();
-          drop.classList.remove('ring-2','ring-cyanBright/50','bg-white'); })
+      ['dragleave','drop'].forEach(evt =>
+        drop.addEventListener(evt, e => { e.preventDefault(); e.stopPropagation(); drop.classList.remove('drop-okay'); })
       );
-
       drop.addEventListener('drop', e => {
-        const file = (e.dataTransfer && e.dataTransfer.files && e.dataTransfer.files[0]) || null;
+        const file = (e.dataTransfer?.files?.[0]) || null;
         handlePickedFile(file);
       });
-
-      imgInput.addEventListener('change', e => {
-        handlePickedFile(e.target.files && e.target.files[0]);
-      });
+      imgInput.addEventListener('change', e => handlePickedFile(e.target.files?.[0]));
 
       function handlePickedFile(file){
         if(!file) return;
         if(!file.type.startsWith('image/')) { toast('Please choose an image'); return; }
         if(file.size > 5 * 1024 * 1024){ toast('Image too large (>5MB)'); return; }
-
         selectedFile = file;
         const url = URL.createObjectURL(file);
         previewImg.src = url;
@@ -289,19 +400,12 @@
 
         try {
           const {desc, attributes, similar, guessed} = await scanImage(selectedFile);
-
-          const descEl = document.getElementById('hsDesc');
-          const attrEl = document.getElementById('hsAttr');
-          const simEl  = document.getElementById('hsSimilar');
-
           const mergedDesc = [descEl.value.trim(), desc].filter(Boolean).join(' ');
           if(mergedDesc) descEl.value = mergedDesc;
           if(attributes) attrEl.value = attributes;
           if(similar)    simEl.value = similar;
-
-          // Auto-run suggestions
+          updateChips();
           document.getElementById('hsRun').click();
-
           toast(guessed ? 'Scanned (demo guess)' : 'Scanned successfully');
         } catch(err){
           console.error(err);
@@ -312,16 +416,12 @@
           previewImg.classList.remove('opacity-60');
         }
       });
-    } else {
-      console.warn('Image UI elements not found — upload/scan disabled.');
     }
 
     async function scanImage(file){
       const base64 = await fileToBase64(file);
-
-      // Try backend endpoint first (optional)
       try{
-        const country = document.getElementById('hsCountry').value || 'IN';
+        const country = countryEl.value || 'IN';
         const resp = await fetch('/api/hs-scan', {
           method: 'POST',
           headers: {'Content-Type':'application/json'},
@@ -339,15 +439,13 @@
       } catch(e){
         console.warn('Backend scan unavailable, using demo fallback', e);
       }
-
-      // Fallback demo guess (based on filename)
+      // Fallback demo guess
       const name = (file.name || '').toLowerCase();
       let desc = '';
       if(/earbud|headphone|tws/.test(name)) desc = 'Wireless earbuds with mic, Bluetooth, lithium battery';
       else if(/router|wifi|wi-?fi/.test(name)) desc = 'Wi-Fi router with ethernet ports and antennas';
       else if(/phone|smartphone|iphone|android/.test(name)) desc = 'Smartphone with touchscreen, 5G, lithium battery';
       else desc = 'General electronic device; plastic/metal housing; consumer product';
-
       return { desc, attributes:'auto-scanned from image (demo)', similar:'', guessed:true };
     }
 
@@ -361,17 +459,15 @@
     }
 
     function resetImageState(){
-      const input = document.getElementById('hsImage');
-      if(input) input.value = '';
-      const wrap = document.getElementById('imgPreviewWrap');
-      if(wrap) wrap.classList.add('hidden');
-      const img = document.getElementById('imgPreview');
-      if(img) img.src = '';
-      const name = document.getElementById('imgName');
-      if(name) name.textContent = '';
+      if (imgInput) imgInput.value = '';
+      previewWrap?.classList.add('hidden');
+      if (previewImg) previewImg.src = '';
+      if (imgNameEl) imgNameEl.textContent = '';
       selectedFile = null;
     }
-    // -------- end image wiring --------
+
+    // Init chips
+    updateChips();
   </script>
 </body>
 </html>
