@@ -1,9 +1,10 @@
 <!DOCTYPE html>
-<html lang="en" class="scroll-smooth h-full">
+<html lang="en" class="h-full">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
-  <title>HS Finder – Ledgerdaddy</title>
+  <meta name="viewport"
+        content="width=device-width, initial-scale=1, maximum-scale=1, viewport-fit=cover" />
+  <title>HS Finder – Ledgerdaddy (Mobile-first)</title>
   <meta name="theme-color" content="#1A237E" />
   <link rel="preconnect" href="https://images.unsplash.com" />
   <script src="https://cdn.tailwindcss.com"></script>
@@ -13,12 +14,14 @@
         extend: {
           colors:{ indigoDeep:"#1A237E", emerald:"#2E7D32", cyanBright:"#00BCD4", accentOrange:"#FF7043" },
           boxShadow:{ lift:"0 16px 40px rgba(2,6,23,.12)" },
-          borderRadius:{ xl2:"16px" }
+          borderRadius:{ xl2:"16px" },
+          spacing:{ safe:"env(safe-area-inset-bottom)" }
         }
       }
     }
   </script>
   <style>
+    /* micro-interactions + mobile tweaks */
     .card{transition:transform .12s ease, box-shadow .2s ease}
     .card:hover{transform:translateY(-2px); box-shadow:0 16px 40px rgba(2,6,23,.14)}
     .hero-img{background:url('https://images.unsplash.com/photo-1586521995568-39ef16c6934d?q=80&w=1920&auto=format&fit=crop') center/cover no-repeat;}
@@ -30,36 +33,41 @@
     .progress{height:6px;border-radius:999px;background:linear-gradient(90deg,#00BCD4,var(--end,#2E7D32))}
     .drop-okay{outline:2px dashed #00BCD4; outline-offset:4px}
     .sr-only-focusable:focus{position:static;width:auto;height:auto;clip:auto;clip-path:none;padding:.25rem .5rem;border-radius:6px;background:#ECFEFF}
+    /* Improve tap targets on mobile */
+    .tappable{min-height:44px; min-width:44px}
   </style>
 </head>
 <body class="bg-gray-50 text-gray-900 h-full">
 
   <!-- Skip link -->
-  <a href="#hsForm" class="sr-only sr-only-focusable absolute left-2 top-2 -translate-y-12 focus:translate-y-0">Skip to finder form</a>
+  <a href="#hsForm"
+     class="sr-only sr-only-focusable absolute left-2 top-2 -translate-y-12 focus:translate-y-0">
+     Skip to finder form
+  </a>
 
-  <!-- Topbar -->
+  <!-- Topbar (mobile-first) -->
   <header class="fixed top-0 inset-x-0 z-50 border-b border-gray-200 bg-white/90 backdrop-blur">
-    <div class="max-w-7xl mx-auto px-4 py-3 flex items-center justify-between">
+    <div class="max-w-7xl mx-auto px-3 sm:px-4 py-2.5 flex items-center justify-between">
       <a href="/" class="flex items-center gap-2" aria-label="Home">
         <span class="grid h-9 w-9 place-items-center rounded-xl bg-gradient-to-tr from-cyanBright to-emerald text-white font-extrabold shadow">◆</span>
-        <span class="text-xl font-bold text-indigoDeep">Ledgerdaddy</span>
-        <span class="ml-2 hidden sm:inline-flex text-[11px] px-2 py-0.5 rounded-full border border-cyanBright/40 text-cyanBright">AI Customs</span>
+        <span class="text-lg sm:text-xl font-bold text-indigoDeep">Ledgerdaddy</span>
       </a>
-      <button id="navToggle" class="md:hidden border px-3 py-1.5 rounded-lg" aria-expanded="false" aria-controls="mainNav">Menu</button>
-      <nav id="mainNav" class="hidden md:flex items-center gap-6 text-sm font-medium">
-        <a href="/marketplace.html" class="hover:text-cyanBright">Marketplace</a>
-        <a href="/calculator.html" class="hover:text-cyanBright">Calculator</a>
-        <a href="/hs-finder.html" class="text-cyanBright">HS Finder</a>
-        <a href="/dashboard.html" class="hover:text-cyanBright">Dashboard</a>
-      </nav>
-      <div class="hidden md:flex items-center gap-2">
-        <a href="/log-in.html" class="border px-4 py-2 rounded-lg">Log in</a>
-        <a href="/personal-sign-up.html" class="bg-emerald text-white px-4 py-2 rounded-lg hover:opacity-95">Sign up</a>
+
+      <!-- Mobile actions -->
+      <div class="flex items-center gap-2">
+        <a href="/personal-sign-up.html"
+           class="hidden sm:inline-block bg-emerald text-white px-3 py-1.5 rounded-lg hover:opacity-95">
+          Sign up
+        </a>
+        <button id="navToggle"
+                class="tappable md:hidden border px-3 py-1.5 rounded-lg"
+                aria-expanded="false" aria-controls="mobileSheet">Menu</button>
       </div>
     </div>
-    <!-- Mobile sheet -->
+
+    <!-- Mobile sheet / Drawer -->
     <div id="mobileSheet" class="md:hidden hidden border-t border-gray-200 bg-white">
-      <div class="max-w-7xl mx-auto px-4 py-3 grid gap-2 text-sm">
+      <div class="px-3 sm:px-4 py-3 grid gap-1.5 text-sm">
         <a href="/marketplace.html" class="px-2 py-2 rounded hover:bg-gray-50">Marketplace</a>
         <a href="/calculator.html" class="px-2 py-2 rounded hover:bg-gray-50">Calculator</a>
         <a href="/hs-finder.html" class="px-2 py-2 rounded bg-gray-50">HS Finder</a>
@@ -73,32 +81,45 @@
   </header>
 
   <!-- Hero -->
-  <section class="pt-24 md:pt-28">
+  <section class="pt-20 sm:pt-24">
     <div class="hero-img">
       <div class="backdrop-brightness-95 bg-gradient-to-r from-indigoDeep/70 to-cyanBright/60">
-        <div class="max-w-6xl mx-auto px-4 py-10 text-white">
-          <h1 class="text-3xl md:text-5xl font-extrabold leading-tight">HS / HSN Finder</h1>
-          <p class="mt-2 md:mt-3 text-white/95">Describe your product. Get suggested HS codes with confidence. Send in one click to the calculator.</p>
-          <div class="mt-4 flex flex-wrap gap-2">
+        <div class="max-w-6xl mx-auto px-3 sm:px-4 py-6 sm:py-10 text-white">
+          <h1 class="text-2xl sm:text-4xl md:text-5xl font-extrabold leading-tight">HS / HSN Finder</h1>
+          <p class="mt-2 sm:mt-3 text-white/95 text-sm sm:text-base">
+            Describe your product. Get suggested HS codes with confidence. Send in one tap to the calculator.
+          </p>
+          <div class="mt-3 sm:mt-4 flex flex-wrap gap-2">
             <span id="chipCountry" class="badge text-indigoDeep">Country: IN</span>
             <span id="chipLen" class="badge text-indigoDeep">Desc length: 0</span>
-            <button id="resetAll" class="badge border-none bg-accentOrange text-white hover:opacity-95">Reset</button>
+            <button id="resetAll" class="badge border-none bg-accentOrange text-white hover:opacity-95">
+              Reset
+            </button>
           </div>
         </div>
       </div>
     </div>
   </section>
 
+  <!-- Mobile sticky CTA (shows after results) -->
+  <div id="mobileCTA"
+       class="fixed inset-x-0 bottom-0 z-40 hidden md:hidden bg-white/95 backdrop-blur border-t border-gray-200 px-3 py-2 pb-[calc(0.5rem+var(--safe,0px))]">
+    <div class="max-w-6xl mx-auto flex items-center gap-2">
+      <button id="quickCopyCTA" class="tappable border px-3 py-2 rounded-lg text-sm flex-1">Copy top HS code</button>
+      <a id="openCalcCTA" href="#" class="tappable bg-cyanBright text-black px-3 py-2 rounded-lg text-sm font-semibold">Open Calculator</a>
+    </div>
+  </div>
+
   <!-- Finder -->
-  <main class="max-w-6xl mx-auto px-2 sm:px-4 -mt-8 md:-mt-10 pb-16 grid lg:grid-cols-[1.05fr,0.95fr] gap-4 md:gap-6">
-    <!-- Left: form -->
-    <section class="bg-white border border-gray-200 rounded-2xl shadow p-4 sm:p-6 md:p-8 card">
-      <h2 class="text-xl font-semibold">Describe your product</h2>
-      <form id="hsForm" class="mt-4 grid gap-4">
-        <div class="grid sm:grid-cols-3 gap-3">
+  <main class="max-w-6xl mx-auto px-2 sm:px-4 -mt-4 sm:-mt-8 pb-[6rem] sm:pb-16 grid gap-4 md:gap-6 lg:grid-cols-[1.05fr,0.95fr]">
+    <!-- Form -->
+    <section class="bg-white border border-gray-200 rounded-2xl shadow p-3 sm:p-5 md:p-8 card" id="formCard">
+      <h2 class="text-lg sm:text-xl font-semibold">Describe your product</h2>
+      <form id="hsForm" class="mt-3 sm:mt-4 grid gap-3 sm:gap-4">
+        <div class="grid gap-3 sm:grid-cols-3">
           <label class="grid gap-1 text-sm">
             <span class="font-medium">Country</span>
-            <select id="hsCountry" class="input border rounded-lg px-3 py-2">
+            <select id="hsCountry" class="input border rounded-lg px-3 py-2 tappable">
               <option>IN</option><option>US</option><option>EU</option><option>UK</option>
               <option>AE</option><option>SG</option><option>AU</option><option>CA</option>
             </select>
@@ -107,9 +128,11 @@
 
           <label class="grid gap-1 text-sm sm:col-span-2">
             <span class="font-medium">Product description</span>
-            <textarea id="hsDesc" rows="5" class="input border rounded-lg px-3 py-2" placeholder="Materials, function, main use, key specs… e.g. Wireless earbuds with mic, Bluetooth 5.3, lithium battery"></textarea>
-            <div class="flex justify-between text-gray-500">
-              <span class="hint">Be specific. Mention materials, power, size, battery, connectivity, use.</span>
+            <textarea id="hsDesc" rows="5"
+                      class="input border rounded-lg px-3 py-2 tappable"
+                      placeholder="Materials, function, main use, key specs… e.g. Wireless earbuds with mic, Bluetooth 5.3, lithium battery"></textarea>
+            <div class="flex justify-between items-center text-gray-500">
+              <span class="hint">Tip: materials, power, size, battery, connectivity, use.</span>
               <span id="descCount" class="hint">0 chars</span>
             </div>
           </label>
@@ -117,16 +140,17 @@
 
         <!-- Image scanner -->
         <div class="grid gap-2 text-sm">
-          <div class="flex items-center justify-between">
+          <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-1">
             <span class="font-medium">Upload product image (optional)</span>
-            <span class="text-[11px] text-gray-500">Helps auto-fill your description</span>
+            <span class="text-[11px] text-gray-500">Use camera on mobile for quick snap</span>
           </div>
 
-          <!-- Dropzone -->
-          <label id="imgDrop" class="cursor-pointer border border-dashed rounded-xl2 p-4 grid place-items-center text-center bg-gray-50/60">
+          <!-- touch friendly dropzone -->
+          <label id="imgDrop"
+                 class="cursor-pointer border border-dashed rounded-xl2 p-4 grid place-items-center text-center bg-gray-50/60">
             <input id="hsImage" type="file" accept="image/*" capture="environment" class="hidden" />
             <div class="grid gap-1">
-              <div class="text-gray-700 font-medium">Drop an image or click to browse</div>
+              <div class="text-gray-700 font-medium">Tap to browse or drop an image</div>
               <div class="text-gray-500">JPG/PNG up to 5 MB</div>
             </div>
           </label>
@@ -134,58 +158,70 @@
           <!-- Preview + Scan -->
           <div id="imgPreviewWrap" class="hidden items-center gap-3">
             <img id="imgPreview" alt="preview" class="h-16 w-16 rounded-lg object-cover border" />
-            <div class="text-xs text-gray-600 truncate" id="imgName"></div>
-            <button id="hsScan" type="button" class="ml-auto bg-cyanBright text-black px-3 py-1.5 rounded-lg disabled:opacity-60">Scan image</button>
+            <div class="text-xs text-gray-600 truncate flex-1" id="imgName"></div>
+            <button id="hsScan" type="button"
+                    class="ml-auto bg-cyanBright text-black px-3 py-2 rounded-lg disabled:opacity-60 tappable">
+              Scan image
+            </button>
           </div>
         </div>
 
         <!-- Optional fields -->
-        <div class="grid md:grid-cols-2 gap-3">
+        <div class="grid gap-3 sm:grid-cols-2">
           <label class="grid gap-1 text-sm">
             <span class="font-medium">Key attributes (optional)</span>
-            <input id="hsAttr" class="input border rounded-lg px-3 py-2" placeholder="e.g., lithium-ion battery, plastic body" />
+            <input id="hsAttr" class="input border rounded-lg px-3 py-2 tappable"
+                   placeholder="e.g., lithium-ion battery, plastic body" />
           </label>
           <label class="grid gap-1 text-sm">
             <span class="font-medium">Similar product (optional)</span>
-            <input id="hsSimilar" class="input border rounded-lg px-3 py-2" placeholder="e.g., AirPods Pro" />
+            <input id="hsSimilar" class="input border rounded-lg px-3 py-2 tappable" placeholder="e.g., AirPods Pro" />
           </label>
         </div>
 
         <!-- Actions -->
-        <div class="flex flex-wrap items-center gap-3 pt-2">
-          <button id="hsRun" class="bg-emerald text-white px-4 py-2 rounded-lg">Find HS codes</button>
-          <button id="hsReset" type="button" class="border px-4 py-2 rounded-lg">Reset</button>
-          <span class="text-xs text-gray-600">These are demo suggestions. Confirm with your customs broker.</span>
+        <div class="flex flex-col xs:flex-row sm:flex-row gap-2 sm:gap-3 pt-1 sm:pt-2">
+          <button id="hsRun"
+                  class="bg-emerald text-white px-4 py-2 rounded-lg tappable text-center">
+            Find HS codes
+          </button>
+          <button id="hsReset" type="button"
+                  class="border px-4 py-2 rounded-lg tappable text-center">
+            Reset
+          </button>
+          <span class="text-xs text-gray-600 sm:ml-auto sm:self-center">
+            Demo suggestions. Confirm with your broker.
+          </span>
         </div>
       </form>
     </section>
 
-    <!-- Right: results -->
-    <section class="grid gap-4 content-start">
-      <!-- Sticky helper -->
-      <div class="rounded-2xl border border-gray-200 bg-white p-4 md:sticky md:top-28">
+    <!-- Results -->
+    <section class="grid gap-4 content-start" id="resultsCol">
+      <!-- Sticky helper on larger screens; normal card on mobile -->
+      <div class="rounded-2xl border border-gray-200 bg-white p-3 sm:p-4 md:sticky md:top-24">
         <div class="flex items-center justify-between">
           <strong>Results</strong>
-          <div class="text-xs text-gray-500">Sorted by confidence</div>
+          <div class="text-xs text-gray-500 hidden sm:block">Sorted by confidence</div>
         </div>
-        <div class="mt-2 grid grid-cols-2 gap-2 text-xs">
-          <button data-filter="all" class="filter-btn badge">All</button>
-          <button data-filter="high" class="filter-btn badge">High (&ge; 75%)</button>
-          <button data-filter="mid" class="filter-btn badge">Medium (50–74%)</button>
-          <button data-filter="low" class="filter-btn badge">Low (&lt; 50%)</button>
+        <div class="mt-2 grid grid-cols-2 sm:grid-cols-4 gap-2 text-xs">
+          <button data-filter="all" class="filter-btn badge w-full text-center tappable">All</button>
+          <button data-filter="high" class="filter-btn badge w-full text-center tappable">High (≥75%)</button>
+          <button data-filter="mid" class="filter-btn badge w-full text-center tappable">Medium (50–74%)</button>
+          <button data-filter="low" class="filter-btn badge w-full text-center tappable">Low (&lt;50%)</button>
         </div>
       </div>
 
       <div id="hsResults" class="grid gap-3" aria-live="polite">
         <div class="p-4 rounded-xl border border-dashed text-gray-500 bg-gray-50">
-          No results yet — describe your product and click “Find HS codes”.
+          No results yet — describe your product and tap “Find HS codes”.
         </div>
       </div>
     </section>
   </main>
 
   <!-- Footer -->
-  <footer class="text-center text-xs text-gray-500 mt-6 mb-8">
+  <footer class="text-center text-xs text-gray-500 mt-6 mb-[calc(2rem+var(--safe,0px))] sm:mb-8">
     © <span id="year"></span> Ledgerdaddy
   </footer>
 
@@ -205,7 +241,7 @@
     function toast(msg){
       const t=document.createElement('div');
       t.textContent=msg;
-      t.className='fixed bottom-6 right-6 bg-gray-900 text-white text-sm px-3 py-2 rounded-lg shadow';
+      t.className='fixed bottom-[calc(1rem+env(safe-area-inset-bottom))] right-4 bg-gray-900 text-white text-sm px-3 py-2 rounded-lg shadow';
       document.body.appendChild(t);
       setTimeout(()=>t.remove(),1500);
     }
@@ -249,21 +285,22 @@
                    conf >= 50 ? {cls:'border-yellow-500 text-yellow-600', end:'#F59E0B'} :
                                 {cls:'border-gray-300 text-gray-500', end:'#94a3b8'};
       return `
-        <article class="p-4 border rounded-xl bg-white fade-in">
+        <article class="p-3 sm:p-4 border rounded-xl bg-white fade-in">
           <div class="flex items-start justify-between gap-3">
             <div class="min-w-0">
-              <div class="text-lg font-semibold truncate">${r.code} — ${r.title}</div>
-              <div class="text-xs text-gray-500 truncate">Examples: ${r.examples.join(', ')}</div>
+              <div class="text-base sm:text-lg font-semibold truncate">${r.code} — ${r.title}</div>
+              <div class="text-[11px] sm:text-xs text-gray-500 truncate">Examples: ${r.examples.join(', ')}</div>
             </div>
-            <div class="text-xs px-2 py-0.5 rounded-full border ${band.cls} shrink-0">${conf}%</div>
+            <div class="text-[11px] sm:text-xs px-2 py-0.5 rounded-full border ${band.cls} shrink-0">${conf}%</div>
           </div>
-          <div class="mt-2 bg-gray-100 rounded-full overflow-hidden">
+          <div class="mt-2 bg-gray-100 rounded-full overflow-hidden h-2">
             <div class="progress" style="--end:${band.end}; width:${conf}%"></div>
           </div>
           <div class="mt-3 flex flex-wrap gap-2">
-            <button class="copy-btn border px-3 py-1 rounded-lg text-sm" data-code="${r.code}">Copy code</button>
-            <a href="${calcUrl}" class="bg-cyanBright text-black px-3 py-1 rounded-lg text-sm">Open in Calculator</a>
-            <a href="/dashboard.html" class="border px-3 py-1 rounded-lg text-sm">Save to Dashboard</a>
+            <button class="copy-btn border px-3 py-2 rounded-lg text-sm tappable" data-code="${r.code}">Copy</button>
+            <a href="${calcUrl}" class="open-calc btn-calc bg-cyanBright text-black px-3 py-2 rounded-lg text-sm tappable"
+               data-code="${r.code}">Open Calculator</a>
+            <a href="/dashboard.html" class="border px-3 py-2 rounded-lg text-sm tappable">Save</a>
           </div>
         </article>
       `;
@@ -279,6 +316,11 @@
     const chipLen = $('#chipLen');
     const descCount = $('#descCount');
 
+    // Mobile bottom CTA elements
+    const mobileCTA = $('#mobileCTA');
+    const quickCopyCTA = $('#quickCopyCTA');
+    const openCalcCTA = $('#openCalcCTA');
+
     function updateChips(){
       chipCountry.textContent = 'Country: ' + (countryEl.value || 'IN');
       const len = (descEl.value||'').length;
@@ -291,9 +333,9 @@
     // Run suggestions
     document.getElementById('hsRun').addEventListener('click', function(e){
       e.preventDefault();
-      const desc = descEl.value.trim();
-      const attr = attrEl.value.trim();
-      const similar = simEl.value.trim();
+      const desc = (descEl.value || '').trim();
+      const attr = (attrEl.value || '').trim();
+      const similar = (simEl.value || '').trim();
       const country = countryEl.value;
 
       if(!desc){ alert('Please describe your product'); return; }
@@ -312,7 +354,20 @@
         const query = [desc, attr, similar].filter(Boolean).join(' ');
         const suggestions = fakeHsSuggest(query).sort((a,b)=>b.conf-a.conf);
         renderResults(suggestions, country);
-      }, 300);
+
+        // Show mobile CTA with first result
+        if (suggestions.length){
+          const top = suggestions[0];
+          quickCopyCTA.onclick = async ()=>{
+            try{ await navigator.clipboard.writeText(top.code); toast('HS code copied'); }
+            catch{ toast('Copy failed'); }
+          };
+          openCalcCTA.href = `/calculator.html?hs=${encodeURIComponent(top.code)}&country=${encodeURIComponent(country)}`;
+          mobileCTA.classList.remove('hidden');
+        } else {
+          mobileCTA.classList.add('hidden');
+        }
+      }, 250);
     });
 
     function renderResults(list, country){
@@ -326,6 +381,12 @@
           const code = btn.getAttribute('data-code');
           try{ await navigator.clipboard.writeText(code); toast('HS code copied'); }
           catch{ toast('Copy failed'); }
+        });
+      });
+      // keep CTA links in sync on tap of any result's "Open Calculator"
+      $$('.open-calc').forEach(a=>{
+        a.addEventListener('click', ()=>{
+          openCalcCTA.href = a.getAttribute('href');
         });
       });
       // filter buttons
@@ -351,6 +412,7 @@
       updateChips();
       resetImageState();
       resEl.innerHTML = '<div class="p-4 rounded-xl border border-dashed text-gray-500 bg-gray-50">Cleared. Enter a description to get suggestions.</div>';
+      mobileCTA.classList.add('hidden');
     }
     document.getElementById('hsReset').addEventListener('click', clearForm);
     document.getElementById('resetAll').addEventListener('click', clearForm);
@@ -439,7 +501,7 @@
       } catch(e){
         console.warn('Backend scan unavailable, using demo fallback', e);
       }
-      // Fallback demo guess
+      // Fallback demo guess by filename
       const name = (file.name || '').toLowerCase();
       let desc = '';
       if(/earbud|headphone|tws/.test(name)) desc = 'Wireless earbuds with mic, Bluetooth, lithium battery';
