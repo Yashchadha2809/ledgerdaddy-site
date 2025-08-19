@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en" class="scroll-smooth">
+<html lang="en" class="h-full scroll-smooth">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
@@ -11,8 +11,26 @@
     tailwind.config = {
       theme: {
         extend: {
-          colors:{ indigoDeep:"#1A237E", emerald:"#2E7D32", cyanBright:"#00BCD4", accentOrange:"#FF7043" },
-          boxShadow:{ lift:"0 14px 34px rgba(0,0,0,.12)" }
+          colors:{
+            indigoDeep:"#1A237E",
+            emerald:"#2E7D32",
+            cyanBright:"#00BCD4",
+            accentOrange:"#FF7043"
+          },
+          boxShadow:{
+            lift:"0 16px 40px rgba(0,0,0,.12)",
+            card:"0 12px 28px rgba(0,0,0,.10)"
+          },
+          borderRadius:{
+            xl2:"16px"
+          },
+          backgroundImage:{
+            "brand-grad":"linear-gradient(135deg, #1A237E 0%, #00BCD4 100%)",
+            "chip-grad":"linear-gradient(135deg, rgba(0,188,212,.10), rgba(26,35,126,.06))"
+          },
+          transitionTimingFunction:{
+            smooth:"cubic-bezier(.2,.9,.2,1)"
+          }
         }
       }
     }
@@ -25,126 +43,220 @@
     .typing-dot:nth-child(3){animation-delay:.3s}
     @keyframes pulse{0%,80%,100%{opacity:.25}40%{opacity:1}}
     .card{transition:transform .12s ease, box-shadow .2s ease}
-    .card:hover{transform:translateY(-2px); box-shadow:0 14px 34px rgba(0,0,0,.14)}
-    .hero-img{background:url('https://images.unsplash.com/photo-1586521995568-39ef16c6934d?q=80&w=1920&auto=format&fit=crop') center/cover no-repeat;}
-    pre{background:#0f172a; color:#e5e7eb; padding:12px; border-radius:10px; overflow:auto}
+    .card:hover{transform:translateY(-2px); box-shadow:0 16px 40px rgba(0,0,0,.12)}
+    .btn{display:inline-flex;align-items:center;gap:.55rem;padding:.58rem 1rem;border-radius:12px;font-weight:600}
+    .btn-emerald{background:#2E7D32;color:#fff;transition:transform .12s ease, filter .12s ease}
+    .btn-emerald:hover{filter:brightness(1.04);transform:translateY(-1px)}
+    .btn-ghost{border:1px solid #e5e7eb;background:#fff}
+    .chip{font-size:12px;border:1px solid #e5e7eb;border-radius:999px;padding:.34rem .66rem;background:#fff}
+    .chip:hover{border-color:#00BCD4;color:#00BCD4}
+    .navlink{border-radius:10px;padding:.5rem .75rem}
+    .navlink:hover{background:rgba(0,188,212,.10);color:#00BCD4}
+    .drawer{transition:transform .18s ease}
+    .drop-target{outline:2px dashed #00BCD4; outline-offset:4px}
+    .thumb{width:56px;height:56px;border-radius:10px;object-fit:cover;border:1px solid #e5e7eb}
+    .file-pill{border:1px solid #e5e7eb;border-radius:10px;padding:.4rem .6rem;font-size:12px;display:flex;align-items:center;gap:.5rem;background:#fff}
+    pre{background:#0f172a;color:#e5e7eb;padding:12px;border-radius:12px;overflow:auto}
     code{font-family:ui-monospace,SFMono-Regular,Menlo,monospace}
   </style>
 </head>
-<body class="bg-gray-50 text-gray-900">
+<body class="h-full bg-gray-50 text-gray-900">
 
-  <!-- Topbar -->
-  <header class="fixed top-0 inset-x-0 z-50 border-b border-gray-200 bg-white/90 backdrop-blur">
-    <div class="max-w-7xl mx-auto px-4 py-3 flex items-center justify-between">
-      <a href="/" class="flex items-center gap-2" aria-label="Home">
-        <span class="grid h-9 w-9 place-items-center rounded-xl bg-gradient-to-tr from-cyanBright to-emerald text-white font-extrabold shadow">◆</span>
-        <span class="text-xl font-bold text-indigoDeep">Ledgerdaddy</span>
-        <span class="ml-2 hidden sm:inline-flex text-[11px] px-2 py-0.5 rounded-full border border-cyanBright/40 text-cyanBright">AI Customs</span>
-      </a>
-      <nav class="hidden md:flex items-center gap-6 text-sm font-medium">
-        <a href="/marketplace.html" class="hover:text-cyanBright">Marketplace</a>
-        <a href="/calculator.html" class="hover:text-cyanBright">Calculator</a>
-        <a href="/hs-finder.html" class="hover:text-cyanBright">HS Finder</a>
-        <a href="/dashboard.html" class="hover:text-cyanBright">Dashboard</a>
+  <!-- App Bar -->
+  <header class="fixed top-0 inset-x-0 z-50 bg-white/90 backdrop-blur border-b border-gray-200">
+    <div class="max-w-7xl mx-auto px-3 sm:px-4 py-2.5 flex items-center justify-between">
+      <div class="flex items-center gap-2">
+        <button id="openDrawer" class="md:hidden btn-ghost rounded-lg px-2 py-1.5" aria-label="Open menu">☰</button>
+        <a href="./dashboard.html" class="flex items-center gap-2" aria-label="Home">
+          <span class="grid h-9 w-9 place-items-center rounded-xl bg-brand-grad text-white font-extrabold shadow">◆</span>
+          <span class="text-xl font-bold text-indigoDeep">Ledgerdaddy</span>
+          <span class="ml-2 hidden sm:inline-flex text-[11px] px-2 py-0.5 rounded-full border border-cyanBright/40 text-cyanBright">AI Customs</span>
+        </a>
+      </div>
+      <nav class="hidden md:flex items-center gap-2 text-sm font-medium">
+        <a href="./marketplace.html" class="navlink">Marketplace</a>
+        <a href="./calculator.html" class="navlink">Calculator</a>
+        <a href="./hs-finder.html" class="navlink">HS Finder</a>
+        <a href="./dashboard.html" class="navlink">Dashboard</a>
       </nav>
       <div class="hidden md:flex items-center gap-2">
-        <a href="/log-in.html" class="border px-4 py-2 rounded-lg">Log in</a>
-        <a href="/personal-sign-up.html" class="bg-emerald text-white px-4 py-2 rounded-lg hover:opacity-95">Sign up</a>
+        <a href="./log-in.html" class="btn-ghost rounded-lg px-3 py-2">Log in</a>
+        <a href="./personal-sign-up.html" class="btn btn-emerald">Sign up</a>
       </div>
-      <a href="/personal-sign-up.html" class="md:hidden bg-emerald text-white px-3 py-1.5 rounded-lg">Start</a>
+      <a href="./personal-sign-up.html" class="md:hidden btn btn-emerald text-sm px-3 py-1.5">Start</a>
     </div>
   </header>
 
-  <!-- Hero strip -->
-  <section class="pt-20 md:pt-24">
-    <div class="hero-img">
-      <div class="backdrop-brightness-90 bg-gradient-to-r from-indigoDeep/70 to-cyanBright/60">
-        <div class="max-w-6xl mx-auto px-4 py-8 text-white">
-          <h1 class="text-3xl md:text-4xl font-extrabold">Ask in Chat</h1>
-          <p class="mt-2 text-white/95">ChatGPT-style assistant for HS, duties, valuation & more. (Connected to backend)</p>
-        </div>
+  <!-- Mobile Drawer -->
+  <aside id="drawer"
+         class="fixed top-0 left-0 h-full w-72 bg-white border-r border-gray-200 shadow-xl drawer -translate-x-full md:hidden z-50">
+    <div class="px-3 py-3 border-b border-gray-200 flex items-center justify-between">
+      <div class="flex items-center gap-2">
+        <span class="grid h-8 w-8 place-items-center rounded-lg bg-brand-grad text-white font-bold">◆</span>
+        <strong class="text-indigoDeep">Menu</strong>
+      </div>
+      <button id="closeDrawer" class="btn-ghost rounded-lg px-2 py-1.5" aria-label="Close menu">✕</button>
+    </div>
+    <div class="p-3">
+      <nav class="grid gap-1 text-sm">
+        <a href="./marketplace.html" class="navlink">Marketplace</a>
+        <a href="./calculator.html" class="navlink">Calculator</a>
+        <a href="./hs-finder.html" class="navlink">HS Finder</a>
+        <a href="./dashboard.html" class="navlink">Dashboard</a>
+      </nav>
+      <div class="mt-3 grid gap-2">
+        <a href="./log-in.html" class="btn-ghost rounded-lg px-3 py-2 text-center">Log in</a>
+        <a href="./personal-sign-up.html" class="btn btn-emerald justify-center">Sign up</a>
+      </div>
+    </div>
+  </aside>
+  <div id="scrim" class="fixed inset-0 bg-black/30 hidden md:hidden z-40"></div>
+
+  <!-- Hero -->
+  <section class="pt-16 md:pt-20">
+    <div class="bg-gradient-to-r from-indigoDeep/85 to-cyanBright/75">
+      <div class="max-w-7xl mx-auto px-4 py-7 text-white">
+        <h1 class="text-2xl sm:text-3xl md:text-4xl font-extrabold">Chat</h1>
+        <p class="mt-1 text-white/95">Ask about HS codes, duties, valuation, docs, and more.</p>
       </div>
     </div>
   </section>
 
-  <!-- Chat layout -->
-  <main class="max-w-6xl mx-auto px-2 sm:px-4 pb-28 grid md:grid-cols-[260px,1fr] gap-4 -mt-6">
+  <!-- App Content -->
+  <main class="max-w-7xl mx-auto px-2 sm:px-4 pb-28 grid md:grid-cols-[280px,1fr] gap-4 -mt-4">
     <!-- Sidebar -->
-    <aside class="bg-white border border-gray-200 rounded-2xl shadow p-3 h-fit sticky top-24">
+    <aside class="bg-white border border-gray-200 rounded-2xl shadow card h-fit md:sticky md:top-24 p-3">
       <div class="flex items-center justify-between">
         <strong>Conversations</strong>
-        <button id="newChat" class="text-xs border rounded px-2 py-1">New chat</button>
+        <button id="newChat" class="text-xs btn-ghost rounded px-2 py-1">New</button>
       </div>
-      <ul id="chatList" class="mt-3 grid gap-1 text-sm max-h-[50vh] overflow-auto"></ul>
+      <ul id="chatList" class="mt-3 grid gap-1 text-sm max-h-[50vh] overflow-auto pr-1"></ul>
+
       <div class="mt-3 grid gap-2 text-sm">
-        <a class="border px-2 py-1 rounded text-center" href="/hs-finder.html">Open HS Finder</a>
-        <a class="border px-2 py-1 rounded text-center" href="/calculator.html">Open Calculator</a>
-        <button id="exportBtn" class="border px-2 py-1 rounded">Export current chat</button>
-        <button id="clearAll" class="text-red-600 border border-red-200 px-2 py-1 rounded">Clear all</button>
+        <a class="btn-ghost rounded justify-center py-2" href="./hs-finder.html">Open HS Finder</a>
+        <a class="btn-ghost rounded justify-center py-2" href="./calculator.html">Open Calculator</a>
+        <button id="exportBtn" class="btn-ghost rounded py-2">Download transcript</button>
+        <button id="clearAll" class="btn-ghost rounded py-2 text-red-600 border-red-200">Clear all</button>
       </div>
     </aside>
 
-    <!-- Conversation -->
-    <section class="bg-white border border-gray-200 rounded-2xl shadow flex flex-col">
-      <div id="messages" class="flex-1 overflow-auto p-4 space-y-4">
-        <div class="fade-in rounded-xl bg-gray-50 p-4">
-          <div class="text-sm text-gray-600">Assistant</div>
-          <div class="mt-1 whitespace-pre-wrap">
-            Hi! Ask me anything about HS codes, import duty, or customs docs.
-            Try:
-            <ul class="list-disc ml-5 mt-2">
-              <li><button class="demo-btn text-cyanBright" data-q="Find HS code for wireless earbuds in IN">Find HS code for wireless earbuds in IN</button></li>
-              <li><button class="demo-btn text-cyanBright" data-q="Duty for IN 851713 CIF 100000">Duty for IN 851713 CIF 100000</button></li>
-              <li><button class="demo-btn text-cyanBright" data-q="List docs needed to import furniture into EU">List docs needed to import furniture into EU</button></li>
-            </ul>
+    <!-- Chat column -->
+    <section class="bg-white border border-gray-200 rounded-2xl shadow card flex flex-col">
+      <!-- system banner area -->
+      <div id="sysbar" class="mx-auto w-full max-w-3xl px-2 pt-3"></div>
+
+      <!-- messages -->
+      <div id="messages" class="flex-1 overflow-auto px-2 sm:px-3 py-4 space-y-3" role="log" aria-live="polite" aria-relevant="additions">
+        <!-- onboarding -->
+        <article class="max-w-2xl mx-auto rounded-xl2 border border-gray-200 bg-white p-4 shadow-sm">
+          <div class="text-sm text-gray-600">AI</div>
+          <div class="mt-1 text-[15px] leading-relaxed">
+            Hey! I’m your <strong>customs agent</strong> in chat. Ask me about HS codes, duties, or import docs — or drop files
+            (photos, PDFs, spreadsheets). What would you like to do today?
           </div>
-        </div>
+          <div class="mt-3 flex flex-wrap gap-2">
+            <button class="chip demo-btn" data-q="Estimate duty for HS 851713 (IN) CIF 100000">Estimate Duty</button>
+            <button class="chip demo-btn" data-q="Find HS code for wireless earbuds in India">Find HS Code</button>
+            <button class="chip demo-btn" data-q="Documents to import wooden furniture into EU">Docs Checklist</button>
+            <button class="chip demo-btn" data-q="Calculate landed cost for 500 LED lights to USA">Landed Cost</button>
+          </div>
+        </article>
       </div>
 
-      <!-- Composer -->
-      <div class="border-t p-3">
-        <form id="composer" class="flex flex-col gap-2">
-          <div class="flex items-center gap-2">
-            <label for="modeSel" class="text-xs text-gray-600">Mode</label>
-            <select id="modeSel" class="border rounded-lg px-2 py-1 text-sm">
-              <option value="core">Core</option>
-              <option value="learn">Learn</option>
-              <option value="calculate">Calculate</option>
-              <option value="earn">Earn</option>
-              <option value="business">Business</option>
-            </select>
-          </div>
-          <div class="flex items-end gap-2">
-            <textarea id="chatInput" rows="1" placeholder="Message Ledgerdaddy…"
-              class="flex-1 border rounded-xl px-3 py-2 resize-none max-h-40"
-            ></textarea>
-            <button id="sendBtn" class="bg-emerald text-white px-4 py-2 rounded-xl">Send</button>
-          </div>
-        </form>
-        <p class="text-[11px] text-gray-500 mt-1">Enter to send • Shift+Enter for new line</p>
+      <!-- composer -->
+      <div class="border-t border-gray-200 bg-white sticky bottom-0">
+        <div class="max-w-3xl mx-auto px-3 pt-3">
+          <!-- attachments preview -->
+          <div id="attachRow" class="hidden mb-2 flex items-center gap-2 flex-wrap"></div>
+
+          <form id="composer" class="flex flex-col gap-2" aria-label="Message composer">
+            <!-- top row: mode + quick chips -->
+            <div class="flex items-center justify-between gap-2">
+              <div class="flex items-center gap-2">
+                <label for="modeSel" class="text-xs text-gray-600">Mode</label>
+                <select id="modeSel" class="border rounded-lg px-2 py-1 text-sm">
+                  <option value="core">Core</option>
+                  <option value="learn">Learn</option>
+                  <option value="calculate">Calculate</option>
+                  <option value="earn">Earn</option>
+                  <option value="business">Business</option>
+                </select>
+              </div>
+              <div class="hidden sm:flex flex-wrap gap-2">
+                <button class="chip qa-btn" data-q="Estimate duty">Duty</button>
+                <button class="chip qa-btn" data-q="Find HS code">HS Code</button>
+                <button class="chip qa-btn" data-q="Documents required">Docs</button>
+                <button class="chip qa-btn" data-q="Landed cost calculator">Landed Cost</button>
+              </div>
+            </div>
+
+            <!-- input row -->
+            <div class="flex items-end gap-2">
+              <!-- upload -->
+              <input id="fileInput" type="file" class="hidden" multiple
+                     accept="image/*,.pdf,.csv,.txt,.json,.doc,.docx,.xls,.xlsx,.ppt,.pptx"/>
+              <button type="button" id="attachBtn" title="Attach files"
+                class="btn-ghost rounded-lg px-3 py-2" aria-label="Attach files">📎</button>
+
+              <!-- textarea -->
+              <label for="chatInput" class="sr-only">Message</label>
+              <textarea id="chatInput" rows="1" placeholder="Message AI…"
+                class="flex-1 border border-gray-300 rounded-xl px-3 py-2 resize-none max-h-40 focus:outline-none focus:ring-2 focus:ring-cyanBright/30"
+                aria-multiline="true" aria-label="Type your message"></textarea>
+
+              <!-- send -->
+              <button id="sendBtn" class="btn btn-emerald rounded-xl" aria-label="Send message">Send</button>
+            </div>
+
+            <div class="mt-1 flex items-center justify-between">
+              <div class="text-[11px] text-gray-500">Enter to send • Shift+Enter for new line • Drag & drop files</div>
+              <button id="toBottom" class="chip hidden">Scroll to bottom</button>
+            </div>
+          </form>
+        </div>
       </div>
     </section>
   </main>
 
   <!-- Toast -->
-  <div id="toast" class="hidden fixed bottom-6 right-6 bg-gray-900 text-white text-sm px-3 py-2 rounded-lg shadow"></div>
+  <div id="toast" class="hidden fixed bottom-6 right-6 bg-gray-900 text-white text-sm px-3 py-2 rounded-lg shadow" role="status" aria-live="polite"></div>
 
   <footer class="text-center text-xs text-gray-500 my-8">
     © <span id="year"></span> Ledgerdaddy
   </footer>
 
   <script>
-    // ===== Backend URL =====
-    const API_BASE = "https://chadaddy.onrender.com"; // your Flask service on Render
+    // =========================
+    // Config
+    // =========================
+    const API_BASE = window.NEXT_PUBLIC_API_BASE || window.VITE_API_BASE || "https://chadaddy.onrender.com";
+    const USE_UPLOAD = true; // set false if you don't have /api/upload yet
 
-    // ===== Utilities =====
+    // =========================
+    // Utilities
+    // =========================
     const $  = s => document.querySelector(s);
     const $$ = s => Array.from(document.querySelectorAll(s));
     const yearEl = $('#year'); if (yearEl) yearEl.textContent = new Date().getFullYear();
     const toast = (msg) => { const t = $('#toast'); t.textContent = msg; t.classList.remove('hidden'); setTimeout(()=>t.classList.add('hidden'), 1600); };
     const uid = () => Math.random().toString(36).slice(2)+Date.now().toString(36);
+    const fmtTime = ts => new Date(ts).toLocaleString([], {hour:'2-digit', minute:'2-digit', day:'2-digit', month:'short'});
 
-    // sticky session id
+    // scroll helper
+    const msgWrap = $('#messages');
+    function nearBottom(){ return (msgWrap.scrollHeight - msgWrap.scrollTop - msgWrap.clientHeight) < 140; }
+    function scrollToBottom(){ msgWrap.scrollTop = msgWrap.scrollHeight; }
+    function toggleScrollBtn(){ nearBottom() ? $('#toBottom').classList.add('hidden') : $('#toBottom').classList.remove('hidden');}
+    msgWrap.addEventListener('scroll', toggleScrollBtn);
+    $('#toBottom').addEventListener('click', ()=>{ scrollToBottom(); toggleScrollBtn(); });
+
+    // Drawer (mobile)
+    const drawer = $('#drawer'), scrim = $('#scrim');
+    $('#openDrawer').addEventListener('click', ()=>{ drawer.classList.remove('-translate-x-full'); scrim.classList.remove('hidden'); });
+    $('#closeDrawer').addEventListener('click', ()=>{ drawer.classList.add('-translate-x-full'); scrim.classList.add('hidden'); });
+    scrim.addEventListener('click', ()=>{ drawer.classList.add('-translate-x-full'); scrim.classList.add('hidden'); });
+
+    // Persistent session id
     function getSessionId(){
       const k="ld_chat_session_id";
       let v = localStorage.getItem(k);
@@ -153,25 +265,28 @@
     }
     const SESSION_ID = getSessionId();
 
-    // ===== Storage (threads) =====
+    // =========================
+    // Local storage (threads)
+    // =========================
     const STORE_KEY='ld_chat_threads_v1';
     let threads = JSON.parse(localStorage.getItem(STORE_KEY) || '[]');
     let currentId = threads[0]?.id || null;
     function saveThreads(){ localStorage.setItem(STORE_KEY, JSON.stringify(threads)); }
+    function getCurrent(){ return threads.find(t=>t.id===currentId); }
+    function setTitleFromFirstUserMessage(thread){
+      const first = thread.messages.find(m=>m.role==='user');
+      if(first){ thread.title = (first.text || 'Conversation').slice(0, 50); }
+    }
     function newThread(){
       const id = uid();
       const t = { id, title: 'New chat', mode: "core", messages: [] };
       threads.unshift(t);
       currentId = id;
       saveThreads(); renderSidebar(); renderMessages(); renderMode();
-    }
-    function getCurrent(){ return threads.find(t=>t.id===currentId); }
-    function setTitleFromFirstUserMessage(thread){
-      const first = thread.messages.find(m=>m.role==='user');
-      if(first){ thread.title = (first.text || 'Conversation').slice(0, 50); }
+      banner('New conversation started', 'info');
     }
 
-    // ===== Sidebar =====
+    // Sidebar
     function renderSidebar(){
       const list = $('#chatList');
       if(!threads.length){
@@ -191,168 +306,241 @@
       });
     }
 
-    // ===== Messages UI =====
-    function msgBubble(role, text){
-      const isUser = role==='user';
-      const avatar = isUser ? '👤' : '◆';
-      const bg = isUser ? 'bg-white' : 'bg-gray-50';
-      return `
-        <div class="fade-in rounded-xl ${bg} p-4">
-          <div class="text-sm text-gray-600 flex items-center gap-2">
-            <span class="grid w-6 h-6 place-items-center rounded-full ${isUser?'bg-gray-200':'bg-indigoDeep text-white'} text-[12px]">${avatar}</span>
-            <span>${isUser?'You':'Assistant'}</span>
-            <button class="ml-auto text-[11px] text-gray-500 copy-btn" data-copy="${encodeURIComponent(text)}">Copy</button>
-          </div>
-          <div class="mt-1 whitespace-pre-wrap leading-relaxed">${renderMarkdownLite(text)}</div>
-        </div>
-      `;
-    }
-    function typingBubble(){
-      return `
-        <div class="rounded-xl bg-gray-50 p-4">
-          <div class="text-sm text-gray-600 flex items-center gap-2">
-            <span class="grid w-6 h-6 place-items-center rounded-full bg-indigoDeep text-white text-[12px]">◆</span>
-            <span>Assistant</span>
-          </div>
-          <div class="mt-2 flex items-center gap-1">
-            <span class="typing-dot w-2 h-2 rounded-full bg-gray-400"></span>
-            <span class="typing-dot w-2 h-2 rounded-full bg-gray-400"></span>
-            <span class="typing-dot w-2 h-2 rounded-full bg-gray-400"></span>
-          </div>
-        </div>
-      `;
-    }
-    function renderMarkdownLite(text){
+    // =========================
+    // Markdown-lite
+    // =========================
+    function mdLite(text){
       let out = (text || '').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
       out = out.replace(/```([\s\S]*?)```/g, (_,code)=>`<pre><code>${code}</code></pre>`);
       out = out.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>');
       out = out.replace(/`([^`]+)`/g, '<code class="bg-gray-100 px-1 py-0.5 rounded text-[90%]">$1</code>');
+      out = out.replace(/\n\n/g, '<br/><br/>');
       return out;
     }
-    function renderMessages(){
-      const wrap = $('#messages');
-      const t = getCurrent();
-      if(!t){ wrap.innerHTML = '<div class="p-4 text-gray-500">Start a new chat.</div>'; return; }
-      wrap.innerHTML = t.messages.map(m=>msgBubble(m.role, m.text)).join('') || `
-        <div class="rounded-xl bg-gray-50 p-4">
-          <div class="text-sm text-gray-600">Assistant</div>
-          <div class="mt-1">How can I help today?</div>
+
+    // =========================
+    // Message bubbles
+    // =========================
+    function attachIcon(name){ const ext=(name.split('.').pop()||'').toLowerCase();
+      if(['png','jpg','jpeg','gif','webp','heic','heif','bmp'].includes(ext)) return '🖼️';
+      if(['pdf'].includes(ext)) return '📄';
+      if(['csv','xls','xlsx'].includes(ext)) return '📊';
+      if(['doc','docx'].includes(ext)) return '📝';
+      if(['ppt','pptx'].includes(ext)) return '📽️';
+      if(['txt','json','md'].includes(ext)) return '📃';
+      return '📎';
+    }
+    function attachBlock(attachments=[]){
+      if(!attachments.length) return '';
+      return `
+        <div class="mt-2 flex flex-wrap gap-2">
+          ${attachments.map(a=>{
+            const isImg = /^image\\//.test(a.type||'');
+            return isImg
+              ? `<a href="${a.url}" target="_blank" class="inline-flex items-center gap-2">
+                   <img src="${a.url}" alt="${a.name||'image'}" class="thumb"/><span class="text-[12px] text-gray-600 truncate max-w-[160px]">${a.name||'image'}</span>
+                 </a>`
+              : `<a href="${a.url}" target="_blank" class="file-pill">
+                   <span>${attachIcon(a.name||'file')}</span>
+                   <span class="truncate max-w-[160px]">${a.name||'file'}</span>
+                   ${a.size ? `<span class="text-gray-500">${(a.size/1024/1024).toFixed(1)}MB</span>`:''}
+                 </a>`;
+          }).join('')}
         </div>
       `;
+    }
+    function bubble(m){
+      const { role, text, attachments, ts, status, kind } = m; // kind: 'system'|'message'
+      const isUser = role==='user';
+      const isSystem = kind === 'system';
+      const who = isSystem ? 'System' : (isUser ? 'You' : 'AI');
+      const avatar = isSystem ? '⚙️' : (isUser ? '👤' : '◆');
+      const nameClass = isSystem ? 'text-amber-800' : 'text-gray-600';
+      const timeClass = isSystem ? 'text-amber-700' : 'text-gray-500';
+      const headBg    = isUser ? 'bg-gray-200' : (isSystem ? 'bg-amber-500 text-white' : 'bg-indigoDeep text-white');
+      const cardBg    = isSystem ? 'bg-yellow-50 border-yellow-200' : (isUser ? 'bg-white' : 'bg-gray-50');
+
+      const statusText = isUser ? (status==='read' ? 'Read' : status==='delivered' ? 'Delivered' : 'Sending…') : '';
+
+      return `
+        <article class="fade-in max-w-3xl mx-auto">
+          <div class="flex ${isUser?'justify-end':''}">
+            <div class="flex ${isUser?'flex-row-reverse':''} gap-3 items-start">
+              <span class="mt-1 inline-flex w-8 h-8 shrink-0 items-center justify-center rounded-full ${headBg}" aria-hidden="true">${avatar}</span>
+              <div class="rounded-2xl border border-gray-200 px-4 py-3 max-w-[min(78vw,760px)] ${cardBg}">
+                <div class="flex items-center justify-between gap-3 mb-1">
+                  <div class="text-sm ${nameClass}">${who}</div>
+                  <div class="text-[11px] ${timeClass}">${fmtTime(ts||Date.now())}${statusText?` • ${statusText}`:''}</div>
+                </div>
+                ${attachments?.length ? attachBlock(attachments) : ''}
+                <div class="prose prose-sm max-w-none">${mdLite(text)}</div>
+                ${!isSystem ? `
+                <div class="mt-2 flex items-center gap-2">
+                  <button class="copy-btn text-[11px] px-2 py-1 rounded border border-gray-200 hover:bg-gray-50" data-copy="${encodeURIComponent(text)}" aria-label="Copy message">Copy</button>
+                </div>`:''}
+              </div>
+            </div>
+          </div>
+        </article>
+      `;
+    }
+    function typingRow(){
+      return `
+        <div class="max-w-3xl mx-auto" aria-live="polite">
+          <div class="flex gap-3 items-start">
+            <span class="mt-1 inline-flex w-8 h-8 items-center justify-center rounded-full bg-indigoDeep text-white">◆</span>
+            <div class="rounded-2xl border border-gray-200 bg-gray-50 px-4 py-3">
+              <div class="flex items-center gap-1" aria-label="AI is typing">
+                <span class="typing-dot w-2 h-2 rounded-full bg-gray-400"></span>
+                <span class="typing-dot w-2 h-2 rounded-full bg-gray-400"></span>
+                <span class="typing-dot w-2 h-2 rounded-full bg-gray-400"></span>
+              </div>
+            </div>
+          </div>
+        </div>
+      `;
+    }
+
+    function renderMessages(){
+      const wrap = msgWrap;
+      const t = getCurrent();
+      if(!t){ wrap.innerHTML = ''; return; }
+      wrap.innerHTML = t.messages.map(bubble).join('');
+      // bind copy
       $$('.copy-btn').forEach(b=>{
         b.onclick = async ()=>{
           try{ await navigator.clipboard.writeText(decodeURIComponent(b.getAttribute('data-copy'))); toast('Copied'); }
           catch{ toast('Copy failed'); }
         };
       });
-      wrap.scrollTop = wrap.scrollHeight;
+      scrollToBottom();
+      toggleScrollBtn();
     }
 
-    // ===== Mode handling =====
-    function renderMode(){
-      const t = getCurrent(); if(!t) return;
-      const sel = $('#modeSel'); if(!sel) return;
-      sel.value = t.mode || "core";
+    // =========================
+    // System banners
+    // =========================
+    function banner(text, tone='info'){
+      const bar = $('#sysbar');
+      const color = tone==='error' ? 'bg-red-50 border-red-200 text-red-800'
+                   : tone==='warn' ? 'bg-yellow-50 border-yellow-200 text-amber-800'
+                   : 'bg-cyan-50 border-cyan-200 text-cyan-800';
+      const el = document.createElement('div');
+      el.className = `mb-2 rounded-lg border px-3 py-2 text-[13px] ${color}`;
+      el.textContent = text;
+      bar.appendChild(el);
+      setTimeout(()=>{ el.remove(); }, 2500);
     }
-    $('#modeSel')?.addEventListener('change', (e)=>{
-      const t = getCurrent(); if(!t) return;
-      t.mode = e.target.value || "core";
-      saveThreads(); renderSidebar();
-    });
 
-    // ===== Send flow (calls backend /api/chat) =====
-    function addMessage(role, text){
+    // =========================
+    // Mutate
+    // =========================
+    function addMessage(m){
       const t = getCurrent(); if(!t) return;
-      t.messages.push({role, text, ts: Date.now()});
+      t.messages.push({ kind:'message', ts: Date.now(), status: m.role==='user'?'sending':undefined, attachments:[], ...m });
       if(t.title==='New chat'){ setTitleFromFirstUserMessage(t); }
       saveThreads(); renderSidebar(); renderMessages();
     }
+    function addSystem(text, tone='info'){
+      const t = getCurrent(); if(!t) return;
+      t.messages.push({ role:'system', kind:'system', ts: Date.now(), text });
+      saveThreads(); renderMessages();
+      banner(text, tone);
+    }
+    function markLastUserStatus(st){
+      const t = getCurrent(); if(!t) return;
+      for(let i=t.messages.length-1;i>=0;i--){
+        if(t.messages[i].role==='user'){ t.messages[i].status = st; break; }
+      }
+      saveThreads(); renderMessages();
+    }
 
-    async function send(text){
-      const trimmed = (text || '').trim();
-      if(!trimmed) return;
-      addMessage('user', trimmed);
+    // =========================
+    // Uploads
+    // =========================
+    const MAX_FILES = 10;
+    const MAX_MB = 25;
+    let pending = []; // {file, url, id}
 
-      const wrap = $('#messages');
-      wrap.insertAdjacentHTML('beforeend', typingBubble());
-      wrap.scrollTop = wrap.scrollHeight;
+    const fileInput = $('#fileInput');
+    const attachBtn  = $('#attachBtn');
+    const attachRow  = $('#attachRow');
 
-      try {
-        const thread = getCurrent();
-        const mode   = (thread?.mode) || "core";
+    attachBtn.addEventListener('click', ()=> fileInput.click());
+    fileInput.addEventListener('change', (e)=> addPendingFiles([...e.target.files]));
 
-        const res = await fetch(`${API_BASE}/api/chat`, {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ message: trimmed, mode, session_id: SESSION_ID }),
-          cache: "no-store"
-        });
+    // drag & drop
+    ;['dragenter','dragover'].forEach(ev=>{
+      document.addEventListener(ev, (e)=>{ e.preventDefault(); msgWrap.classList.add('drop-target'); });
+    });
+    ;['dragleave','drop'].forEach(ev=>{
+      document.addEventListener(ev, (e)=>{ e.preventDefault(); msgWrap.classList.remove('drop-target'); });
+    });
+    document.addEventListener('drop', (e)=>{
+      const files = [...(e.dataTransfer?.files||[])];
+      if(files.length) addPendingFiles(files);
+    });
 
-        let data = {};
-        const ct = res.headers.get("content-type") || "";
-        if (ct.includes("application/json")) {
-          data = await res.json();
-        } else {
-          const txt = await res.text();
-          data = { error: txt || `HTTP ${res.status}` };
-        }
+    function addPendingFiles(files){
+      const all = [...pending];
+      for(const f of files){
+        if(all.length >= MAX_FILES){ toast('Max 10 files'); break; }
+        if(f.size > MAX_MB*1024*1024){ toast(`${f.name} is over ${MAX_MB}MB`); continue; }
+        all.push({ file:f, id:uid(), url: URL.createObjectURL(f) });
+      }
+      pending = all;
+      renderPending();
+    }
+    function removePending(id){
+      pending = pending.filter(p=>p.id!==id);
+      renderPending();
+    }
+    function renderPending(){
+      if(!pending.length){ attachRow.classList.add('hidden'); attachRow.innerHTML=''; return; }
+      attachRow.classList.remove('hidden');
+      attachRow.innerHTML = pending.map(p=>{
+        const isImg = p.file.type.startsWith('image/');
+        const size = (p.file.size/1024/1024).toFixed(1)+'MB';
+        return isImg
+          ? `<div class="relative">
+               <img src="${p.url}" class="thumb" alt="${p.file.name}"/>
+               <button title="Remove" class="absolute -top-2 -right-2 bg-white border border-gray-200 rounded-full w-6 h-6 text-xs"
+                 onclick="removePending('${p.id}')">×</button>
+             </div>`
+          : `<div class="file-pill">
+               <span>${attachIcon(p.file.name)}</span>
+               <span class="truncate max-w-[160px]">${p.file.name}</span>
+               <span class="text-gray-500">${size}</span>
+               <button title="Remove" class="ml-1 border border-gray-200 rounded px-1 text-[11px]" onclick="removePending('${p.id}')">×</button>
+             </div>`;
+      }).join('');
+      window.removePending = removePending; // expose for inline onclick
+    }
 
-        const last = wrap.lastElementChild; if(last) last.remove();
-
-        if (res.ok && data.reply){
-          addMessage('assistant', data.reply);
-        } else {
-          addMessage('assistant', "⚠️ Error: " + (data.error || `API ${res.status}`));
-        }
-      } catch (err) {
-        const last = wrap.lastElementChild; if(last) last.remove();
-        addMessage('assistant', "⚠️ Network error: " + err.message);
+    async function uploadFiles(files){
+      if(!USE_UPLOAD || !files.length) return [];
+      const form = new FormData();
+      files.forEach(f => form.append('files', f.file, f.file.name));
+      try{
+        const res = await fetch(`${API_BASE}/api/upload`, { method:'POST', body:form });
+        if(!res.ok) throw new Error('Upload failed');
+        const data = await res.json();
+        const list = Array.isArray(data) ? data : (data.files || [data]);
+        return list.map((x,i)=>({
+          url: x.url || files[i].url,
+          name: x.name || files[i].file.name,
+          type: x.type || files[i].file.type,
+          size: x.size || files[i].file.size
+        }));
+      }catch(e){
+        banner('Upload error: ' + (e.message||'unknown'), 'error');
+        return files.map(p=>({ // fallback to blob URLs
+          url: p.url, name: p.file.name, type: p.file.type, size: p.file.size
+        }));
       }
     }
 
-    // ===== Composer behaviour =====
-    const area = $('#chatInput');
-    const form = $('#composer');
-
-    area.addEventListener('input', ()=>{
-      area.style.height = 'auto';
-      area.style.height = Math.min(area.scrollHeight, 160) + 'px';
-    });
-
-    area.addEventListener('keydown', (e)=>{
-      if(e.key==='Enter' && !e.shiftKey){
-        e.preventDefault();
-        send(area.value);
-        area.value=''; area.style.height='auto';
-      }
-    });
-    form.addEventListener('submit', (e)=>{ e.preventDefault(); send(area.value); area.value=''; area.style.height='auto'; });
-
-    $$('.demo-btn').forEach(b=> b.onclick = ()=>{
-      area.value = b.getAttribute('data-q');
-      area.dispatchEvent(new Event('input'));
-      area.focus();
-    });
-
-    $('#newChat').onclick = ()=> newThread();
-
-    $('#exportBtn').onclick = ()=>{
-      const t = getCurrent(); if(!t) return toast('No chat');
-      const blob = new Blob([JSON.stringify(t, null, 2)], {type:'application/json'});
-      const a = document.createElement('a');
-      a.href = URL.createObjectURL(blob);
-      a.download = (t.title||'chat') + '.json';
-      a.click();
-      URL.revokeObjectURL(a.href);
-    };
-    $('#clearAll').onclick = ()=>{
-      if(confirm('Delete all conversations?')){
-        threads=[]; currentId=null; saveThreads(); renderSidebar(); renderMessages(); toast('Cleared');
-      }
-    };
-
-    // ===== Init =====
-    if(!threads.length){ newThread(); } else { renderSidebar(); renderMessages(); renderMode(); }
-  </script>
-</body>
-</html>
+    // =========================
+    // Send flow
+    // =========================
+    const area
