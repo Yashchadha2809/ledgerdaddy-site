@@ -56,7 +56,7 @@
       <div class="backdrop-brightness-90 bg-gradient-to-r from-indigoDeep/70 to-cyanBright/60">
         <div class="max-w-5xl mx-auto px-4 py-12 text-white">
           <h1 class="text-4xl md:text-5xl font-extrabold leading-tight">Global Duty & Landed Cost</h1>
-          <p class="mt-3 text-white/95">Get a quick estimate for BCD, VAT/IGST and landed cost. (Demo logic; connect your rates later.)</p>
+          <p class="mt-3 text-white/95">Get a quick estimate for BCD, VAT/IGST and landed cost. (Uses backend if available; falls back to demo.)</p>
         </div>
       </div>
     </div>
@@ -129,13 +129,13 @@
           </details>
 
           <div class="flex items-center gap-3">
-            <button class="bg-emerald text-white py-2 px-4 rounded-lg" type="submit">Calculate</button>
+            <button id="calcBtn" class="bg-emerald text-white py-2 px-4 rounded-lg" type="submit">Calculate</button>
             <label class="text-sm inline-flex items-center gap-2">
               <input id="ftaToggle" type="checkbox" class="h-4 w-4 border rounded"> Apply FTA savings (demo)
             </label>
           </div>
 
-          <p class="text-xs text-gray-600">Demo rates: IN BCD 10% (+SWS 10% of BCD), IGST 18%; US 3% & 0.9% VAT; EU/UK 5% & 20%. Override above if needed.</p>
+          <p class="text-xs text-gray-600">Backend path: <code>/duty/calc</code> (IN only). If unavailable, this page falls back to demo logic.</p>
         </section>
 
         <section>
@@ -185,8 +185,15 @@
     // Footer year
     document.getElementById('year').textContent = new Date().getFullYear();
 
-    // Helpers
-    const $ = s=>document.querySelector(s);
+    // ====== CONFIG ======
+    // If the page is hosted on the SAME domain as Flask, you can use an empty string "".
+    // Otherwise set your Render base, e.g. "https://chadaddy.onrender.com"
+    const API_BASE = ""; // "" means same-origin. Set to your full API origin if different.
+
+    // ====== Helpers ======
+    const $  = s => document.querySelector(s);
+    const $$ = s => Array.from(document.querySelectorAll(s));
+
     function addRow(label,basis,rate,amount){
       return `<tr>
         <td class="px-3 py-2">${label}</td>
@@ -196,27 +203,60 @@
       </tr>`;
     }
 
-    const ccy = {IN:'₹', US:'$', EU:'€', UK:'£'};
+    const currencyByCountry = { IN: 'INR', US: 'USD', EU: 'EUR', UK: 'GBP' };
+    const symbolByCcy = { INR:'₹', USD:'$', EUR:'€', GBP:'£' };
 
-    function runCalc(){
-      const country = $('#cCountry').value;
-      const hs = $('#cHS').value.trim();
-      const goods = +($('#cGoods').value||0);
-      const freight = +($('#cFreight').value||0);
-      const ins = +($('#cIns').value||0);
-      const other = +($('#cOther').value||0);
-      const override = +($('#cDuty').value||NaN);
-      const vatIn = +($('#cVat').value||NaN);
-      const aidcIn = +($('#cAidc').value||NaN);
-      const fta = $('#ftaToggle').checked;
+    function symForCountry(country){
+      const ccy = currencyByCountry[country] || 'USD';
+      return symbolByCcy[ccy] || '';
+    }
 
-      if(!goods){ alert('Please enter Goods Value'); return; }
+    function setBusy(busy){
+      const btn = $('#calcBtn');
+      btn.disabled = !!busy;
+      btn.textContent = busy ? 'Calculating…' : 'Calculate';
+    }
 
-      let AV = goods + freight + ins + other;
+    async function tryHsSuggest(hsOrQuery, country){
+      const box = $('#hsSuggestBox');
+      const list = $('#hsSuggestList');
 
+      // Only suggest if the HS looks short
+      if(!hsOrQuery || hsOrQuery.trim().length >= 6){
+        box.classList.add('hidden');
+        return;
+      }
+
+      // Attempt backend suggestions if available
+      try{
+        const url = `${API_BASE}/hsn/suggest?country=${encodeURIComponent(country)}&q=${encodeURIComponent(hsOrQuery)}`;
+        const res = await fetch(url, { method: 'GET', cache: 'no-store' });
+        if(res.ok){
+          const data = await res.json();
+          if(Array.isArray(data?.suggestions) && data.suggestions.length){
+            list.innerHTML = data.suggestions.slice(0,5).map(s =>
+              `<li>${s.text || s.code || s} ${s.confidence ? `<span class="text-xs text-gray-500">confidence ${s.confidence}%</span>`:''}</li>`
+            ).join('');
+            box.classList.remove('hidden');
+            return;
+          }
+        }
+      }catch(_){ /* ignore */ }
+
+      // Fallback static suggestions
+      list.innerHTML = [
+        '851713 – Phones',
+        '851762 – Comm. equip',
+        '850760 – Li-ion cells'
+      ].map((s,i)=>`<li>${s} <span class="text-xs text-gray-500">confidence ${85 - i*10}%</span></li>`).join('');
+      box.classList.remove('hidden');
+    }
+
+    // ====== Demo fallback math (what you already had) ======
+    function demoCalc({country, goods, freight, ins, other, override, vatIn, aidcIn, fta}){
+      const AV = goods + freight + ins + other;
       let baseDuty = isNaN(override)?({IN:10,US:3,EU:5,UK:5}[country]||10):override;
       if(fta) baseDuty = Math.max(0, baseDuty - 5);
-
       const vatRate = isNaN(vatIn)?({IN:18,US:0.9,EU:20,UK:20}[country]||18):vatIn;
       const aidcRate = isNaN(aidcIn)?({IN:0,US:0,EU:0,UK:0}[country]||0):aidcIn;
 
@@ -228,34 +268,104 @@
       const VAT = sub * (vatRate/100);
       const total = sub + VAT;
 
+      return { AV, baseDuty, vatRate, aidcRate, BCD, SWS, AIDC, sub, VAT, total };
+    }
+
+    // ====== Backend-first calculation ======
+    async function runCalc(){
+      const country = $('#cCountry').value.trim();
+      const hs = $('#cHS').value.trim();
+      const goods = +($('#cGoods').value||0);
+      const freight = +($('#cFreight').value||0);
+      const ins = +($('#cIns').value||0);
+      const other = +($('#cOther').value||0);
+      const override = +($('#cDuty').value||NaN);
+      const vatIn = +($('#cVat').value||NaN);
+      const aidcIn = +($('#cAidc').value||NaN);
+      const fta = $('#ftaToggle').checked;
+      const incoterm = $('#cIncoterm').value;
+
+      if(!goods){ alert('Please enter Goods Value'); return; }
+
+      setBusy(true);
       const tb = $('#cTable');
-      tb.innerHTML = addRow('Assessable Value (AV)', AV, '', AV)
-        + addRow('BCD', AV, baseDuty, BCD)
-        + (SWS ? addRow('SWS (10% of BCD)', BCD, 10, SWS) : '')
-        + (AIDC ? addRow('AIDC/Cess', AV, aidcRate, AIDC) : '')
-        + addRow(country==='IN'?'IGST':'VAT', sub, vatRate, VAT)
-        + `<tr class="bg-gray-50 font-semibold">
-             <td class="px-3 py-2" colspan="3">Total Landed Cost</td>
-             <td class="px-3 py-2 text-right">${Math.round(total).toLocaleString()}</td>
-           </tr>`;
+      const sym = symForCountry(country);
 
-      // HS suggestions if HS looks short
-      const box = $('#hsSuggestBox');
-      if(hs.length < 6){
-        box.classList.remove('hidden');
-        $('#hsSuggestList').innerHTML = [
-          '851713 – Phones',
-          '851762 – Comm. equip',
-          '850760 – Li-ion cells'
-        ].map((s,i)=>`<li>${s} <span class="text-xs text-gray-500">confidence ${85 - i*10}%</span></li>`).join('');
-      } else {
-        box.classList.add('hidden');
+      // Try HS suggestions async (no need to await)
+      tryHsSuggest(hs, country);
+
+      // Build payload for backend (India engine expects fob/freight/insurance; we ignore "other")
+      const payload = {
+        import_country: country,
+        export_country: "CN",
+        hs_code: hs,
+        incoterm: incoterm,
+        currency: currencyByCountry[country] || "USD",
+        fob: goods,
+        freight: freight,
+        insurance: ins
+      };
+
+      let usedBackend = false;
+      try{
+        const res = await fetch(`${API_BASE}/duty/calc`, {
+          method: "POST",
+          headers: { "Content-Type":"application/json" },
+          body: JSON.stringify(payload),
+          cache: "no-store"
+        });
+        const data = await res.json();
+
+        if(res.ok && !data.error){
+          usedBackend = true;
+
+          const AV = +data.cif_value || (goods + freight + ins);
+          const bcdRate = data.components?.bcd?.rate_pct ?? '';
+          const bcdAmt  = data.components?.bcd?.amount ?? 0;
+          const swsRate = data.components?.sws?.rate_pct ?? '';
+          const swsAmt  = data.components?.sws?.amount ?? 0;
+          const igstRate= data.components?.igst?.rate_pct ?? '';
+          const igstAmt = data.components?.igst?.amount ?? 0;
+          const adcvdAmt= data.components?.adcvd?.amount ?? 0;
+          const totalTaxes = data.total_taxes ?? (bcdAmt + swsAmt + igstAmt + adcvdAmt);
+          const total = AV + totalTaxes;
+
+          tb.innerHTML =
+            addRow('Assessable Value (CIF basis)', AV, '', AV) +
+            addRow('BCD', AV, bcdRate, bcdAmt) +
+            (swsAmt ? addRow('SWS (10% of BCD)', bcdAmt, swsRate || 10, swsAmt) : '') +
+            (adcvdAmt ? addRow('Anti-dumping/CVD', AV, '', adcvdAmt) : '') +
+            addRow(country==='IN'?'IGST':'VAT', AV + bcdAmt + swsAmt + adcvdAmt, igstRate, igstAmt) +
+            `<tr class="bg-gray-50 font-semibold">
+              <td class="px-3 py-2" colspan="3">Total Landed Cost</td>
+              <td class="px-3 py-2 text-right">${sym} ${Math.round(total).toLocaleString()}</td>
+            </tr>`;
+
+          $('#totalCard').classList.remove('hidden');
+          $('#totalVal').textContent = `${sym} ${Math.round(total).toLocaleString()}`;
+        } else {
+          // Backend said unsupported (e.g., non-IN) or errored — fall back
+          throw new Error(data.error || `HTTP ${res.status}`);
+        }
+      } catch(_err){
+        // DEMO fallback math
+        const out = demoCalc({country, goods, freight, ins, other, override, vatIn, aidcIn, fta});
+        tb.innerHTML =
+          addRow('Assessable Value (AV)', out.AV, '', out.AV) +
+          addRow('BCD', out.AV, out.baseDuty, out.BCD) +
+          (out.SWS ? addRow('SWS (10% of BCD)', out.BCD, 10, out.SWS) : '') +
+          (out.AIDC ? addRow('AIDC/Cess', out.AV, out.aidcRate, out.AIDC) : '') +
+          addRow(country==='IN'?'IGST':'VAT', out.sub, out.vatRate, out.VAT) +
+          `<tr class="bg-gray-50 font-semibold">
+            <td class="px-3 py-2" colspan="3">Total Landed Cost</td>
+            <td class="px-3 py-2 text-right">${sym} ${Math.round(out.total).toLocaleString()}</td>
+          </tr>`;
+
+        $('#totalCard').classList.remove('hidden');
+        $('#totalVal').textContent = `${sym} ${Math.round(out.total).toLocaleString()}`;
+      } finally {
+        setBusy(false);
       }
-
-      // Total card
-      const sym = ccy[country] || '';
-      $('#totalCard').classList.remove('hidden');
-      $('#totalVal').textContent = `${sym} ${Math.round(total).toLocaleString()}`;
     }
 
     document.getElementById('calcForm').addEventListener('submit', function(e){
