@@ -164,7 +164,7 @@
     </aside>
 
     <!-- Conversation -->
-    <section class="bg-white border border-gray-200 rounded-2xl shadow flex flex-col min-h-[60vh] w/full">
+    <section class="bg-white border border-gray-200 rounded-2xl shadow flex flex-col min-h-[60vh] w-full">
       <!-- Stream -->
       <div id="messages" class="flex-1 overflow-auto p-3 md:p-4 space-y-3 md:space-y-4 w-full">
         <div class="fade-in rounded-xl bg-gray-50 p-3 md:p-4 bubble w-full">
@@ -234,18 +234,15 @@
     }
     setVH(); window.addEventListener('resize', setVH);
 
-    // ===== Backend URL (auto same-origin; override with window.__LD_API_BASE__) =====
-    const API_BASE = (window.__LD_API_BASE__ ?? '').toString();
+    // ===== Backend URL =====
+    const API_BASE = "https://chadaddy.onrender.com"; // change if needed
+
+    // ===== Utilities =====
     const $  = s => document.querySelector(s);
     const $$ = s => Array.from(document.querySelectorAll(s));
     $('#year').textContent = new Date().getFullYear();
     const toast = (msg) => { const t = $('#toast'); t.textContent = msg; t.classList.remove('hidden'); setTimeout(()=>t.classList.add('hidden'), 1600); };
     const uid = () => Math.random().toString(36).slice(2)+Date.now().toString(36);
-
-    function join(base, path){
-      if(!base) return path; // same-origin
-      return base.replace(/\/+$/,'') + path;
-    }
 
     function getSessionId(){
       const k="ld_chat_session_id";
@@ -421,7 +418,7 @@
       const form = new FormData();
       files.forEach(f => form.append('files', f.file, f.file.name));
       try{
-        const res = await fetch(join(API_BASE, '/api/upload'), { method:'POST', body:form, cache:'no-store' });
+        const res = await fetch(`${API_BASE}/api/upload`, { method:'POST', body:form });
         if(!res.ok) throw new Error('Upload failed');
         const data = await res.json();
         const list = Array.isArray(data) ? data : (data.files || [data]);
@@ -477,7 +474,7 @@
     }
     function typingBubble(){
       return `
-        <div class="rounded-xl bg-gray-50 p-3 md:p-4 bubble w-full" id="typingBubble">
+        <div class="rounded-xl bg-gray-50 p-3 md:p-4 bubble w-full">
           <div class="text-xs md:text-sm text-gray-600 flex items-center gap-2">
             <span class="grid w-6 h-6 place-items-center rounded-full bg-indigoDeep text-white text-[12px]">◆</span>
             <span>Assistant</span>
@@ -516,7 +513,7 @@
       saveThreads(); renderSidebar(); renderMobileList(); renderMessages();
     }
 
-    // ===== Send (JSON + Streaming support) =====
+    // ===== Send =====
     const area = $('#chatInput');
     const form = $('#composer');
     const toBottomBtn = $('#toBottom');
@@ -537,7 +534,7 @@
       wrap.scrollTop = wrap.scrollHeight;
 
       try {
-        const res = await fetch(join(API_BASE, '/api/chat'), {
+        const res = await fetch(`${API_BASE}/api/chat`, {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({
@@ -548,72 +545,20 @@
           cache: "no-store"
         });
 
-        const ct = (res.headers.get("content-type") || "").toLowerCase();
+        const ct = res.headers.get("content-type") || "";
+        let data = {};
+        if (ct.includes("application/json")) data = await res.json();
+        else data = { error: await res.text() || `HTTP ${res.status}` };
 
-        // Remove typing bubble when real data arrives
-        const tb = document.getElementById('typingBubble'); if(tb) tb.remove();
+        const last = wrap.lastElementChild; if(last) last.remove();
 
-        if (ct.includes("text/event-stream") || ct.includes("text/plain") || ct.includes("application/octet-stream")) {
-          // Streaming mode
-          addMessage('assistant', ""); // create empty msg to append chunks
-          const t = getCurrent();
-          const msg = t.messages[t.messages.length - 1];
-          const reader = res.body?.getReader();
-          const decoder = new TextDecoder();
-          let buffer = "";
-          if (!reader) { addMessage('assistant', "⚠️ Streaming not supported by this browser."); return; }
-          while (true) {
-            const { value, done } = await reader.read();
-            if (done) break;
-            buffer += decoder.decode(value, { stream: true });
-
-            // Handle SSE: blocks separated by blank line
-            const blocks = buffer.split(/\r?\n\r?\n/);
-            buffer = blocks.pop() || "";
-            for (const block of blocks) {
-              const lines = block.split(/\r?\n/).filter(Boolean);
-              for (const line of lines) {
-                const payload = line.replace(/^data:\s?/, "");
-                try {
-                  const obj = JSON.parse(payload);
-                  const delta = obj.delta ?? obj.message ?? obj.content ?? "";
-                  if (delta) { msg.text = (msg.text || "") + delta; saveThreads(); renderMessages(); }
-                } catch {
-                  msg.text = (msg.text || "") + payload;
-                  saveThreads(); renderMessages();
-                }
-              }
-            }
-          }
-          // Flush trailing text
-          if (buffer.trim()) {
-            try {
-              const obj = JSON.parse(buffer);
-              const delta = obj.delta ?? obj.message ?? obj.content ?? buffer;
-              msg.text = (msg.text || "") + delta;
-            } catch {
-              msg.text = (msg.text || "") + buffer;
-            }
-            saveThreads(); renderMessages();
-          }
-          return;
+        if (res.ok && data.reply){
+          addMessage('assistant', data.reply);
+        } else {
+          addMessage('assistant', "⚠️ Error: " + (data.error || `API ${res.status}`));
         }
-
-        if (ct.includes("application/json")) {
-          const data = await res.json();
-          if (res.ok && data.reply){
-            addMessage('assistant', data.reply);
-          } else {
-            addMessage('assistant', "⚠️ Error: " + (data.error || `API ${res.status}`));
-          }
-          return;
-        }
-
-        // Any other content type: show text as-is
-        const textResp = await res.text();
-        addMessage('assistant', textResp || `⚠️ Unexpected response (HTTP ${res.status})`);
       } catch (err) {
-        const tb2 = document.getElementById('typingBubble'); if(tb2) tb2.remove();
+        const last = wrap.lastElementChild; if(last) last.remove();
         addMessage('assistant', "⚠️ Network error: " + err.message);
       }
     }
@@ -644,12 +589,11 @@
       const nearBottom = (msgWrap.scrollHeight - msgWrap.scrollTop - msgWrap.clientHeight) < 140;
       if(nearBottom) toBottomBtn.classList.add('hidden'); else toBottomBtn.classList.remove('hidden');
     }
-    const msgWrap = $('#messages');
     msgWrap.addEventListener('scroll', toggleScrollBtn);
+    toBottomBtn.addEventListener('click', ()=>{ msgWrap.scrollTop = msgWrap.scrollHeight; toggleScrollBtn(); });
+    // Mobile bottom buttons
     $('#fabDown').addEventListener('click', ()=>{ msgWrap.scrollTop = msgWrap.scrollHeight; });
     $('#fabNew').addEventListener('click', ()=>{ newThread(); openDrawer(); });
-    const toBottomBtn = $('#toBottom');
-    toBottomBtn.addEventListener('click', ()=>{ msgWrap.scrollTop = msgWrap.scrollHeight; toggleScrollBtn(); });
 
     // Sidebar actions (desktop)
     $('#newChat')?.addEventListener('click', ()=> newThread());
