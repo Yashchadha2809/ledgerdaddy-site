@@ -7,29 +7,25 @@
   <meta name="theme-color" content="#111827" />
   <script src="https://cdn.tailwindcss.com"></script>
   <script>
-    // Minimal, modern palette
     tailwind.config = {
       theme: {
         extend: {
           colors:{
-            brandPrimary:"#111827",   // headings / strong text (slate-900)
-            brandAccent:"#2563EB",    // interactive blue (blue-600)
-            brandSoft:"#EFF6FF",      // soft blue bg (blue-50)
-            brandBorder:"#E5E7EB",    // light border (gray-200)
-            brandMuted:"#6B7280",     // muted text (gray-500)
-            brandBg:"#F9FAFB"         // app background (gray-50)
+            brandPrimary:"#111827",
+            brandAccent:"#2563EB",
+            brandSoft:"#EFF6FF",
+            brandBorder:"#E5E7EB",
+            brandMuted:"#6B7280",
+            brandBg:"#F9FAFB"
           },
           boxShadow:{ lift:"0 10px 24px rgba(17,24,39,.06)" },
-          backgroundImage:{
-            "soft-gradient":"linear-gradient(135deg, #EFF6FF 0%, #FFFFFF 100%)"
-          },
+          backgroundImage:{ "soft-gradient":"linear-gradient(135deg, #EFF6FF 0%, #FFFFFF 100%)" },
           borderRadius: { xl2: '14px' }
         }
       }
     }
   </script>
   <style>
-    /* Subtle, breathable UI */
     .card{transition:transform .12s ease, box-shadow .2s ease}
     .card:hover{transform:translateY(-1px); box-shadow:0 10px 24px rgba(17,24,39,.06)}
     .kpi{background:#fff}
@@ -44,42 +40,59 @@
   </style>
 </head>
 <body class="min-h-screen bg-brandBg text-brandPrimary">
-  <!-- ===== Auth gate: if no user, redirect to login ===== -->
+  <!-- ===== Auth gate (robust) ===== -->
   <script>
     (function(){
-      try{
-        const u = JSON.parse(localStorage.getItem('chadaddy_user')||'null');
-        if(!u || !u.email){ window.location.replace('/log-in.html'); }
-      }catch(e){ window.location.replace('/log-in.html'); }
+      try {
+        const here = location.pathname;
+        const isLogin = here.endsWith('/log-in.html') || here === '/log-in.html';
+        const raw = localStorage.getItem('chadaddy_user');
+        let u = null;
+        if (raw) { try { u = JSON.parse(raw); } catch { u = null; } }
+        // OPTIONAL: for local testing, uncomment to auto-seed a demo user
+        // if (!u) { u = { email:"demo@ledgerdaddy.test", name:"Demo User", ts: Date.now() }; localStorage.setItem('chadaddy_user', JSON.stringify(u)); }
+
+        if ((!u || !u.email) && !isLogin) {
+          // redirect only if not already on login
+          window.location.href = './log-in.html';
+        }
+      } catch (e) {
+        // If anything goes wrong, avoid redirect loops
+        console.warn('Auth gate warning:', e);
+      }
     })();
   </script>
 
   <!-- ===== Topbar ===== -->
   <header class="fixed top-0 inset-x-0 z-50 border-b border-brandBorder bg-white/90 backdrop-blur">
     <div class="max-w-7xl mx-auto px-4 py-3 flex items-center justify-between">
-      <!-- tip: root-relative link keeps you on same domain -->
-      <a href="/" class="flex items-center gap-2" aria-label="Home">
+      <!-- Use dashboard as home to avoid "/" 404s -->
+      <a href="./dashboard.html" id="homeLink" class="flex items-center gap-2" aria-label="Home">
         <span class="grid h-9 w-9 place-items-center rounded-xl bg-soft-gradient text-brandPrimary font-extrabold shadow">◆</span>
         <span class="text-xl font-bold">Ledgerdaddy</span>
         <span class="ml-2 hidden sm:inline-flex badge">AI Customs</span>
       </a>
+
       <nav class="hidden md:flex items-center gap-2 text-sm font-medium">
-        <a href="/marketplace.html" class="nav-link px-3 py-2 rounded-lg">Marketplace</a>
-        <a href="/calculator.html" class="nav-link px-3 py-2 rounded-lg">Calculator</a>
-        <a href="/hs-finder.html" class="nav-link px-3 py-2 rounded-lg">HS Finder</a>
-        <a href="/chat.html" class="nav-link px-3 py-2 rounded-lg">Ask in Chat</a>
+        <a href="./marketplace.html" class="nav-link px-3 py-2 rounded-lg">Marketplace</a>
+        <a href="./calculator.html"   class="nav-link px-3 py-2 rounded-lg">Calculator</a>
+        <a href="./hs-finder.html"    class="nav-link px-3 py-2 rounded-lg">HS Finder</a>
+        <a href="./chat.html"         class="nav-link px-3 py-2 rounded-lg">Ask in Chat</a>
       </nav>
-      <div class="flex items-center gap-2">
-        <!-- Account dropdown (hover reveal, minimal) -->
-        <div class="relative group">
-          <button class="btn btn-primary">Account ▾</button>
-          <div class="absolute right-0 mt-2 hidden group-hover:block bg-white border border-brandBorder rounded-xl shadow-lg w-48">
-            <a href="/profile.html" class="block px-4 py-2 text-sm hover:bg-brandSoft">Profile</a>
-            <a href="/security.html" class="block px-4 py-2 text-sm hover:bg-brandSoft">Security & Privacy</a>
-            <a href="/payments.html" class="block px-4 py-2 text-sm hover:bg-brandSoft">Payment Methods</a>
-            <a href="/integrations.html" class="block px-4 py-2 text-sm hover:bg-brandSoft">Integrations</a>
-            <button id="logoutBtn" class="w-full text-left block px-4 py-2 text-sm text-red-600 hover:bg-red-50">Sign out</button>
-          </div>
+
+      <!-- Click-to-toggle account menu (no hover traps; mobile-safe) -->
+      <div class="relative">
+        <button id="accountBtn" type="button" class="btn btn-primary select-none">Account ▾</button>
+        <div id="accountMenu"
+             class="absolute right-0 mt-2 hidden bg-white border border-brandBorder rounded-xl shadow-lg w-56 py-1">
+          <a href="./profile.html"      class="block px-4 py-2 text-sm hover:bg-brandSoft">Profile</a>
+          <a href="./security.html"     class="block px-4 py-2 text-sm hover:bg-brandSoft">Security & Privacy</a>
+          <a href="./payments.html"     class="block px-4 py-2 text-sm hover:bg-brandSoft">Payment Methods</a>
+          <a href="./integrations.html" class="block px-4 py-2 text-sm hover:bg-brandSoft">Integrations</a>
+          <button id="logoutBtn" type="button"
+                  class="w-full text-left block px-4 py-2 text-sm text-red-600 hover:bg-red-50">
+            Sign out
+          </button>
         </div>
       </div>
     </div>
@@ -94,8 +107,8 @@
           <p class="text-brandMuted mt-2">Quick access to your tools and recent activity.</p>
         </div>
         <div class="flex items-center gap-2">
-          <a href="/chat.html" class="btn btn-primary">Ask something</a>
-          <a href="/calculator.html" class="btn btn-outline">New estimate</a>
+          <a href="./chat.html" class="btn btn-primary">Ask something</a>
+          <a href="./calculator.html" class="btn btn-outline">New estimate</a>
         </div>
       </div>
     </div>
@@ -132,7 +145,7 @@
           <div class="text-xs text-brandMuted">Common tasks</div>
         </div>
         <div class="mt-4 grid grid-cols-2 md:grid-cols-4 gap-3">
-          <a href="/calculator.html" class="group border border-brandBorder rounded-xl p-4 text-left hover:border-brandAccent focus-ring">
+          <a href="./calculator.html" class="group border border-brandBorder rounded-xl p-4 text-left hover:border-brandAccent focus-ring">
             <div class="flex items-center gap-3">
               <div class="h-10 w-10 rounded-lg bg-brandSoft text-brandAccent grid place-items-center">∑</div>
               <div>
@@ -141,7 +154,7 @@
               </div>
             </div>
           </a>
-          <a href="/hs-finder.html" class="group border border-brandBorder rounded-xl p-4 text-left hover:border-brandAccent focus-ring">
+          <a href="./hs-finder.html" class="group border border-brandBorder rounded-xl p-4 text-left hover:border-brandAccent focus-ring">
             <div class="flex items-center gap-3">
               <div class="h-10 w-10 rounded-lg bg-brandSoft text-brandAccent grid place-items-center">HS</div>
               <div>
@@ -150,7 +163,7 @@
               </div>
             </div>
           </a>
-          <a href="/marketplace.html" class="group border border-brandBorder rounded-xl p-4 text-left hover:border-brandAccent focus-ring">
+          <a href="./marketplace.html" class="group border border-brandBorder rounded-xl p-4 text-left hover:border-brandAccent focus-ring">
             <div class="flex items-center gap-3">
               <div class="h-10 w-10 rounded-lg bg-brandSoft text-brandAccent grid place-items-center">🏬</div>
               <div>
@@ -159,7 +172,7 @@
               </div>
             </div>
           </a>
-          <a href="/chat.html" class="group border border-brandBorder rounded-xl p-4 text-left hover:border-brandAccent focus-ring">
+          <a href="./chat.html" class="group border border-brandBorder rounded-xl p-4 text-left hover:border-brandAccent focus-ring">
             <div class="flex items-center gap-3">
               <div class="h-10 w-10 rounded-lg bg-brandSoft text-brandAccent grid place-items-center">💬</div>
               <div>
@@ -180,7 +193,7 @@
           <article class="border border-brandBorder rounded-xl p-4">
             <div class="flex items-center justify-between">
               <h3 class="font-semibold">Calculator</h3>
-              <a href="/calculator.html" class="text-brandAccent text-sm">Open →</a>
+              <a href="./calculator.html" class="text-brandAccent text-sm">Open →</a>
             </div>
             <p class="text-sm text-brandMuted mt-1">Estimate BCD, IGST/VAT and landed cost.</p>
             <div class="text-xs text-brandMuted mt-2">Last used: 2 days ago</div>
@@ -188,7 +201,7 @@
           <article class="border border-brandBorder rounded-xl p-4">
             <div class="flex items-center justify-between">
               <h3 class="font-semibold">HS Finder</h3>
-              <a href="/hs-finder.html" class="text-brandAccent text-sm">Open →</a>
+              <a href="./hs-finder.html" class="text-brandAccent text-sm">Open →</a>
             </div>
             <p class="text-sm text-brandMuted mt-1">Describe product → get HS suggestions.</p>
             <div class="text-xs text-brandMuted mt-2">Last used: 4 days ago</div>
@@ -196,7 +209,7 @@
           <article class="border border-brandBorder rounded-xl p-4">
             <div class="flex items-center justify-between">
               <h3 class="font-semibold">Marketplace</h3>
-              <a href="/marketplace.html" class="text-brandAccent text-sm">Open →</a>
+              <a href="./marketplace.html" class="text-brandAccent text-sm">Open →</a>
             </div>
             <p class="text-sm text-brandMuted mt-1">Browse & compare verified customs brokers.</p>
             <div class="text-xs text-brandMuted mt-2">Last used: 1 week ago</div>
@@ -204,7 +217,7 @@
           <article class="border border-brandBorder rounded-xl p-4">
             <div class="flex items-center justify-between">
               <h3 class="font-semibold">Ask in Chat</h3>
-              <a href="/chat.html" class="text-brandAccent text-sm">Open →</a>
+              <a href="./chat.html" class="text-brandAccent text-sm">Open →</a>
             </div>
             <p class="text-sm text-brandMuted mt-1">Get instant help, ChatGPT-style.</p>
             <div class="text-xs text-brandMuted mt-2">Active: <span id="chatThreadsText">0 threads</span></div>
@@ -242,10 +255,10 @@
       <section class="bg-white border border-brandBorder rounded-2xl p-5 card">
         <h3 class="text-lg font-semibold">What’s next?</h3>
         <ul class="mt-2 list-disc ml-5 text-sm text-brandPrimary/90">
-          <li>Create a landed cost estimate in the <a class="text-brandAccent" href="/calculator.html">Calculator</a></li>
-          <li>Try <a class="text-brandAccent" href="/hs-finder.html">HS Finder</a> with a product description</li>
-          <li>Browse verified brokers in the <a class="text-brandAccent" href="/marketplace.html">Marketplace</a></li>
-          <li>Ask quick questions in <a class="text-brandAccent" href="/chat.html">Chat</a></li>
+          <li>Create a landed cost estimate in the <a class="text-brandAccent" href="./calculator.html">Calculator</a></li>
+          <li>Try <a class="text-brandAccent" href="./hs-finder.html">HS Finder</a> with a product description</li>
+          <li>Browse verified brokers in the <a class="text-brandAccent" href="./marketplace.html">Marketplace</a></li>
+          <li>Ask quick questions in <a class="text-brandAccent" href="./chat.html">Chat</a></li>
         </ul>
       </section>
     </aside>
@@ -256,50 +269,99 @@
   </footer>
 
   <script>
-    document.getElementById('year').textContent = new Date().getFullYear();
+    // Utility
+    const $ = s => document.querySelector(s);
+    const $$ = s => Array.from(document.querySelectorAll(s));
 
-    // Load session
+    // Footer year
+    $('#year').textContent = new Date().getFullYear();
+
+    // Session load (safe)
     let user = null;
-    try{ user = JSON.parse(localStorage.getItem('chadaddy_user')||'null'); }catch(e){}
-    if(user){
-      document.getElementById('name').textContent = user.name || 'there';
-      document.getElementById('email').textContent = user.email || '—';
+    try {
+      const raw = localStorage.getItem('chadaddy_user');
+      if (raw) user = JSON.parse(raw);
+    } catch (e) { user = null; }
+
+    if (user) {
+      $('#name').textContent = user.name || 'there';
+      $('#email').textContent = user.email || '—';
       const d = new Date(user.ts || Date.now());
-      document.getElementById('memberSince').textContent = d.toLocaleDateString();
+      $('#memberSince').textContent = d.toLocaleDateString();
     }
 
     // Demo "recent" list
     const recent = [
-      { t:'Estimate • IN • HS 851713 • CIF', time:'2 days ago', link:'/calculator.html' },
-      { t:'HS Finder • “LED downlight”', time:'4 days ago', link:'/hs-finder.html' },
-      { t:'Broker shortlist • JNPT', time:'1 week ago', link:'/marketplace.html' },
-      { t:'Chat • “Docs for EU furniture”', time:'1 week ago', link:'/chat.html' },
+      { t:'Estimate • IN • HS 851713 • CIF', time:'2 days ago', link:'./calculator.html' },
+      { t:'HS Finder • “LED downlight”',     time:'4 days ago',  link:'./hs-finder.html' },
+      { t:'Broker shortlist • JNPT',         time:'1 week ago',  link:'./marketplace.html' },
+      { t:'Chat • “Docs for EU furniture”',  time:'1 week ago',  link:'./chat.html' },
     ];
-    document.getElementById('recentList').innerHTML = recent
-      .map(r => `<li class="border border-${'brandBorder'} rounded-lg px-3 py-2 flex items-center justify-between">
+    $('#recentList').innerHTML = recent
+      .map(r => `<li class="border border-brandBorder rounded-lg px-3 py-2 flex items-center justify-between">
         <a class="hover:text-brandAccent" href="${r.link}">${r.t}</a>
         <span class="text-brandMuted">${r.time}</span></li>`).join('');
 
-    // Pull chat thread count
+    // Chat thread count
     try{
       const t = JSON.parse(localStorage.getItem('ld_chat_threads_v1')||'[]');
       const n = Array.isArray(t) ? t.length : 0;
-      document.getElementById('kpiThreads').textContent = n;
-      const tt = document.getElementById('chatThreadsText');
+      $('#kpiThreads').textContent = n;
+      const tt = $('#chatThreadsText');
       if(tt) tt.textContent = n + (n===1?' thread':' threads');
     }catch{}
 
-    // Logout (from dropdown)
-    document.getElementById('logoutBtn')?.addEventListener('click', () => {
-      localStorage.removeItem('chadaddy_user');
-      window.location.replace('/log-in.html');
+    // ===== Account dropdown (click toggle; closes on outside click) =====
+    (function setupAccountMenu(){
+      const btn = $('#accountBtn');
+      const menu = $('#accountMenu');
+
+      function close(){ menu.classList.add('hidden'); btn.setAttribute('aria-expanded', 'false'); }
+      function open(){ menu.classList.remove('hidden'); btn.setAttribute('aria-expanded', 'true'); }
+
+      btn.addEventListener('click', (e)=>{
+        e.stopPropagation();
+        const isOpen = !menu.classList.contains('hidden');
+        isOpen ? close() : open();
+      });
+
+      // prevent menu clicks from bubbling (so clicking inside doesn't close or trigger anything else)
+      menu.addEventListener('click', (e)=> e.stopPropagation());
+
+      // click outside to close
+      document.addEventListener('click', close);
+
+      // Escape to close
+      document.addEventListener('keydown', (e)=>{ if(e.key==='Escape') close(); });
+    })();
+
+    // ===== Logout =====
+    $('#logoutBtn')?.addEventListener('click', (e) => {
+      e.stopPropagation();
+      try {
+        localStorage.removeItem('chadaddy_user');
+        // optional: also clear chat cache
+        // localStorage.removeItem('ld_chat_threads_v1');
+      } catch {}
+      window.location.href = './log-in.html';
     });
 
-    // Clear local demo data
-    document.getElementById('clearData').addEventListener('click', () => {
+    // ===== Clear local demo data =====
+    $('#clearData').addEventListener('click', () => {
       localStorage.removeItem('chadaddy_user');
       localStorage.removeItem('ld_chat_threads_v1');
       alert('Local demo data cleared. You may need to sign in again.');
+      // Optional: refresh to re-run auth gate
+      // location.reload();
+    });
+
+    // ===== Home link safety (avoid "/" issues) =====
+    // If you're already on dashboard, prevent redundant navigation.
+    $('#homeLink').addEventListener('click', (e)=>{
+      const here = location.pathname.replace(/\/+$/,'');
+      if (here.endsWith('/dashboard.html') || here === '/dashboard.html') {
+        e.preventDefault();
+      }
     });
   </script>
 </body>
