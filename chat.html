@@ -1,8 +1,11 @@
 <!DOCTYPE html>
-<html lang="en" class="h-full scroll-smooth">
+<html lang="en" class="h-full">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta
+    name="viewport"
+    content="width=device-width, initial-scale=1, viewport-fit=cover"
+  />
   <title>Ask in Chat – Ledgerdaddy</title>
   <meta name="theme-color" content="#1A237E" />
   <link rel="preconnect" href="https://images.unsplash.com" />
@@ -11,31 +14,16 @@
     tailwind.config = {
       theme: {
         extend: {
-          colors:{
-            indigoDeep:"#1A237E",
-            emerald:"#2E7D32",
-            cyanBright:"#00BCD4",
-            accentOrange:"#FF7043"
-          },
-          boxShadow:{
-            lift:"0 16px 40px rgba(0,0,0,.12)",
-            card:"0 12px 28px rgba(0,0,0,.10)"
-          },
-          borderRadius:{
-            xl2:"16px"
-          },
-          backgroundImage:{
-            "brand-grad":"linear-gradient(135deg, #1A237E 0%, #00BCD4 100%)",
-            "chip-grad":"linear-gradient(135deg, rgba(0,188,212,.10), rgba(26,35,126,.06))"
-          },
-          transitionTimingFunction:{
-            smooth:"cubic-bezier(.2,.9,.2,1)"
-          }
+          colors:{ indigoDeep:"#1A237E", emerald:"#2E7D32", cyanBright:"#00BCD4", accentOrange:"#FF7043" },
+          boxShadow:{ lift:"0 14px 34px rgba(0,0,0,.12)" },
+          height: { 'screen-dvh': 'calc(var(--vh, 1vh) * 100)' }
         }
       }
     }
   </script>
   <style>
+    /* Mobile viewport height fix (set in JS) */
+    html,body { height: 100%; }
     .fade-in{animation:fade .15s ease-out}
     @keyframes fade{from{opacity:.5;transform:translateY(2px)}to{opacity:1;transform:none}}
     .typing-dot{animation:pulse 1s infinite ease-in-out}
@@ -43,220 +31,191 @@
     .typing-dot:nth-child(3){animation-delay:.3s}
     @keyframes pulse{0%,80%,100%{opacity:.25}40%{opacity:1}}
     .card{transition:transform .12s ease, box-shadow .2s ease}
-    .card:hover{transform:translateY(-2px); box-shadow:0 16px 40px rgba(0,0,0,.12)}
-    .btn{display:inline-flex;align-items:center;gap:.55rem;padding:.58rem 1rem;border-radius:12px;font-weight:600}
-    .btn-emerald{background:#2E7D32;color:#fff;transition:transform .12s ease, filter .12s ease}
-    .btn-emerald:hover{filter:brightness(1.04);transform:translateY(-1px)}
-    .btn-ghost{border:1px solid #e5e7eb;background:#fff}
-    .chip{font-size:12px;border:1px solid #e5e7eb;border-radius:999px;padding:.34rem .66rem;background:#fff}
-    .chip:hover{border-color:#00BCD4;color:#00BCD4}
-    .navlink{border-radius:10px;padding:.5rem .75rem}
-    .navlink:hover{background:rgba(0,188,212,.10);color:#00BCD4}
-    .drawer{transition:transform .18s ease}
-    .drop-target{outline:2px dashed #00BCD4; outline-offset:4px}
+    .card:hover{transform:translateY(-2px); box-shadow:0 14px 34px rgba(0,0,0,.14)}
+    .hero-img{background:url('https://images.unsplash.com/photo-1586521995568-39ef16c6934d?q=80&w=1920&auto=format&fit=crop') center/cover no-repeat;}
+    pre{background:#0f172a; color:#e5e7eb; padding:12px; border-radius:10px; overflow:auto}
+    code{font-family:ui-monospace,SFMono-Regular,Menlo,monospace}
+
+    /* Upload previews */
     .thumb{width:56px;height:56px;border-radius:10px;object-fit:cover;border:1px solid #e5e7eb}
     .file-pill{border:1px solid #e5e7eb;border-radius:10px;padding:.4rem .6rem;font-size:12px;display:flex;align-items:center;gap:.5rem;background:#fff}
-    pre{background:#0f172a;color:#e5e7eb;padding:12px;border-radius:12px;overflow:auto}
-    code{font-family:ui-monospace,SFMono-Regular,Menlo,monospace}
+    .drop-target{outline:2px dashed #00BCD4; outline-offset:4px}
+
+    .btn{display:inline-flex;align-items:center;gap:.55rem;padding:.56rem .9rem;border-radius:12px;font-weight:600}
+    .btn-emerald{background:#2E7D32;color:#fff}
+    .btn-emerald:hover{filter:brightness(1.03)}
+    .btn-ghost{border:1px solid #e5e7eb;background:transparent}
+    .chip{font-size:12px;border:1px solid #e5e7eb;border-radius:999px;padding:.3rem .6rem;background:#fff}
+
+    /* Drawer transitions */
+    .drawer-enter { transform: translateX(-100%); opacity: .6; }
+    .drawer-enter-active { transform: translateX(0); opacity: 1; transition: transform .18s ease, opacity .18s ease; }
+    .drawer-exit { transform: translateX(0); opacity: 1; }
+    .drawer-exit-active { transform: translateX(-100%); opacity: .0; transition: transform .18s ease, opacity .18s ease; }
+
+    /* iOS tap highlights */
+    * { -webkit-tap-highlight-color: rgba(0,0,0,0.05); }
   </style>
 </head>
-<body class="h-full bg-gray-50 text-gray-900">
+<body class="bg-gray-50 text-gray-900 h-screen-dvh flex flex-col">
 
-  <!-- App Bar -->
-  <header class="fixed top-0 inset-x-0 z-50 bg-white/90 backdrop-blur border-b border-gray-200">
-    <div class="max-w-7xl mx-auto px-3 sm:px-4 py-2.5 flex items-center justify-between">
-      <div class="flex items-center gap-2">
-        <button id="openDrawer" class="md:hidden btn-ghost rounded-lg px-2 py-1.5" aria-label="Open menu">☰</button>
-        <a href="./dashboard.html" class="flex items-center gap-2" aria-label="Home">
-          <span class="grid h-9 w-9 place-items-center rounded-xl bg-brand-grad text-white font-extrabold shadow">◆</span>
-          <span class="text-xl font-bold text-indigoDeep">Ledgerdaddy</span>
-          <span class="ml-2 hidden sm:inline-flex text-[11px] px-2 py-0.5 rounded-full border border-cyanBright/40 text-cyanBright">AI Customs</span>
-        </a>
-      </div>
-      <nav class="hidden md:flex items-center gap-2 text-sm font-medium">
-        <a href="./marketplace.html" class="navlink">Marketplace</a>
-        <a href="./calculator.html" class="navlink">Calculator</a>
-        <a href="./hs-finder.html" class="navlink">HS Finder</a>
-        <a href="./dashboard.html" class="navlink">Dashboard</a>
+  <!-- Topbar -->
+  <header class="fixed top-0 inset-x-0 z-50 border-b border-gray-200 bg-white/90 backdrop-blur">
+    <div class="max-w-7xl mx-auto px-4 py-3 flex items-center justify-between">
+      <button id="openDrawer" class="md:hidden inline-flex items-center justify-center h-9 w-9 rounded-lg border border-gray-200" aria-label="Open conversations">
+        ☰
+      </button>
+      <a href="./dashboard.html" class="flex items-center gap-2" aria-label="Home">
+        <span class="grid h-9 w-9 place-items-center rounded-xl bg-gradient-to-tr from-cyanBright to-emerald text-white font-extrabold shadow">◆</span>
+        <span class="text-lg md:text-xl font-bold text-indigoDeep">Ledgerdaddy</span>
+        <span class="ml-2 hidden sm:inline-flex text-[11px] px-2 py-0.5 rounded-full border border-cyanBright/40 text-cyanBright">AI Customs</span>
+      </a>
+      <nav class="hidden md:flex items-center gap-6 text-sm font-medium">
+        <a href="./marketplace.html" class="hover:text-cyanBright">Marketplace</a>
+        <a href="./calculator.html" class="hover:text-cyanBright">Calculator</a>
+        <a href="./hs-finder.html" class="hover:text-cyanBright">HS Finder</a>
+        <a href="./dashboard.html" class="hover:text-cyanBright">Dashboard</a>
       </nav>
       <div class="hidden md:flex items-center gap-2">
-        <a href="./log-in.html" class="btn-ghost rounded-lg px-3 py-2">Log in</a>
-        <a href="./personal-sign-up.html" class="btn btn-emerald">Sign up</a>
+        <a href="./log-in.html" class="border px-3 py-1.5 rounded-lg text-sm">Log in</a>
+        <a href="./personal-sign-up.html" class="bg-emerald text-white px-3 py-1.5 rounded-lg text-sm hover:opacity-95">Sign up</a>
       </div>
-      <a href="./personal-sign-up.html" class="md:hidden btn btn-emerald text-sm px-3 py-1.5">Start</a>
+      <a href="./personal-sign-up.html" class="md:hidden bg-emerald text-white px-3 py-1.5 rounded-lg text-sm">Start</a>
     </div>
   </header>
 
-  <!-- Mobile Drawer -->
+  <!-- Drawer (mobile conversations) -->
+  <div id="drawerBackdrop" class="fixed inset-0 z-[60] bg-black/30 hidden md:hidden"></div>
   <aside id="drawer"
-         class="fixed top-0 left-0 h-full w-72 bg-white border-r border-gray-200 shadow-xl drawer -translate-x-full md:hidden z-50">
-    <div class="px-3 py-3 border-b border-gray-200 flex items-center justify-between">
+    class="fixed left-0 top-0 bottom-0 z-[61] w-[82vw] max-w-[320px] bg-white border-r border-gray-200 p-3 md:hidden drawer-enter hidden">
+    <div class="flex items-center justify-between">
+      <strong>Conversations</strong>
       <div class="flex items-center gap-2">
-        <span class="grid h-8 w-8 place-items-center rounded-lg bg-brand-grad text-white font-bold">◆</span>
-        <strong class="text-indigoDeep">Menu</strong>
+        <button id="newChat_m" class="text-xs border rounded px-2 py-1">New</button>
+        <button id="closeDrawer" class="text-xs border rounded px-2 py-1">Close</button>
       </div>
-      <button id="closeDrawer" class="btn-ghost rounded-lg px-2 py-1.5" aria-label="Close menu">✕</button>
     </div>
-    <div class="p-3">
-      <nav class="grid gap-1 text-sm">
-        <a href="./marketplace.html" class="navlink">Marketplace</a>
-        <a href="./calculator.html" class="navlink">Calculator</a>
-        <a href="./hs-finder.html" class="navlink">HS Finder</a>
-        <a href="./dashboard.html" class="navlink">Dashboard</a>
-      </nav>
-      <div class="mt-3 grid gap-2">
-        <a href="./log-in.html" class="btn-ghost rounded-lg px-3 py-2 text-center">Log in</a>
-        <a href="./personal-sign-up.html" class="btn btn-emerald justify-center">Sign up</a>
-      </div>
+    <ul id="chatList_m" class="mt-3 grid gap-1 text-sm overflow-auto" style="max-height: calc(var(--vh, 1vh) * 100 - 140px)"></ul>
+    <div class="mt-3 grid gap-2 text-sm">
+      <a class="border px-2 py-1 rounded text-center" href="./hs-finder.html">Open HS Finder</a>
+      <a class="border px-2 py-1 rounded text-center" href="./calculator.html">Open Calculator</a>
+      <button id="exportBtn_m" class="border px-2 py-1 rounded">Export current</button>
+      <button id="clearAll_m" class="text-red-600 border border-red-200 px-2 py-1 rounded">Clear all</button>
     </div>
   </aside>
-  <div id="scrim" class="fixed inset-0 bg-black/30 hidden md:hidden z-40"></div>
 
-  <!-- Hero -->
-  <section class="pt-16 md:pt-20">
-    <div class="bg-gradient-to-r from-indigoDeep/85 to-cyanBright/75">
-      <div class="max-w-7xl mx-auto px-4 py-7 text-white">
-        <h1 class="text-2xl sm:text-3xl md:text-4xl font-extrabold">Chat</h1>
-        <p class="mt-1 text-white/95">Ask about HS codes, duties, valuation, docs, and more.</p>
+  <!-- Hero (kept slim on mobile) -->
+  <section class="pt-[56px] md:pt-[76px]">
+    <div class="hero-img">
+      <div class="backdrop-brightness-100 md:bg-gradient-to-r md:from-indigoDeep/70 md:to-cyanBright/60">
+        <div class="max-w-6xl mx-auto px-4 py-4 md:py-8 text-indigoDeep md:text-white">
+          <h1 class="text-xl md:text-4xl font-extrabold">Ask in Chat</h1>
+          <p class="mt-1 md:mt-2 text-indigoDeep/80 md:text-white/95 text-sm md:text-base">
+            Chat assistant for HS, duties & valuation. Attach images, PDFs, spreadsheets for context.
+          </p>
+        </div>
       </div>
     </div>
   </section>
 
-  <!-- App Content -->
-  <main class="max-w-7xl mx-auto px-2 sm:px-4 pb-28 grid md:grid-cols-[280px,1fr] gap-4 -mt-4">
-    <!-- Sidebar -->
-    <aside class="bg-white border border-gray-200 rounded-2xl shadow card h-fit md:sticky md:top-24 p-3">
+  <!-- Chat layout -->
+  <main class="max-w-7xl mx-auto px-2 sm:px-4 pb-20 md:pb-28 grid md:grid-cols-[280px,1fr] gap-4 -mt-2 md:-mt-4 flex-1 w-full">
+    <!-- Sidebar (desktop) -->
+    <aside class="hidden md:block bg-white border border-gray-200 rounded-2xl shadow p-3 h-fit md:sticky md:top-[92px]">
       <div class="flex items-center justify-between">
         <strong>Conversations</strong>
-        <button id="newChat" class="text-xs btn-ghost rounded px-2 py-1">New</button>
+        <button id="newChat" class="text-xs border rounded px-2 py-1">New chat</button>
       </div>
-      <ul id="chatList" class="mt-3 grid gap-1 text-sm max-h-[50vh] overflow-auto pr-1"></ul>
-
+      <ul id="chatList" class="mt-3 grid gap-1 text-sm max-h-[50vh] overflow-auto"></ul>
       <div class="mt-3 grid gap-2 text-sm">
-        <a class="btn-ghost rounded justify-center py-2" href="./hs-finder.html">Open HS Finder</a>
-        <a class="btn-ghost rounded justify-center py-2" href="./calculator.html">Open Calculator</a>
-        <button id="exportBtn" class="btn-ghost rounded py-2">Download transcript</button>
-        <button id="clearAll" class="btn-ghost rounded py-2 text-red-600 border-red-200">Clear all</button>
+        <a class="border px-2 py-1 rounded text-center" href="./hs-finder.html">Open HS Finder</a>
+        <a class="border px-2 py-1 rounded text-center" href="./calculator.html">Open Calculator</a>
+        <button id="exportBtn" class="border px-2 py-1 rounded">Export current chat</button>
+        <button id="clearAll" class="text-red-600 border border-red-200 px-2 py-1 rounded">Clear all</button>
       </div>
     </aside>
 
-    <!-- Chat column -->
-    <section class="bg-white border border-gray-200 rounded-2xl shadow card flex flex-col">
-      <!-- system banner area -->
-      <div id="sysbar" class="mx-auto w-full max-w-3xl px-2 pt-3"></div>
-
-      <!-- messages -->
-      <div id="messages" class="flex-1 overflow-auto px-2 sm:px-3 py-4 space-y-3" role="log" aria-live="polite" aria-relevant="additions">
-        <!-- onboarding -->
-        <article class="max-w-2xl mx-auto rounded-xl2 border border-gray-200 bg-white p-4 shadow-sm">
-          <div class="text-sm text-gray-600">AI</div>
-          <div class="mt-1 text-[15px] leading-relaxed">
-            Hey! I’m your <strong>customs agent</strong> in chat. Ask me about HS codes, duties, or import docs — or drop files
-            (photos, PDFs, spreadsheets). What would you like to do today?
+    <!-- Conversation -->
+    <section class="bg-white border border-gray-200 rounded-2xl shadow flex flex-col min-h-[60vh]">
+      <!-- Stream -->
+      <div id="messages" class="flex-1 overflow-auto p-3 md:p-4 space-y-3 md:space-y-4">
+        <div class="fade-in rounded-xl bg-gray-50 p-3 md:p-4">
+          <div class="text-xs md:text-sm text-gray-600">Assistant</div>
+          <div class="mt-1 whitespace-pre-wrap text-[14px] leading-relaxed">
+            Hey! I’m your customs agent. Ask me about HS codes, duties, or docs. You can also attach files (images, PDFs, spreadsheets).
+            <div class="mt-3 flex flex-wrap gap-2">
+              <button class="chip demo-btn" data-q="Estimate duty for HS 851713 (IN) CIF 100000">Estimate Duty</button>
+              <button class="chip demo-btn" data-q="Find HS code for wireless earbuds in India">Find HS Code</button>
+              <button class="chip demo-btn" data-q="Documents to import wooden furniture into EU">Docs Checklist</button>
+            </div>
           </div>
-          <div class="mt-3 flex flex-wrap gap-2">
-            <button class="chip demo-btn" data-q="Estimate duty for HS 851713 (IN) CIF 100000">Estimate Duty</button>
-            <button class="chip demo-btn" data-q="Find HS code for wireless earbuds in India">Find HS Code</button>
-            <button class="chip demo-btn" data-q="Documents to import wooden furniture into EU">Docs Checklist</button>
-            <button class="chip demo-btn" data-q="Calculate landed cost for 500 LED lights to USA">Landed Cost</button>
-          </div>
-        </article>
+        </div>
       </div>
 
-      <!-- composer -->
-      <div class="border-t border-gray-200 bg-white sticky bottom-0">
-        <div class="max-w-3xl mx-auto px-3 pt-3">
-          <!-- attachments preview -->
-          <div id="attachRow" class="hidden mb-2 flex items-center gap-2 flex-wrap"></div>
+      <!-- Composer -->
+      <div class="border-t p-2 md:p-3 sticky bottom-0 bg-white">
+        <!-- Attachment previews -->
+        <div id="attachRow" class="hidden mb-2 flex items-center gap-2 flex-wrap"></div>
 
-          <form id="composer" class="flex flex-col gap-2" aria-label="Message composer">
-            <!-- top row: mode + quick chips -->
-            <div class="flex items-center justify-between gap-2">
-              <div class="flex items-center gap-2">
-                <label for="modeSel" class="text-xs text-gray-600">Mode</label>
-                <select id="modeSel" class="border rounded-lg px-2 py-1 text-sm">
-                  <option value="core">Core</option>
-                  <option value="learn">Learn</option>
-                  <option value="calculate">Calculate</option>
-                  <option value="earn">Earn</option>
-                  <option value="business">Business</option>
-                </select>
-              </div>
-              <div class="hidden sm:flex flex-wrap gap-2">
-                <button class="chip qa-btn" data-q="Estimate duty">Duty</button>
-                <button class="chip qa-btn" data-q="Find HS code">HS Code</button>
-                <button class="chip qa-btn" data-q="Documents required">Docs</button>
-                <button class="chip qa-btn" data-q="Landed cost calculator">Landed Cost</button>
-              </div>
-            </div>
+        <form id="composer" class="flex items-end gap-2 md:gap-3">
+          <!-- Attach -->
+          <input id="fileInput" type="file" class="hidden" multiple
+            accept="image/*,.pdf,.csv,.txt,.json,.md,.doc,.docx,.xls,.xlsx,.ppt,.pptx" />
+          <button type="button" id="attachBtn" title="Attach files"
+            class="btn btn-ghost h-10 md:h-11 min-w-[44px]" aria-label="Attach files">📎</button>
 
-            <!-- input row -->
-            <div class="flex items-end gap-2">
-              <!-- upload -->
-              <input id="fileInput" type="file" class="hidden" multiple
-                     accept="image/*,.pdf,.csv,.txt,.json,.doc,.docx,.xls,.xlsx,.ppt,.pptx"/>
-              <button type="button" id="attachBtn" title="Attach files"
-                class="btn-ghost rounded-lg px-3 py-2" aria-label="Attach files">📎</button>
+          <!-- Text -->
+          <textarea id="chatInput" rows="1" placeholder="Message Ledgerdaddy…"
+            class="flex-1 border rounded-xl px-3 py-2 md:py-2.5 text-[15px] md:text-[15px] resize-none max-h-40 focus:outline-none focus:ring-2 focus:ring-cyanBright/40"
+            inputmode="text" enterkeyhint="send"></textarea>
 
-              <!-- textarea -->
-              <label for="chatInput" class="sr-only">Message</label>
-              <textarea id="chatInput" rows="1" placeholder="Message AI…"
-                class="flex-1 border border-gray-300 rounded-xl px-3 py-2 resize-none max-h-40 focus:outline-none focus:ring-2 focus:ring-cyanBright/30"
-                aria-multiline="true" aria-label="Type your message"></textarea>
+          <!-- Send -->
+          <button id="sendBtn" class="btn btn-emerald h-10 md:h-11 px-4 md:px-5">Send</button>
+        </form>
 
-              <!-- send -->
-              <button id="sendBtn" class="btn btn-emerald rounded-xl" aria-label="Send message">Send</button>
-            </div>
-
-            <div class="mt-1 flex items-center justify-between">
-              <div class="text-[11px] text-gray-500">Enter to send • Shift+Enter for new line • Drag & drop files</div>
-              <button id="toBottom" class="chip hidden">Scroll to bottom</button>
-            </div>
-          </form>
+        <div class="mt-2 flex items-center justify-between">
+          <div class="text-[11px] text-gray-500 hidden md:block">Enter to send • Shift+Enter for new line • Drag & drop files (desktop)</div>
+          <div class="md:hidden text-[11px] text-gray-500">Tap 📎 to attach • Enter to send</div>
+          <button id="toBottom" class="chip hidden">Scroll to bottom</button>
         </div>
       </div>
     </section>
   </main>
 
-  <!-- Toast -->
-  <div id="toast" class="hidden fixed bottom-6 right-6 bg-gray-900 text-white text-sm px-3 py-2 rounded-lg shadow" role="status" aria-live="polite"></div>
+  <!-- Mobile bottom bar (quick actions) -->
+  <nav class="md:hidden fixed bottom-0 inset-x-0 z-40 bg-white border-t border-gray-200">
+    <div class="max-w-7xl mx-auto px-3 py-2 grid grid-cols-3 gap-2">
+      <button id="fabNew" class="w-full border rounded-lg py-2 text-sm">+ New</button>
+      <button id="fabAttach" class="w-full border rounded-lg py-2 text-sm">📎 Upload</button>
+      <button id="fabDown" class="w-full border rounded-lg py-2 text-sm">⬇︎ Bottom</button>
+    </div>
+  </nav>
 
-  <footer class="text-center text-xs text-gray-500 my-8">
+  <!-- Toast -->
+  <div id="toast" class="hidden fixed bottom-20 right-4 md:bottom-6 md:right-6 bg-gray-900 text-white text-sm px-3 py-2 rounded-lg shadow"></div>
+
+  <footer class="text-center text-xs text-gray-500 my-14 md:my-8">
     © <span id="year"></span> Ledgerdaddy
   </footer>
 
   <script>
-    // =========================
-    // Config
-    // =========================
-    const API_BASE = window.NEXT_PUBLIC_API_BASE || window.VITE_API_BASE || "https://chadaddy.onrender.com";
-    const USE_UPLOAD = true; // set false if you don't have /api/upload yet
+    // ===== Mobile viewport fix =====
+    function setVH(){
+      const vh = window.innerHeight * 0.01;
+      document.documentElement.style.setProperty('--vh', `${vh}px`);
+    }
+    setVH(); window.addEventListener('resize', setVH);
 
-    // =========================
-    // Utilities
-    // =========================
+    // ===== Backend URL =====
+    const API_BASE = "https://chadaddy.onrender.com"; // change if needed
+
+    // ===== Utilities =====
     const $  = s => document.querySelector(s);
     const $$ = s => Array.from(document.querySelectorAll(s));
-    const yearEl = $('#year'); if (yearEl) yearEl.textContent = new Date().getFullYear();
+    $('#year').textContent = new Date().getFullYear();
     const toast = (msg) => { const t = $('#toast'); t.textContent = msg; t.classList.remove('hidden'); setTimeout(()=>t.classList.add('hidden'), 1600); };
     const uid = () => Math.random().toString(36).slice(2)+Date.now().toString(36);
-    const fmtTime = ts => new Date(ts).toLocaleString([], {hour:'2-digit', minute:'2-digit', day:'2-digit', month:'short'});
 
-    // scroll helper
-    const msgWrap = $('#messages');
-    function nearBottom(){ return (msgWrap.scrollHeight - msgWrap.scrollTop - msgWrap.clientHeight) < 140; }
-    function scrollToBottom(){ msgWrap.scrollTop = msgWrap.scrollHeight; }
-    function toggleScrollBtn(){ nearBottom() ? $('#toBottom').classList.add('hidden') : $('#toBottom').classList.remove('hidden');}
-    msgWrap.addEventListener('scroll', toggleScrollBtn);
-    $('#toBottom').addEventListener('click', ()=>{ scrollToBottom(); toggleScrollBtn(); });
-
-    // Drawer (mobile)
-    const drawer = $('#drawer'), scrim = $('#scrim');
-    $('#openDrawer').addEventListener('click', ()=>{ drawer.classList.remove('-translate-x-full'); scrim.classList.remove('hidden'); });
-    $('#closeDrawer').addEventListener('click', ()=>{ drawer.classList.add('-translate-x-full'); scrim.classList.add('hidden'); });
-    scrim.addEventListener('click', ()=>{ drawer.classList.add('-translate-x-full'); scrim.classList.add('hidden'); });
-
-    // Persistent session id
     function getSessionId(){
       const k="ld_chat_session_id";
       let v = localStorage.getItem(k);
@@ -265,30 +224,28 @@
     }
     const SESSION_ID = getSessionId();
 
-    // =========================
-    // Local storage (threads)
-    // =========================
+    // ===== Storage (threads) =====
     const STORE_KEY='ld_chat_threads_v1';
     let threads = JSON.parse(localStorage.getItem(STORE_KEY) || '[]');
     let currentId = threads[0]?.id || null;
     function saveThreads(){ localStorage.setItem(STORE_KEY, JSON.stringify(threads)); }
+    function newThread(){
+      const id = uid();
+      const t = { id, title: 'New chat', messages: [] };
+      threads.unshift(t);
+      currentId = id;
+      saveThreads(); renderSidebar(); renderMessages(); renderMobileList();
+    }
     function getCurrent(){ return threads.find(t=>t.id===currentId); }
     function setTitleFromFirstUserMessage(thread){
       const first = thread.messages.find(m=>m.role==='user');
       if(first){ thread.title = (first.text || 'Conversation').slice(0, 50); }
     }
-    function newThread(){
-      const id = uid();
-      const t = { id, title: 'New chat', mode: "core", messages: [] };
-      threads.unshift(t);
-      currentId = id;
-      saveThreads(); renderSidebar(); renderMessages(); renderMode();
-      banner('New conversation started', 'info');
-    }
 
-    // Sidebar
+    // ===== Sidebar (desktop) =====
     function renderSidebar(){
       const list = $('#chatList');
+      if(!list) return;
       if(!threads.length){
         list.innerHTML = '<li class="text-gray-500 text-xs p-2 rounded bg-gray-50">No conversations yet</li>'; return;
       }
@@ -297,18 +254,56 @@
           <button data-id="${t.id}"
             class="w-full text-left px-2 py-2 rounded hover:bg-gray-50 ${t.id===currentId?'bg-gray-100':''}">
             <div class="truncate">${t.title || 'Conversation'}</div>
-            <div class="text-[11px] text-gray-500">${(t.messages?.length||0)} messages • ${(t.mode||'core').toUpperCase()}</div>
+            <div class="text-[11px] text-gray-500">${(t.messages?.length||0)} messages</div>
           </button>
         </li>
       `).join('');
       list.querySelectorAll('button[data-id]').forEach(btn=>{
-        btn.onclick = ()=>{ currentId = btn.getAttribute('data-id'); renderSidebar(); renderMessages(); renderMode(); };
+        btn.onclick = ()=>{ currentId = btn.getAttribute('data-id'); renderSidebar(); renderMessages(); renderMobileList(); closeDrawer(); };
       });
     }
 
-    // =========================
-    // Markdown-lite
-    // =========================
+    // ===== Sidebar (mobile drawer) =====
+    const drawer = $('#drawer'), backdrop = $('#drawerBackdrop');
+    function openDrawer(){
+      drawer.classList.remove('hidden','drawer-exit','drawer-exit-active');
+      backdrop.classList.remove('hidden');
+      drawer.classList.add('drawer-enter-active');
+      requestAnimationFrame(()=> drawer.classList.remove('drawer-enter','drawer-enter-active'));
+    }
+    function closeDrawer(){
+      drawer.classList.add('drawer-exit-active');
+      setTimeout(()=>{
+        drawer.classList.add('hidden','drawer-enter');
+        drawer.classList.remove('drawer-exit-active');
+        backdrop.classList.add('hidden');
+      }, 180);
+    }
+    $('#openDrawer').addEventListener('click', openDrawer);
+    $('#closeDrawer').addEventListener('click', closeDrawer);
+    backdrop.addEventListener('click', closeDrawer);
+
+    function renderMobileList(){
+      const list = $('#chatList_m');
+      if(!list) return;
+      if(!threads.length){
+        list.innerHTML = '<li class="text-gray-500 text-xs p-2 rounded bg-gray-50">No conversations yet</li>'; return;
+      }
+      list.innerHTML = threads.map(t=>`
+        <li>
+          <button data-id="${t.id}"
+            class="w-full text-left px-2 py-2 rounded hover:bg-gray-50 ${t.id===currentId?'bg-gray-100':''}">
+            <div class="truncate">${t.title || 'Conversation'}</div>
+            <div class="text-[11px] text-gray-500">${(t.messages?.length||0)} messages</div>
+          </button>
+        </li>
+      `).join('');
+      list.querySelectorAll('button[data-id]').forEach(btn=>{
+        btn.onclick = ()=>{ currentId = btn.getAttribute('data-id'); renderSidebar(); renderMessages(); renderMobileList(); closeDrawer(); };
+      });
+    }
+
+    // ===== Markdown-lite =====
     function mdLite(text){
       let out = (text || '').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
       out = out.replace(/```([\s\S]*?)```/g, (_,code)=>`<pre><code>${code}</code></pre>`);
@@ -318,158 +313,22 @@
       return out;
     }
 
-    // =========================
-    // Message bubbles
-    // =========================
-    function attachIcon(name){ const ext=(name.split('.').pop()||'').toLowerCase();
-      if(['png','jpg','jpeg','gif','webp','heic','heif','bmp'].includes(ext)) return '🖼️';
-      if(['pdf'].includes(ext)) return '📄';
-      if(['csv','xls','xlsx'].includes(ext)) return '📊';
-      if(['doc','docx'].includes(ext)) return '📝';
-      if(['ppt','pptx'].includes(ext)) return '📽️';
-      if(['txt','json','md'].includes(ext)) return '📃';
-      return '📎';
-    }
-    function attachBlock(attachments=[]){
-      if(!attachments.length) return '';
-      return `
-        <div class="mt-2 flex flex-wrap gap-2">
-          ${attachments.map(a=>{
-            const isImg = /^image\\//.test(a.type||'');
-            return isImg
-              ? `<a href="${a.url}" target="_blank" class="inline-flex items-center gap-2">
-                   <img src="${a.url}" alt="${a.name||'image'}" class="thumb"/><span class="text-[12px] text-gray-600 truncate max-w-[160px]">${a.name||'image'}</span>
-                 </a>`
-              : `<a href="${a.url}" target="_blank" class="file-pill">
-                   <span>${attachIcon(a.name||'file')}</span>
-                   <span class="truncate max-w-[160px]">${a.name||'file'}</span>
-                   ${a.size ? `<span class="text-gray-500">${(a.size/1024/1024).toFixed(1)}MB</span>`:''}
-                 </a>`;
-          }).join('')}
-        </div>
-      `;
-    }
-    function bubble(m){
-      const { role, text, attachments, ts, status, kind } = m; // kind: 'system'|'message'
-      const isUser = role==='user';
-      const isSystem = kind === 'system';
-      const who = isSystem ? 'System' : (isUser ? 'You' : 'AI');
-      const avatar = isSystem ? '⚙️' : (isUser ? '👤' : '◆');
-      const nameClass = isSystem ? 'text-amber-800' : 'text-gray-600';
-      const timeClass = isSystem ? 'text-amber-700' : 'text-gray-500';
-      const headBg    = isUser ? 'bg-gray-200' : (isSystem ? 'bg-amber-500 text-white' : 'bg-indigoDeep text-white');
-      const cardBg    = isSystem ? 'bg-yellow-50 border-yellow-200' : (isUser ? 'bg-white' : 'bg-gray-50');
-
-      const statusText = isUser ? (status==='read' ? 'Read' : status==='delivered' ? 'Delivered' : 'Sending…') : '';
-
-      return `
-        <article class="fade-in max-w-3xl mx-auto">
-          <div class="flex ${isUser?'justify-end':''}">
-            <div class="flex ${isUser?'flex-row-reverse':''} gap-3 items-start">
-              <span class="mt-1 inline-flex w-8 h-8 shrink-0 items-center justify-center rounded-full ${headBg}" aria-hidden="true">${avatar}</span>
-              <div class="rounded-2xl border border-gray-200 px-4 py-3 max-w-[min(78vw,760px)] ${cardBg}">
-                <div class="flex items-center justify-between gap-3 mb-1">
-                  <div class="text-sm ${nameClass}">${who}</div>
-                  <div class="text-[11px] ${timeClass}">${fmtTime(ts||Date.now())}${statusText?` • ${statusText}`:''}</div>
-                </div>
-                ${attachments?.length ? attachBlock(attachments) : ''}
-                <div class="prose prose-sm max-w-none">${mdLite(text)}</div>
-                ${!isSystem ? `
-                <div class="mt-2 flex items-center gap-2">
-                  <button class="copy-btn text-[11px] px-2 py-1 rounded border border-gray-200 hover:bg-gray-50" data-copy="${encodeURIComponent(text)}" aria-label="Copy message">Copy</button>
-                </div>`:''}
-              </div>
-            </div>
-          </div>
-        </article>
-      `;
-    }
-    function typingRow(){
-      return `
-        <div class="max-w-3xl mx-auto" aria-live="polite">
-          <div class="flex gap-3 items-start">
-            <span class="mt-1 inline-flex w-8 h-8 items-center justify-center rounded-full bg-indigoDeep text-white">◆</span>
-            <div class="rounded-2xl border border-gray-200 bg-gray-50 px-4 py-3">
-              <div class="flex items-center gap-1" aria-label="AI is typing">
-                <span class="typing-dot w-2 h-2 rounded-full bg-gray-400"></span>
-                <span class="typing-dot w-2 h-2 rounded-full bg-gray-400"></span>
-                <span class="typing-dot w-2 h-2 rounded-full bg-gray-400"></span>
-              </div>
-            </div>
-          </div>
-        </div>
-      `;
-    }
-
-    function renderMessages(){
-      const wrap = msgWrap;
-      const t = getCurrent();
-      if(!t){ wrap.innerHTML = ''; return; }
-      wrap.innerHTML = t.messages.map(bubble).join('');
-      // bind copy
-      $$('.copy-btn').forEach(b=>{
-        b.onclick = async ()=>{
-          try{ await navigator.clipboard.writeText(decodeURIComponent(b.getAttribute('data-copy'))); toast('Copied'); }
-          catch{ toast('Copy failed'); }
-        };
-      });
-      scrollToBottom();
-      toggleScrollBtn();
-    }
-
-    // =========================
-    // System banners
-    // =========================
-    function banner(text, tone='info'){
-      const bar = $('#sysbar');
-      const color = tone==='error' ? 'bg-red-50 border-red-200 text-red-800'
-                   : tone==='warn' ? 'bg-yellow-50 border-yellow-200 text-amber-800'
-                   : 'bg-cyan-50 border-cyan-200 text-cyan-800';
-      const el = document.createElement('div');
-      el.className = `mb-2 rounded-lg border px-3 py-2 text-[13px] ${color}`;
-      el.textContent = text;
-      bar.appendChild(el);
-      setTimeout(()=>{ el.remove(); }, 2500);
-    }
-
-    // =========================
-    // Mutate
-    // =========================
-    function addMessage(m){
-      const t = getCurrent(); if(!t) return;
-      t.messages.push({ kind:'message', ts: Date.now(), status: m.role==='user'?'sending':undefined, attachments:[], ...m });
-      if(t.title==='New chat'){ setTitleFromFirstUserMessage(t); }
-      saveThreads(); renderSidebar(); renderMessages();
-    }
-    function addSystem(text, tone='info'){
-      const t = getCurrent(); if(!t) return;
-      t.messages.push({ role:'system', kind:'system', ts: Date.now(), text });
-      saveThreads(); renderMessages();
-      banner(text, tone);
-    }
-    function markLastUserStatus(st){
-      const t = getCurrent(); if(!t) return;
-      for(let i=t.messages.length-1;i>=0;i--){
-        if(t.messages[i].role==='user'){ t.messages[i].status = st; break; }
-      }
-      saveThreads(); renderMessages();
-    }
-
-    // =========================
-    // Uploads
-    // =========================
+    // ===== Attachments =====
     const MAX_FILES = 10;
-    const MAX_MB = 25;
-    let pending = []; // {file, url, id}
-
+    const MAX_MB = 25; // per file
+    const attachBtn = $('#attachBtn');
     const fileInput = $('#fileInput');
-    const attachBtn  = $('#attachBtn');
-    const attachRow  = $('#attachRow');
+    const attachRow = $('#attachRow');
+    const msgWrap   = $('#messages');
+
+    let pendingFiles = []; // [{file, id, url}]
 
     attachBtn.addEventListener('click', ()=> fileInput.click());
     fileInput.addEventListener('change', (e)=> addPendingFiles([...e.target.files]));
+    // Mobile bottom bar – Upload shortcut
+    $('#fabAttach').addEventListener('click', ()=> fileInput.click());
 
-    // drag & drop
+    // Drag & drop (desktop)
     ;['dragenter','dragover'].forEach(ev=>{
       document.addEventListener(ev, (e)=>{ e.preventDefault(); msgWrap.classList.add('drop-target'); });
     });
@@ -482,23 +341,33 @@
     });
 
     function addPendingFiles(files){
-      const all = [...pending];
+      const all = [...pendingFiles];
       for(const f of files){
         if(all.length >= MAX_FILES){ toast('Max 10 files'); break; }
         if(f.size > MAX_MB*1024*1024){ toast(`${f.name} is over ${MAX_MB}MB`); continue; }
         all.push({ file:f, id:uid(), url: URL.createObjectURL(f) });
       }
-      pending = all;
+      pendingFiles = all;
       renderPending();
     }
     function removePending(id){
-      pending = pending.filter(p=>p.id!==id);
+      pendingFiles = pendingFiles.filter(p=>p.id!==id);
       renderPending();
     }
+    function fileIcon(name){
+      const ext=(name.split('.').pop()||'').toLowerCase();
+      if(['png','jpg','jpeg','gif','webp','heic','heif','bmp'].includes(ext)) return '🖼️';
+      if(['pdf'].includes(ext)) return '📄';
+      if(['csv','xls','xlsx'].includes(ext)) return '📊';
+      if(['doc','docx'].includes(ext)) return '📝';
+      if(['ppt','pptx'].includes(ext)) return '📽️';
+      if(['txt','json','md'].includes(ext)) return '📃';
+      return '📎';
+    }
     function renderPending(){
-      if(!pending.length){ attachRow.classList.add('hidden'); attachRow.innerHTML=''; return; }
+      if(!pendingFiles.length){ attachRow.classList.add('hidden'); attachRow.innerHTML=''; return; }
       attachRow.classList.remove('hidden');
-      attachRow.innerHTML = pending.map(p=>{
+      attachRow.innerHTML = pendingFiles.map(p=>{
         const isImg = p.file.type.startsWith('image/');
         const size = (p.file.size/1024/1024).toFixed(1)+'MB';
         return isImg
@@ -508,17 +377,16 @@
                  onclick="removePending('${p.id}')">×</button>
              </div>`
           : `<div class="file-pill">
-               <span>${attachIcon(p.file.name)}</span>
+               <span>${fileIcon(p.file.name)}</span>
                <span class="truncate max-w-[160px]">${p.file.name}</span>
                <span class="text-gray-500">${size}</span>
                <button title="Remove" class="ml-1 border border-gray-200 rounded px-1 text-[11px]" onclick="removePending('${p.id}')">×</button>
              </div>`;
       }).join('');
-      window.removePending = removePending; // expose for inline onclick
+      window.removePending = removePending;
     }
-
     async function uploadFiles(files){
-      if(!USE_UPLOAD || !files.length) return [];
+      if(!files.length) return [];
       const form = new FormData();
       files.forEach(f => form.append('files', f.file, f.file.name));
       try{
@@ -533,14 +401,206 @@
           size: x.size || files[i].file.size
         }));
       }catch(e){
-        banner('Upload error: ' + (e.message||'unknown'), 'error');
-        return files.map(p=>({ // fallback to blob URLs
-          url: p.url, name: p.file.name, type: p.file.type, size: p.file.size
-        }));
+        toast('Upload error: ' + (e.message||'unknown'));
+        return files.map(p=>({ url:p.url, name:p.file.name, type:p.file.type, size:p.file.size }));
+      }
+    }
+    function attachBlock(attachments=[]){
+      if(!attachments.length) return '';
+      return `
+        <div class="mt-2 flex flex-wrap gap-2">
+          ${attachments.map(a=>{
+            const isImg = /^image\//.test(a.type);
+            return isImg
+              ? `<a href="${a.url}" target="_blank" class="inline-flex items-center gap-2" title="${a.name||'image'}">
+                   <img src="${a.url}" alt="${a.name||'image'}" class="thumb"/>
+                   <span class="text-[12px] text-gray-600 truncate max-w-[160px]">${a.name||'image'}</span>
+                 </a>`
+              : `<a href="${a.url}" target="_blank" class="file-pill" title="${a.name||'file'}">
+                   <span>${fileIcon(a.name||'file')}</span>
+                   <span class="truncate max-w-[160px]">${a.name||'file'}</span>
+                   ${a.size ? `<span class="text-gray-500">${(a.size/1024/1024).toFixed(1)}MB</span>`:''}
+                 </a>`;
+          }).join('')}
+        </div>
+      `;
+    }
+
+    // ===== Messages =====
+    function msgBubble(m){
+      const { role, text, attachments } = m;
+      const isUser = role==='user';
+      const avatar = isUser ? '👤' : '◆';
+      const bg = isUser ? 'bg-white' : 'bg-gray-50';
+      return `
+        <div class="fade-in rounded-xl ${bg} p-3 md:p-4">
+          <div class="text-[12px] md:text-sm text-gray-600 flex items-center gap-2">
+            <span class="grid w-6 h-6 place-items-center rounded-full ${isUser?'bg-gray-200':'bg-indigoDeep text-white'} text-[12px]">${avatar}</span>
+            <span class="truncate">${isUser?'You':'Assistant'}</span>
+            <button class="ml-auto text-[11px] text-gray-500 copy-btn" data-copy="${encodeURIComponent(text||'')}">Copy</button>
+          </div>
+          ${attachments?.length ? attachBlock(attachments) : ''}
+          <div class="mt-2 whitespace-pre-wrap leading-relaxed text-[14px] md:text-[15px]">${mdLite(text||'')}</div>
+        </div>
+      `;
+    }
+    function typingBubble(){
+      return `
+        <div class="rounded-xl bg-gray-50 p-3 md:p-4">
+          <div class="text-xs md:text-sm text-gray-600 flex items-center gap-2">
+            <span class="grid w-6 h-6 place-items-center rounded-full bg-indigoDeep text-white text-[12px]">◆</span>
+            <span>Assistant</span>
+          </div>
+          <div class="mt-2 flex items-center gap-1">
+            <span class="typing-dot w-2 h-2 rounded-full bg-gray-400"></span>
+            <span class="typing-dot w-2 h-2 rounded-full bg-gray-400"></span>
+            <span class="typing-dot w-2 h-2 rounded-full bg-gray-400"></span>
+          </div>
+        </div>
+      `;
+    }
+    function renderMessages(){
+      const wrap = $('#messages');
+      const t = getCurrent();
+      if(!t){ wrap.innerHTML = '<div class="p-4 text-gray-500">Start a new chat.</div>'; return; }
+      wrap.innerHTML = t.messages.map(msgBubble).join('') || `
+        <div class="rounded-xl bg-gray-50 p-3 md:p-4">
+          <div class="text-xs md:text-sm text-gray-600">Assistant</div>
+          <div class="mt-1">How can I help today?</div>
+        </div>
+      `;
+      $$('.copy-btn').forEach(b=>{
+        b.onclick = async ()=>{
+          try{ await navigator.clipboard.writeText(decodeURIComponent(b.getAttribute('data-copy'))); toast('Copied'); }
+          catch{ toast('Copy failed'); }
+        };
+      });
+      wrap.scrollTop = wrap.scrollHeight;
+      toggleScrollBtn();
+    }
+    function addMessage(role, text, attachments=[]){
+      const t = getCurrent(); if(!t) return;
+      t.messages.push({ role, text, attachments, ts: Date.now() });
+      if(t.title==='New chat'){ setTitleFromFirstUserMessage(t); }
+      saveThreads(); renderSidebar(); renderMobileList(); renderMessages();
+    }
+
+    // ===== Send =====
+    const area = $('#chatInput');
+    const form = $('#composer');
+    const toBottomBtn = $('#toBottom');
+
+    async function send(text){
+      const trimmed = (text || '').trim();
+      if(!trimmed && !pendingFiles.length) return;
+
+      // Upload files first
+      const uploaded = await uploadFiles(pendingFiles);
+      pendingFiles.forEach(p=> URL.revokeObjectURL(p.url));
+      pendingFiles = []; renderPending();
+
+      addMessage('user', trimmed, uploaded);
+
+      const wrap = $('#messages');
+      wrap.insertAdjacentHTML('beforeend', typingBubble());
+      wrap.scrollTop = wrap.scrollHeight;
+
+      try {
+        const res = await fetch(`${API_BASE}/api/chat`, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            message: trimmed,
+            session_id: SESSION_ID,
+            attachments: uploaded
+          }),
+          cache: "no-store"
+        });
+
+        const ct = res.headers.get("content-type") || "";
+        let data = {};
+        if (ct.includes("application/json")) data = await res.json();
+        else data = { error: await res.text() || `HTTP ${res.status}` };
+
+        const last = wrap.lastElementChild; if(last) last.remove();
+
+        if (res.ok && data.reply){
+          addMessage('assistant', data.reply);
+        } else {
+          addMessage('assistant', "⚠️ Error: " + (data.error || `API ${res.status}`));
+        }
+      } catch (err) {
+        const last = wrap.lastElementChild; if(last) last.remove();
+        addMessage('assistant', "⚠️ Network error: " + err.message);
       }
     }
 
-    // =========================
-    // Send flow
-    // =========================
-    const area
+    // Textarea behaviours (mobile friendly)
+    area.addEventListener('input', ()=>{
+      area.style.height = 'auto';
+      area.style.height = Math.min(area.scrollHeight, 160) + 'px';
+    });
+    area.addEventListener('keydown', (e)=>{
+      if(e.key==='Enter' && !e.shiftKey){
+        e.preventDefault();
+        send(area.value);
+        area.value=''; area.style.height='auto';
+      }
+    });
+    form.addEventListener('submit', (e)=>{ e.preventDefault(); send(area.value); area.value=''; area.style.height='auto'; });
+
+    // Quick chips
+    $$('.demo-btn').forEach(b=> b.onclick = ()=>{
+      area.value = b.getAttribute('data-q');
+      area.dispatchEvent(new Event('input'));
+      area.focus();
+    });
+
+    // Scroll helpers
+    function toggleScrollBtn(){
+      const nearBottom = (msgWrap.scrollHeight - msgWrap.scrollTop - msgWrap.clientHeight) < 140;
+      if(nearBottom) toBottomBtn.classList.add('hidden'); else toBottomBtn.classList.remove('hidden');
+    }
+    msgWrap.addEventListener('scroll', toggleScrollBtn);
+    toBottomBtn.addEventListener('click', ()=>{ msgWrap.scrollTop = msgWrap.scrollHeight; toggleScrollBtn(); });
+    // Mobile bottom buttons
+    $('#fabDown').addEventListener('click', ()=>{ msgWrap.scrollTop = msgWrap.scrollHeight; });
+    $('#fabNew').addEventListener('click', ()=>{ newThread(); openDrawer(); });
+
+    // Sidebar actions (desktop)
+    $('#newChat')?.addEventListener('click', ()=> newThread());
+    $('#exportBtn')?.addEventListener('click', ()=>{
+      const t = getCurrent(); if(!t) return toast('No chat');
+      const blob = new Blob([JSON.stringify(t, null, 2)], {type:'application/json'});
+      const a = document.createElement('a');
+      a.href = URL.createObjectURL(blob);
+      a.download = (t.title||'chat') + '.json';
+      a.click(); URL.revokeObjectURL(a.href);
+    });
+    $('#clearAll')?.addEventListener('click', ()=>{
+      if(confirm('Delete all conversations?')){
+        threads=[]; currentId=null; saveThreads(); renderSidebar(); renderMobileList(); renderMessages(); toast('Cleared');
+      }
+    });
+
+    // Drawer actions (mobile)
+    $('#newChat_m').addEventListener('click', ()=> newThread());
+    $('#exportBtn_m').addEventListener('click', ()=>{
+      const t = getCurrent(); if(!t) return toast('No chat');
+      const blob = new Blob([JSON.stringify(t, null, 2)], {type:'application/json'});
+      const a = document.createElement('a');
+      a.href = URL.createObjectURL(blob);
+      a.download = (t.title||'chat') + '.json';
+      a.click(); URL.revokeObjectURL(a.href);
+    });
+    $('#clearAll_m').addEventListener('click', ()=>{
+      if(confirm('Delete all conversations?')){
+        threads=[]; currentId=null; saveThreads(); renderSidebar(); renderMobileList(); renderMessages(); toast('Cleared');
+      }
+    });
+
+    // ===== Init =====
+    if(!threads.length){ newThread(); } else { renderSidebar(); renderMobileList(); renderMessages(); }
+  </script>
+</body>
+</html>
