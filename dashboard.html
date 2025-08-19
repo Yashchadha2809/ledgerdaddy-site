@@ -11,32 +11,52 @@
       theme: {
         extend: {
           colors:{
-            brandPrimary:"#111827",
-            brandAccent:"#2563EB",
-            brandSoft:"#EFF6FF",
-            brandBorder:"#E5E7EB",
-            brandMuted:"#6B7280",
-            brandBg:"#F9FAFB"
+            brandPrimary:"#111827",   // headings / strong text
+            brandAccent:"#2563EB",    // interactive blue
+            brandSoft:"#EFF6FF",      // soft blue bg
+            brandBorder:"#E5E7EB",    // light border
+            brandMuted:"#6B7280",     // muted text
+            brandBg:"#F9FAFB"         // app background
           },
-          boxShadow:{ lift:"0 10px 24px rgba(17,24,39,.06)" },
-          backgroundImage:{ "soft-gradient":"linear-gradient(135deg, #EFF6FF 0%, #FFFFFF 100%)" },
-          borderRadius: { xl2: '14px' }
+          boxShadow:{
+            lift:"0 10px 24px rgba(17,24,39,.06)",
+            card:"0 12px 28px rgba(17,24,39,.07)",
+            hover:"0 16px 38px rgba(17,24,39,.10)"
+          },
+          backgroundImage:{
+            "soft-gradient":"linear-gradient(135deg, #EFF6FF 0%, #FFFFFF 100%)",
+            "brand-chip":"linear-gradient(135deg, rgba(37,99,235,.08) 0%, rgba(37,99,235,.02) 100%)",
+            "brand-tile":"linear-gradient(135deg, #EFF6FF 0%, #FFFFFF 100%)"
+          },
+          borderRadius: { xl2: '14px' },
+          transitionTimingFunction: { smooth:"cubic-bezier(.2,.9,.2,1)" }
         }
       }
     }
   </script>
   <style>
-    .card{transition:transform .12s ease, box-shadow .2s ease}
-    .card:hover{transform:translateY(-1px); box-shadow:0 10px 24px rgba(17,24,39,.06)}
-    .kpi{background:#fff}
-    .btn{display:inline-flex;align-items:center;gap:.5rem;padding:.58rem 1rem;border-radius:12px;font-weight:600}
-    .btn-primary{background:#2563EB;color:#fff}
-    .btn-primary:hover{filter:brightness(1.03);transform:translateY(-1px)}
+    /* Consistent cards + micro-interactions */
+    .card{transition:transform .12s var(--ease, ease), box-shadow .2s ease}
+    .card:hover{transform:translateY(-2px); box-shadow:0 16px 38px rgba(17,24,39,.10)}
+    .btn{display:inline-flex;align-items:center;gap:.55rem;padding:.62rem 1rem;border-radius:12px;font-weight:600}
+    .btn-primary{background:#2563EB;color:#fff;transition:transform .12s ease, filter .12s ease, box-shadow .18s ease}
+    .btn-primary:hover{filter:brightness(1.04);transform:translateY(-1px)}
     .btn-outline{border:1px solid #E5E7EB;background:#fff}
-    .nav-link{position:relative}
+    .btn-ghost{border:1px solid #E5E7EB;background:transparent}
+    .nav-link{position:relative;border-radius:10px}
+    .nav-link.active{color:#2563EB;background:rgba(37,99,235,.08)}
     .nav-link:hover{color:#2563EB;background:rgba(37,99,235,.06)}
     .focus-ring:focus-visible{outline:2px solid #2563EB;outline-offset:2px;border-radius:12px}
     .badge{font-size:11px;padding:.2rem .5rem;border-radius:999px;border:1px solid rgba(37,99,235,.35);color:#2563EB}
+    .tile{border:1px solid #E5E7EB;border-radius:14px;padding:16px;background:var(--bg, #fff);transition:transform .15s ease, box-shadow .2s ease, border-color .2s ease}
+    .tile:hover{transform:scale(1.02);box-shadow:0 14px 34px rgba(17,24,39,.10);border-color:#2563EB22}
+    .chip{font-size:12px;border:1px solid #E5E7EB;border-radius:999px;padding:.32rem .6rem;background:#fff}
+    .kpi{background:#fff;border:1px solid #E5E7EB;border-radius:16px;padding:18px;box-shadow:0 8px 24px rgba(17,24,39,.04)}
+    .kpi .label{font-size:12px;text-transform:uppercase;color:#6B7280;letter-spacing:.02em}
+    .kpi .value{font-size:28px;font-weight:800;line-height:1.1;margin-top:2px}
+    .overflow-mask{mask-image: linear-gradient(to bottom, black 80%, transparent)}
+    .tooltip{position:relative}
+    .tooltip:hover::after{content:attr(data-tip);position:absolute;bottom:calc(100% + 6px);left:50%;transform:translateX(-50%);background:#111827;color:#fff;font-size:11px;padding:.25rem .45rem;border-radius:6px;white-space:nowrap}
   </style>
 </head>
 <body class="min-h-screen bg-brandBg text-brandPrimary">
@@ -49,40 +69,33 @@
         const raw = localStorage.getItem('chadaddy_user');
         let u = null;
         if (raw) { try { u = JSON.parse(raw); } catch { u = null; } }
-        // OPTIONAL: for local testing, uncomment to auto-seed a demo user
-        // if (!u) { u = { email:"demo@ledgerdaddy.test", name:"Demo User", ts: Date.now() }; localStorage.setItem('chadaddy_user', JSON.stringify(u)); }
-
         if ((!u || !u.email) && !isLogin) {
-          // redirect only if not already on login
           window.location.href = './log-in.html';
         }
       } catch (e) {
-        // If anything goes wrong, avoid redirect loops
         console.warn('Auth gate warning:', e);
       }
     })();
   </script>
 
   <!-- ===== Topbar ===== -->
-  <header class="fixed top-0 inset-x-0 z-50 border-b border-brandBorder bg-white/90 backdrop-blur">
+  <header class="fixed top-0 inset-x-0 z-50 border-b border-brandBorder bg-white/85 backdrop-blur">
     <div class="max-w-7xl mx-auto px-4 py-3 flex items-center justify-between">
-      <!-- Use dashboard as home to avoid "/" 404s -->
       <a href="./dashboard.html" id="homeLink" class="flex items-center gap-2" aria-label="Home">
         <span class="grid h-9 w-9 place-items-center rounded-xl bg-soft-gradient text-brandPrimary font-extrabold shadow">◆</span>
         <span class="text-xl font-bold">Ledgerdaddy</span>
         <span class="ml-2 hidden sm:inline-flex badge">AI Customs</span>
       </a>
 
-      <nav class="hidden md:flex items-center gap-2 text-sm font-medium">
-        <a href="./marketplace.html" class="nav-link px-3 py-2 rounded-lg">Marketplace</a>
-        <a href="./calculator.html"   class="nav-link px-3 py-2 rounded-lg">Calculator</a>
-        <a href="./hs-finder.html"    class="nav-link px-3 py-2 rounded-lg">HS Finder</a>
-        <a href="./chat.html"         class="nav-link px-3 py-2 rounded-lg">Ask in Chat</a>
+      <nav class="hidden md:flex items-center gap-1 text-sm font-medium">
+        <a href="./marketplace.html" class="nav-link px-3 py-2">Marketplace</a>
+        <a href="./calculator.html"   class="nav-link px-3 py-2">Calculator</a>
+        <a href="./hs-finder.html"    class="nav-link px-3 py-2">HS Finder</a>
+        <a href="./chat.html"         class="nav-link px-3 py-2">Ask in Chat</a>
       </nav>
 
-      <!-- Click-to-toggle account menu (no hover traps; mobile-safe) -->
       <div class="relative">
-        <button id="accountBtn" type="button" class="btn btn-primary select-none">Account ▾</button>
+        <button id="accountBtn" type="button" class="btn btn-primary select-none" aria-expanded="false">Account ▾</button>
         <div id="accountMenu"
              class="absolute right-0 mt-2 hidden bg-white border border-brandBorder rounded-xl shadow-lg w-56 py-1">
           <a href="./profile.html"      class="block px-4 py-2 text-sm hover:bg-brandSoft">Profile</a>
@@ -98,7 +111,7 @@
     </div>
   </header>
 
-  <!-- ===== Heading ===== -->
+  <!-- ===== Page heading + KPIs ===== -->
   <section class="pt-24 md:pt-28">
     <div class="max-w-7xl mx-auto px-4">
       <div class="flex items-center justify-between gap-3 flex-wrap">
@@ -111,112 +124,158 @@
           <a href="./calculator.html" class="btn btn-outline">New estimate</a>
         </div>
       </div>
+
+      <!-- Metrics row -->
+      <div class="mt-5 grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
+        <div class="kpi card">
+          <div class="flex items-center justify-between">
+            <span class="label">Saved Estimates</span>
+            <span class="chip bg-brand-chip">∑</span>
+          </div>
+          <div class="value">3</div>
+        </div>
+        <div class="kpi card">
+          <div class="flex items-center justify-between">
+            <span class="label">HS Codes Searched</span>
+            <span class="chip bg-brand-chip">HS</span>
+          </div>
+          <div class="value">12</div>
+        </div>
+        <div class="kpi card">
+          <div class="flex items-center justify-between">
+            <span class="label">Invoices Sent</span>
+            <span class="chip bg-brand-chip">₹</span>
+          </div>
+          <div class="value">5</div>
+        </div>
+        <div class="kpi card">
+          <div class="flex items-center justify-between">
+            <span class="label">Chat Threads</span>
+            <span class="chip bg-brand-chip">💬</span>
+          </div>
+          <div class="value" id="kpiThreads">0</div>
+        </div>
+      </div>
     </div>
   </section>
 
-  <!-- ===== KPIs ===== -->
-  <section class="max-w-7xl mx-auto px-4 mt-6 grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
-    <div class="kpi border border-brandBorder rounded-2xl p-4">
-      <div class="text-xs uppercase text-brandMuted">Saved Estimates</div>
-      <div class="mt-1 text-3xl font-extrabold tracking-tight">3</div>
-    </div>
-    <div class="kpi border border-brandBorder rounded-2xl p-4">
-      <div class="text-xs uppercase text-brandMuted">HS Lookups</div>
-      <div class="mt-1 text-3xl font-extrabold tracking-tight">2</div>
-    </div>
-    <div class="kpi border border-brandBorder rounded-2xl p-4">
-      <div class="text-xs uppercase text-brandMuted">Broker Shortlists</div>
-      <div class="mt-1 text-3xl font-extrabold tracking-tight">1</div>
-    </div>
-    <div class="kpi border border-brandBorder rounded-2xl p-4">
-      <div class="text-xs uppercase text-brandMuted">Chat Threads</div>
-      <div class="mt-1 text-3xl font-extrabold tracking-tight" id="kpiThreads">0</div>
-    </div>
-  </section>
-
-  <!-- ===== Content ===== -->
+  <!-- ===== Content grid ===== -->
   <main id="main" class="max-w-7xl mx-auto px-4 mt-8 grid gap-6 lg:grid-cols-[1fr,360px]">
     <!-- Left column -->
     <div class="grid gap-6">
-      <!-- Quick actions -->
+      <!-- Quick actions as tiles -->
       <section class="bg-white border border-brandBorder rounded-2xl p-5 card">
         <div class="flex items-center justify-between">
           <h2 class="text-xl font-semibold">Quick actions</h2>
           <div class="text-xs text-brandMuted">Common tasks</div>
         </div>
+
         <div class="mt-4 grid grid-cols-2 md:grid-cols-4 gap-3">
-          <a href="./calculator.html" class="group border border-brandBorder rounded-xl p-4 text-left hover:border-brandAccent focus-ring">
+          <a href="./calculator.html" class="tile focus-ring" style="--bg: var(--tile, linear-gradient(135deg, #EFF6FF 0%, #FFFFFF 100%))">
             <div class="flex items-center gap-3">
-              <div class="h-10 w-10 rounded-lg bg-brandSoft text-brandAccent grid place-items-center">∑</div>
+              <div class="h-11 w-11 rounded-lg bg-brandSoft text-brandAccent grid place-items-center font-bold">∑</div>
               <div>
                 <div class="text-sm font-semibold">Open Calculator</div>
                 <div class="text-xs text-brandMuted">Start a new estimate</div>
               </div>
             </div>
           </a>
-          <a href="./hs-finder.html" class="group border border-brandBorder rounded-xl p-4 text-left hover:border-brandAccent focus-ring">
+
+          <a href="./hs-finder.html" class="tile focus-ring">
             <div class="flex items-center gap-3">
-              <div class="h-10 w-10 rounded-lg bg-brandSoft text-brandAccent grid place-items-center">HS</div>
+              <div class="h-11 w-11 rounded-lg bg-brandSoft text-brandAccent grid place-items-center font-bold">HS</div>
               <div>
                 <div class="text-sm font-semibold">HS Finder</div>
                 <div class="text-xs text-brandMuted">Get code suggestions</div>
               </div>
             </div>
           </a>
-          <a href="./marketplace.html" class="group border border-brandBorder rounded-xl p-4 text-left hover:border-brandAccent focus-ring">
+
+          <a href="./marketplace.html" class="tile focus-ring">
             <div class="flex items-center gap-3">
-              <div class="h-10 w-10 rounded-lg bg-brandSoft text-brandAccent grid place-items-center">🏬</div>
+              <div class="h-11 w-11 rounded-lg bg-brandSoft text-brandAccent grid place-items-center">🏬</div>
               <div>
                 <div class="text-sm font-semibold">Find Broker</div>
                 <div class="text-xs text-brandMuted">Compare verified CHAs</div>
               </div>
             </div>
           </a>
-          <a href="./chat.html" class="group border border-brandBorder rounded-xl p-4 text-left hover:border-brandAccent focus-ring">
+
+          <a href="./chat.html" class="tile focus-ring">
             <div class="flex items-center gap-3">
-              <div class="h-10 w-10 rounded-lg bg-brandSoft text-brandAccent grid place-items-center">💬</div>
+              <div class="h-11 w-11 rounded-lg bg-brandSoft text-brandAccent grid place-items-center">💬</div>
               <div>
                 <div class="text-sm font-semibold">Ask in Chat</div>
-                <div class="text-xs text-brandMuted">ChatGPT-style helper</div>
+                <div class="text-xs text-brandMuted">Quick help</div>
               </div>
             </div>
           </a>
         </div>
       </section>
 
-      <!-- Pinned tools -->
+      <!-- Pinned tools (horizontal cards with pin/unpin) -->
       <section class="bg-white border border-brandBorder rounded-2xl p-5 card">
         <div class="flex items-center justify-between">
           <h2 class="text-xl font-semibold">Pinned tools</h2>
+          <div class="text-xs text-brandMuted">Drag to reorder <span class="ml-1">↕</span></div>
         </div>
-        <div class="mt-4 grid md:grid-cols-2 gap-4">
-          <article class="border border-brandBorder rounded-xl p-4">
+
+        <div id="pinnedWrap" class="mt-4 grid md:grid-cols-2 gap-4">
+          <!-- Item -->
+          <article class="group border border-brandBorder rounded-xl p-4 relative overflow-hidden">
+            <button class="absolute top-3 right-3 opacity-0 group-hover:opacity-100 transition chip pin-btn" data-id="calc" aria-label="Unpin">
+              ⭐
+            </button>
             <div class="flex items-center justify-between">
-              <h3 class="font-semibold">Calculator</h3>
+              <div class="flex items-center gap-3">
+                <div class="h-10 w-10 rounded-lg bg-brandSoft text-brandAccent grid place-items-center">∑</div>
+                <h3 class="font-semibold">Calculator</h3>
+              </div>
               <a href="./calculator.html" class="text-brandAccent text-sm">Open →</a>
             </div>
             <p class="text-sm text-brandMuted mt-1">Estimate BCD, IGST/VAT and landed cost.</p>
-            <div class="text-xs text-brandMuted mt-2">Last used: 2 days ago</div>
+            <div class="text-xs text-brandMuted mt-2">Last used: <span class="badge">2 days ago</span></div>
           </article>
-          <article class="border border-brandBorder rounded-xl p-4">
+
+          <article class="group border border-brandBorder rounded-xl p-4 relative overflow-hidden">
+            <button class="absolute top-3 right-3 opacity-0 group-hover:opacity-100 transition chip pin-btn" data-id="hs" aria-label="Unpin">
+              ⭐
+            </button>
             <div class="flex items-center justify-between">
-              <h3 class="font-semibold">HS Finder</h3>
+              <div class="flex items-center gap-3">
+                <div class="h-10 w-10 rounded-lg bg-brandSoft text-brandAccent grid place-items-center">HS</div>
+                <h3 class="font-semibold">HS Finder</h3>
+              </div>
               <a href="./hs-finder.html" class="text-brandAccent text-sm">Open →</a>
             </div>
             <p class="text-sm text-brandMuted mt-1">Describe product → get HS suggestions.</p>
-            <div class="text-xs text-brandMuted mt-2">Last used: 4 days ago</div>
+            <div class="text-xs text-brandMuted mt-2">Last used: <span class="badge">4 days ago</span></div>
           </article>
-          <article class="border border-brandBorder rounded-xl p-4">
+
+          <article class="group border border-brandBorder rounded-xl p-4 relative overflow-hidden">
+            <button class="absolute top-3 right-3 opacity-0 group-hover:opacity-100 transition chip pin-btn" data-id="mkt" aria-label="Unpin">
+              ⭐
+            </button>
             <div class="flex items-center justify-between">
-              <h3 class="font-semibold">Marketplace</h3>
+              <div class="flex items-center gap-3">
+                <div class="h-10 w-10 rounded-lg bg-brandSoft text-brandAccent grid place-items-center">🏬</div>
+                <h3 class="font-semibold">Marketplace</h3>
+              </div>
               <a href="./marketplace.html" class="text-brandAccent text-sm">Open →</a>
             </div>
             <p class="text-sm text-brandMuted mt-1">Browse & compare verified customs brokers.</p>
-            <div class="text-xs text-brandMuted mt-2">Last used: 1 week ago</div>
+            <div class="text-xs text-brandMuted mt-2">Last used: <span class="badge">1 week ago</span></div>
           </article>
-          <article class="border border-brandBorder rounded-xl p-4">
+
+          <article class="group border border-brandBorder rounded-xl p-4 relative overflow-hidden">
+            <button class="absolute top-3 right-3 opacity-0 group-hover:opacity-100 transition chip pin-btn" data-id="chat" aria-label="Unpin">
+              ⭐
+            </button>
             <div class="flex items-center justify-between">
-              <h3 class="font-semibold">Ask in Chat</h3>
+              <div class="flex items-center gap-3">
+                <div class="h-10 w-10 rounded-lg bg-brandSoft text-brandAccent grid place-items-center">💬</div>
+                <h3 class="font-semibold">Ask in Chat</h3>
+              </div>
               <a href="./chat.html" class="text-brandAccent text-sm">Open →</a>
             </div>
             <p class="text-sm text-brandMuted mt-1">Get instant help, ChatGPT-style.</p>
@@ -225,7 +284,7 @@
         </div>
       </section>
 
-      <!-- Recent items -->
+      <!-- Recent items (with tooltips + icons) -->
       <section class="bg-white border border-brandBorder rounded-2xl p-5 card">
         <div class="flex items-center justify-between">
           <h2 class="text-xl font-semibold">Recent items</h2>
@@ -237,6 +296,7 @@
 
     <!-- Right column -->
     <aside class="grid gap-6">
+      <!-- Account -->
       <section class="bg-white border border-brandBorder rounded-2xl p-5 card">
         <h3 class="text-lg font-semibold">Account</h3>
         <dl class="mt-3 text-sm">
@@ -249,17 +309,37 @@
             <dd id="memberSince" class="font-medium">—</dd>
           </div>
         </dl>
-        <button id="clearData" class="mt-4 text-xs underline text-brandAccent">Clear local data</button>
+        <div class="mt-4 flex items-center gap-2">
+          <button id="clearData" class="text-xs underline text-brandAccent">Clear local data</button>
+          <a href="./profile.html" class="chip">Edit profile</a>
+        </div>
       </section>
 
+      <!-- What’s next – progress tracker -->
       <section class="bg-white border border-brandBorder rounded-2xl p-5 card">
         <h3 class="text-lg font-semibold">What’s next?</h3>
-        <ul class="mt-2 list-disc ml-5 text-sm text-brandPrimary/90">
-          <li>Create a landed cost estimate in the <a class="text-brandAccent" href="./calculator.html">Calculator</a></li>
-          <li>Try <a class="text-brandAccent" href="./hs-finder.html">HS Finder</a> with a product description</li>
-          <li>Browse verified brokers in the <a class="text-brandAccent" href="./marketplace.html">Marketplace</a></li>
-          <li>Ask quick questions in <a class="text-brandAccent" href="./chat.html">Chat</a></li>
-        </ul>
+        <ol class="mt-2 space-y-2 text-sm">
+          <li class="flex items-center gap-2">
+            <input type="checkbox" checked class="accent-blue-600">
+            <span>Create your first estimate</span>
+            <a href="./calculator.html" class="ml-auto chip">→ Create Estimate</a>
+          </li>
+          <li class="flex items-center gap-2">
+            <input type="checkbox" class="accent-blue-600">
+            <span>Try HS Finder with a product description</span>
+            <a href="./hs-finder.html" class="ml-auto chip">→ Try HS Finder</a>
+          </li>
+          <li class="flex items-center gap-2">
+            <input type="checkbox" class="accent-blue-600">
+            <span>Compare customs brokers in Marketplace</span>
+            <a href="./marketplace.html" class="ml-auto chip">→ Browse</a>
+          </li>
+          <li class="flex items-center gap-2">
+            <input type="checkbox" class="accent-blue-600">
+            <span>Ask a quick question in Chat</span>
+            <a href="./chat.html" class="ml-auto chip">→ Open Chat</a>
+          </li>
+        </ol>
       </section>
     </aside>
   </main>
@@ -269,14 +349,15 @@
   </footer>
 
   <script>
-    // Utility
-    const $ = s => document.querySelector(s);
+    // ===== Utilities =====
+    const $  = s => document.querySelector(s);
     const $$ = s => Array.from(document.querySelectorAll(s));
+    const fmt = ts => new Date(ts).toLocaleDateString();
 
     // Footer year
     $('#year').textContent = new Date().getFullYear();
 
-    // Session load (safe)
+    // Load session (safe)
     let user = null;
     try {
       const raw = localStorage.getItem('chadaddy_user');
@@ -290,19 +371,33 @@
       $('#memberSince').textContent = d.toLocaleDateString();
     }
 
-    // Demo "recent" list
+    // ===== Active nav state =====
+    (function setActiveNav(){
+      const here = location.pathname.split('/').pop() || 'dashboard.html';
+      $$('.nav-link').forEach(a=>{
+        const linkTo = a.getAttribute('href')?.split('/').pop();
+        if (linkTo === here) a.classList.add('active');
+      });
+    })();
+
+    // ===== Recent list =====
     const recent = [
-      { t:'Estimate • IN • HS 851713 • CIF', time:'2 days ago', link:'./calculator.html' },
-      { t:'HS Finder • “LED downlight”',     time:'4 days ago',  link:'./hs-finder.html' },
-      { t:'Broker shortlist • JNPT',         time:'1 week ago',  link:'./marketplace.html' },
-      { t:'Chat • “Docs for EU furniture”',  time:'1 week ago',  link:'./chat.html' },
+      { t:'Estimate • IN • HS 851713 • CIF', time:'2 days ago', link:'./calculator.html', icon:'∑' },
+      { t:'HS Finder • “LED downlight”',     time:'4 days ago',  link:'./hs-finder.html', icon:'HS' },
+      { t:'Broker shortlist • JNPT',         time:'1 week ago',  link:'./marketplace.html', icon:'🏬' },
+      { t:'Chat • “Docs for EU furniture”',  time:'1 week ago',  link:'./chat.html', icon:'💬' },
     ];
     $('#recentList').innerHTML = recent
-      .map(r => `<li class="border border-brandBorder rounded-lg px-3 py-2 flex items-center justify-between">
-        <a class="hover:text-brandAccent" href="${r.link}">${r.t}</a>
-        <span class="text-brandMuted">${r.time}</span></li>`).join('');
+      .map(r => `
+        <li class="border border-brandBorder rounded-lg px-3 py-2 flex items-center justify-between">
+          <a class="hover:text-brandAccent flex items-center gap-3 min-w-0" href="${r.link}">
+            <span class="inline-grid place-items-center h-7 w-7 rounded-md bg-brandSoft text-brandAccent text-xs font-bold">${r.icon}</span>
+            <span class="truncate tooltip" data-tip="${r.t}">${r.t}</span>
+          </a>
+          <span class="text-brandMuted">${r.time}</span>
+        </li>`).join('');
 
-    // Chat thread count
+    // ===== Chat thread count =====
     try{
       const t = JSON.parse(localStorage.getItem('ld_chat_threads_v1')||'[]');
       const n = Array.isArray(t) ? t.length : 0;
@@ -311,27 +406,19 @@
       if(tt) tt.textContent = n + (n===1?' thread':' threads');
     }catch{}
 
-    // ===== Account dropdown (click toggle; closes on outside click) =====
+    // ===== Account dropdown (click toggle) =====
     (function setupAccountMenu(){
       const btn = $('#accountBtn');
       const menu = $('#accountMenu');
-
-      function close(){ menu.classList.add('hidden'); btn.setAttribute('aria-expanded', 'false'); }
-      function open(){ menu.classList.remove('hidden'); btn.setAttribute('aria-expanded', 'true'); }
-
+      const close = ()=>{ menu.classList.add('hidden'); btn.setAttribute('aria-expanded','false'); };
+      const open  = ()=>{ menu.classList.remove('hidden'); btn.setAttribute('aria-expanded','true'); };
       btn.addEventListener('click', (e)=>{
         e.stopPropagation();
         const isOpen = !menu.classList.contains('hidden');
         isOpen ? close() : open();
       });
-
-      // prevent menu clicks from bubbling (so clicking inside doesn't close or trigger anything else)
       menu.addEventListener('click', (e)=> e.stopPropagation());
-
-      // click outside to close
       document.addEventListener('click', close);
-
-      // Escape to close
       document.addEventListener('keydown', (e)=>{ if(e.key==='Escape') close(); });
     })();
 
@@ -340,8 +427,7 @@
       e.stopPropagation();
       try {
         localStorage.removeItem('chadaddy_user');
-        // optional: also clear chat cache
-        // localStorage.removeItem('ld_chat_threads_v1');
+        // localStorage.removeItem('ld_chat_threads_v1'); // optional
       } catch {}
       window.location.href = './log-in.html';
     });
@@ -351,18 +437,25 @@
       localStorage.removeItem('chadaddy_user');
       localStorage.removeItem('ld_chat_threads_v1');
       alert('Local demo data cleared. You may need to sign in again.');
-      // Optional: refresh to re-run auth gate
-      // location.reload();
     });
 
-    // ===== Home link safety (avoid "/" issues) =====
-    // If you're already on dashboard, prevent redundant navigation.
+    // ===== Home link safety =====
     $('#homeLink').addEventListener('click', (e)=>{
       const here = location.pathname.replace(/\/+$/,'');
-      if (here.endsWith('/dashboard.html') || here === '/dashboard.html') {
-        e.preventDefault();
-      }
+      if (here.endsWith('/dashboard.html') || here === '/dashboard.html') e.preventDefault();
     });
+
+    // ===== Pin / Unpin demo (visual only) =====
+    $$('.pin-btn').forEach(btn=>{
+      btn.addEventListener('click', (e)=>{
+        e.stopPropagation();
+        btn.classList.toggle('text-brandAccent');
+        btn.textContent = btn.textContent.trim() === '⭐' ? '★' : '⭐';
+      });
+    });
+
+    // ===== Small: persistent scroll for long lists (optional)
+    // (No heavy logic here — UI only)
   </script>
 </body>
 </html>
