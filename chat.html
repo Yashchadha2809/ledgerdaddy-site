@@ -22,14 +22,22 @@
     }
   </script>
   <style>
+    /* Prevent horizontal shake; make layout fully fluid */
+    html, body {
+      height: 100%;
+      width: 100%;
+      max-width: 100%;
+      overflow-x: hidden;
+    }
+
     /* Mobile viewport height fix (set in JS) */
-    html,body { height: 100%; }
     .fade-in{animation:fade .15s ease-out}
     @keyframes fade{from{opacity:.5;transform:translateY(2px)}to{opacity:1;transform:none}}
     .typing-dot{animation:pulse 1s infinite ease-in-out}
     .typing-dot:nth-child(2){animation-delay:.15s}
     .typing-dot:nth-child(3){animation-delay:.3s}
     @keyframes pulse{0%,80%,100%{opacity:.25}40%{opacity:1}}
+
     .card{transition:transform .12s ease, box-shadow .2s ease}
     .card:hover{transform:translateY(-2px); box-shadow:0 14px 34px rgba(0,0,0,.14)}
     .hero-img{background:url('https://images.unsplash.com/photo-1586521995568-39ef16c6934d?q=80&w=1920&auto=format&fit=crop') center/cover no-repeat;}
@@ -53,8 +61,28 @@
     .drawer-exit { transform: translateX(0); opacity: 1; }
     .drawer-exit-active { transform: translateX(-100%); opacity: .0; transition: transform .18s ease, opacity .18s ease; }
 
-    /* iOS tap highlights */
+    /* Bubbles must be fluid + wrap safely */
+    .bubble, .file-pill { max-width: 100% !important; word-wrap: break-word; word-break: break-word; overflow-wrap: anywhere; }
+    .bubble-content { max-width: 100%; }
+
+    /* iOS tap highlight */
     * { -webkit-tap-highlight-color: rgba(0,0,0,0.05); }
+
+    /* Mobile overrides to avoid “width shake” */
+    @media (max-width: 768px) {
+      #drawer {
+        width: 100% !important; /* full width on mobile */
+        max-width: none !important;
+      }
+      #messages {
+        padding-left: .5rem;
+        padding-right: .5rem;
+      }
+      /* Limit filename text to viewport width, not fixed pixels */
+      .name-wrap {
+        max-width: 52vw; /* fluid cap for small screens */
+      }
+    }
   </style>
 </head>
 <body class="bg-gray-50 text-gray-900 h-screen-dvh flex flex-col">
@@ -87,7 +115,7 @@
   <!-- Drawer (mobile conversations) -->
   <div id="drawerBackdrop" class="fixed inset-0 z-[60] bg-black/30 hidden md:hidden"></div>
   <aside id="drawer"
-    class="fixed left-0 top-0 bottom-0 z-[61] w-[82vw] max-w-[320px] bg-white border-r border-gray-200 p-3 md:hidden drawer-enter hidden">
+    class="fixed left-0 top-0 bottom-0 z-[61] w-full bg-white border-r border-gray-200 p-3 md:hidden drawer-enter hidden">
     <div class="flex items-center justify-between">
       <strong>Conversations</strong>
       <div class="flex items-center gap-2">
@@ -104,8 +132,8 @@
     </div>
   </aside>
 
-  <!-- Hero (kept slim on mobile) -->
-  <section class="pt-[56px] md:pt-[76px]">
+  <!-- Hero (slim on mobile) -->
+  <section class="pt-[56px] md:pt-[76px] w-full">
     <div class="hero-img">
       <div class="backdrop-brightness-100 md:bg-gradient-to-r md:from-indigoDeep/70 md:to-cyanBright/60">
         <div class="max-w-6xl mx-auto px-4 py-4 md:py-8 text-indigoDeep md:text-white">
@@ -121,7 +149,7 @@
   <!-- Chat layout -->
   <main class="max-w-7xl mx-auto px-2 sm:px-4 pb-20 md:pb-28 grid md:grid-cols-[280px,1fr] gap-4 -mt-2 md:-mt-4 flex-1 w-full">
     <!-- Sidebar (desktop) -->
-    <aside class="hidden md:block bg-white border border-gray-200 rounded-2xl shadow p-3 h-fit md:sticky md:top-[92px]">
+    <aside class="hidden md:block bg-white border border-gray-200 rounded-2xl shadow p-3 h-fit md:sticky md:top-[92px] w-full">
       <div class="flex items-center justify-between">
         <strong>Conversations</strong>
         <button id="newChat" class="text-xs border rounded px-2 py-1">New chat</button>
@@ -136,12 +164,12 @@
     </aside>
 
     <!-- Conversation -->
-    <section class="bg-white border border-gray-200 rounded-2xl shadow flex flex-col min-h-[60vh]">
+    <section class="bg-white border border-gray-200 rounded-2xl shadow flex flex-col min-h-[60vh] w-full">
       <!-- Stream -->
-      <div id="messages" class="flex-1 overflow-auto p-3 md:p-4 space-y-3 md:space-y-4">
-        <div class="fade-in rounded-xl bg-gray-50 p-3 md:p-4">
+      <div id="messages" class="flex-1 overflow-auto p-3 md:p-4 space-y-3 md:space-y-4 w-full">
+        <div class="fade-in rounded-xl bg-gray-50 p-3 md:p-4 bubble w-full">
           <div class="text-xs md:text-sm text-gray-600">Assistant</div>
-          <div class="mt-1 whitespace-pre-wrap text-[14px] leading-relaxed">
+          <div class="mt-1 whitespace-pre-wrap text-[14px] leading-relaxed bubble-content">
             Hey! I’m your customs agent. Ask me about HS codes, duties, or docs. You can also attach files (images, PDFs, spreadsheets).
             <div class="mt-3 flex flex-wrap gap-2">
               <button class="chip demo-btn" data-q="Estimate duty for HS 851713 (IN) CIF 100000">Estimate Duty</button>
@@ -153,11 +181,11 @@
       </div>
 
       <!-- Composer -->
-      <div class="border-t p-2 md:p-3 sticky bottom-0 bg-white">
+      <div class="border-t p-2 md:p-3 sticky bottom-0 bg-white w-full">
         <!-- Attachment previews -->
         <div id="attachRow" class="hidden mb-2 flex items-center gap-2 flex-wrap"></div>
 
-        <form id="composer" class="flex items-end gap-2 md:gap-3">
+        <form id="composer" class="flex items-end gap-2 md:gap-3 w-full">
           <!-- Attach -->
           <input id="fileInput" type="file" class="hidden" multiple
             accept="image/*,.pdf,.csv,.txt,.json,.md,.doc,.docx,.xls,.xlsx,.ppt,.pptx" />
@@ -166,14 +194,14 @@
 
           <!-- Text -->
           <textarea id="chatInput" rows="1" placeholder="Message Ledgerdaddy…"
-            class="flex-1 border rounded-xl px-3 py-2 md:py-2.5 text-[15px] md:text-[15px] resize-none max-h-40 focus:outline-none focus:ring-2 focus:ring-cyanBright/40"
+            class="flex-1 border rounded-xl px-3 py-2 md:py-2.5 text-[15px] md:text-[15px] resize-none max-h-40 focus:outline-none focus:ring-2 focus:ring-cyanBright/40 w-full"
             inputmode="text" enterkeyhint="send"></textarea>
 
           <!-- Send -->
           <button id="sendBtn" class="btn btn-emerald h-10 md:h-11 px-4 md:px-5">Send</button>
         </form>
 
-        <div class="mt-2 flex items-center justify-between">
+        <div class="mt-2 flex items-center justify-between w-full">
           <div class="text-[11px] text-gray-500 hidden md:block">Enter to send • Shift+Enter for new line • Drag & drop files (desktop)</div>
           <div class="md:hidden text-[11px] text-gray-500">Tap 📎 to attach • Enter to send</div>
           <button id="toBottom" class="chip hidden">Scroll to bottom</button>
@@ -183,8 +211,8 @@
   </main>
 
   <!-- Mobile bottom bar (quick actions) -->
-  <nav class="md:hidden fixed bottom-0 inset-x-0 z-40 bg-white border-t border-gray-200">
-    <div class="max-w-7xl mx-auto px-3 py-2 grid grid-cols-3 gap-2">
+  <nav class="md:hidden fixed bottom-0 inset-x-0 z-40 bg-white border-t border-gray-200 w-full">
+    <div class="max-w-7xl mx-auto px-3 py-2 grid grid-cols-3 gap-2 w-full">
       <button id="fabNew" class="w-full border rounded-lg py-2 text-sm">+ New</button>
       <button id="fabAttach" class="w-full border rounded-lg py-2 text-sm">📎 Upload</button>
       <button id="fabDown" class="w-full border rounded-lg py-2 text-sm">⬇︎ Bottom</button>
@@ -194,12 +222,12 @@
   <!-- Toast -->
   <div id="toast" class="hidden fixed bottom-20 right-4 md:bottom-6 md:right-6 bg-gray-900 text-white text-sm px-3 py-2 rounded-lg shadow"></div>
 
-  <footer class="text-center text-xs text-gray-500 my-14 md:my-8">
+  <footer class="text-center text-xs text-gray-500 my-14 md:my-8 w-full">
     © <span id="year"></span> Ledgerdaddy
   </footer>
 
   <script>
-    // ===== Mobile viewport fix =====
+    // ===== Mobile viewport fix (prevents width/height jumps) =====
     function setVH(){
       const vh = window.innerHeight * 0.01;
       document.documentElement.style.setProperty('--vh', `${vh}px`);
@@ -376,9 +404,9 @@
                <button title="Remove" class="absolute -top-2 -right-2 bg-white border border-gray-200 rounded-full w-6 h-6 text-xs"
                  onclick="removePending('${p.id}')">×</button>
              </div>`
-          : `<div class="file-pill">
+          : `<div class="file-pill bubble w-full">
                <span>${fileIcon(p.file.name)}</span>
-               <span class="truncate max-w-[160px]">${p.file.name}</span>
+               <span class="truncate name-wrap">${p.file.name}</span>
                <span class="text-gray-500">${size}</span>
                <button title="Remove" class="ml-1 border border-gray-200 rounded px-1 text-[11px]" onclick="removePending('${p.id}')">×</button>
              </div>`;
@@ -408,17 +436,17 @@
     function attachBlock(attachments=[]){
       if(!attachments.length) return '';
       return `
-        <div class="mt-2 flex flex-wrap gap-2">
+        <div class="mt-2 flex flex-wrap gap-2 w-full">
           ${attachments.map(a=>{
             const isImg = /^image\//.test(a.type);
             return isImg
-              ? `<a href="${a.url}" target="_blank" class="inline-flex items-center gap-2" title="${a.name||'image'}">
+              ? `<a href="${a.url}" target="_blank" class="inline-flex items-center gap-2 bubble w-full" title="${a.name||'image'}">
                    <img src="${a.url}" alt="${a.name||'image'}" class="thumb"/>
-                   <span class="text-[12px] text-gray-600 truncate max-w-[160px]">${a.name||'image'}</span>
+                   <span class="text-[12px] text-gray-600 truncate name-wrap">${a.name||'image'}</span>
                  </a>`
-              : `<a href="${a.url}" target="_blank" class="file-pill" title="${a.name||'file'}">
+              : `<a href="${a.url}" target="_blank" class="file-pill bubble w-full" title="${a.name||'file'}">
                    <span>${fileIcon(a.name||'file')}</span>
-                   <span class="truncate max-w-[160px]">${a.name||'file'}</span>
+                   <span class="truncate name-wrap">${a.name||'file'}</span>
                    ${a.size ? `<span class="text-gray-500">${(a.size/1024/1024).toFixed(1)}MB</span>`:''}
                  </a>`;
           }).join('')}
@@ -433,20 +461,20 @@
       const avatar = isUser ? '👤' : '◆';
       const bg = isUser ? 'bg-white' : 'bg-gray-50';
       return `
-        <div class="fade-in rounded-xl ${bg} p-3 md:p-4">
-          <div class="text-[12px] md:text-sm text-gray-600 flex items-center gap-2">
+        <div class="fade-in rounded-xl ${bg} p-3 md:p-4 bubble w-full">
+          <div class="text-[12px] md:text-sm text-gray-600 flex items-center gap-2 bubble-content">
             <span class="grid w-6 h-6 place-items-center rounded-full ${isUser?'bg-gray-200':'bg-indigoDeep text-white'} text-[12px]">${avatar}</span>
             <span class="truncate">${isUser?'You':'Assistant'}</span>
             <button class="ml-auto text-[11px] text-gray-500 copy-btn" data-copy="${encodeURIComponent(text||'')}">Copy</button>
           </div>
           ${attachments?.length ? attachBlock(attachments) : ''}
-          <div class="mt-2 whitespace-pre-wrap leading-relaxed text-[14px] md:text-[15px]">${mdLite(text||'')}</div>
+          <div class="mt-2 whitespace-pre-wrap leading-relaxed text-[14px] md:text-[15px] bubble-content">${mdLite(text||'')}</div>
         </div>
       `;
     }
     function typingBubble(){
       return `
-        <div class="rounded-xl bg-gray-50 p-3 md:p-4">
+        <div class="rounded-xl bg-gray-50 p-3 md:p-4 bubble w-full">
           <div class="text-xs md:text-sm text-gray-600 flex items-center gap-2">
             <span class="grid w-6 h-6 place-items-center rounded-full bg-indigoDeep text-white text-[12px]">◆</span>
             <span>Assistant</span>
@@ -464,9 +492,9 @@
       const t = getCurrent();
       if(!t){ wrap.innerHTML = '<div class="p-4 text-gray-500">Start a new chat.</div>'; return; }
       wrap.innerHTML = t.messages.map(msgBubble).join('') || `
-        <div class="rounded-xl bg-gray-50 p-3 md:p-4">
+        <div class="rounded-xl bg-gray-50 p-3 md:p-4 bubble w-full">
           <div class="text-xs md:text-sm text-gray-600">Assistant</div>
-          <div class="mt-1">How can I help today?</div>
+          <div class="mt-1 bubble-content">How can I help today?</div>
         </div>
       `;
       $$('.copy-btn').forEach(b=>{
