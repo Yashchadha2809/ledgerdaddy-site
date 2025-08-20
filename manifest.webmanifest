@@ -15,6 +15,6 @@
   ],
   "shortcuts": [
     { "name": "Open Chat", "short_name": "Chat", "url": "/chat.html" },
-    { "name": "Calculator", "short_name": "Calc", "url": "/calculator" }
+    { "name": "Calculator", "short_name": "Calc", "url": "/calculator.html" }
   ]
 }
