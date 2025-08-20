@@ -1,8 +1,9 @@
+// /sw.js
 const CACHE = 'ld-v1';
 const URLS = [
-  '/',               // ensure this resolves to your main page
-  '/home_min.html',  // include the page you route "/" to
-  // Add only files that actually exist in production:
+  '/',               // root
+  '/home_min.html',  // your "/" routes here
+  // Add more ONLY after confirming they load in prod:
   // '/chat.html',
   // '/styles.css',
   // '/app.js',
@@ -17,9 +18,8 @@ self.addEventListener('install', (event) => {
       try {
         const res = await fetch(url, { cache: 'no-store' });
         if (res.ok) await cache.put(url, res.clone());
-      } catch (e) {
-        // Skip missing/broken assets to avoid failing the whole install
-        // console.warn('SW skip caching', url, e);
+      } catch (_) {
+        // Skip missing/broken assets to avoid failing install
       }
     }
     self.skipWaiting();
@@ -39,10 +39,9 @@ self.addEventListener('fetch', (event) => {
     const cached = await caches.match(event.request);
     if (cached) return cached;
     try {
-      const res = await fetch(event.request);
-      return res;
-    } catch (e) {
-      // Optional: return fallback page for navigations
+      return await fetch(event.request);
+    } catch (_) {
+      // Fallback for navigations when offline
       if (event.request.mode === 'navigate') {
         return caches.match('/home_min.html') || Response.error();
       }
