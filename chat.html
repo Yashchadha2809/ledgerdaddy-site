@@ -43,6 +43,8 @@
     .btn-accent{background:#2563EB;color:#fff}
     .btn-accent:hover{filter:brightness(1.03)}
     .chip{font-size:12px;border:1px solid #E5E7EB;border-radius:999px;padding:.3rem .6rem;background:#fff}
+    .thumb{width:56px;height:56px;border-radius:10px;object-fit:cover;border:1px solid #E5E7EB}
+    .file-pill{border:1px solid #E5E7EB;border-radius:10px;padding:.4rem .6rem;font-size:12px;display:flex;align-items:center;gap:.5rem;background:#fff}
   </style>
 </head>
 <body class="bg-brandBg text-brandPrimary h-screen-dvh flex flex-col">
@@ -104,12 +106,18 @@
 
       <!-- Composer -->
       <div class="border-t border-brandBorder p-3 bg-white w-full">
+        <!-- Attachments preview -->
+        <div id="attachRow" class="hidden mb-2 flex items-center gap-2 flex-wrap"></div>
+
         <form id="composer" class="flex items-end gap-2 w-full">
+          <input id="fileInput" type="file" class="hidden" multiple accept="image/*,.pdf,.csv,.txt,.doc,.docx,.xls,.xlsx,.ppt,.pptx"/>
+          <button type="button" id="attachBtn" title="Attach files" class="btn border border-brandBorder">📎</button>
+
           <textarea id="chatInput" rows="1" placeholder="Message Chadaddy…"
             class="flex-1 border border-brandBorder rounded-xl px-3 py-2 text-[15px] resize-none max-h-40 focus:outline-none focus:ring-2 focus:ring-brandAccent/40 w-full"></textarea>
           <button id="sendBtn" class="btn btn-accent h-11 px-5">Send</button>
         </form>
-        <p class="mt-2 text-[11px] text-brandMuted text-center">Press Enter to send • Shift+Enter for new line</p>
+        <p class="mt-2 text-[11px] text-brandMuted text-center">Enter to send • Shift+Enter for new line • 📎 to attach files</p>
       </div>
     </section>
   </main>
@@ -120,26 +128,7 @@
 
   <script>
     document.getElementById('year').textContent = new Date().getFullYear();
-
     const API_BASE = "https://chadaddy.onrender.com";
-    async function checkSession(){
-      try{
-        const res = await fetch(`${API_BASE}/auth/session`, { credentials:"include", redirect:"manual" });
-        if(res.status===200){
-          const data = await res.json().catch(()=>null);
-          if(data?.user){
-            document.getElementById('userControls').innerHTML =
-              `<span>Hi, ${data.user.name||'User'}</span>
-               <a href="./dashboard.html" class="bg-brandAccent text-white px-3 py-1.5 rounded-lg">Dashboard</a>
-               <a href="${API_BASE}/auth/logout" class="text-brandMuted ml-2">Log out</a>`;
-            return;
-          }
-        }
-      }catch{}
-      document.getElementById('userControls').innerHTML =
-        `<a href="./dashboard.html" class="bg-brandAccent text-white px-3 py-1.5 rounded-lg">Dashboard</a>`;
-    }
-    checkSession();
 
     function getSessionId(){
       const key="ld_session_id";
@@ -152,10 +141,23 @@
     const messages=document.getElementById('messages');
     const chatInput=document.getElementById('chatInput');
     const form=document.getElementById('composer');
+    const fileInput=document.getElementById('fileInput');
+    const attachBtn=document.getElementById('attachBtn');
+    const attachRow=document.getElementById('attachRow');
 
-    function addMessage(role,text){
+    let pendingFiles=[]; // store selected files
+
+    function addMessage(role,text,attachments=[]){
       const div=document.createElement('div');
       div.className=`fade-in rounded-xl ${role==='user'?'bg-white border border-brandBorder':'bg-brandSoft'} p-4 bubble w-full`;
+      let attachHTML="";
+      if(attachments.length){
+        attachHTML='<div class="mt-2 flex flex-wrap gap-2">'+attachments.map(a=>{
+          return a.type.startsWith("image/")
+            ? `<img src="${a.url}" alt="${a.name}" class="thumb"/>`
+            : `<div class="file-pill"><span>📄</span><span class="truncate">${a.name}</span></div>`;
+        }).join("")+'</div>';
+      }
       div.innerHTML=`
         <div class="flex items-center gap-2 text-xs text-brandMuted">
           <span class="w-6 h-6 grid place-items-center rounded-full ${role==='user'?'bg-brandBg':'bg-brandPrimary text-white'}">
@@ -163,17 +165,49 @@
           </span>
           ${role==='user'?'You':'Assistant'}
         </div>
-        <div class="mt-2 whitespace-pre-wrap text-[14px] leading-relaxed">${text}</div>`;
+        <div class="mt-2 whitespace-pre-wrap text-[14px] leading-relaxed">${text}</div>
+        ${attachHTML}`;
       messages.appendChild(div);
       messages.scrollTop=messages.scrollHeight;
     }
 
-    async function sendMessage(text){
-      if(!text.trim()) return;
-      addMessage('user',text);
-      chatInput.value="";
+    // ===== File handling =====
+    attachBtn.addEventListener('click',()=>fileInput.click());
+    fileInput.addEventListener('change',e=>{
+      pendingFiles=[...e.target.files];
+      renderPending();
+    });
 
-      const typing=document.createElement('div');
+    function renderPending(){
+      if(!pendingFiles.length){ attachRow.classList.add('hidden'); attachRow.innerHTML=""; return; }
+      attachRow.classList.remove('hidden');
+      attachRow.innerHTML=pendingFiles.map(f=>{
+        return f.type.startsWith("image/")
+          ? `<img src="${URL.createObjectURL(f)}" class="thumb" title="${f.name}"/>`
+          : `<div class="file-pill"><span>📄</span><span>${f.name}</span></div>`;
+      }).join("");
+    }
+
+    async function uploadFiles(files){
+      if(!files.length) return [];
+      const form=new FormData();
+      files.forEach(f=>form.append("files",f,f.name));
+      try{
+        const res=await fetch(`${API_BASE}/api/upload`,{method:"POST",body:form});
+        const data=await res.json();
+        return (data.files||[]).map(x=>({url:x.url,name:x.name,type:x.type}));
+      }catch(e){
+        return files.map(f=>({url:URL.createObjectURL(f),name:f.name,type:f.type}));
+      }
+    }
+
+    async function sendMessage(text){
+      if(!text.trim() && !pendingFiles.length) return;
+      const uploads=await uploadFiles(pendingFiles);
+      addMessage("user",text,uploads);
+      chatInput.value=""; pendingFiles=[]; renderPending();
+
+      const typing=document.createElement("div");
       typing.className="fade-in rounded-xl bg-brandSoft p-4 bubble w-full";
       typing.innerHTML=`<div class="flex items-center gap-2 text-xs text-brandMuted">
                           <span class="w-6 h-6 grid place-items-center bg-brandPrimary text-white rounded-full">◆</span>
@@ -183,36 +217,30 @@
                           <span class="typing-dot w-2 h-2 rounded-full bg-brandMuted"></span>
                           <span class="typing-dot w-2 h-2 rounded-full bg-brandMuted"></span>
                         </div>`;
-      messages.appendChild(typing);
-      messages.scrollTop=messages.scrollHeight;
+      messages.appendChild(typing); messages.scrollTop=messages.scrollHeight;
 
       try{
         const res=await fetch(`${API_BASE}/api/chat`,{
           method:"POST",
           headers:{"Content-Type":"application/json"},
-          body:JSON.stringify({message:text,session_id:SESSION_ID}),
+          body:JSON.stringify({message:text,session_id:SESSION_ID,attachments:uploads}),
           credentials:"include"
         });
         const data=await res.json().catch(()=>({reply:"⚠️ Invalid response"}));
         typing.remove();
-        addMessage('assistant',data.reply||"⚠️ No reply");
+        addMessage("assistant",data.reply||"⚠️ No reply");
       }catch(err){
         typing.remove();
-        addMessage('assistant',"⚠️ Network error: "+err.message);
+        addMessage("assistant","⚠️ Network error: "+err.message);
       }
     }
 
-    form.addEventListener('submit',e=>{
-      e.preventDefault(); sendMessage(chatInput.value);
+    form.addEventListener("submit",e=>{e.preventDefault();sendMessage(chatInput.value);});
+    chatInput.addEventListener("keydown",e=>{
+      if(e.key==="Enter" && !e.shiftKey){e.preventDefault();sendMessage(chatInput.value);}
     });
-    chatInput.addEventListener('keydown',e=>{
-      if(e.key==="Enter" && !e.shiftKey){
-        e.preventDefault(); sendMessage(chatInput.value);
-      }
-    });
-
-    document.querySelectorAll('.demo-btn').forEach(btn=>{
-      btn.addEventListener('click',()=>sendMessage(btn.dataset.q));
+    document.querySelectorAll(".demo-btn").forEach(btn=>{
+      btn.addEventListener("click",()=>sendMessage(btn.dataset.q));
     });
   </script>
 </body>
