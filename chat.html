@@ -2,10 +2,7 @@
 <html lang="en" class="h-full">
 <head>
   <meta charset="UTF-8" />
-  <meta
-    name="viewport"
-    content="width=device-width, initial-scale=1, viewport-fit=cover"
-  />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
   <title>Ask in Chat – Chadaddy</title>
   <meta name="theme-color" content="#111827" />
   <link rel="preconnect" href="https://images.unsplash.com" />
@@ -14,7 +11,7 @@
     tailwind.config = {
       theme: {
         extend: {
-          colors:{
+          colors: {
             brandPrimary:"#111827",
             brandAccent:"#2563EB",
             brandSoft:"#EFF6FF",
@@ -22,8 +19,8 @@
             brandMuted:"#6B7280",
             brandBg:"#F9FAFB"
           },
-          boxShadow:{ lift:"0 14px 34px rgba(17,24,39,.06)" },
-          height: { 'screen-dvh': 'calc(var(--vh, 1vh) * 100)' },
+          boxShadow: { lift:"0 14px 34px rgba(17,24,39,.06)" },
+          height: { 'screen-dvh':'calc(var(--vh, 1vh) * 100)' },
           backgroundImage:{
             "soft-gradient":"linear-gradient(135deg, #EFF6FF 0%, #FFFFFF 100%)"
           }
@@ -39,9 +36,8 @@
     .typing-dot:nth-child(2){animation-delay:.15s}
     .typing-dot:nth-child(3){animation-delay:.3s}
     @keyframes pulse{0%,80%,100%{opacity:.25}40%{opacity:1}}
-    .card{transition:transform .12s ease, box-shadow .2s ease}
-    .hero-img{background:url('https://images.unsplash.com/photo-1586521995568-39ef16c6934d?q=80&w=1920&auto=format&fit=crop') center/cover no-repeat;}
-    pre{background:#0f172a; color:#e5e7eb; padding:12px; border-radius:10px; overflow:auto}
+    .bubble{word-wrap:break-word;overflow-wrap:break-word}
+    pre{background:#0f172a;color:#e5e7eb;padding:12px;border-radius:10px;overflow:auto}
     code{font-family:ui-monospace,monospace}
     .btn{display:inline-flex;align-items:center;gap:.55rem;padding:.56rem .9rem;border-radius:12px;font-weight:600}
     .btn-accent{background:#2563EB;color:#fff}
@@ -65,7 +61,6 @@
         <a href="./hs-finder.html" class="hover:text-brandAccent">HS Finder</a>
         <a href="./dashboard.html" class="hover:text-brandAccent">Dashboard</a>
       </nav>
-      <!-- Session-aware controls -->
       <div id="userControls" class="flex items-center gap-2 text-sm"></div>
     </div>
   </header>
@@ -73,32 +68,31 @@
   <!-- Hero -->
   <section class="pt-[56px] md:pt-[76px] w-full">
     <div class="hero-img">
-      <div class="backdrop-brightness-100 md:bg-gradient-to-r md:from-brandPrimary/70 md:to-brandAccent/60">
-        <div class="max-w-6xl mx-auto px-4 py-4 md:py-8 text-brandPrimary md:text-white">
-          <h1 class="text-xl md:text-4xl font-extrabold">Ask in Chat</h1>
-          <p class="mt-1 md:mt-2 text-brandPrimary/80 md:text-white/95 text-sm md:text-base">
-            Chat with the AI customs assistant. Works in demo mode without login. Your session will persist if logged in.
+      <div class="bg-gradient-to-r from-brandPrimary/70 to-brandAccent/60">
+        <div class="max-w-6xl mx-auto px-4 py-6 md:py-10 text-white">
+          <h1 class="text-2xl md:text-4xl font-extrabold">Ask in Chat</h1>
+          <p class="mt-1 md:mt-2 text-white/90 text-sm md:text-base">
+            Chat with your AI customs agent. Start instantly — no login required for demo.  
+            Logged in? Your session continues across tools.
           </p>
         </div>
       </div>
     </div>
   </section>
 
-  <!-- Chat layout -->
-  <main class="max-w-7xl mx-auto px-2 sm:px-4 pb-20 md:pb-28 grid md:grid-cols-[280px,1fr] gap-4 -mt-2 md:-mt-4 flex-1 w-full">
-    <!-- Sidebar (desktop) -->
-    <aside class="hidden md:block bg-white border border-brandBorder rounded-2xl shadow p-3 h-fit md:sticky md:top-[92px] w-full">
-      <strong>Conversations</strong>
-      <ul id="chatList" class="mt-3 grid gap-1 text-sm max-h-[50vh] overflow-auto"></ul>
-    </aside>
-
-    <!-- Conversation -->
-    <section class="bg-white border border-brandBorder rounded-2xl shadow flex flex-col min-h-[60vh] w-full">
-      <div id="messages" class="flex-1 overflow-auto p-3 space-y-3">
-        <div class="fade-in rounded-xl bg-brandSoft p-3 bubble w-full">
-          <div class="text-xs text-brandMuted">Assistant</div>
-          <div class="mt-1 whitespace-pre-wrap text-[14px] leading-relaxed bubble-content">
-            👋 Hey! You can start chatting right away. No login required for basic queries.  
+  <!-- Chat -->
+  <main class="max-w-5xl mx-auto px-2 sm:px-4 pb-24 flex-1 w-full">
+    <section class="bg-white border border-brandBorder rounded-2xl shadow flex flex-col min-h-[70vh] w-full">
+      
+      <!-- Messages -->
+      <div id="messages" class="flex-1 overflow-auto p-4 space-y-4">
+        <div class="fade-in rounded-xl bg-brandSoft p-4 bubble w-full">
+          <div class="flex items-center gap-2 text-xs text-brandMuted">
+            <span class="w-6 h-6 grid place-items-center bg-brandPrimary text-white rounded-full">◆</span>
+            Assistant
+          </div>
+          <div class="mt-2 text-[14px] leading-relaxed bubble-content">
+            👋 Hey! I’m your customs assistant. You can ask about HS codes, duties, or required documents.  
             <div class="mt-3 flex flex-wrap gap-2">
               <button class="chip demo-btn" data-q="Estimate duty for HS 851713 (IN) CIF 100000">Estimate Duty</button>
               <button class="chip demo-btn" data-q="Find HS code for wireless earbuds in India">Find HS Code</button>
@@ -109,12 +103,13 @@
       </div>
 
       <!-- Composer -->
-      <div class="border-t border-brandBorder p-2 sticky bottom-0 bg-white w-full">
+      <div class="border-t border-brandBorder p-3 bg-white w-full">
         <form id="composer" class="flex items-end gap-2 w-full">
           <textarea id="chatInput" rows="1" placeholder="Message Chadaddy…"
             class="flex-1 border border-brandBorder rounded-xl px-3 py-2 text-[15px] resize-none max-h-40 focus:outline-none focus:ring-2 focus:ring-brandAccent/40 w-full"></textarea>
-          <button id="sendBtn" class="btn btn-accent h-10 px-4">Send</button>
+          <button id="sendBtn" class="btn btn-accent h-11 px-5">Send</button>
         </form>
+        <p class="mt-2 text-[11px] text-brandMuted text-center">Press Enter to send • Shift+Enter for new line</p>
       </div>
     </section>
   </main>
@@ -124,17 +119,12 @@
   </footer>
 
   <script>
-    // ===== Year =====
     document.getElementById('year').textContent = new Date().getFullYear();
 
-    // ===== Session persistence =====
     const API_BASE = "https://chadaddy.onrender.com";
     async function checkSession(){
       try{
-        const res = await fetch(`${API_BASE}/auth/session`, {
-          credentials:"include",
-          redirect:"manual"
-        });
+        const res = await fetch(`${API_BASE}/auth/session`, { credentials:"include", redirect:"manual" });
         if(res.status===200){
           const data = await res.json().catch(()=>null);
           if(data?.user){
@@ -145,74 +135,84 @@
             return;
           }
         }
-      }catch(e){ console.warn("Session check failed", e); }
-      // If not logged in → still allow demo
+      }catch{}
       document.getElementById('userControls').innerHTML =
         `<a href="./dashboard.html" class="bg-brandAccent text-white px-3 py-1.5 rounded-lg">Dashboard</a>`;
     }
     checkSession();
 
-    // ===== Local session id (for continuity across tools) =====
     function getSessionId(){
       const key="ld_session_id";
-      let v = localStorage.getItem(key);
+      let v=localStorage.getItem(key);
       if(!v){ v = crypto.randomUUID?.() || 'sess_'+Date.now(); localStorage.setItem(key,v); }
       return v;
     }
     const SESSION_ID = getSessionId();
 
-    // ===== Messages =====
-    const messages = document.getElementById('messages');
-    const chatInput = document.getElementById('chatInput');
-    const form = document.getElementById('composer');
+    const messages=document.getElementById('messages');
+    const chatInput=document.getElementById('chatInput');
+    const form=document.getElementById('composer');
 
-    function addMessage(role, text){
-      const div = document.createElement('div');
-      div.className = `fade-in rounded-xl ${role==='user'?'bg-white border border-brandBorder':'bg-brandSoft'} p-3 bubble w-full`;
-      div.innerHTML = `<div class="text-xs text-brandMuted">${role==='user'?'You':'Assistant'}</div>
-                       <div class="mt-1 whitespace-pre-wrap text-[14px]">${text}</div>`;
+    function addMessage(role,text){
+      const div=document.createElement('div');
+      div.className=`fade-in rounded-xl ${role==='user'?'bg-white border border-brandBorder':'bg-brandSoft'} p-4 bubble w-full`;
+      div.innerHTML=`
+        <div class="flex items-center gap-2 text-xs text-brandMuted">
+          <span class="w-6 h-6 grid place-items-center rounded-full ${role==='user'?'bg-brandBg':'bg-brandPrimary text-white'}">
+            ${role==='user'?'👤':'◆'}
+          </span>
+          ${role==='user'?'You':'Assistant'}
+        </div>
+        <div class="mt-2 whitespace-pre-wrap text-[14px] leading-relaxed">${text}</div>`;
       messages.appendChild(div);
-      messages.scrollTop = messages.scrollHeight;
+      messages.scrollTop=messages.scrollHeight;
     }
 
     async function sendMessage(text){
       if(!text.trim()) return;
-      addMessage('user', text);
+      addMessage('user',text);
       chatInput.value="";
 
-      const typing = document.createElement('div');
-      typing.className = "fade-in rounded-xl bg-brandSoft p-3 bubble w-full";
-      typing.innerHTML = `<div class="text-xs text-brandMuted">Assistant</div>
-                          <div class="mt-1">...</div>`;
+      const typing=document.createElement('div');
+      typing.className="fade-in rounded-xl bg-brandSoft p-4 bubble w-full";
+      typing.innerHTML=`<div class="flex items-center gap-2 text-xs text-brandMuted">
+                          <span class="w-6 h-6 grid place-items-center bg-brandPrimary text-white rounded-full">◆</span>
+                          Assistant</div>
+                        <div class="mt-2 flex gap-1">
+                          <span class="typing-dot w-2 h-2 rounded-full bg-brandMuted"></span>
+                          <span class="typing-dot w-2 h-2 rounded-full bg-brandMuted"></span>
+                          <span class="typing-dot w-2 h-2 rounded-full bg-brandMuted"></span>
+                        </div>`;
       messages.appendChild(typing);
-      messages.scrollTop = messages.scrollHeight;
+      messages.scrollTop=messages.scrollHeight;
 
       try{
-        const res = await fetch(`${API_BASE}/api/chat`, {
+        const res=await fetch(`${API_BASE}/api/chat`,{
           method:"POST",
-          headers:{ "Content-Type":"application/json" },
-          body: JSON.stringify({ message:text, session_id:SESSION_ID }),
+          headers:{"Content-Type":"application/json"},
+          body:JSON.stringify({message:text,session_id:SESSION_ID}),
           credentials:"include"
         });
-        const data = await res.json().catch(()=>({ reply:"⚠️ Invalid response" }));
+        const data=await res.json().catch(()=>({reply:"⚠️ Invalid response"}));
         typing.remove();
-        addMessage('assistant', data.reply || "⚠️ No reply");
+        addMessage('assistant',data.reply||"⚠️ No reply");
       }catch(err){
         typing.remove();
-        addMessage('assistant', "⚠️ Network error: "+err.message);
+        addMessage('assistant',"⚠️ Network error: "+err.message);
       }
     }
 
-    form.addEventListener('submit', e=>{
-      e.preventDefault();
-      sendMessage(chatInput.value);
+    form.addEventListener('submit',e=>{
+      e.preventDefault(); sendMessage(chatInput.value);
+    });
+    chatInput.addEventListener('keydown',e=>{
+      if(e.key==="Enter" && !e.shiftKey){
+        e.preventDefault(); sendMessage(chatInput.value);
+      }
     });
 
     document.querySelectorAll('.demo-btn').forEach(btn=>{
-      btn.addEventListener('click', ()=>{
-        chatInput.value = btn.dataset.q;
-        sendMessage(btn.dataset.q);
-      });
+      btn.addEventListener('click',()=>sendMessage(btn.dataset.q));
     });
   </script>
 </body>
