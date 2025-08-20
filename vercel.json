@@ -1,4 +1,12 @@
 {
+  "headers": [
+    {
+      "source": "/icons/(.*).png",
+      "headers": [{ "key": "Content-Type", "value": "image/png" }]
+    }
+  ]
+}
+{
   "builds": [
     { "src": "index.py", "use": "@vercel/python" },
     { "src": "**/*.html", "use": "@vercel/static" },
