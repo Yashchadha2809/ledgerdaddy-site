@@ -7,16 +7,26 @@
     content="width=device-width, initial-scale=1, viewport-fit=cover"
   />
   <title>Ask in Chat – Chadaddy</title>
-  <meta name="theme-color" content="#1A237E" />
+  <meta name="theme-color" content="#111827" />
   <link rel="preconnect" href="https://images.unsplash.com" />
   <script src="https://cdn.tailwindcss.com"></script>
   <script>
     tailwind.config = {
       theme: {
         extend: {
-          colors:{ indigoDeep:"#1A237E", emerald:"#2E7D32", cyanBright:"#00BCD4", accentOrange:"#FF7043" },
-          boxShadow:{ lift:"0 14px 34px rgba(0,0,0,.12)" },
-          height: { 'screen-dvh': 'calc(var(--vh, 1vh) * 100)' }
+          colors:{
+            brandPrimary:"#111827",   // headings / strong text
+            brandAccent:"#2563EB",    // interactive blue
+            brandSoft:"#EFF6FF",      // soft blue bg
+            brandBorder:"#E5E7EB",    // light border
+            brandMuted:"#6B7280",     // muted text
+            brandBg:"#F9FAFB"         // app background
+          },
+          boxShadow:{ lift:"0 14px 34px rgba(17,24,39,.06)" },
+          height: { 'screen-dvh': 'calc(var(--vh, 1vh) * 100)' },
+          backgroundImage:{
+            "soft-gradient":"linear-gradient(135deg, #EFF6FF 0%, #FFFFFF 100%)"
+          }
         }
       }
     }
@@ -39,21 +49,21 @@
     @keyframes pulse{0%,80%,100%{opacity:.25}40%{opacity:1}}
 
     .card{transition:transform .12s ease, box-shadow .2s ease}
-    .card:hover{transform:translateY(-2px); box-shadow:0 14px 34px rgba(0,0,0,.14)}
+    .card:hover{transform:translateY(-2px); box-shadow:0 14px 34px rgba(17,24,39,.10)}
     .hero-img{background:url('https://images.unsplash.com/photo-1586521995568-39ef16c6934d?q=80&w=1920&auto=format&fit=crop') center/cover no-repeat;}
     pre{background:#0f172a; color:#e5e7eb; padding:12px; border-radius:10px; overflow:auto}
     code{font-family:ui-monospace,SFMono-Regular,Menlo,monospace}
 
     /* Upload previews */
-    .thumb{width:56px;height:56px;border-radius:10px;object-fit:cover;border:1px solid #e5e7eb}
-    .file-pill{border:1px solid #e5e7eb;border-radius:10px;padding:.4rem .6rem;font-size:12px;display:flex;align-items:center;gap:.5rem;background:#fff}
-    .drop-target{outline:2px dashed #00BCD4; outline-offset:4px}
+    .thumb{width:56px;height:56px;border-radius:10px;object-fit:cover;border:1px solid #E5E7EB}
+    .file-pill{border:1px solid #E5E7EB;border-radius:10px;padding:.4rem .6rem;font-size:12px;display:flex;align-items:center;gap:.5rem;background:#fff}
+    .drop-target{outline:2px dashed #2563EB; outline-offset:4px}
 
     .btn{display:inline-flex;align-items:center;gap:.55rem;padding:.56rem .9rem;border-radius:12px;font-weight:600}
-    .btn-emerald{background:#2E7D32;color:#fff}
-    .btn-emerald:hover{filter:brightness(1.03)}
-    .btn-ghost{border:1px solid #e5e7eb;background:transparent}
-    .chip{font-size:12px;border:1px solid #e5e7eb;border-radius:999px;padding:.3rem .6rem;background:#fff}
+    .btn-accent{background:#2563EB;color:#fff}
+    .btn-accent:hover{filter:brightness(1.03)}
+    .btn-ghost{border:1px solid #E5E7EB;background:transparent}
+    .chip{font-size:12px;border:1px solid #E5E7EB;border-radius:999px;padding:.3rem .6rem;background:#fff}
 
     /* Drawer transitions */
     .drawer-enter { transform: translateX(-100%); opacity: .6; }
@@ -85,49 +95,49 @@
     }
   </style>
 </head>
-<body class="bg-gray-50 text-gray-900 h-screen-dvh flex flex-col">
+<body class="bg-brandBg text-brandPrimary h-screen-dvh flex flex-col">
 
   <!-- Topbar -->
-  <header class="fixed top-0 inset-x-0 z-50 border-b border-gray-200 bg-white/90 backdrop-blur">
+  <header class="fixed top-0 inset-x-0 z-50 border-b border-brandBorder bg-white/90 backdrop-blur">
     <div class="max-w-7xl mx-auto px-4 py-3 flex items-center justify-between">
-      <button id="openDrawer" class="md:hidden inline-flex items-center justify-center h-9 w-9 rounded-lg border border-gray-200" aria-label="Open conversations">
+      <button id="openDrawer" class="md:hidden inline-flex items-center justify-center h-9 w-9 rounded-lg border border-brandBorder" aria-label="Open conversations">
         ☰
       </button>
       <a href="./dashboard.html" class="flex items-center gap-2" aria-label="Home">
-        <span class="grid h-9 w-9 place-items-center rounded-xl bg-gradient-to-tr from-cyanBright to-emerald text-white font-extrabold shadow">◆</span>
-        <span class="text-lg md:text-xl font-bold text-indigoDeep">Chadaddy</span>
-        <span class="ml-2 hidden sm:inline-flex text-[11px] px-2 py-0.5 rounded-full border border-cyanBright/40 text-cyanBright">AI Customs</span>
+        <span class="grid h-9 w-9 place-items-center rounded-xl bg-soft-gradient text-brandPrimary font-extrabold shadow">◆</span>
+        <span class="text-lg md:text-xl font-bold">Chadaddy</span>
+        <span class="ml-2 hidden sm:inline-flex text-[11px] px-2 py-0.5 rounded-full border border-brandAccent/40 text-brandAccent">AI Customs</span>
       </a>
       <nav class="hidden md:flex items-center gap-6 text-sm font-medium">
-        <a href="./marketplace.html" class="hover:text-cyanBright">Marketplace</a>
-        <a href="./calculator.html" class="hover:text-cyanBright">Calculator</a>
-        <a href="./hs-finder.html" class="hover:text-cyanBright">HS Finder</a>
-        <a href="./dashboard.html" class="hover:text-cyanBright">Dashboard</a>
+        <a href="./marketplace.html" class="hover:text-brandAccent">Marketplace</a>
+        <a href="./calculator.html" class="hover:text-brandAccent">Calculator</a>
+        <a href="./hs-finder.html" class="hover:text-brandAccent">HS Finder</a>
+        <a href="./dashboard.html" class="hover:text-brandAccent">Dashboard</a>
       </nav>
       <div class="hidden md:flex items-center gap-2">
-        <a href="./log-in.html" class="border px-3 py-1.5 rounded-lg text-sm">Log in</a>
-        <a href="./personal-sign-up.html" class="bg-emerald text-white px-3 py-1.5 rounded-lg text-sm hover:opacity-95">Sign up</a>
+        <a href="./log-in.html" class="border border-brandBorder px-3 py-1.5 rounded-lg text-sm">Log in</a>
+        <a href="./personal-sign-up.html" class="bg-brandAccent text-white px-3 py-1.5 rounded-lg text-sm hover:opacity-95">Sign up</a>
       </div>
-      <a href="./personal-sign-up.html" class="md:hidden bg-emerald text-white px-3 py-1.5 rounded-lg text-sm">Start</a>
+      <a href="./personal-sign-up.html" class="md:hidden bg-brandAccent text-white px-3 py-1.5 rounded-lg text-sm">Start</a>
     </div>
   </header>
 
   <!-- Drawer (mobile conversations) -->
   <div id="drawerBackdrop" class="fixed inset-0 z-[60] bg-black/30 hidden md:hidden"></div>
   <aside id="drawer"
-    class="fixed left-0 top-0 bottom-0 z-[61] w-full bg-white border-r border-gray-200 p-3 md:hidden drawer-enter hidden">
+    class="fixed left-0 top-0 bottom-0 z-[61] w-full bg-white border-r border-brandBorder p-3 md:hidden drawer-enter hidden">
     <div class="flex items-center justify-between">
       <strong>Conversations</strong>
       <div class="flex items-center gap-2">
-        <button id="newChat_m" class="text-xs border rounded px-2 py-1">New</button>
-        <button id="closeDrawer" class="text-xs border rounded px-2 py-1">Close</button>
+        <button id="newChat_m" class="text-xs border border-brandBorder rounded px-2 py-1">New</button>
+        <button id="closeDrawer" class="text-xs border border-brandBorder rounded px-2 py-1">Close</button>
       </div>
     </div>
     <ul id="chatList_m" class="mt-3 grid gap-1 text-sm overflow-auto" style="max-height: calc(var(--vh, 1vh) * 100 - 140px)"></ul>
     <div class="mt-3 grid gap-2 text-sm">
-      <a class="border px-2 py-1 rounded text-center" href="./hs-finder.html">Open HS Finder</a>
-      <a class="border px-2 py-1 rounded text-center" href="./calculator.html">Open Calculator</a>
-      <button id="exportBtn_m" class="border px-2 py-1 rounded">Export current</button>
+      <a class="border border-brandBorder px-2 py-1 rounded text-center" href="./hs-finder.html">Open HS Finder</a>
+      <a class="border border-brandBorder px-2 py-1 rounded text-center" href="./calculator.html">Open Calculator</a>
+      <button id="exportBtn_m" class="border border-brandBorder px-2 py-1 rounded">Export current</button>
       <button id="clearAll_m" class="text-red-600 border border-red-200 px-2 py-1 rounded">Clear all</button>
     </div>
   </aside>
@@ -135,10 +145,10 @@
   <!-- Hero (slim on mobile) -->
   <section class="pt-[56px] md:pt-[76px] w-full">
     <div class="hero-img">
-      <div class="backdrop-brightness-100 md:bg-gradient-to-r md:from-indigoDeep/70 md:to-cyanBright/60">
-        <div class="max-w-6xl mx-auto px-4 py-4 md:py-8 text-indigoDeep md:text-white">
+      <div class="backdrop-brightness-100 md:bg-gradient-to-r md:from-brandPrimary/70 md:to-brandAccent/60">
+        <div class="max-w-6xl mx-auto px-4 py-4 md:py-8 text-brandPrimary md:text-white">
           <h1 class="text-xl md:text-4xl font-extrabold">Ask in Chat</h1>
-          <p class="mt-1 md:mt-2 text-indigoDeep/80 md:text-white/95 text-sm md:text-base">
+          <p class="mt-1 md:mt-2 text-brandPrimary/80 md:text-white/95 text-sm md:text-base">
             Chat assistant for HS, duties & valuation. Attach images, PDFs, spreadsheets for context.
           </p>
         </div>
@@ -149,26 +159,26 @@
   <!-- Chat layout -->
   <main class="max-w-7xl mx-auto px-2 sm:px-4 pb-20 md:pb-28 grid md:grid-cols-[280px,1fr] gap-4 -mt-2 md:-mt-4 flex-1 w-full">
     <!-- Sidebar (desktop) -->
-    <aside class="hidden md:block bg-white border border-gray-200 rounded-2xl shadow p-3 h-fit md:sticky md:top-[92px] w-full">
+    <aside class="hidden md:block bg-white border border-brandBorder rounded-2xl shadow p-3 h-fit md:sticky md:top-[92px] w-full">
       <div class="flex items-center justify-between">
         <strong>Conversations</strong>
-        <button id="newChat" class="text-xs border rounded px-2 py-1">New chat</button>
+        <button id="newChat" class="text-xs border border-brandBorder rounded px-2 py-1">New chat</button>
       </div>
       <ul id="chatList" class="mt-3 grid gap-1 text-sm max-h-[50vh] overflow-auto"></ul>
       <div class="mt-3 grid gap-2 text-sm">
-        <a class="border px-2 py-1 rounded text-center" href="./hs-finder.html">Open HS Finder</a>
-        <a class="border px-2 py-1 rounded text-center" href="./calculator.html">Open Calculator</a>
-        <button id="exportBtn" class="border px-2 py-1 rounded">Export current chat</button>
+        <a class="border border-brandBorder px-2 py-1 rounded text-center" href="./hs-finder.html">Open HS Finder</a>
+        <a class="border border-brandBorder px-2 py-1 rounded text-center" href="./calculator.html">Open Calculator</a>
+        <button id="exportBtn" class="border border-brandBorder px-2 py-1 rounded">Export current chat</button>
         <button id="clearAll" class="text-red-600 border border-red-200 px-2 py-1 rounded">Clear all</button>
       </div>
     </aside>
 
     <!-- Conversation -->
-    <section class="bg-white border border-gray-200 rounded-2xl shadow flex flex-col min-h-[60vh] w-full">
+    <section class="bg-white border border-brandBorder rounded-2xl shadow flex flex-col min-h-[60vh] w-full">
       <!-- Stream -->
       <div id="messages" class="flex-1 overflow-auto p-3 md:p-4 space-y-3 md:space-y-4 w-full">
-        <div class="fade-in rounded-xl bg-gray-50 p-3 md:p-4 bubble w-full">
-          <div class="text-xs md:text-sm text-gray-600">Assistant</div>
+        <div class="fade-in rounded-xl bg-brandSoft p-3 md:p-4 bubble w-full">
+          <div class="text-xs md:text-sm text-brandMuted">Assistant</div>
           <div class="mt-1 whitespace-pre-wrap text-[14px] leading-relaxed bubble-content">
             Hey! I’m your customs agent. Ask me about HS codes, duties, or docs. You can also attach files (images, PDFs, spreadsheets).
             <div class="mt-3 flex flex-wrap gap-2">
@@ -181,7 +191,7 @@
       </div>
 
       <!-- Composer -->
-      <div class="border-t p-2 md:p-3 sticky bottom-0 bg-white w-full">
+      <div class="border-t border-brandBorder p-2 md:p-3 sticky bottom-0 bg-white w-full">
         <!-- Attachment previews -->
         <div id="attachRow" class="hidden mb-2 flex items-center gap-2 flex-wrap"></div>
 
@@ -194,16 +204,16 @@
 
           <!-- Text -->
           <textarea id="chatInput" rows="1" placeholder="Message Chadaddy…"
-            class="flex-1 border rounded-xl px-3 py-2 md:py-2.5 text-[15px] md:text-[15px] resize-none max-h-40 focus:outline-none focus:ring-2 focus:ring-cyanBright/40 w-full"
+            class="flex-1 border border-brandBorder rounded-xl px-3 py-2 md:py-2.5 text-[15px] md:text-[15px] resize-none max-h-40 focus:outline-none focus:ring-2 focus:ring-brandAccent/40 w-full"
             inputmode="text" enterkeyhint="send"></textarea>
 
           <!-- Send -->
-          <button id="sendBtn" class="btn btn-emerald h-10 md:h-11 px-4 md:px-5">Send</button>
+          <button id="sendBtn" class="btn btn-accent h-10 md:h-11 px-4 md:px-5">Send</button>
         </form>
 
         <div class="mt-2 flex items-center justify-between w-full">
-          <div class="text-[11px] text-gray-500 hidden md:block">Enter to send • Shift+Enter for new line • Drag & drop files (desktop)</div>
-          <div class="md:hidden text-[11px] text-gray-500">Tap 📎 to attach • Enter to send</div>
+          <div class="text-[11px] text-brandMuted hidden md:block">Enter to send • Shift+Enter for new line • Drag & drop files (desktop)</div>
+          <div class="md:hidden text-[11px] text-brandMuted">Tap 📎 to attach • Enter to send</div>
           <button id="toBottom" class="chip hidden">Scroll to bottom</button>
         </div>
       </div>
@@ -211,18 +221,18 @@
   </main>
 
   <!-- Mobile bottom bar (quick actions) -->
-  <nav class="md:hidden fixed bottom-0 inset-x-0 z-40 bg-white border-t border-gray-200 w-full">
+  <nav class="md:hidden fixed bottom-0 inset-x-0 z-40 bg-white border-t border-brandBorder w-full">
     <div class="max-w-7xl mx-auto px-3 py-2 grid grid-cols-3 gap-2 w-full">
-      <button id="fabNew" class="w-full border rounded-lg py-2 text-sm">+ New</button>
-      <button id="fabAttach" class="w-full border rounded-lg py-2 text-sm">📎 Upload</button>
-      <button id="fabDown" class="w-full border rounded-lg py-2 text-sm">⬇︎ Bottom</button>
+      <button id="fabNew" class="w-full border border-brandBorder rounded-lg py-2 text-sm">+ New</button>
+      <button id="fabAttach" class="w-full border border-brandBorder rounded-lg py-2 text-sm">📎 Upload</button>
+      <button id="fabDown" class="w-full border border-brandBorder rounded-lg py-2 text-sm">⬇︎ Bottom</button>
     </div>
   </nav>
 
   <!-- Toast -->
-  <div id="toast" class="hidden fixed bottom-20 right-4 md:bottom-6 md:right-6 bg-gray-900 text-white text-sm px-3 py-2 rounded-lg shadow"></div>
+  <div id="toast" class="hidden fixed bottom-20 right-4 md:bottom-6 md:right-6 bg-brandPrimary text-white text-sm px-3 py-2 rounded-lg shadow"></div>
 
-  <footer class="text-center text-xs text-gray-500 my-14 md:my-8 w-full">
+  <footer class="text-center text-xs text-brandMuted my-14 md:my-8 w-full">
     © <span id="year"></span> Chadaddy
   </footer>
 
@@ -275,14 +285,14 @@
       const list = $('#chatList');
       if(!list) return;
       if(!threads.length){
-        list.innerHTML = '<li class="text-gray-500 text-xs p-2 rounded bg-gray-50">No conversations yet</li>'; return;
+        list.innerHTML = '<li class="text-brandMuted text-xs p-2 rounded bg-brandBg">No conversations yet</li>'; return;
       }
       list.innerHTML = threads.map(t=>`
         <li>
           <button data-id="${t.id}"
-            class="w-full text-left px-2 py-2 rounded hover:bg-gray-50 ${t.id===currentId?'bg-gray-100':''}">
+            class="w-full text-left px-2 py-2 rounded hover:bg-brandBg ${t.id===currentId?'bg-brandSoft':''}">
             <div class="truncate">${t.title || 'Conversation'}</div>
-            <div class="text-[11px] text-gray-500">${(t.messages?.length||0)} messages</div>
+            <div class="text-[11px] text-brandMuted">${(t.messages?.length||0)} messages</div>
           </button>
         </li>
       `).join('');
@@ -315,19 +325,19 @@
       const list = $('#chatList_m');
       if(!list) return;
       if(!threads.length){
-        list.innerHTML = '<li class="text-gray-500 text-xs p-2 rounded bg-gray-50">No conversations yet</li>'; return;
+        list.innerHTML = '<li class="text-brandMuted text-xs p-2 rounded bg-brandBg">No conversations yet</li>'; return;
       }
       list.innerHTML = threads.map(t=>`
         <li>
           <button data-id="${t.id}"
-            class="w-full text-left px-2 py-2 rounded hover:bg-gray-50 ${t.id===currentId?'bg-gray-100':''}">
+            class="w-full text-left px-2 py-2 rounded hover:bg-brandBg ${t.id===currentId?'bg-brandSoft':''}">
             <div class="truncate">${t.title || 'Conversation'}</div>
-            <div class="text-[11px] text-gray-500">${(t.messages?.length||0)} messages</div>
+            <div class="text-[11px] text-brandMuted">${(t.messages?.length||0)} messages</div>
           </button>
         </li>
       `).join('');
       list.querySelectorAll('button[data-id]').forEach(btn=>{
-        btn.onclick = ()=>{ currentId = btn.getAttribute('data-id'); renderSidebar(); renderMessages(); renderMobileList(); closeDrawer(); };
+        btn.onclick = ()=>{ currentId = btn.getAttribute('data-id'); renderSidebar(); renderMobileList(); renderMessages(); closeDrawer(); };
       });
     }
 
@@ -336,7 +346,7 @@
       let out = (text || '').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
       out = out.replace(/```([\s\S]*?)```/g, (_,code)=>`<pre><code>${code}</code></pre>`);
       out = out.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>');
-      out = out.replace(/`([^`]+)`/g, '<code class="bg-gray-100 px-1 py-0.5 rounded text-[90%]">$1</code>');
+      out = out.replace(/`([^`]+)`/g, '<code class="bg-brandBg px-1 py-0.5 rounded text-[90%]">$1</code>');
       out = out.replace(/\n\n/g, '<br/><br/>');
       return out;
     }
@@ -401,14 +411,14 @@
         return isImg
           ? `<div class="relative">
                <img src="${p.url}" class="thumb" alt="${p.file.name}"/>
-               <button title="Remove" class="absolute -top-2 -right-2 bg-white border border-gray-200 rounded-full w-6 h-6 text-xs"
+               <button title="Remove" class="absolute -top-2 -right-2 bg-white border border-brandBorder rounded-full w-6 h-6 text-xs"
                  onclick="removePending('${p.id}')">×</button>
              </div>`
           : `<div class="file-pill bubble w-full">
                <span>${fileIcon(p.file.name)}</span>
                <span class="truncate name-wrap">${p.file.name}</span>
-               <span class="text-gray-500">${size}</span>
-               <button title="Remove" class="ml-1 border border-gray-200 rounded px-1 text-[11px]" onclick="removePending('${p.id}')">×</button>
+               <span class="text-brandMuted">${size}</span>
+               <button title="Remove" class="ml-1 border border-brandBorder rounded px-1 text-[11px]" onclick="removePending('${p.id}')">×</button>
              </div>`;
       }).join('');
       window.removePending = removePending;
@@ -442,12 +452,12 @@
             return isImg
               ? `<a href="${a.url}" target="_blank" class="inline-flex items-center gap-2 bubble w-full" title="${a.name||'image'}">
                    <img src="${a.url}" alt="${a.name||'image'}" class="thumb"/>
-                   <span class="text-[12px] text-gray-600 truncate name-wrap">${a.name||'image'}</span>
+                   <span class="text-[12px] text-brandMuted truncate name-wrap">${a.name||'image'}</span>
                  </a>`
               : `<a href="${a.url}" target="_blank" class="file-pill bubble w-full" title="${a.name||'file'}">
                    <span>${fileIcon(a.name||'file')}</span>
                    <span class="truncate name-wrap">${a.name||'file'}</span>
-                   ${a.size ? `<span class="text-gray-500">${(a.size/1024/1024).toFixed(1)}MB</span>`:''}
+                   ${a.size ? `<span class="text-brandMuted">${(a.size/1024/1024).toFixed(1)}MB</span>`:''}
                  </a>`;
           }).join('')}
         </div>
@@ -459,13 +469,13 @@
       const { role, text, attachments } = m;
       const isUser = role==='user';
       const avatar = isUser ? '👤' : '◆';
-      const bg = isUser ? 'bg-white' : 'bg-gray-50';
+      const bg = isUser ? 'bg-white' : 'bg-brandSoft';
       return `
-        <div class="fade-in rounded-xl ${bg} p-3 md:p-4 bubble w-full">
-          <div class="text-[12px] md:text-sm text-gray-600 flex items-center gap-2 bubble-content">
-            <span class="grid w-6 h-6 place-items-center rounded-full ${isUser?'bg-gray-200':'bg-indigoDeep text-white'} text-[12px]">${avatar}</span>
+        <div class="fade-in rounded-xl ${bg} p-3 md:p-4 bubble w-full border ${isUser?'border-brandBorder':'border-transparent'}">
+          <div class="text-[12px] md:text-sm text-brandMuted flex items-center gap-2 bubble-content">
+            <span class="grid w-6 h-6 place-items-center rounded-full ${isUser?'bg-brandBg':'bg-brandPrimary text-white'} text-[12px]">${avatar}</span>
             <span class="truncate">${isUser?'You':'Assistant'}</span>
-            <button class="ml-auto text-[11px] text-gray-500 copy-btn" data-copy="${encodeURIComponent(text||'')}">Copy</button>
+            <button class="ml-auto text-[11px] text-brandMuted copy-btn" data-copy="${encodeURIComponent(text||'')}">Copy</button>
           </div>
           ${attachments?.length ? attachBlock(attachments) : ''}
           <div class="mt-2 whitespace-pre-wrap leading-relaxed text-[14px] md:text-[15px] bubble-content">${mdLite(text||'')}</div>
@@ -474,15 +484,15 @@
     }
     function typingBubble(){
       return `
-        <div class="rounded-xl bg-gray-50 p-3 md:p-4 bubble w-full">
-          <div class="text-xs md:text-sm text-gray-600 flex items-center gap-2">
-            <span class="grid w-6 h-6 place-items-center rounded-full bg-indigoDeep text-white text-[12px]">◆</span>
+        <div class="rounded-xl bg-brandSoft p-3 md:p-4 bubble w-full">
+          <div class="text-xs md:text-sm text-brandMuted flex items-center gap-2">
+            <span class="grid w-6 h-6 place-items-center rounded-full bg-brandPrimary text-white text-[12px]">◆</span>
             <span>Assistant</span>
           </div>
           <div class="mt-2 flex items-center gap-1">
-            <span class="typing-dot w-2 h-2 rounded-full bg-gray-400"></span>
-            <span class="typing-dot w-2 h-2 rounded-full bg-gray-400"></span>
-            <span class="typing-dot w-2 h-2 rounded-full bg-gray-400"></span>
+            <span class="typing-dot w-2 h-2 rounded-full bg-brandMuted"></span>
+            <span class="typing-dot w-2 h-2 rounded-full bg-brandMuted"></span>
+            <span class="typing-dot w-2 h-2 rounded-full bg-brandMuted"></span>
           </div>
         </div>
       `;
@@ -490,10 +500,10 @@
     function renderMessages(){
       const wrap = $('#messages');
       const t = getCurrent();
-      if(!t){ wrap.innerHTML = '<div class="p-4 text-gray-500">Start a new chat.</div>'; return; }
+      if(!t){ wrap.innerHTML = '<div class="p-4 text-brandMuted">Start a new chat.</div>'; return; }
       wrap.innerHTML = t.messages.map(msgBubble).join('') || `
-        <div class="rounded-xl bg-gray-50 p-3 md:p-4 bubble w-full">
-          <div class="text-xs md:text-sm text-gray-600">Assistant</div>
+        <div class="rounded-xl bg-brandSoft p-3 md:p-4 bubble w-full">
+          <div class="text-xs md:text-sm text-brandMuted">Assistant</div>
           <div class="mt-1 bubble-content">How can I help today?</div>
         </div>
       `;
@@ -589,15 +599,16 @@
       const nearBottom = (msgWrap.scrollHeight - msgWrap.scrollTop - msgWrap.clientHeight) < 140;
       if(nearBottom) toBottomBtn.classList.add('hidden'); else toBottomBtn.classList.remove('hidden');
     }
+    const msgWrap = document.getElementById('messages');
     msgWrap.addEventListener('scroll', toggleScrollBtn);
     toBottomBtn.addEventListener('click', ()=>{ msgWrap.scrollTop = msgWrap.scrollHeight; toggleScrollBtn(); });
     // Mobile bottom buttons
-    $('#fabDown').addEventListener('click', ()=>{ msgWrap.scrollTop = msgWrap.scrollHeight; });
-    $('#fabNew').addEventListener('click', ()=>{ newThread(); openDrawer(); });
+    document.getElementById('fabDown').addEventListener('click', ()=>{ msgWrap.scrollTop = msgWrap.scrollHeight; });
+    document.getElementById('fabNew').addEventListener('click', ()=>{ newThread(); openDrawer(); });
 
     // Sidebar actions (desktop)
-    $('#newChat')?.addEventListener('click', ()=> newThread());
-    $('#exportBtn')?.addEventListener('click', ()=>{
+    document.getElementById('newChat')?.addEventListener('click', ()=> newThread());
+    document.getElementById('exportBtn')?.addEventListener('click', ()=>{
       const t = getCurrent(); if(!t) return toast('No chat');
       const blob = new Blob([JSON.stringify(t, null, 2)], {type:'application/json'});
       const a = document.createElement('a');
@@ -605,15 +616,15 @@
       a.download = (t.title||'chat') + '.json';
       a.click(); URL.revokeObjectURL(a.href);
     });
-    $('#clearAll')?.addEventListener('click', ()=>{
+    document.getElementById('clearAll')?.addEventListener('click', ()=>{
       if(confirm('Delete all conversations?')){
         threads=[]; currentId=null; saveThreads(); renderSidebar(); renderMobileList(); renderMessages(); toast('Cleared');
       }
     });
 
     // Drawer actions (mobile)
-    $('#newChat_m').addEventListener('click', ()=> newThread());
-    $('#exportBtn_m').addEventListener('click', ()=>{
+    document.getElementById('newChat_m').addEventListener('click', ()=> newThread());
+    document.getElementById('exportBtn_m').addEventListener('click', ()=>{
       const t = getCurrent(); if(!t) return toast('No chat');
       const blob = new Blob([JSON.stringify(t, null, 2)], {type:'application/json'});
       const a = document.createElement('a');
@@ -621,7 +632,7 @@
       a.download = (t.title||'chat') + '.json';
       a.click(); URL.revokeObjectURL(a.href);
     });
-    $('#clearAll_m').addEventListener('click', ()=>{
+    document.getElementById('clearAll_m').addEventListener('click', ()=>{
       if(confirm('Delete all conversations?')){
         threads=[]; currentId=null; saveThreads(); renderSidebar(); renderMobileList(); renderMessages(); toast('Cleared');
       }
