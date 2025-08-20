@@ -4,52 +4,59 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Sign up – Chadaddy</title>
-  <meta name="theme-color" content="#1A237E" />
+  <meta name="theme-color" content="#2563EB" />
   <link rel="preconnect" href="https://images.unsplash.com" />
   <script src="https://cdn.tailwindcss.com"></script>
   <script>
     tailwind.config = {
       theme: {
         extend: {
-          colors:{ indigoDeep:"#1A237E", emerald:"#2E7D32", cyanBright:"#00BCD4", accentOrange:"#FF7043" },
-          boxShadow:{ lift:"0 14px 34px rgba(0,0,0,.12)" }
+          colors:{
+            brandPrimary:"#111827",   /* headings / strong text */
+            brandAccent:"#2563EB",    /* primary action */
+            brandSoft:"#EFF6FF",      /* soft bg accents */
+            brandBorder:"#E5E7EB",    /* light borders */
+            brandMuted:"#6B7280",     /* secondary text */
+            brandBg:"#F9FAFB"         /* app background */
+          },
+          boxShadow:{ lift:"0 14px 34px rgba(17,24,39,.10)" }
         }
       }
     }
   </script>
   <style>
     .card{transition:transform .12s ease, box-shadow .2s ease}
-    .card:hover{transform:translateY(-2px); box-shadow:0 14px 34px rgba(0,0,0,.14)}
+    .card:hover{transform:translateY(-2px); box-shadow:0 14px 34px rgba(17,24,39,.12)}
     .hero-img{background:url('https://images.unsplash.com/photo-1586521995568-39ef16c6934d?q=80&w=1920&auto=format&fit=crop') center/cover no-repeat;}
   </style>
 </head>
-<body class="bg-gray-50 text-gray-900">
+<body class="bg-brandBg text-brandPrimary">
 
   <!-- Topbar (matches home) -->
-  <header class="fixed top-0 inset-x-0 z-50 border-b border-gray-200 bg-white/90 backdrop-blur">
+  <header class="fixed top-0 inset-x-0 z-50 border-b border-brandBorder bg-white/90 backdrop-blur">
     <div class="max-w-7xl mx-auto px-4 py-3 flex items-center justify-between">
       <a href="/" class="flex items-center gap-2" aria-label="Home">
-        <span class="grid h-9 w-9 place-items-center rounded-xl bg-gradient-to-tr from-cyanBright to-emerald text-white font-extrabold shadow">◆</span>
-        <span class="text-xl font-bold text-indigoDeep">Chadaddy</span>
-        <span class="ml-2 hidden sm:inline-flex text-[11px] px-2 py-0.5 rounded-full border border-cyanBright/40 text-cyanBright">AI Customs</span>
+        <span class="grid h-9 w-9 place-items-center rounded-xl bg-gradient-to-tr from-brandSoft to-white text-brandPrimary font-extrabold shadow">◆</span>
+        <span class="text-xl font-bold">Chadaddy</span>
+        <span class="ml-2 hidden sm:inline-flex text-[11px] px-2 py-0.5 rounded-full border border-brandBorder text-brandMuted">AI Customs</span>
       </a>
       <nav class="hidden md:flex items-center gap-6 text-sm font-medium" aria-label="Main">
-        <a href="/#marketplace" class="hover:text-cyanBright">Marketplace</a>
-        <a href="/#calculator" class="hover:text-cyanBright">Calculator</a>
-        <a href="/#hsfinder" class="hover:text-cyanBright">HS Finder</a>
-        <a href="/#chat" class="hover:text-cyanBright">Chat</a>
-        <a href="/#news" class="hover:text-cyanBright">News</a>
-        <a href="/#learn" class="hover:text-cyanBright">Academy</a>
-        <a href="/#pricing" class="hover:text-cyanBright">Pricing</a>
+        <a href="/#marketplace" class="hover:text-brandAccent">Marketplace</a>
+        <a href="/#calculator" class="hover:text-brandAccent">Calculator</a>
+        <a href="/#hsfinder" class="hover:text-brandAccent">HS Finder</a>
+        <a href="/#chat" class="hover:text-brandAccent">Chat</a>
+        <a href="/#news" class="hover:text-brandAccent">News</a>
+        <a href="/#learn" class="hover:text-brandAccent">Academy</a>
+        <a href="/#pricing" class="hover:text-brandAccent">Pricing</a>
       </nav>
-      <a href="/personal-sign-up" class="bg-emerald text-white px-4 py-2 rounded-lg hover:opacity-95">Sign up</a>
+      <a href="/personal-sign-up" class="bg-brandAccent text-white px-4 py-2 rounded-lg hover:opacity-95">Sign up</a>
     </div>
   </header>
 
   <!-- Hero -->
   <section class="pt-28 md:pt-32">
     <div class="hero-img">
-      <div class="backdrop-brightness-90 bg-gradient-to-r from-indigoDeep/70 to-cyanBright/60">
+      <div class="backdrop-brightness-90 bg-gradient-to-r from-brandPrimary/70 to-brandAccent/60">
         <div class="max-w-3xl mx-auto px-4 py-12 text-white text-center">
           <h1 class="text-4xl md:text-5xl font-extrabold leading-tight">Create your free account</h1>
           <p class="mt-3 text-white/95">Unlock calculator results, HS suggestions, and chat history.</p>
@@ -60,27 +67,27 @@
 
   <!-- Centered card -->
   <main class="max-w-2xl mx-auto px-4 -mt-12">
-    <div class="bg-white border border-gray-200 rounded-2xl shadow p-6 md:p-8">
+    <div class="bg-white border border-brandBorder rounded-2xl shadow p-6 md:p-8">
       <form id="signupForm" class="grid gap-5">
         <div class="grid md:grid-cols-2 gap-5">
           <label class="grid gap-2 text-sm">
             <span class="font-medium">Full name</span>
-            <input name="name" class="border rounded-lg px-3 py-2 w-full" placeholder="Your name" required>
+            <input name="name" class="border border-brandBorder rounded-lg px-3 py-2 w-full" placeholder="Your name" required>
           </label>
           <label class="grid gap-2 text-sm">
             <span class="font-medium">Email</span>
-            <input name="email" type="email" class="border rounded-lg px-3 py-2 w-full" placeholder="you@example.com" required>
+            <input name="email" type="email" class="border border-brandBorder rounded-lg px-3 py-2 w-full" placeholder="you@example.com" required>
           </label>
         </div>
 
         <div class="grid md:grid-cols-2 gap-5">
           <label class="grid gap-2 text-sm">
             <span class="font-medium">Phone / WhatsApp (optional)</span>
-            <input name="phone" class="border rounded-lg px-3 py-2 w-full" placeholder="+91 9xxxx xxxxx">
+            <input name="phone" class="border border-brandBorder rounded-lg px-3 py-2 w-full" placeholder="+91 9xxxx xxxxx">
           </label>
           <label class="grid gap-2 text-sm">
             <span class="font-medium">Role</span>
-            <select name="role" class="border rounded-lg px-3 py-2 w-full">
+            <select name="role" class="border border-brandBorder rounded-lg px-3 py-2 w-full">
               <option value="personal">Personal</option>
               <option value="business">Business</option>
               <option value="student">Student</option>
@@ -91,26 +98,26 @@
         <!-- Honeypot (spam trap) -->
         <input type="text" name="company" class="hidden" tabindex="-1" autocomplete="off">
 
-        <button class="bg-emerald text-white px-5 py-2.5 rounded-lg text-base font-semibold" type="submit">
+        <button class="bg-brandAccent text-white px-5 py-2.5 rounded-lg text-base font-semibold" type="submit">
           Create account
         </button>
-        <p class="text-xs text-gray-500">We’ll connect full backend later. For now, this saves to Google Sheets.</p>
+        <p class="text-xs text-brandMuted">We’ll connect full backend later. For now, this saves to Google Sheets.</p>
       </form>
 
       <div class="mt-6 text-sm text-center">
-        <a href="/" class="text-cyanBright">← Back to home</a>
+        <a href="/" class="text-brandAccent">← Back to home</a>
       </div>
     </div>
   </main>
 
-  <footer class="text-center text-xs text-gray-500 mt-10 mb-8">
+  <footer class="text-center text-xs text-brandMuted mt-10 mb-8">
     © <span id="year"></span> Chadaddy
   </footer>
 
   <script>
     document.getElementById('year').textContent = new Date().getFullYear();
 
-    // REPLACE THIS with your Apps Script Web App URL (step 4 below)
+    // REPLACE THIS with your Apps Script Web App URL
     const SHEET_WEBHOOK = "https://SCRIPT-WEB-APP-URL-HERE";
 
     const form = document.getElementById('signupForm');
@@ -130,13 +137,11 @@
         ua: navigator.userAgent
       };
 
-      // quick inline validation
       if (!payload.name || !payload.email) {
         toast("Please enter name and email");
         return;
       }
 
-      // Send to Google Sheets webhook (no-cors; we won't read response)
       try {
         await fetch(SHEET_WEBHOOK, {
           method: "POST",
@@ -154,7 +159,7 @@
     function toast(msg){
       const t = document.createElement('div');
       t.textContent = msg;
-      t.className = 'fixed bottom-6 right-6 bg-gray-900 text-white text-sm px-3 py-2 rounded-lg shadow';
+      t.className = 'fixed bottom-6 right-6 bg-black text-white text-sm px-3 py-2 rounded-lg shadow';
       document.body.appendChild(t);
       setTimeout(()=> t.remove(), 1400);
     }
