@@ -12,12 +12,12 @@
       theme: {
         extend: {
           colors:{
-            brandPrimary:"#111827",   /* headings / strong text */
-            brandAccent:"#2563EB",    /* interactive blue */
-            brandSoft:"#EFF6FF",      /* soft blue bg */
-            brandBorder:"#E5E7EB",    /* light border */
-            brandMuted:"#6B7280",     /* muted text */
-            brandBg:"#F9FAFB"         /* app background */
+            brandPrimary:"#111827",   
+            brandAccent:"#2563EB",    
+            brandSoft:"#EFF6FF",      
+            brandBorder:"#E5E7EB",    
+            brandMuted:"#6B7280",     
+            brandBg:"#F9FAFB"         
           },
           boxShadow:{ lift:"0 14px 34px rgba(17,24,39,.06)" },
           backgroundImage:{
@@ -52,7 +52,7 @@
         <a href="/#learn" class="hover:text-brandAccent">Academy</a>
         <a href="/#pricing" class="hover:text-brandAccent">Pricing</a>
       </nav>
-      <div class="hidden md:flex items-center gap-2">
+      <div id="userControls" class="hidden md:flex items-center gap-2">
         <a href="/log-in" class="border border-brandBorder px-4 py-2 rounded-lg">Log in</a>
         <a href="/personal-sign-up" class="bg-brandAccent text-white px-4 py-2 rounded-lg hover:opacity-95">Sign up</a>
       </div>
@@ -77,77 +77,93 @@
     <div class="bg-white border border-brandBorder rounded-2xl shadow p-6 md:p-8">
       <form id="calcForm" class="grid md:grid-cols-2 gap-6 items-start">
         <section class="grid gap-3">
+
+          <!-- Import + Destination -->
           <div class="grid grid-cols-2 gap-3">
             <label class="grid gap-1 text-sm">
-              <span class="font-medium">Country</span>
+              <span class="font-medium">Import Country</span>
               <select id="cCountry" class="border border-brandBorder rounded-lg px-3 py-2">
                 <option>IN</option><option>US</option><option>EU</option><option>UK</option>
               </select>
             </label>
             <label class="grid gap-1 text-sm">
-              <span class="font-medium">Incoterm</span>
-              <select id="cIncoterm" class="border border-brandBorder rounded-lg px-3 py-2">
-                <option value="CIF">CIF</option>
-                <option value="FOB">FOB</option>
-                <option value="EXW">EXW</option>
+              <span class="font-medium">Destination</span>
+              <select id="cDestCountry" class="border border-brandBorder rounded-lg px-3 py-2">
+                <option>US</option><option>EU</option><option>UK</option><option>IN</option>
               </select>
             </label>
           </div>
 
+          <!-- Incoterm -->
+          <label class="grid gap-1 text-sm">
+            <span class="font-medium">Incoterm</span>
+            <select id="cIncoterm" class="border border-brandBorder rounded-lg px-3 py-2">
+              <option value="CIF">CIF</option>
+              <option value="FOB">FOB</option>
+              <option value="EXW">EXW</option>
+            </select>
+          </label>
+
+          <!-- HS + Goods -->
           <div class="grid grid-cols-2 gap-3">
             <label class="grid gap-1 text-sm">
               <span class="font-medium">HS Code</span>
-              <input id="cHS" class="border border-brandBorder rounded-lg px-3 py-2" placeholder="e.g. 851713" required />
+              <input id="cHS" class="border border-brandBorder rounded-lg px-3 py-2" placeholder="e.g. 851713" required title="6-digit HS Code (mandatory)"/>
             </label>
             <label class="grid gap-1 text-sm">
               <span class="font-medium">Goods Value</span>
-              <input id="cGoods" type="number" class="border border-brandBorder rounded-lg px-3 py-2" placeholder="e.g. 100000" required />
+              <input id="cGoods" type="number" class="border border-brandBorder rounded-lg px-3 py-2" placeholder="e.g. 100000" required title="Declared FOB or CIF goods value"/>
             </label>
           </div>
 
+          <!-- Freight/Ins/Other -->
           <div class="grid grid-cols-3 gap-3">
             <label class="grid gap-1 text-sm">
-              <span class="font-medium">Freight</span>
-              <input id="cFreight" type="number" class="border border-brandBorder rounded-lg px-3 py-2" placeholder="0" />
+              <span class="font-medium">Freight (optional)</span>
+              <input id="cFreight" type="number" class="border border-brandBorder rounded-lg px-3 py-2" placeholder="0" title="Leave 0 if not applicable"/>
             </label>
             <label class="grid gap-1 text-sm">
-              <span class="font-medium">Insurance</span>
-              <input id="cIns" type="number" class="border border-brandBorder rounded-lg px-3 py-2" placeholder="0" />
+              <span class="font-medium">Insurance (optional)</span>
+              <input id="cIns" type="number" class="border border-brandBorder rounded-lg px-3 py-2" placeholder="0" title="Leave 0 if not applicable"/>
             </label>
             <label class="grid gap-1 text-sm">
-              <span class="font-medium">Other includable</span>
-              <input id="cOther" type="number" class="border border-brandBorder rounded-lg px-3 py-2" placeholder="0" />
+              <span class="font-medium">Other includable (optional)</span>
+              <input id="cOther" type="number" class="border border-brandBorder rounded-lg px-3 py-2" placeholder="0"/>
             </label>
           </div>
 
+          <!-- Advanced -->
           <details class="p-3 border border-brandBorder rounded-lg">
             <summary class="cursor-pointer font-medium">Advanced (optional)</summary>
             <div class="grid grid-cols-3 gap-3 mt-3 text-sm">
               <label class="grid gap-1">
                 <span>Override duty %</span>
-                <input id="cDuty" type="number" class="border border-brandBorder rounded-lg px-3 py-2" placeholder="auto" />
+                <input id="cDuty" type="number" class="border border-brandBorder rounded-lg px-3 py-2" placeholder="auto" title="Auto-calculated if left blank"/>
               </label>
               <label class="grid gap-1">
                 <span>VAT/IGST %</span>
-                <input id="cVat" type="number" class="border border-brandBorder rounded-lg px-3 py-2" placeholder="auto" />
+                <input id="cVat" type="number" class="border border-brandBorder rounded-lg px-3 py-2" placeholder="auto" title="Auto-calculated if left blank"/>
               </label>
               <label class="grid gap-1">
                 <span>AIDC/Cess %</span>
-                <input id="cAidc" type="number" class="border border-brandBorder rounded-lg px-3 py-2" placeholder="0" />
+                <input id="cAidc" type="number" class="border border-brandBorder rounded-lg px-3 py-2" placeholder="0" title="Enter if applicable"/>
               </label>
             </div>
           </details>
 
+          <!-- Buttons -->
           <div class="flex items-center gap-3">
             <button id="calcBtn" class="bg-brandAccent text-white py-2 px-4 rounded-lg" type="submit">Calculate</button>
             <label class="text-sm inline-flex items-center gap-2 text-brandPrimary">
-              <input id="ftaToggle" type="checkbox" class="h-4 w-4 border border-brandBorder rounded"> Apply FTA savings (demo)
+              <input id="ftaToggle" type="checkbox" class="h-4 w-4 border border-brandBorder rounded"> 
+              FTA savings (demo only: reduces duty by 5%)
             </label>
           </div>
 
           <p class="text-xs text-brandMuted">Backend path: <code class="bg-brandBg px-1 py-0.5 rounded">/duty/calc</code> (IN only). If unavailable, this page falls back to demo logic.</p>
         </section>
 
+        <!-- Results -->
         <section>
           <h3 class="font-semibold mb-2">Breakdown</h3>
           <div class="overflow-hidden rounded-xl border border-brandBorder">
@@ -192,18 +208,12 @@
   </footer>
 
   <script>
-    // Footer year
     document.getElementById('year').textContent = new Date().getFullYear();
 
-    // ====== CONFIG ======
-    // If the page is hosted on the SAME domain as Flask, you can use an empty string "".
-    // Otherwise set your Render base, e.g. "https://chadaddy.onrender.com"
-    const API_BASE = ""; // "" means same-origin. Set to your full API origin if different.
-
-    // ====== Helpers ======
+    const API_BASE = ""; // same-origin or set to backend URL
     const $  = s => document.querySelector(s);
-    const $$ = s => Array.from(document.querySelectorAll(s));
 
+    // Add row helper
     function addRow(label,basis,rate,amount){
       return `<tr>
         <td class="px-3 py-2">${label}</td>
@@ -213,65 +223,46 @@
       </tr>`;
     }
 
+    // ===== SESSION CHECK (keep users signed in) =====
+    async function checkSession(){
+      try{
+        const res = await fetch(`${API_BASE}/auth/session`, {credentials:"include"});
+        if(res.ok){
+          const data = await res.json();
+          if(data?.user){
+            document.getElementById('userControls').innerHTML = 
+              `<span class="text-sm">Hi, ${data.user.name || "User"}</span>
+               <a href="/dashboard" class="bg-brandAccent text-white px-4 py-2 rounded-lg">Dashboard</a>`;
+          }
+        }
+      }catch(_){}
+    }
+    checkSession();
+
+    // ===== Currency map =====
     const currencyByCountry = { IN: 'INR', US: 'USD', EU: 'EUR', UK: 'GBP' };
     const symbolByCcy = { INR:'₹', USD:'$', EUR:'€', GBP:'£' };
-
     function symForCountry(country){
       const ccy = currencyByCountry[country] || 'USD';
       return symbolByCcy[ccy] || '';
     }
-
     function setBusy(busy){
       const btn = $('#calcBtn');
       btn.disabled = !!busy;
       btn.textContent = busy ? 'Calculating…' : 'Calculate';
     }
 
-    async function tryHsSuggest(hsOrQuery, country){
-      const box = $('#hsSuggestBox');
-      const list = $('#hsSuggestList');
-
-      if(!hsOrQuery || hsOrQuery.trim().length >= 6){
-        box.classList.add('hidden');
-        return;
-      }
-
-      try{
-        const url = `${API_BASE}/hsn/suggest?country=${encodeURIComponent(country)}&q=${encodeURIComponent(hsOrQuery)}`;
-        const res = await fetch(url, { method: 'GET', cache: 'no-store' });
-        if(res.ok){
-          const data = await res.json();
-          if(Array.isArray(data?.suggestions) && data.suggestions.length){
-            list.innerHTML = data.suggestions.slice(0,5).map(s =>
-              `<li>${s.text || s.code || s} ${s.confidence ? `<span class="text-xs text-brandMuted">confidence ${s.confidence}%</span>`:''}</li>`
-            ).join('');
-            box.classList.remove('hidden');
-            return;
-          }
-        }
-      }catch(_){ /* ignore */ }
-
-      // Fallback static suggestions
-      list.innerHTML = [
-        '851713 – Phones',
-        '851762 – Comm. equip',
-        '850760 – Li-ion cells'
-      ].map((s,i)=>`<li>${s} <span class="text-xs text-brandMuted">confidence ${85 - i*10}%</span></li>`).join('');
-      box.classList.remove('hidden');
-    }
-
-    // ====== Demo fallback math ======
+    // Demo fallback calc
     function demoCalc({country, goods, freight, ins, other, override, vatIn, aidcIn, fta}){
       const AV = goods + freight + ins + other;
       let baseDuty = isNaN(override)?({IN:10,US:3,EU:5,UK:5}[country]||10):override;
       if(fta) baseDuty = Math.max(0, baseDuty - 5);
       const vatRate = isNaN(vatIn)?({IN:18,US:0.9,EU:20,UK:20}[country]||18):vatIn;
-      const aidcRate = isNaN(aidcIn)?({IN:0,US:0,EU:0,UK:0}[country]||0):aidcIn;
+      const aidcRate = isNaN(aidcIn)?0:aidcIn;
 
       const BCD = AV * baseDuty / 100;
       const SWS = (country==='IN') ? BCD * 0.10 : 0;
       const AIDC = AV * aidcRate / 100;
-
       const sub = AV + BCD + SWS + AIDC;
       const VAT = sub * (vatRate/100);
       const total = sub + VAT;
@@ -279,9 +270,10 @@
       return { AV, baseDuty, vatRate, aidcRate, BCD, SWS, AIDC, sub, VAT, total };
     }
 
-    // ====== Backend-first calculation ======
+    // Run calculation
     async function runCalc(){
       const country = $('#cCountry').value.trim();
+      const dest = $('#cDestCountry').value.trim();
       const hs = $('#cHS').value.trim();
       const goods = +($('#cGoods').value||0);
       const freight = +($('#cFreight').value||0);
@@ -299,11 +291,9 @@
       const tb = $('#cTable');
       const sym = symForCountry(country);
 
-      // Try HS suggestions async
-      tryHsSuggest(hs, country);
-
       const payload = {
         import_country: country,
+        destination_country: dest,
         export_country: "CN",
         hs_code: hs,
         incoterm: incoterm,
@@ -326,55 +316,14 @@
           const AV = +data.cif_value || (goods + freight + ins);
           const bcdRate = data.components?.bcd?.rate_pct ?? '';
           const bcdAmt  = data.components?.bcd?.amount ?? 0;
-          const swsRate = data.components?.sws?.rate_pct ?? '';
           const swsAmt  = data.components?.sws?.amount ?? 0;
           const igstRate= data.components?.igst?.rate_pct ?? '';
           const igstAmt = data.components?.igst?.amount ?? 0;
-          const adcvdAmt= data.components?.adcvd?.amount ?? 0;
-          const totalTaxes = data.total_taxes ?? (bcdAmt + swsAmt + igstAmt + adcvdAmt);
+          const totalTaxes = data.total_taxes ?? (bcdAmt + swsAmt + igstAmt);
           const total = AV + totalTaxes;
 
           tb.innerHTML =
             addRow('Assessable Value (CIF basis)', AV, '', AV) +
             addRow('BCD', AV, bcdRate, bcdAmt) +
-            (swsAmt ? addRow('SWS (10% of BCD)', bcdAmt, swsRate || 10, swsAmt) : '') +
-            (adcvdAmt ? addRow('Anti-dumping/CVD', AV, '', adcvdAmt) : '') +
-            addRow(country==='IN'?'IGST':'VAT', AV + bcdAmt + swsAmt + adcvdAmt, igstRate, igstAmt) +
-            `<tr class="bg-brandSoft font-semibold">
-              <td class="px-3 py-2" colspan="3">Total Landed Cost</td>
-              <td class="px-3 py-2 text-right">${sym} ${Math.round(total).toLocaleString()}</td>
-            </tr>`;
-
-          document.getElementById('totalCard').classList.remove('hidden');
-          document.getElementById('totalVal').textContent = `${sym} ${Math.round(total).toLocaleString()}`;
-        } else {
-          throw new Error(data.error || `HTTP ${res.status}`);
-        }
-      } catch(_err){
-        // Demo fallback
-        const out = demoCalc({country, goods, freight, ins, other, override, vatIn, aidcIn, fta});
-        tb.innerHTML =
-          addRow('Assessable Value (AV)', out.AV, '', out.AV) +
-          addRow('BCD', out.AV, out.baseDuty, out.BCD) +
-          (out.SWS ? addRow('SWS (10% of BCD)', out.BCD, 10, out.SWS) : '') +
-          (out.AIDC ? addRow('AIDC/Cess', out.AV, out.aidcRate, out.AIDC) : '') +
-          addRow(country==='IN'?'IGST':'VAT', out.sub, out.vatRate, out.VAT) +
-          `<tr class="bg-brandSoft font-semibold">
-            <td class="px-3 py-2" colspan="3">Total Landed Cost</td>
-            <td class="px-3 py-2 text-right">${sym} ${Math.round(out.total).toLocaleString()}</td>
-          </tr>`;
-
-        document.getElementById('totalCard').classList.remove('hidden');
-        document.getElementById('totalVal').textContent = `${sym} ${Math.round(out.total).toLocaleString()}`;
-      } finally {
-        setBusy(false);
-      }
-    }
-
-    document.getElementById('calcForm').addEventListener('submit', function(e){
-      e.preventDefault();
-      runCalc();
-    });
-  </script>
-</body>
-</html>
+            (swsAmt ? addRow('SWS (10% of BCD)', bcdAmt, 10, swsAmt) : '') +
+            addRow(country==='IN'?'IGST':'VAT', AV + bcdAmt + swsAmt, igstRate
