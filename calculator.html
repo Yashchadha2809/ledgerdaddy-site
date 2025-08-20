@@ -4,56 +4,66 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Global Duty & Landed Cost – Chadaddy</title>
-  <meta name="theme-color" content="#1A237E" />
+  <meta name="theme-color" content="#111827" />
   <link rel="preconnect" href="https://images.unsplash.com" />
   <script src="https://cdn.tailwindcss.com"></script>
   <script>
     tailwind.config = {
       theme: {
         extend: {
-          colors:{ indigoDeep:"#1A237E", emerald:"#2E7D32", cyanBright:"#00BCD4", accentOrange:"#FF7043" },
-          boxShadow:{ lift:"0 14px 34px rgba(0,0,0,.12)" }
+          colors:{
+            brandPrimary:"#111827",   /* headings / strong text */
+            brandAccent:"#2563EB",    /* interactive blue */
+            brandSoft:"#EFF6FF",      /* soft blue bg */
+            brandBorder:"#E5E7EB",    /* light border */
+            brandMuted:"#6B7280",     /* muted text */
+            brandBg:"#F9FAFB"         /* app background */
+          },
+          boxShadow:{ lift:"0 14px 34px rgba(17,24,39,.06)" },
+          backgroundImage:{
+            "soft-gradient":"linear-gradient(135deg, #EFF6FF 0%, #FFFFFF 100%)"
+          }
         }
       }
     }
   </script>
   <style>
     .card{transition:transform .12s ease, box-shadow .2s ease}
-    .card:hover{transform:translateY(-2px); box-shadow:0 14px 34px rgba(0,0,0,.14)}
+    .card:hover{transform:translateY(-2px); box-shadow:0 14px 34px rgba(17,24,39,.10)}
     .hero-img{background:url('https://images.unsplash.com/photo-1586521995568-39ef16c6934d?q=80&w=1920&auto=format&fit=crop') center/cover no-repeat;}
   </style>
 </head>
-<body class="bg-gray-50 text-gray-900">
+<body class="bg-brandBg text-brandPrimary">
 
   <!-- Topbar -->
-  <header class="fixed top-0 inset-x-0 z-50 border-b border-gray-200 bg-white/90 backdrop-blur">
+  <header class="fixed top-0 inset-x-0 z-50 border-b border-brandBorder bg-white/90 backdrop-blur">
     <div class="max-w-7xl mx-auto px-4 py-3 flex items-center justify-between">
       <a href="/" class="flex items-center gap-2" aria-label="Home">
-        <span class="grid h-9 w-9 place-items-center rounded-xl bg-gradient-to-tr from-cyanBright to-emerald text-white font-extrabold shadow">◆</span>
-        <span class="text-xl font-bold text-indigoDeep">Chadaddy</span>
-        <span class="ml-2 hidden sm:inline-flex text-[11px] px-2 py-0.5 rounded-full border border-cyanBright/40 text-cyanBright">AI Customs</span>
+        <span class="grid h-9 w-9 place-items-center rounded-xl bg-soft-gradient text-brandPrimary font-extrabold shadow">◆</span>
+        <span class="text-xl font-bold">Chadaddy</span>
+        <span class="ml-2 hidden sm:inline-flex text-[11px] px-2 py-0.5 rounded-full border border-brandAccent/40 text-brandAccent">AI Customs</span>
       </a>
       <nav class="hidden md:flex items-center gap-6 text-sm font-medium" aria-label="Main">
-        <a href="/#marketplace" class="hover:text-cyanBright">Marketplace</a>
-        <a href="/calculator" class="hover:text-cyanBright text-cyanBright">Calculator</a>
-        <a href="/#hsfinder" class="hover:text-cyanBright">HS Finder</a>
-        <a href="/#chat" class="hover:text-cyanBright">Chat</a>
-        <a href="/#news" class="hover:text-cyanBright">News</a>
-        <a href="/#learn" class="hover:text-cyanBright">Academy</a>
-        <a href="/#pricing" class="hover:text-cyanBright">Pricing</a>
+        <a href="/#marketplace" class="hover:text-brandAccent">Marketplace</a>
+        <a href="/calculator" class="hover:text-brandAccent text-brandAccent">Calculator</a>
+        <a href="/#hsfinder" class="hover:text-brandAccent">HS Finder</a>
+        <a href="/#chat" class="hover:text-brandAccent">Chat</a>
+        <a href="/#news" class="hover:text-brandAccent">News</a>
+        <a href="/#learn" class="hover:text-brandAccent">Academy</a>
+        <a href="/#pricing" class="hover:text-brandAccent">Pricing</a>
       </nav>
       <div class="hidden md:flex items-center gap-2">
-        <a href="/log-in" class="border px-4 py-2 rounded-lg">Log in</a>
-        <a href="/personal-sign-up" class="bg-emerald text-white px-4 py-2 rounded-lg hover:opacity-95">Sign up</a>
+        <a href="/log-in" class="border border-brandBorder px-4 py-2 rounded-lg">Log in</a>
+        <a href="/personal-sign-up" class="bg-brandAccent text-white px-4 py-2 rounded-lg hover:opacity-95">Sign up</a>
       </div>
-      <a href="/personal-sign-up" class="md:hidden bg-emerald text-white px-3 py-1.5 rounded-lg">Start</a>
+      <a href="/personal-sign-up" class="md:hidden bg-brandAccent text-white px-3 py-1.5 rounded-lg">Start</a>
     </div>
   </header>
 
   <!-- Hero -->
   <section class="pt-24 md:pt-28">
     <div class="hero-img">
-      <div class="backdrop-brightness-90 bg-gradient-to-r from-indigoDeep/70 to-cyanBright/60">
+      <div class="backdrop-brightness-90 bg-gradient-to-r from-brandPrimary/70 to-brandAccent/60">
         <div class="max-w-5xl mx-auto px-4 py-12 text-white">
           <h1 class="text-4xl md:text-5xl font-extrabold leading-tight">Global Duty & Landed Cost</h1>
           <p class="mt-3 text-white/95">Get a quick estimate for BCD, VAT/IGST and landed cost. (Uses backend if available; falls back to demo.)</p>
@@ -64,19 +74,19 @@
 
   <!-- Calculator -->
   <main class="max-w-5xl mx-auto px-4 -mt-10">
-    <div class="bg-white border border-gray-200 rounded-2xl shadow p-6 md:p-8">
+    <div class="bg-white border border-brandBorder rounded-2xl shadow p-6 md:p-8">
       <form id="calcForm" class="grid md:grid-cols-2 gap-6 items-start">
         <section class="grid gap-3">
           <div class="grid grid-cols-2 gap-3">
             <label class="grid gap-1 text-sm">
               <span class="font-medium">Country</span>
-              <select id="cCountry" class="border rounded-lg px-3 py-2">
+              <select id="cCountry" class="border border-brandBorder rounded-lg px-3 py-2">
                 <option>IN</option><option>US</option><option>EU</option><option>UK</option>
               </select>
             </label>
             <label class="grid gap-1 text-sm">
               <span class="font-medium">Incoterm</span>
-              <select id="cIncoterm" class="border rounded-lg px-3 py-2">
+              <select id="cIncoterm" class="border border-brandBorder rounded-lg px-3 py-2">
                 <option value="CIF">CIF</option>
                 <option value="FOB">FOB</option>
                 <option value="EXW">EXW</option>
@@ -87,62 +97,62 @@
           <div class="grid grid-cols-2 gap-3">
             <label class="grid gap-1 text-sm">
               <span class="font-medium">HS Code</span>
-              <input id="cHS" class="border rounded-lg px-3 py-2" placeholder="e.g. 851713" required />
+              <input id="cHS" class="border border-brandBorder rounded-lg px-3 py-2" placeholder="e.g. 851713" required />
             </label>
             <label class="grid gap-1 text-sm">
               <span class="font-medium">Goods Value</span>
-              <input id="cGoods" type="number" class="border rounded-lg px-3 py-2" placeholder="e.g. 100000" required />
+              <input id="cGoods" type="number" class="border border-brandBorder rounded-lg px-3 py-2" placeholder="e.g. 100000" required />
             </label>
           </div>
 
           <div class="grid grid-cols-3 gap-3">
             <label class="grid gap-1 text-sm">
               <span class="font-medium">Freight</span>
-              <input id="cFreight" type="number" class="border rounded-lg px-3 py-2" placeholder="0" />
+              <input id="cFreight" type="number" class="border border-brandBorder rounded-lg px-3 py-2" placeholder="0" />
             </label>
             <label class="grid gap-1 text-sm">
               <span class="font-medium">Insurance</span>
-              <input id="cIns" type="number" class="border rounded-lg px-3 py-2" placeholder="0" />
+              <input id="cIns" type="number" class="border border-brandBorder rounded-lg px-3 py-2" placeholder="0" />
             </label>
             <label class="grid gap-1 text-sm">
               <span class="font-medium">Other includable</span>
-              <input id="cOther" type="number" class="border rounded-lg px-3 py-2" placeholder="0" />
+              <input id="cOther" type="number" class="border border-brandBorder rounded-lg px-3 py-2" placeholder="0" />
             </label>
           </div>
 
-          <details class="p-3 border rounded-lg">
+          <details class="p-3 border border-brandBorder rounded-lg">
             <summary class="cursor-pointer font-medium">Advanced (optional)</summary>
             <div class="grid grid-cols-3 gap-3 mt-3 text-sm">
               <label class="grid gap-1">
                 <span>Override duty %</span>
-                <input id="cDuty" type="number" class="border rounded-lg px-3 py-2" placeholder="auto" />
+                <input id="cDuty" type="number" class="border border-brandBorder rounded-lg px-3 py-2" placeholder="auto" />
               </label>
               <label class="grid gap-1">
                 <span>VAT/IGST %</span>
-                <input id="cVat" type="number" class="border rounded-lg px-3 py-2" placeholder="auto" />
+                <input id="cVat" type="number" class="border border-brandBorder rounded-lg px-3 py-2" placeholder="auto" />
               </label>
               <label class="grid gap-1">
                 <span>AIDC/Cess %</span>
-                <input id="cAidc" type="number" class="border rounded-lg px-3 py-2" placeholder="0" />
+                <input id="cAidc" type="number" class="border border-brandBorder rounded-lg px-3 py-2" placeholder="0" />
               </label>
             </div>
           </details>
 
           <div class="flex items-center gap-3">
-            <button id="calcBtn" class="bg-emerald text-white py-2 px-4 rounded-lg" type="submit">Calculate</button>
-            <label class="text-sm inline-flex items-center gap-2">
-              <input id="ftaToggle" type="checkbox" class="h-4 w-4 border rounded"> Apply FTA savings (demo)
+            <button id="calcBtn" class="bg-brandAccent text-white py-2 px-4 rounded-lg" type="submit">Calculate</button>
+            <label class="text-sm inline-flex items-center gap-2 text-brandPrimary">
+              <input id="ftaToggle" type="checkbox" class="h-4 w-4 border border-brandBorder rounded"> Apply FTA savings (demo)
             </label>
           </div>
 
-          <p class="text-xs text-gray-600">Backend path: <code>/duty/calc</code> (IN only). If unavailable, this page falls back to demo logic.</p>
+          <p class="text-xs text-brandMuted">Backend path: <code class="bg-brandBg px-1 py-0.5 rounded">/duty/calc</code> (IN only). If unavailable, this page falls back to demo logic.</p>
         </section>
 
         <section>
           <h3 class="font-semibold mb-2">Breakdown</h3>
-          <div class="overflow-hidden rounded-xl border border-gray-200">
+          <div class="overflow-hidden rounded-xl border border-brandBorder">
             <table class="w-full text-sm">
-              <thead class="bg-gray-50">
+              <thead class="bg-brandSoft">
                 <tr>
                   <th class="px-3 py-2 text-left">Component</th>
                   <th class="px-3 py-2 text-right">Basis</th>
@@ -150,34 +160,34 @@
                   <th class="px-3 py-2 text-right">Amount</th>
                 </tr>
               </thead>
-              <tbody id="cTable" class="divide-y divide-gray-200">
-                <tr><td class="px-3 py-3 text-center text-gray-500" colspan="4">No results yet — run a calculation.</td></tr>
+              <tbody id="cTable" class="divide-y divide-brandBorder">
+                <tr><td class="px-3 py-3 text-center text-brandMuted" colspan="4">No results yet — run a calculation.</td></tr>
               </tbody>
             </table>
           </div>
 
-          <div id="hsSuggestBox" class="hidden mt-3 p-3 border rounded-lg bg-white">
+          <div id="hsSuggestBox" class="hidden mt-3 p-3 border border-brandBorder rounded-lg bg-white">
             <strong>HS suggestions</strong>
             <ul id="hsSuggestList" class="list-disc ml-5 text-sm"></ul>
-            <p class="text-xs text-gray-500 mt-1">Customs makes the final decision.</p>
+            <p class="text-xs text-brandMuted mt-1">Customs makes the final decision.</p>
           </div>
 
-          <div id="totalCard" class="hidden mt-4 p-4 rounded-xl border bg-gray-50">
-            <div class="text-sm text-gray-600">Estimated total landed cost</div>
+          <div id="totalCard" class="hidden mt-4 p-4 rounded-xl border border-brandBorder bg-brandSoft">
+            <div class="text-sm text-brandMuted">Estimated total landed cost</div>
             <div id="totalVal" class="text-2xl font-extrabold mt-1">—</div>
           </div>
         </section>
       </form>
 
       <div class="mt-6 text-sm flex items-center justify-between">
-        <a href="/" class="text-cyanBright">← Back to home</a>
+        <a href="/" class="text-brandAccent">← Back to home</a>
         <a href="/dashboard" class="underline">Go to dashboard</a>
       </div>
     </div>
   </main>
 
   <!-- Footer -->
-  <footer class="text-center text-xs text-gray-500 mt-10 mb-8">
+  <footer class="text-center text-xs text-brandMuted mt-10 mb-8">
     © <span id="year"></span> Chadaddy
   </footer>
 
@@ -221,13 +231,11 @@
       const box = $('#hsSuggestBox');
       const list = $('#hsSuggestList');
 
-      // Only suggest if the HS looks short
       if(!hsOrQuery || hsOrQuery.trim().length >= 6){
         box.classList.add('hidden');
         return;
       }
 
-      // Attempt backend suggestions if available
       try{
         const url = `${API_BASE}/hsn/suggest?country=${encodeURIComponent(country)}&q=${encodeURIComponent(hsOrQuery)}`;
         const res = await fetch(url, { method: 'GET', cache: 'no-store' });
@@ -235,7 +243,7 @@
           const data = await res.json();
           if(Array.isArray(data?.suggestions) && data.suggestions.length){
             list.innerHTML = data.suggestions.slice(0,5).map(s =>
-              `<li>${s.text || s.code || s} ${s.confidence ? `<span class="text-xs text-gray-500">confidence ${s.confidence}%</span>`:''}</li>`
+              `<li>${s.text || s.code || s} ${s.confidence ? `<span class="text-xs text-brandMuted">confidence ${s.confidence}%</span>`:''}</li>`
             ).join('');
             box.classList.remove('hidden');
             return;
@@ -248,11 +256,11 @@
         '851713 – Phones',
         '851762 – Comm. equip',
         '850760 – Li-ion cells'
-      ].map((s,i)=>`<li>${s} <span class="text-xs text-gray-500">confidence ${85 - i*10}%</span></li>`).join('');
+      ].map((s,i)=>`<li>${s} <span class="text-xs text-brandMuted">confidence ${85 - i*10}%</span></li>`).join('');
       box.classList.remove('hidden');
     }
 
-    // ====== Demo fallback math (what you already had) ======
+    // ====== Demo fallback math ======
     function demoCalc({country, goods, freight, ins, other, override, vatIn, aidcIn, fta}){
       const AV = goods + freight + ins + other;
       let baseDuty = isNaN(override)?({IN:10,US:3,EU:5,UK:5}[country]||10):override;
@@ -291,10 +299,9 @@
       const tb = $('#cTable');
       const sym = symForCountry(country);
 
-      // Try HS suggestions async (no need to await)
+      // Try HS suggestions async
       tryHsSuggest(hs, country);
 
-      // Build payload for backend (India engine expects fob/freight/insurance; we ignore "other")
       const payload = {
         import_country: country,
         export_country: "CN",
@@ -306,7 +313,6 @@
         insurance: ins
       };
 
-      let usedBackend = false;
       try{
         const res = await fetch(`${API_BASE}/duty/calc`, {
           method: "POST",
@@ -317,8 +323,6 @@
         const data = await res.json();
 
         if(res.ok && !data.error){
-          usedBackend = true;
-
           const AV = +data.cif_value || (goods + freight + ins);
           const bcdRate = data.components?.bcd?.rate_pct ?? '';
           const bcdAmt  = data.components?.bcd?.amount ?? 0;
@@ -336,19 +340,18 @@
             (swsAmt ? addRow('SWS (10% of BCD)', bcdAmt, swsRate || 10, swsAmt) : '') +
             (adcvdAmt ? addRow('Anti-dumping/CVD', AV, '', adcvdAmt) : '') +
             addRow(country==='IN'?'IGST':'VAT', AV + bcdAmt + swsAmt + adcvdAmt, igstRate, igstAmt) +
-            `<tr class="bg-gray-50 font-semibold">
+            `<tr class="bg-brandSoft font-semibold">
               <td class="px-3 py-2" colspan="3">Total Landed Cost</td>
               <td class="px-3 py-2 text-right">${sym} ${Math.round(total).toLocaleString()}</td>
             </tr>`;
 
-          $('#totalCard').classList.remove('hidden');
-          $('#totalVal').textContent = `${sym} ${Math.round(total).toLocaleString()}`;
+          document.getElementById('totalCard').classList.remove('hidden');
+          document.getElementById('totalVal').textContent = `${sym} ${Math.round(total).toLocaleString()}`;
         } else {
-          // Backend said unsupported (e.g., non-IN) or errored — fall back
           throw new Error(data.error || `HTTP ${res.status}`);
         }
       } catch(_err){
-        // DEMO fallback math
+        // Demo fallback
         const out = demoCalc({country, goods, freight, ins, other, override, vatIn, aidcIn, fta});
         tb.innerHTML =
           addRow('Assessable Value (AV)', out.AV, '', out.AV) +
@@ -356,13 +359,13 @@
           (out.SWS ? addRow('SWS (10% of BCD)', out.BCD, 10, out.SWS) : '') +
           (out.AIDC ? addRow('AIDC/Cess', out.AV, out.aidcRate, out.AIDC) : '') +
           addRow(country==='IN'?'IGST':'VAT', out.sub, out.vatRate, out.VAT) +
-          `<tr class="bg-gray-50 font-semibold">
+          `<tr class="bg-brandSoft font-semibold">
             <td class="px-3 py-2" colspan="3">Total Landed Cost</td>
             <td class="px-3 py-2 text-right">${sym} ${Math.round(out.total).toLocaleString()}</td>
           </tr>`;
 
-        $('#totalCard').classList.remove('hidden');
-        $('#totalVal').textContent = `${sym} ${Math.round(out.total).toLocaleString()}`;
+        document.getElementById('totalCard').classList.remove('hidden');
+        document.getElementById('totalVal').textContent = `${sym} ${Math.round(out.total).toLocaleString()}`;
       } finally {
         setBusy(false);
       }
