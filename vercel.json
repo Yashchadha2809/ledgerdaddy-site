@@ -1,4 +1,30 @@
 {
+  "headers": [
+    {
+      "source": "/icons/(.*)\\.png",
+      "headers": [
+        { "key": "Content-Type", "value": "image/png" }
+      ]
+    },
+    {
+      "source": "/manifest.webmanifest",
+      "headers": [
+        { "key": "Content-Type", "value": "application/manifest+json; charset=utf-8" }
+      ]
+    },
+    {
+      "source": "/sw.js",
+      "headers": [
+        { "key": "Content-Type", "value": "application/javascript; charset=utf-8" }
+      ]
+    },
+    {
+      "source": "/\\.well-known/assetlinks.json",
+      "headers": [
+        { "key": "Content-Type", "value": "application/json; charset=utf-8" }
+      ]
+    }
+  ],
   "builds": [
     { "src": "index.py", "use": "@vercel/python" },
     { "src": "**/*.html", "use": "@vercel/static" },
@@ -12,7 +38,7 @@
     { "src": "^/manifest\\.webmanifest$", "dest": "/manifest.webmanifest" },
     { "src": "^/sw\\.js$", "dest": "/sw.js" },
     { "src": "^/icons/(.*)$", "dest": "/icons/$1" },
-    { "src": "^/\\.well-known/(.*)$", "dest": ".well-known/$1" },
+    { "src": "^/\\.well-known/(.*)$", "dest": "/.well-known/$1" },
 
     { "src": "^/$", "dest": "/home_min.html" },
 
@@ -27,3 +53,13 @@
     { "src": "^/cookie-policy/?$", "dest": "/cookie-policy.html" },
     { "src": "^/acceptable-use/?$", "dest": "/acceptable-use.html" },
     { "src": "^/security/?$", "dest": "/security.html" },
+    { "src": "^/dpa/?$", "dest": "/dpa.html" },
+    { "src": "^/sla/?$", "dest": "/sla.html" },
+    { "src": "^/subprocessors/?$", "dest": "/subprocessors.html" },
+
+    { "src": "^/assets/(.*)$", "dest": "/assets/$1" },
+    { "src": "^/(.*)\\.html$", "dest": "/$1.html" },
+
+    { "src": "^/api/(.*)$", "dest": "/index.py" }
+  ]
+}
