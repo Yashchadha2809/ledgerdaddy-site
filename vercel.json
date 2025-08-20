@@ -11,7 +11,7 @@
     { "src": "^/manifest\\.webmanifest$", "dest": "/manifest.webmanifest" },
     { "src": "^/sw\\.js$", "dest": "/sw.js" },
     { "src": "^/icons/(.*)$", "dest": "/icons/$1" },
-{ "src": "^/\\.well-known/(.*)$", "dest": "/.well-known/$1" }
+
 
     { "src": "^/$", "dest": "/home_min.html" },
 
@@ -31,7 +31,7 @@
     { "src": "^/subprocessors/?$", "dest": "/subprocessors.html" },
 
     { "src": "^/assets/(.*)$", "dest": "/assets/$1" },
-
+{ "src": "^/\\.well-known/(.*)$", "dest": "/.well-known/$1" }
     { "src": "^/(.*\\.html)$", "dest": "/$1" },
 
     { "src": "^/api/(.*)$", "dest": "/index.py" }
