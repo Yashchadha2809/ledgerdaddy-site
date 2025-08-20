@@ -10,51 +10,59 @@
     tailwind.config = {
       theme: {
         extend: {
-          colors:{ indigoDeep:"#1A237E", emerald:"#2E7D32", cyanBright:"#00BCD4", accentOrange:"#FF7043" }
+          colors:{
+            brandPrimary:"#111827",   /* headings / strong text */
+            brandAccent:"#2563EB",    /* interactive blue */
+            brandSoft:"#EFF6FF",      /* soft blue bg */
+            brandBorder:"#E5E7EB",    /* light border */
+            brandMuted:"#6B7280",     /* muted text */
+            brandBg:"#F9FAFB"         /* app background */
+          },
+          boxShadow:{ lift:"0 14px 34px rgba(17,24,39,.10)" }
         }
       }
     }
   </script>
   <style>
     .card{transition:transform .12s ease, box-shadow .2s ease}
-    .card:hover{transform:translateY(-2px); box-shadow:0 14px 34px rgba(0,0,0,.14)}
+    .card:hover{transform:translateY(-2px); box-shadow:0 14px 34px rgba(17,24,39,.12)}
   </style>
 </head>
-<body class="bg-gray-50 text-gray-900">
+<body class="bg-brandBg text-brandPrimary">
   <!-- Header -->
-  <header class="sticky top-0 z-40 border-b bg-white/90 backdrop-blur">
+  <header class="sticky top-0 z-40 border-b border-brandBorder bg-white/90 backdrop-blur">
     <div class="max-w-7xl mx-auto px-4 py-3 flex items-center justify-between">
       <a href="index.html" class="flex items-center gap-2" aria-label="Chadaddy home">
-        <span class="grid h-9 w-9 place-items-center rounded-xl bg-gradient-to-tr from-cyanBright to-emerald text-white font-extrabold shadow">◆</span>
-        <span class="text-xl font-bold text-indigoDeep">Chadaddy</span>
-        <span class="ml-2 hidden sm:inline-flex text-[11px] px-2 py-0.5 rounded-full border border-cyanBright/40 text-cyanBright">Marketplace</span>
+        <span class="grid h-9 w-9 place-items-center rounded-xl bg-gradient-to-tr from-brandSoft to-white text-brandPrimary font-extrabold shadow">◆</span>
+        <span class="text-xl font-bold">Chadaddy</span>
+        <span class="ml-2 hidden sm:inline-flex text-[11px] px-2 py-0.5 rounded-full border border-brandBorder text-brandMuted">Marketplace</span>
       </a>
       <nav class="hidden md:flex items-center gap-5 text-sm">
-        <a href="index.html#calculator" class="hover:text-cyanBright">Calculator</a>
-        <a href="index.html#hsfinder" class="hover:text-cyanBright">HS Finder</a>
-        <a href="auth.html#signin" class="border rounded-lg px-3 py-1.5">Sign in</a>
-        <a href="auth.html#signup" class="bg-emerald text-white rounded-lg px-4 py-1.5">Sign up</a>
+        <a href="index.html#calculator" class="hover:text-brandAccent">Calculator</a>
+        <a href="index.html#hsfinder" class="hover:text-brandAccent">HS Finder</a>
+        <a href="auth.html#signin" class="border border-brandBorder rounded-lg px-3 py-1.5">Sign in</a>
+        <a href="auth.html#signup" class="bg-brandAccent text-white rounded-lg px-4 py-1.5">Sign up</a>
       </nav>
     </div>
   </header>
 
   <!-- Hero -->
-  <section class="bg-white border-b">
+  <section class="bg-white border-b border-brandBorder">
     <div class="max-w-7xl mx-auto px-6 py-10 grid md:grid-cols-[280px,1fr] gap-6 items-start">
       <div class="hidden md:block">
         <h1 class="text-2xl font-bold">Find Your Customs Broker</h1>
-        <p class="text-gray-600 mt-1 text-sm">Search by port, HS specialty, rating, and response time.</p>
+        <p class="text-brandMuted mt-1 text-sm">Search by port, HS specialty, rating, and response time.</p>
       </div>
       <form id="searchBar" class="w-full">
         <div class="flex gap-2">
-          <input id="q" class="flex-1 border rounded-lg px-3 py-2" placeholder="Search broker, port, or HS (e.g. 8517, JNPT, electronics)" />
-          <select id="sort" class="border rounded-lg px-3 py-2">
+          <input id="q" class="flex-1 border border-brandBorder rounded-lg px-3 py-2" placeholder="Search broker, port, or HS (e.g. 8517, JNPT, electronics)" />
+          <select id="sort" class="border border-brandBorder rounded-lg px-3 py-2">
             <option value="featured">Sort: Featured</option>
             <option value="rating">Sort: Rating</option>
             <option value="price">Sort: Price</option>
             <option value="response">Sort: Response time</option>
           </select>
-          <button class="bg-cyanBright text-black rounded-lg px-4">Search</button>
+          <button class="bg-brandAccent text-white rounded-lg px-4">Search</button>
         </div>
       </form>
     </div>
@@ -63,7 +71,7 @@
   <!-- Main -->
   <main class="max-w-7xl mx-auto px-6 py-8 grid md:grid-cols-[280px,1fr] gap-6">
     <!-- Filters -->
-    <aside class="bg-white border rounded-xl p-4 h-fit">
+    <aside class="bg-white border border-brandBorder rounded-xl p-4 h-fit">
       <div class="flex items-center justify-between">
         <h2 class="font-semibold">Filters</h2>
         <button id="clearFilters" class="text-xs underline">Clear</button>
@@ -72,7 +80,7 @@
       <div class="mt-4 grid gap-4">
         <div>
           <label class="text-sm font-medium">Country</label>
-          <select id="fCountry" class="mt-1 w-full border rounded-lg px-3 py-2">
+          <select id="fCountry" class="mt-1 w-full border border-brandBorder rounded-lg px-3 py-2">
             <option value="">Any</option>
             <option>IN</option><option>US</option><option>EU</option><option>UK</option><option>AE</option><option>SG</option>
           </select>
@@ -80,7 +88,7 @@
 
         <div>
           <label class="text-sm font-medium">Port</label>
-          <select id="fPort" class="mt-1 w-full border rounded-lg px-3 py-2">
+          <select id="fPort" class="mt-1 w-full border border-brandBorder rounded-lg px-3 py-2">
             <option value="">Any</option>
             <option>JNPT</option><option>Mundra</option><option>Chennai</option>
             <option>Rotterdam</option><option>Los Angeles</option><option>Felixstowe</option>
@@ -103,15 +111,15 @@
         <div>
           <label class="text-sm font-medium">Min rating</label>
           <input id="fRating" type="range" min="0" max="5" step="0.1" value="0" class="w-full">
-          <div class="text-xs text-gray-600">Current: <span id="ratingVal">0.0</span>+</div>
+          <div class="text-xs text-brandMuted">Current: <span id="ratingVal">0.0</span>+</div>
         </div>
 
         <div>
           <label class="text-sm font-medium">Max price (₹)</label>
-          <input id="fPrice" type="number" class="mt-1 w-full border rounded-lg px-3 py-2" placeholder="e.g. 7000" />
+          <input id="fPrice" type="number" class="mt-1 w-full border border-brandBorder rounded-lg px-3 py-2" placeholder="e.g. 7000" />
         </div>
 
-        <button id="apply" class="mt-2 w-full bg-emerald text-white rounded-lg py-2">Apply filters</button>
+        <button id="apply" class="mt-2 w-full bg-brandAccent text-white rounded-lg py-2">Apply filters</button>
       </div>
     </aside>
 
@@ -119,82 +127,82 @@
     <section class="min-h-[60vh]">
       <div class="flex items-center justify-between">
         <h2 class="text-xl font-semibold">Results</h2>
-        <button id="openCompare" class="text-sm border rounded-lg px-3 py-1">Compare (<span id="compareCount">0</span>)</button>
+        <button id="openCompare" class="text-sm border border-brandBorder rounded-lg px-3 py-1">Compare (<span id="compareCount">0</span>)</button>
       </div>
 
       <div id="grid" class="mt-4 grid sm:grid-cols-2 lg:grid-cols-3 gap-6"></div>
 
       <!-- Pagination (stub) -->
       <div class="mt-8 flex items-center justify-center gap-2">
-        <button class="px-3 py-1 border rounded disabled:opacity-50" id="prevPage">Prev</button>
+        <button class="px-3 py-1 border border-brandBorder rounded disabled:opacity-50" id="prevPage">Prev</button>
         <div class="text-sm">Page <span id="pageNo">1</span></div>
-        <button class="px-3 py-1 border rounded disabled:opacity-50" id="nextPage">Next</button>
+        <button class="px-3 py-1 border border-brandBorder rounded disabled:opacity-50" id="nextPage">Next</button>
       </div>
     </section>
   </main>
 
   <!-- Compare Drawer -->
-  <aside id="compareDrawer" class="fixed right-0 top-0 h-full w-[340px] bg-white border-l shadow-xl translate-x-full transition-transform">
-    <div class="p-4 border-b flex items-center justify-between">
+  <aside id="compareDrawer" class="fixed right-0 top-0 h-full w-[340px] bg-white border-l border-brandBorder shadow-xl translate-x-full transition-transform">
+    <div class="p-4 border-b border-brandBorder flex items-center justify-between">
       <h3 class="font-semibold">Compare</h3>
-      <button id="closeCompare" class="text-sm border rounded px-2 py-1">Close</button>
+      <button id="closeCompare" class="text-sm border border-brandBorder rounded px-2 py-1">Close</button>
     </div>
     <div id="compareList" class="p-4 grid gap-3 text-sm"></div>
-    <div class="p-4 border-t grid gap-2">
-      <a href="auth.html#signup" class="bg-emerald text-white rounded-lg py-2 text-center">Contact selected</a>
-      <button id="clearCompare" class="border rounded-lg py-2">Clear</button>
+    <div class="p-4 border-t border-brandBorder grid gap-2">
+      <a href="auth.html#signup" class="bg-brandAccent text-white rounded-lg py-2 text-center">Contact selected</a>
+      <button id="clearCompare" class="border border-brandBorder rounded-lg py-2">Clear</button>
     </div>
   </aside>
 
   <!-- Broker Details Modal -->
   <div id="modal" class="hidden fixed inset-0 z-50 items-center justify-center bg-black/50 p-3">
     <div class="max-w-2xl w-full bg-white rounded-xl overflow-hidden">
-      <div class="p-4 border-b flex items-center justify-between">
+      <div class="p-4 border-b border-brandBorder flex items-center justify-between">
         <h3 id="mTitle" class="font-semibold">Broker</h3>
-        <button id="mClose" class="border rounded px-2 py-1">✕</button>
+        <button id="mClose" class="border border-brandBorder rounded px-2 py-1">✕</button>
       </div>
       <div class="p-4 grid md:grid-cols-[1fr,320px] gap-4">
         <div>
           <img id="mImg" class="w-full h-48 object-cover rounded-lg" alt="">
-          <p id="mDesc" class="mt-3 text-sm text-gray-700"></p>
+          <p id="mDesc" class="mt-3 text-sm text-brandPrimary/80"></p>
           <div id="mTags" class="mt-2 flex flex-wrap gap-2 text-xs"></div>
         </div>
-        <div class="bg-gray-50 border rounded-lg p-3">
+        <div class="bg-brandSoft/60 border border-brandBorder rounded-lg p-3">
           <div class="text-sm">Ports: <span id="mPorts" class="font-medium"></span></div>
           <div class="text-sm mt-1">Country: <span id="mCountry" class="font-medium"></span></div>
           <div class="text-sm mt-1">Rating: <span id="mRating" class="font-medium"></span> ★</div>
           <div class="text-sm mt-1">From: <span id="mPrice" class="font-medium"></span></div>
-          <a href="auth.html#signup" class="mt-3 block bg-cyanBright text-black rounded-lg py-2 text-center">Get Quote</a>
+          <a href="auth.html#signup" class="mt-3 block bg-brandAccent text-white rounded-lg py-2 text-center">Get Quote</a>
         </div>
       </div>
     </div>
   </div>
 
   <!-- Footer -->
-  <footer class="mt-16 border-t bg-white">
+  <footer class="mt-16 border-t border-brandBorder bg-white">
     <div class="max-w-7xl mx-auto px-6 py-10 grid sm:grid-cols-2 md:grid-cols-4 gap-6 text-sm">
       <div>
-        <div class="font-semibold text-indigoDeep">Chadaddy</div>
-        <p class="text-gray-600 mt-1">AI-powered customs platform to ship smarter worldwide.</p>
+        <div class="font-semibold">Chadaddy</div>
+        <p class="text-brandMuted mt-1">AI-powered customs platform to ship smarter worldwide.</p>
       </div>
       <div>
         <div class="font-semibold">Explore</div>
         <ul class="mt-2 space-y-1">
-          <li><a href="index.html#calculator" class="hover:text-cyanBright">Calculator</a></li>
-          <li><a href="index.html#hsfinder" class="hover:text-cyanBright">HS Finder</a></li>
-          <li><a href="index.html#learn" class="hover:text-cyanBright">Academy</a></li>
+          <li><a href="index.html#calculator" class="hover:text-brandAccent">Calculator</a></li>
+          <li><a href="index.html#hsfinder" class="hover:text-brandAccent">HS Finder</a></li>
+          <li><a href="index.html#learn" class="hover:text-brandAccent">Academy</a></li>
         </ul>
       </div>
       <div>
         <div class="font-semibold">Account</div>
         <ul class="mt-2 space-y-1">
-          <li><a href="auth.html#signin" class="hover:text-cyanBright">Sign in</a></li>
-          <li><a href="auth.html#signup" class="hover:text-cyanBright">Sign up</a></li>
+          <li><a href="auth.html#signin" class="hover:text-brandAccent">Sign in</a></li>
+          <li><a href="auth.html#signup" class="hover:text-brandAccent">Sign up</a></li>
         </ul>
       </div>
       <div>
         <div class="font-semibold">Contact</div>
-        <p class="text-gray-600 mt-1">support@chadaddy.example</p>
+        <p class="text-brandMuted mt-1">support@chadaddy.example</p>
       </div>
     </div>
   </footer>
@@ -291,23 +299,23 @@
       const specs = b.specs.join(", ");
       const ports = b.ports.join(" • ");
       return `
-        <article class="card bg-white border rounded-xl overflow-hidden">
+        <article class="card bg-white border border-brandBorder rounded-xl overflow-hidden">
           <img class="h-36 w-full object-cover" src="${b.img}" alt="${b.name}">
           <div class="p-3">
             <div class="flex items-center justify-between">
               <div class="font-semibold">${b.name}</div>
-              <div class="text-xs px-2 py-0.5 rounded-full border border-emerald text-emerald">Verified</div>
+              <div class="text-xs px-2 py-0.5 rounded-full border border-brandAccent text-brandAccent">Verified</div>
             </div>
-            <div class="text-xs text-gray-500 mt-1">${b.country} • ${ports}</div>
+            <div class="text-xs text-brandMuted mt-1">${b.country} • ${ports}</div>
             <div class="text-xs mt-1">${specs}</div>
             <div class="flex items-center justify-between mt-2">
               <div class="text-sm">★ ${b.rating.toFixed(1)}</div>
               <div class="text-sm">From <strong>${fmtPrice(b.price, b.country)}</strong></div>
             </div>
             <div class="mt-3 grid grid-cols-3 gap-2 text-sm">
-              <button class="border rounded-lg px-2 py-1" data-action="details" data-id="${b.id}">Details</button>
-              <button class="bg-cyanBright text-black rounded-lg px-2 py-1" onclick="location.href='auth.html#signup'">Get Quote</button>
-              <button class="border rounded-lg px-2 py-1" data-action="compare" data-id="${b.id}">
+              <button class="border border-brandBorder rounded-lg px-2 py-1" data-action="details" data-id="${b.id}">Details</button>
+              <button class="bg-brandAccent text-white rounded-lg px-2 py-1" onclick="location.href='auth.html#signup'">Get Quote</button>
+              <button class="border border-brandBorder rounded-lg px-2 py-1" data-action="compare" data-id="${b.id}">
                 ${compareSet.has(b.id) ? '✓ In Compare' : 'Compare'}
               </button>
             </div>
@@ -363,7 +371,7 @@
       const slice = filtered.slice(start, start + PAGE_SIZE);
 
       $("#grid").innerHTML = slice.map(cardHTML).join("") || `
-        <div class="col-span-full text-center text-gray-500 py-10">No brokers found. Try changing filters.</div>
+        <div class="col-span-full text-center text-brandMuted py-10">No brokers found. Try changing filters.</div>
       `;
 
       $("#pageNo").textContent = String(page);
@@ -413,9 +421,9 @@
     function openCompare() {
       const list = Array.from(compareSet).map(id => BROKERS.find(b => b.id === id)).filter(Boolean);
       $("#compareList").innerHTML = list.length ? list.map(b => `
-        <div class="border rounded-lg p-3">
+        <div class="border border-brandBorder rounded-lg p-3">
           <div class="font-semibold">${b.name}</div>
-          <div class="text-xs text-gray-600">${b.country} • ${b.ports.join(" • ")}</div>
+          <div class="text-xs text-brandMuted">${b.country} • ${b.ports.join(" • ")}</div>
           <div class="mt-1 grid grid-cols-3 gap-2 text-xs">
             <div>★ ${b.rating.toFixed(1)}</div>
             <div>From ${fmtPrice(b.price,b.country)}</div>
@@ -423,7 +431,7 @@
           </div>
           <button class="mt-2 text-xs underline" onclick="location.href='auth.html#signup'">Contact</button>
         </div>
-      ").join("") : '<div class="text-gray-500 text-sm">No items selected.</div>';
+      `).join("") : '<div class="text-brandMuted text-sm">No items selected.</div>';
       $("#compareDrawer").style.transform = "translateX(0)";
       $("#compareCount").textContent = String(compareSet.size);
     }
@@ -439,7 +447,7 @@
       $("#mCountry").textContent = b.country;
       $("#mRating").textContent = b.rating.toFixed(1);
       $("#mPrice").textContent = fmtPrice(b.price, b.country);
-      $("#mTags").innerHTML = b.specs.map(s => `<span class="px-2 py-0.5 rounded-full border text-xs">${s}</span>`).join(" ");
+      $("#mTags").innerHTML = b.specs.map(s => `<span class="px-2 py-0.5 rounded-full border border-brandBorder text-xs">${s}</span>`).join(" ");
       $("#modal").classList.remove("hidden"); $("#modal").classList.add("flex");
     }
     $("#mClose").addEventListener("click", () => { $("#modal").classList.add("hidden"); $("#modal").classList.remove("flex"); });
