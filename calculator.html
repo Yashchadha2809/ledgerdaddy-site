@@ -12,12 +12,12 @@
       theme: {
         extend: {
           colors:{
-            brandPrimary:"#111827",   
-            brandAccent:"#2563EB",    
-            brandSoft:"#EFF6FF",      
-            brandBorder:"#E5E7EB",    
-            brandMuted:"#6B7280",     
-            brandBg:"#F9FAFB"         
+            brandPrimary:"#111827",
+            brandAccent:"#2563EB",
+            brandSoft:"#EFF6FF",
+            brandBorder:"#E5E7EB",
+            brandMuted:"#6B7280",
+            brandBg:"#F9FAFB"
           },
           boxShadow:{ lift:"0 14px 34px rgba(17,24,39,.06)" },
           backgroundImage:{
@@ -52,11 +52,8 @@
         <a href="/#learn" class="hover:text-brandAccent">Academy</a>
         <a href="/#pricing" class="hover:text-brandAccent">Pricing</a>
       </nav>
-      <div id="userControls" class="hidden md:flex items-center gap-2">
-        <a href="/log-in" class="border border-brandBorder px-4 py-2 rounded-lg">Log in</a>
-        <a href="/personal-sign-up" class="bg-brandAccent text-white px-4 py-2 rounded-lg hover:opacity-95">Sign up</a>
-      </div>
-      <a href="/personal-sign-up" class="md:hidden bg-brandAccent text-white px-3 py-1.5 rounded-lg">Start</a>
+      <!-- Always session-based user controls -->
+      <div id="userControls" class="flex items-center gap-3"></div>
     </div>
   </header>
 
@@ -209,21 +206,10 @@
 
   <script>
     document.getElementById('year').textContent = new Date().getFullYear();
+    const API_BASE = ""; // same-origin or backend URL
+    const $ = s => document.querySelector(s);
 
-    const API_BASE = ""; // same-origin or set to backend URL
-    const $  = s => document.querySelector(s);
-
-    // Add row helper
-    function addRow(label,basis,rate,amount){
-      return `<tr>
-        <td class="px-3 py-2">${label}</td>
-        <td class="px-3 py-2 text-right">${Number.isFinite(basis)?basis.toLocaleString(): '—'}</td>
-        <td class="px-3 py-2 text-right">${(rate ?? '') !== '' ? rate + '%' : '—'}</td>
-        <td class="px-3 py-2 text-right font-semibold">${Number.isFinite(amount)?Math.round(amount).toLocaleString(): '—'}</td>
-      </tr>`;
-    }
-
-    // ===== SESSION CHECK (keep users signed in) =====
+    // SESSION ENFORCEMENT
     async function checkSession(){
       try{
         const res = await fetch(`${API_BASE}/auth/session`, {credentials:"include"});
@@ -232,41 +218,47 @@
           if(data?.user){
             document.getElementById('userControls').innerHTML = 
               `<span class="text-sm">Hi, ${data.user.name || "User"}</span>
-               <a href="/dashboard" class="bg-brandAccent text-white px-4 py-2 rounded-lg">Dashboard</a>`;
+               <a href="/dashboard" class="bg-brandAccent text-white px-4 py-2 rounded-lg">Dashboard</a>
+               <a href="/log-out" class="text-sm text-brandMuted">Log out</a>`;
+          } else {
+            window.location.href="/log-in";
           }
+        } else {
+          window.location.href="/log-in";
         }
-      }catch(_){}
+      }catch(_){
+        window.location.href="/log-in";
+      }
     }
     checkSession();
 
-    // ===== Currency map =====
+    // ===== Helpers =====
+    function addRow(label,basis,rate,amount){
+      return `<tr>
+        <td class="px-3 py-2">${label}</td>
+        <td class="px-3 py-2 text-right">${Number.isFinite(basis)?basis.toLocaleString(): '—'}</td>
+        <td class="px-3 py-2 text-right">${(rate ?? '') !== '' ? rate + '%' : '—'}</td>
+        <td class="px-3 py-2 text-right font-semibold">${Number.isFinite(amount)?Math.round(amount).toLocaleString(): '—'}</td>
+      </tr>`;
+    }
     const currencyByCountry = { IN: 'INR', US: 'USD', EU: 'EUR', UK: 'GBP' };
     const symbolByCcy = { INR:'₹', USD:'$', EUR:'€', GBP:'£' };
-    function symForCountry(country){
-      const ccy = currencyByCountry[country] || 'USD';
-      return symbolByCcy[ccy] || '';
-    }
-    function setBusy(busy){
-      const btn = $('#calcBtn');
-      btn.disabled = !!busy;
-      btn.textContent = busy ? 'Calculating…' : 'Calculate';
-    }
+    function symForCountry(country){ const ccy = currencyByCountry[country] || 'USD'; return symbolByCcy[ccy] || ''; }
+    function setBusy(busy){ const btn = $('#calcBtn'); btn.disabled = !!busy; btn.textContent = busy ? 'Calculating…' : 'Calculate'; }
 
-    // Demo fallback calc
+    // DEMO calc
     function demoCalc({country, goods, freight, ins, other, override, vatIn, aidcIn, fta}){
       const AV = goods + freight + ins + other;
       let baseDuty = isNaN(override)?({IN:10,US:3,EU:5,UK:5}[country]||10):override;
       if(fta) baseDuty = Math.max(0, baseDuty - 5);
       const vatRate = isNaN(vatIn)?({IN:18,US:0.9,EU:20,UK:20}[country]||18):vatIn;
       const aidcRate = isNaN(aidcIn)?0:aidcIn;
-
       const BCD = AV * baseDuty / 100;
       const SWS = (country==='IN') ? BCD * 0.10 : 0;
       const AIDC = AV * aidcRate / 100;
       const sub = AV + BCD + SWS + AIDC;
       const VAT = sub * (vatRate/100);
       const total = sub + VAT;
-
       return { AV, baseDuty, vatRate, aidcRate, BCD, SWS, AIDC, sub, VAT, total };
     }
 
@@ -286,7 +278,6 @@
       const incoterm = $('#cIncoterm').value;
 
       if(!goods){ alert('Please enter Goods Value'); return; }
-
       setBusy(true);
       const tb = $('#cTable');
       const sym = symForCountry(country);
@@ -305,13 +296,10 @@
 
       try{
         const res = await fetch(`${API_BASE}/duty/calc`, {
-          method: "POST",
-          headers: { "Content-Type":"application/json" },
-          body: JSON.stringify(payload),
-          cache: "no-store"
+          method: "POST", headers: { "Content-Type":"application/json" },
+          body: JSON.stringify(payload), cache: "no-store"
         });
         const data = await res.json();
-
         if(res.ok && !data.error){
           const AV = +data.cif_value || (goods + freight + ins);
           const bcdRate = data.components?.bcd?.rate_pct ?? '';
@@ -321,9 +309,9 @@
           const igstAmt = data.components?.igst?.amount ?? 0;
           const totalTaxes = data.total_taxes ?? (bcdAmt + swsAmt + igstAmt);
           const total = AV + totalTaxes;
-
           tb.innerHTML =
             addRow('Assessable Value (CIF basis)', AV, '', AV) +
             addRow('BCD', AV, bcdRate, bcdAmt) +
             (swsAmt ? addRow('SWS (10% of BCD)', bcdAmt, 10, swsAmt) : '') +
-            addRow(country==='IN'?'IGST':'VAT', AV + bcdAmt + swsAmt, igstRate
+            addRow(country==='IN'?'IGST':'VAT', AV + bcdAmt + swsAmt, igstRate, igstAmt) +
+            `<tr class="bg-brandSoft font-semibold"><td class="px-3 py-2" colspan="3">Total Landed Cost</td><td class="px-3 py-2 text-right">${sym} ${Math.round(total).toLocaleString()}</td></tr>`;
