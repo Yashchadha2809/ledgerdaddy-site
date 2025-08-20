@@ -5,17 +5,27 @@
   <meta name="viewport"
         content="width=device-width, initial-scale=1, maximum-scale=1, viewport-fit=cover" />
   <title>HS Finder – Ledgerdaddy (Mobile-first)</title>
-  <meta name="theme-color" content="#1A237E" />
+  <meta name="theme-color" content="#111827" />
   <link rel="preconnect" href="https://images.unsplash.com" />
   <script src="https://cdn.tailwindcss.com"></script>
   <script>
     tailwind.config = {
       theme: {
         extend: {
-          colors:{ indigoDeep:"#1A237E", emerald:"#2E7D32", cyanBright:"#00BCD4", accentOrange:"#FF7043" },
-          boxShadow:{ lift:"0 16px 40px rgba(2,6,23,.12)" },
+          colors:{
+            brandPrimary:"#111827",   /* headings / strong text */
+            brandAccent:"#2563EB",    /* interactive blue */
+            brandSoft:"#EFF6FF",      /* soft blue bg */
+            brandBorder:"#E5E7EB",    /* light border */
+            brandMuted:"#6B7280",     /* muted text */
+            brandBg:"#F9FAFB"         /* app background */
+          },
+          boxShadow:{ lift:"0 16px 40px rgba(17,24,39,.10)" },
           borderRadius:{ xl2:"16px" },
-          spacing:{ safe:"env(safe-area-inset-bottom)" }
+          spacing:{ safe:"env(safe-area-inset-bottom)" },
+          backgroundImage:{
+            "soft-gradient":"linear-gradient(135deg, #EFF6FF 0%, #FFFFFF 100%)"
+          }
         }
       }
     }
@@ -23,21 +33,21 @@
   <style>
     /* micro-interactions + mobile tweaks */
     .card{transition:transform .12s ease, box-shadow .2s ease}
-    .card:hover{transform:translateY(-2px); box-shadow:0 16px 40px rgba(2,6,23,.14)}
+    .card:hover{transform:translateY(-2px); box-shadow:0 16px 40px rgba(17,24,39,.12)}
     .hero-img{background:url('https://images.unsplash.com/photo-1586521995568-39ef16c6934d?q=80&w=1920&auto=format&fit=crop') center/cover no-repeat;}
-    .input:focus{outline:none; box-shadow:0 0 0 3px rgba(0,188,212,.25)}
-    .badge{font-size:12px;padding:.25rem .5rem;border:1px solid rgba(0,188,212,.35);border-radius:999px;background:#fff}
+    .input:focus{outline:none; box-shadow:0 0 0 3px rgba(37,99,235,.25)}
+    .badge{font-size:12px;padding:.25rem .5rem;border:1px solid rgba(37,99,235,.35);border-radius:999px;background:#fff;color:#2563EB}
     .hint{font-size:12px}
     .fade-in{animation:fade .14s ease-out}
     @keyframes fade{from{opacity:.5;transform:translateY(2px)}to{opacity:1;transform:none}}
-    .progress{height:6px;border-radius:999px;background:linear-gradient(90deg,#00BCD4,var(--end,#2E7D32))}
-    .drop-okay{outline:2px dashed #00BCD4; outline-offset:4px}
+    .progress{height:6px;border-radius:999px;background:linear-gradient(90deg,#2563EB,var(--end,#1e3a8a))}
+    .drop-okay{outline:2px dashed #2563EB; outline-offset:4px}
     .sr-only-focusable:focus{position:static;width:auto;height:auto;clip:auto;clip-path:none;padding:.25rem .5rem;border-radius:6px;background:#ECFEFF}
     /* Improve tap targets on mobile */
     .tappable{min-height:44px; min-width:44px}
   </style>
 </head>
-<body class="bg-gray-50 text-gray-900 h-full">
+<body class="bg-brandBg text-brandPrimary h-full">
 
   <!-- Skip link -->
   <a href="#hsForm"
@@ -46,35 +56,35 @@
   </a>
 
   <!-- Topbar (mobile-first) -->
-  <header class="fixed top-0 inset-x-0 z-50 border-b border-gray-200 bg-white/90 backdrop-blur">
+  <header class="fixed top-0 inset-x-0 z-50 border-b border-brandBorder bg-white/90 backdrop-blur">
     <div class="max-w-7xl mx-auto px-3 sm:px-4 py-2.5 flex items-center justify-between">
       <a href="/" class="flex items-center gap-2" aria-label="Home">
-        <span class="grid h-9 w-9 place-items-center rounded-xl bg-gradient-to-tr from-cyanBright to-emerald text-white font-extrabold shadow">◆</span>
-        <span class="text-lg sm:text-xl font-bold text-indigoDeep">Ledgerdaddy</span>
+        <span class="grid h-9 w-9 place-items-center rounded-xl bg-soft-gradient text-brandPrimary font-extrabold shadow">◆</span>
+        <span class="text-lg sm:text-xl font-bold">Ledgerdaddy</span>
       </a>
 
       <!-- Mobile actions -->
       <div class="flex items-center gap-2">
         <a href="/personal-sign-up.html"
-           class="hidden sm:inline-block bg-emerald text-white px-3 py-1.5 rounded-lg hover:opacity-95">
+           class="hidden sm:inline-block bg-brandAccent text-white px-3 py-1.5 rounded-lg hover:opacity-95">
           Sign up
         </a>
         <button id="navToggle"
-                class="tappable md:hidden border px-3 py-1.5 rounded-lg"
+                class="tappable md:hidden border border-brandBorder px-3 py-1.5 rounded-lg"
                 aria-expanded="false" aria-controls="mobileSheet">Menu</button>
       </div>
     </div>
 
     <!-- Mobile sheet / Drawer -->
-    <div id="mobileSheet" class="md:hidden hidden border-t border-gray-200 bg-white">
+    <div id="mobileSheet" class="md:hidden hidden border-t border-brandBorder bg-white">
       <div class="px-3 sm:px-4 py-3 grid gap-1.5 text-sm">
-        <a href="/marketplace.html" class="px-2 py-2 rounded hover:bg-gray-50">Marketplace</a>
-        <a href="/calculator.html" class="px-2 py-2 rounded hover:bg-gray-50">Calculator</a>
-        <a href="/hs-finder.html" class="px-2 py-2 rounded bg-gray-50">HS Finder</a>
-        <a href="/dashboard.html" class="px-2 py-2 rounded hover:bg-gray-50">Dashboard</a>
+        <a href="/marketplace.html" class="px-2 py-2 rounded hover:bg-brandSoft/60">Marketplace</a>
+        <a href="/calculator.html" class="px-2 py-2 rounded hover:bg-brandSoft/60">Calculator</a>
+        <a href="/hs-finder.html" class="px-2 py-2 rounded bg-brandSoft/60">HS Finder</a>
+        <a href="/dashboard.html" class="px-2 py-2 rounded hover:bg-brandSoft/60">Dashboard</a>
         <div class="pt-2 flex items-center gap-2">
-          <a href="/log-in.html" class="border px-3 py-1.5 rounded-lg">Log in</a>
-          <a href="/personal-sign-up.html" class="bg-emerald text-white px-3 py-1.5 rounded-lg">Sign up</a>
+          <a href="/log-in.html" class="border border-brandBorder px-3 py-1.5 rounded-lg">Log in</a>
+          <a href="/personal-sign-up.html" class="bg-brandAccent text-white px-3 py-1.5 rounded-lg">Sign up</a>
         </div>
       </div>
     </div>
@@ -83,16 +93,16 @@
   <!-- Hero -->
   <section class="pt-20 sm:pt-24">
     <div class="hero-img">
-      <div class="backdrop-brightness-95 bg-gradient-to-r from-indigoDeep/70 to-cyanBright/60">
+      <div class="backdrop-brightness-95 bg-gradient-to-r from-brandPrimary/70 to-brandAccent/60">
         <div class="max-w-6xl mx-auto px-3 sm:px-4 py-6 sm:py-10 text-white">
           <h1 class="text-2xl sm:text-4xl md:text-5xl font-extrabold leading-tight">HS / HSN Finder</h1>
           <p class="mt-2 sm:mt-3 text-white/95 text-sm sm:text-base">
             Describe your product. Get suggested HS codes with confidence. Send in one tap to the calculator.
           </p>
           <div class="mt-3 sm:mt-4 flex flex-wrap gap-2">
-            <span id="chipCountry" class="badge text-indigoDeep">Country: IN</span>
-            <span id="chipLen" class="badge text-indigoDeep">Desc length: 0</span>
-            <button id="resetAll" class="badge border-none bg-accentOrange text-white hover:opacity-95">
+            <span id="chipCountry" class="badge">Country: IN</span>
+            <span id="chipLen" class="badge">Desc length: 0</span>
+            <button id="resetAll" class="badge border-none bg-brandAccent text-white hover:opacity-95">
               Reset
             </button>
           </div>
@@ -103,35 +113,35 @@
 
   <!-- Mobile sticky CTA (shows after results) -->
   <div id="mobileCTA"
-       class="fixed inset-x-0 bottom-0 z-40 hidden md:hidden bg-white/95 backdrop-blur border-t border-gray-200 px-3 py-2 pb-[calc(0.5rem+var(--safe,0px))]">
+       class="fixed inset-x-0 bottom-0 z-40 hidden md:hidden bg-white/95 backdrop-blur border-t border-brandBorder px-3 py-2 pb-[calc(0.5rem+var(--safe,0px))]">
     <div class="max-w-6xl mx-auto flex items-center gap-2">
-      <button id="quickCopyCTA" class="tappable border px-3 py-2 rounded-lg text-sm flex-1">Copy top HS code</button>
-      <a id="openCalcCTA" href="#" class="tappable bg-cyanBright text-black px-3 py-2 rounded-lg text-sm font-semibold">Open Calculator</a>
+      <button id="quickCopyCTA" class="tappable border border-brandBorder px-3 py-2 rounded-lg text-sm flex-1">Copy top HS code</button>
+      <a id="openCalcCTA" href="#" class="tappable bg-brandAccent text-white px-3 py-2 rounded-lg text-sm font-semibold">Open Calculator</a>
     </div>
   </div>
 
   <!-- Finder -->
   <main class="max-w-6xl mx-auto px-2 sm:px-4 -mt-4 sm:-mt-8 pb-[6rem] sm:pb-16 grid gap-4 md:gap-6 lg:grid-cols-[1.05fr,0.95fr]">
     <!-- Form -->
-    <section class="bg-white border border-gray-200 rounded-2xl shadow p-3 sm:p-5 md:p-8 card" id="formCard">
+    <section class="bg-white border border-brandBorder rounded-2xl shadow p-3 sm:p-5 md:p-8 card" id="formCard">
       <h2 class="text-lg sm:text-xl font-semibold">Describe your product</h2>
       <form id="hsForm" class="mt-3 sm:mt-4 grid gap-3 sm:gap-4">
         <div class="grid gap-3 sm:grid-cols-3">
           <label class="grid gap-1 text-sm">
             <span class="font-medium">Country</span>
-            <select id="hsCountry" class="input border rounded-lg px-3 py-2 tappable">
+            <select id="hsCountry" class="input border border-brandBorder rounded-lg px-3 py-2 tappable">
               <option>IN</option><option>US</option><option>EU</option><option>UK</option>
               <option>AE</option><option>SG</option><option>AU</option><option>CA</option>
             </select>
-            <span class="hint text-gray-500">Impacts duty/VAT later.</span>
+            <span class="hint text-brandMuted">Impacts duty/VAT later.</span>
           </label>
 
           <label class="grid gap-1 text-sm sm:col-span-2">
             <span class="font-medium">Product description</span>
             <textarea id="hsDesc" rows="5"
-                      class="input border rounded-lg px-3 py-2 tappable"
+                      class="input border border-brandBorder rounded-lg px-3 py-2 tappable"
                       placeholder="Materials, function, main use, key specs… e.g. Wireless earbuds with mic, Bluetooth 5.3, lithium battery"></textarea>
-            <div class="flex justify-between items-center text-gray-500">
+            <div class="flex justify-between items-center text-brandMuted">
               <span class="hint">Tip: materials, power, size, battery, connectivity, use.</span>
               <span id="descCount" class="hint">0 chars</span>
             </div>
@@ -142,25 +152,25 @@
         <div class="grid gap-2 text-sm">
           <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-1">
             <span class="font-medium">Upload product image (optional)</span>
-            <span class="text-[11px] text-gray-500">Use camera on mobile for quick snap</span>
+            <span class="text-[11px] text-brandMuted">Use camera on mobile for quick snap</span>
           </div>
 
           <!-- touch friendly dropzone -->
           <label id="imgDrop"
-                 class="cursor-pointer border border-dashed rounded-xl2 p-4 grid place-items-center text-center bg-gray-50/60">
+                 class="cursor-pointer border border-dashed border-brandBorder rounded-xl2 p-4 grid place-items-center text-center bg-brandSoft/40">
             <input id="hsImage" type="file" accept="image/*" capture="environment" class="hidden" />
             <div class="grid gap-1">
-              <div class="text-gray-700 font-medium">Tap to browse or drop an image</div>
-              <div class="text-gray-500">JPG/PNG up to 5 MB</div>
+              <div class="text-brandPrimary font-medium">Tap to browse or drop an image</div>
+              <div class="text-brandMuted">JPG/PNG up to 5 MB</div>
             </div>
           </label>
 
           <!-- Preview + Scan -->
           <div id="imgPreviewWrap" class="hidden items-center gap-3">
-            <img id="imgPreview" alt="preview" class="h-16 w-16 rounded-lg object-cover border" />
-            <div class="text-xs text-gray-600 truncate flex-1" id="imgName"></div>
+            <img id="imgPreview" alt="preview" class="h-16 w-16 rounded-lg object-cover border border-brandBorder" />
+            <div class="text-xs text-brandMuted truncate flex-1" id="imgName"></div>
             <button id="hsScan" type="button"
-                    class="ml-auto bg-cyanBright text-black px-3 py-2 rounded-lg disabled:opacity-60 tappable">
+                    class="ml-auto bg-brandAccent text-white px-3 py-2 rounded-lg disabled:opacity-60 tappable">
               Scan image
             </button>
           </div>
@@ -170,26 +180,26 @@
         <div class="grid gap-3 sm:grid-cols-2">
           <label class="grid gap-1 text-sm">
             <span class="font-medium">Key attributes (optional)</span>
-            <input id="hsAttr" class="input border rounded-lg px-3 py-2 tappable"
+            <input id="hsAttr" class="input border border-brandBorder rounded-lg px-3 py-2 tappable"
                    placeholder="e.g., lithium-ion battery, plastic body" />
           </label>
           <label class="grid gap-1 text-sm">
             <span class="font-medium">Similar product (optional)</span>
-            <input id="hsSimilar" class="input border rounded-lg px-3 py-2 tappable" placeholder="e.g., AirPods Pro" />
+            <input id="hsSimilar" class="input border border-brandBorder rounded-lg px-3 py-2 tappable" placeholder="e.g., AirPods Pro" />
           </label>
         </div>
 
         <!-- Actions -->
         <div class="flex flex-col xs:flex-row sm:flex-row gap-2 sm:gap-3 pt-1 sm:pt-2">
           <button id="hsRun"
-                  class="bg-emerald text-white px-4 py-2 rounded-lg tappable text-center">
+                  class="bg-brandAccent text-white px-4 py-2 rounded-lg tappable text-center">
             Find HS codes
           </button>
           <button id="hsReset" type="button"
-                  class="border px-4 py-2 rounded-lg tappable text-center">
+                  class="border border-brandBorder px-4 py-2 rounded-lg tappable text-center">
             Reset
           </button>
-          <span class="text-xs text-gray-600 sm:ml-auto sm:self-center">
+          <span class="text-xs text-brandMuted sm:ml-auto sm:self-center">
             Demo suggestions. Confirm with your broker.
           </span>
         </div>
@@ -199,10 +209,10 @@
     <!-- Results -->
     <section class="grid gap-4 content-start" id="resultsCol">
       <!-- Sticky helper on larger screens; normal card on mobile -->
-      <div class="rounded-2xl border border-gray-200 bg-white p-3 sm:p-4 md:sticky md:top-24">
+      <div class="rounded-2xl border border-brandBorder bg-white p-3 sm:p-4 md:sticky md:top-24">
         <div class="flex items-center justify-between">
           <strong>Results</strong>
-          <div class="text-xs text-gray-500 hidden sm:block">Sorted by confidence</div>
+          <div class="text-xs text-brandMuted hidden sm:block">Sorted by confidence</div>
         </div>
         <div class="mt-2 grid grid-cols-2 sm:grid-cols-4 gap-2 text-xs">
           <button data-filter="all" class="filter-btn badge w-full text-center tappable">All</button>
@@ -213,7 +223,7 @@
       </div>
 
       <div id="hsResults" class="grid gap-3" aria-live="polite">
-        <div class="p-4 rounded-xl border border-dashed text-gray-500 bg-gray-50">
+        <div class="p-4 rounded-xl border border-dashed border-brandBorder text-brandMuted bg-brandSoft/50">
           No results yet — describe your product and tap “Find HS codes”.
         </div>
       </div>
@@ -221,7 +231,7 @@
   </main>
 
   <!-- Footer -->
-  <footer class="text-center text-xs text-gray-500 mt-6 mb-[calc(2rem+var(--safe,0px))] sm:mb-8">
+  <footer class="text-center text-xs text-brandMuted mt-6 mb-[calc(2rem+var(--safe,0px))] sm:mb-8">
     © <span id="year"></span> Ledgerdaddy
   </footer>
 
@@ -241,7 +251,7 @@
     function toast(msg){
       const t=document.createElement('div');
       t.textContent=msg;
-      t.className='fixed bottom-[calc(1rem+env(safe-area-inset-bottom))] right-4 bg-gray-900 text-white text-sm px-3 py-2 rounded-lg shadow';
+      t.className='fixed bottom-[calc(1rem+env(safe-area-inset-bottom))] right-4 bg-brandPrimary text-white text-sm px-3 py-2 rounded-lg shadow';
       document.body.appendChild(t);
       setTimeout(()=>t.remove(),1500);
     }
@@ -281,26 +291,26 @@
     function resultCard(r, country){
       const conf = Math.round(r.conf * 100);
       const calcUrl = `/calculator.html?hs=${encodeURIComponent(r.code)}&country=${encodeURIComponent(country||'IN')}`;
-      const band = conf >= 75 ? {cls:'border-emerald text-emerald', end:'#2E7D32'} :
+      const band = conf >= 75 ? {cls:'border-green-600 text-green-600', end:'#16a34a'} :
                    conf >= 50 ? {cls:'border-yellow-500 text-yellow-600', end:'#F59E0B'} :
-                                {cls:'border-gray-300 text-gray-500', end:'#94a3b8'};
+                                {cls:'border-brandBorder text-brandMuted', end:'#94a3b8'};
       return `
-        <article class="p-3 sm:p-4 border rounded-xl bg-white fade-in">
+        <article class="p-3 sm:p-4 border border-brandBorder rounded-xl bg-white fade-in">
           <div class="flex items-start justify-between gap-3">
             <div class="min-w-0">
               <div class="text-base sm:text-lg font-semibold truncate">${r.code} — ${r.title}</div>
-              <div class="text-[11px] sm:text-xs text-gray-500 truncate">Examples: ${r.examples.join(', ')}</div>
+              <div class="text-[11px] sm:text-xs text-brandMuted truncate">Examples: ${r.examples.join(', ')}</div>
             </div>
             <div class="text-[11px] sm:text-xs px-2 py-0.5 rounded-full border ${band.cls} shrink-0">${conf}%</div>
           </div>
-          <div class="mt-2 bg-gray-100 rounded-full overflow-hidden h-2">
+          <div class="mt-2 bg-brandSoft rounded-full overflow-hidden h-2">
             <div class="progress" style="--end:${band.end}; width:${conf}%"></div>
           </div>
           <div class="mt-3 flex flex-wrap gap-2">
-            <button class="copy-btn border px-3 py-2 rounded-lg text-sm tappable" data-code="${r.code}">Copy</button>
-            <a href="${calcUrl}" class="open-calc btn-calc bg-cyanBright text-black px-3 py-2 rounded-lg text-sm tappable"
+            <button class="copy-btn border border-brandBorder px-3 py-2 rounded-lg text-sm tappable" data-code="${r.code}">Copy</button>
+            <a href="${calcUrl}" class="open-calc btn-calc bg-brandAccent text-white px-3 py-2 rounded-lg text-sm tappable"
                data-code="${r.code}">Open Calculator</a>
-            <a href="/dashboard.html" class="border px-3 py-2 rounded-lg text-sm tappable">Save</a>
+            <a href="/dashboard.html" class="border border-brandBorder px-3 py-2 rounded-lg text-sm tappable">Save</a>
           </div>
         </article>
       `;
@@ -342,11 +352,11 @@
 
       // Skeleton while "loading"
       resEl.innerHTML = `
-        <div class="p-4 rounded-xl border bg-white">
+        <div class="p-4 rounded-xl border border-brandBorder bg-white">
           <div class="animate-pulse grid gap-2">
-            <div class="h-4 bg-gray-200 rounded w-1/3"></div>
-            <div class="h-3 bg-gray-200 rounded w-2/3"></div>
-            <div class="h-3 bg-gray-200 rounded w-1/2"></div>
+            <div class="h-4 bg-brandSoft rounded w-1/3"></div>
+            <div class="h-3 bg-brandSoft rounded w-2/3"></div>
+            <div class="h-3 bg-brandSoft rounded w-1/2"></div>
           </div>
         </div>`;
 
@@ -372,7 +382,7 @@
 
     function renderResults(list, country){
       resEl.innerHTML = list.map(r => resultCard(r, country)).join('') || `
-        <div class="p-4 rounded-xl border border-dashed text-gray-500 bg-gray-50">
+        <div class="p-4 rounded-xl border border-dashed border-brandBorder text-brandMuted bg-brandSoft/50">
           No matches. Try adding materials, function and key specs.
         </div>`;
       // copy
@@ -411,7 +421,7 @@
       countryEl.value = 'IN';
       updateChips();
       resetImageState();
-      resEl.innerHTML = '<div class="p-4 rounded-xl border border-dashed text-gray-500 bg-gray-50">Cleared. Enter a description to get suggestions.</div>';
+      resEl.innerHTML = '<div class="p-4 rounded-xl border border-dashed border-brandBorder text-brandMuted bg-brandSoft/50">Cleared. Enter a description to get suggestions.</div>';
       mobileCTA.classList.add('hidden');
     }
     document.getElementById('hsReset').addEventListener('click', clearForm);
@@ -483,7 +493,7 @@
     async function scanImage(file){
       const base64 = await fileToBase64(file);
       try{
-        const country = countryEl.value || 'IN';
+        const country = (document.getElementById('hsCountry')?.value) || 'IN';
         const resp = await fetch('/api/hs-scan', {
           method: 'POST',
           headers: {'Content-Type':'application/json'},
