@@ -36,22 +36,29 @@
 <body class="bg-brandBg text-brandPrimary">
 
   <!-- Topbar -->
-  <header class="fixed top-0 inset-x-0 z-50 border-b border-brandBorder bg-white/90 backdrop-blur">
-    <div class="max-w-7xl mx-auto px-4 py-3 flex items-center justify-between">
-      <a href="/" class="flex items-center gap-2" aria-label="Home">
-        <span class="grid h-9 w-9 place-items-center rounded-xl bg-soft-gradient text-brandPrimary font-extrabold shadow">◆</span>
-        <span class="text-xl font-bold">Chadaddy</span>
-        <span class="ml-2 hidden sm:inline-flex text-[11px] px-2 py-0.5 rounded-full border border-brandAccent/40 text-brandAccent">AI Customs</span>
-      </a>
-      <nav class="hidden md:flex items-center gap-6 text-sm font-medium" aria-label="Main">
-        <a href="/marketplace" class="hover:text-brandAccent">Marketplace</a>
-        <a href="/calculator" class="hover:text-brandAccent text-brandAccent">Calculator</a>
-        <a href="/hsfinder" class="hover:text-brandAccent">HS Finder</a>
-        <a href="/chat" class="hover:text-brandAccent">Chat</a>
-        <a href="/#news" class="hover:text-brandAccent">News</a>
-        <a href="/#learn" class="hover:text-brandAccent">Academy</a>
-        <a href="/#pricing" class="hover:text-brandAccent">Pricing</a>
-      </nav>
+<!-- Topbar -->
+<header class="fixed top-0 inset-x-0 z-50 border-b border-brandBorder bg-white/90 backdrop-blur">
+  <div class="max-w-7xl mx-auto px-4 py-3 flex items-center justify-between">
+    <!-- Logo / Home -->
+    <a href="/" class="flex items-center gap-2" aria-label="Home">
+      <span class="grid h-9 w-9 place-items-center rounded-xl bg-soft-gradient text-brandPrimary font-extrabold shadow">◆</span>
+      <span class="text-xl font-bold">Chadaddy</span>
+      <span class="ml-2 hidden sm:inline-flex text-[11px] px-2 py-0.5 rounded-full border border-brandAccent/40 text-brandAccent">AI Customs</span>
+    </a>
+
+    <!-- Main Navigation -->
+    <nav class="hidden md:flex items-center gap-6 text-sm font-medium" aria-label="Main">
+      <a href="https://www.ledgerdaddy.com/marketplace.html" class="hover:text-brandAccent">Marketplace</a>
+      <a href="https://www.ledgerdaddy.com/calculator.html" class="hover:text-brandAccent text-brandAccent">Calculator</a>
+      <a href="https://www.ledgerdaddy.com/hs-finder.html" class="hover:text-brandAccent">HS Finder</a>
+      <a href="https://www.ledgerdaddy.com/chat.html" class="hover:text-brandAccent">Chat</a>
+    </nav>
+
+    <!-- Session-based User Controls -->
+    <div id="userControls" class="flex items-center gap-3"></div>
+  </div>
+</header>
+
       <!-- Always session-based user controls -->
       <div id="userControls" class="flex items-center gap-3"></div>
     </div>
