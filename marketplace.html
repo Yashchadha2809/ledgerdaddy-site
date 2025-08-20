@@ -30,21 +30,29 @@
 </head>
 <body class="bg-brandBg text-brandPrimary">
   <!-- Header -->
-  <header class="sticky top-0 z-40 border-b border-brandBorder bg-white/90 backdrop-blur">
-    <div class="max-w-7xl mx-auto px-4 py-3 flex items-center justify-between">
-      <a href="index.html" class="flex items-center gap-2" aria-label="Chadaddy home">
-        <span class="grid h-9 w-9 place-items-center rounded-xl bg-gradient-to-tr from-brandSoft to-white text-brandPrimary font-extrabold shadow">◆</span>
-        <span class="text-xl font-bold">Chadaddy</span>
-        <span class="ml-2 hidden sm:inline-flex text-[11px] px-2 py-0.5 rounded-full border border-brandBorder text-brandMuted">Marketplace</span>
-      </a>
-      <nav class="hidden md:flex items-center gap-5 text-sm">
-        <a href="index.html#calculator" class="hover:text-brandAccent">Calculator</a>
-        <a href="index.html#hsfinder" class="hover:text-brandAccent">HS Finder</a>
-        <a href="auth.html#signin" class="border border-brandBorder rounded-lg px-3 py-1.5">Sign in</a>
-        <a href="auth.html#signup" class="bg-brandAccent text-white rounded-lg px-4 py-1.5">Sign up</a>
-      </nav>
-    </div>
-  </header>
+<!-- Topbar -->
+<header class="fixed top-0 inset-x-0 z-50 border-b border-brandBorder bg-white/90 backdrop-blur">
+  <div class="max-w-7xl mx-auto px-4 py-3 flex items-center justify-between">
+    <!-- Logo / Home -->
+    <a href="/" class="flex items-center gap-2" aria-label="Home">
+      <span class="grid h-9 w-9 place-items-center rounded-xl bg-soft-gradient text-brandPrimary font-extrabold shadow">◆</span>
+      <span class="text-xl font-bold">Chadaddy</span>
+      <span class="ml-2 hidden sm:inline-flex text-[11px] px-2 py-0.5 rounded-full border border-brandAccent/40 text-brandAccent">AI Customs</span>
+    </a>
+
+    <!-- Main Navigation -->
+    <nav class="hidden md:flex items-center gap-6 text-sm font-medium" aria-label="Main">
+      <a href="https://www.ledgerdaddy.com/marketplace.html" class="hover:text-brandAccent">Marketplace</a>
+      <a href="https://www.ledgerdaddy.com/calculator.html" class="hover:text-brandAccent text-brandAccent">Calculator</a>
+      <a href="https://www.ledgerdaddy.com/hs-finder.html" class="hover:text-brandAccent">HS Finder</a>
+      <a href="https://www.ledgerdaddy.com/chat.html" class="hover:text-brandAccent">Chat</a>
+    </nav>
+
+    <!-- Session-based User Controls -->
+    <div id="userControls" class="flex items-center gap-3"></div>
+  </div>
+</header>
+
 
   <!-- Hero -->
   <section class="bg-white border-b border-brandBorder">
