@@ -36,11 +36,11 @@
     .hero-img{background:url('https://images.unsplash.com/photo-1586521995568-39ef16c6934d?q=80&w=1920&auto=format&fit=crop') center/cover no-repeat;}
     .input:focus{outline:none; box-shadow:0 0 0 3px rgba(37,99,235,.25)}
     .badge{font-size:12px;padding:.25rem .5rem;border:1px solid rgba(37,99,235,.35);border-radius:999px;background:#fff;color:#2563EB}
-    .hint{font-size:12px}
     .fade-in{animation:fade .14s ease-out}
     @keyframes fade{from{opacity:.5;transform:translateY(2px)}to{opacity:1;transform:none}}
     .progress{height:6px;border-radius:999px;background:linear-gradient(90deg,#2563EB,var(--end,#1e3a8a))}
     .tappable{min-height:44px; min-width:44px}
+    .drop-okay{outline:2px dashed #2563EB; outline-offset:4px}
   </style>
 </head>
 <body class="bg-brandBg text-brandPrimary h-full">
@@ -52,7 +52,6 @@
         <span class="grid h-9 w-9 place-items-center rounded-xl bg-soft-gradient text-brandPrimary font-extrabold shadow">◆</span>
         <span class="text-lg sm:text-xl font-bold">Chadaddy</span>
       </a>
-      <!-- User controls -->
       <div id="userControls" class="flex items-center gap-3"></div>
     </div>
   </header>
@@ -83,11 +82,34 @@
             <option>IN</option><option>US</option><option>EU</option><option>UK</option>
           </select>
         </label>
+
         <label class="grid gap-1 text-sm">
           <span class="font-medium">Product description</span>
           <textarea id="hsDesc" rows="4" class="input border border-brandBorder rounded-lg px-3 py-2 tappable"
             placeholder="Try: Wireless earbuds with mic, Bluetooth, lithium battery"></textarea>
         </label>
+
+        <!-- Image upload -->
+        <div class="grid gap-2 text-sm">
+          <span class="font-medium">Upload product image (optional)</span>
+          <label id="imgDrop"
+                 class="cursor-pointer border border-dashed border-brandBorder rounded-xl2 p-4 grid place-items-center text-center bg-brandSoft/40">
+            <input id="hsImage" type="file" accept="image/*" capture="environment" class="hidden" />
+            <div class="grid gap-1">
+              <div class="text-brandPrimary font-medium">Tap to browse or drop an image</div>
+              <div class="text-brandMuted">JPG/PNG up to 5 MB</div>
+            </div>
+          </label>
+          <div id="imgPreviewWrap" class="hidden items-center gap-3">
+            <img id="imgPreview" alt="preview" class="h-16 w-16 rounded-lg object-cover border border-brandBorder" />
+            <div class="text-xs text-brandMuted truncate flex-1" id="imgName"></div>
+            <button id="hsScan" type="button"
+                    class="ml-auto bg-brandAccent text-white px-3 py-2 rounded-lg disabled:opacity-60 tappable">
+              Scan image
+            </button>
+          </div>
+        </div>
+
         <div class="flex gap-2">
           <button id="hsRun" class="bg-brandAccent text-white px-4 py-2 rounded-lg tappable">Find HS codes</button>
           <button id="hsReset" type="button" class="border border-brandBorder px-4 py-2 rounded-lg tappable">Reset</button>
@@ -114,14 +136,13 @@
     document.getElementById('year').textContent = new Date().getFullYear();
     const API_BASE = "";
 
-    // Session check (no redirect ever)
+    // Session check (never redirects)
     async function checkSession(){
       try{
         const res = await fetch(`${API_BASE}/auth/session`, {
           credentials:"include",
-          redirect: "manual"   // 🚀 prevents browser auto-redirect
+          redirect: "manual"
         });
-
         if(res.status === 200){
           const data = await res.json().catch(()=>null);
           if(data?.user){
@@ -130,12 +151,8 @@
                <a href="https://www.ledgerdaddy.com/dashboard.html" class="bg-brandAccent text-white px-3 py-1.5 rounded-lg">Dashboard</a>
                <a href="/log-out" class="text-sm text-brandMuted">Log out</a>`;
           }
-        } else {
-          console.log("Not logged in (staying on HS Finder)");
         }
-      } catch(e){
-        console.warn("Session check failed", e);
-      }
+      } catch(e){ console.warn("Session check failed", e); }
     }
     checkSession();
 
@@ -158,27 +175,107 @@
         </div>`).join('');
     }
 
-    // Show demo results by default
     renderResults(demoResults, "IN");
 
-    // Run form
     document.getElementById('hsRun').addEventListener('click', e=>{
       e.preventDefault();
       const desc = document.getElementById('hsDesc').value.trim();
       const country = document.getElementById('hsCountry').value;
       if(!desc){ renderResults(demoResults, country); return; }
-      // Example dynamic results
       renderResults([
         {code:'847130', title:'Computers & laptops', conf:0.88},
         {code:'850760', title:'Lithium-ion batteries', conf:0.66}
       ], country);
     });
 
-    // Reset
     document.getElementById('hsReset').addEventListener('click', ()=>{
       document.getElementById('hsDesc').value="";
+      resetImageState();
       renderResults(demoResults,"IN");
     });
+
+    // Image upload logic
+    const imgInput = document.getElementById('hsImage');
+    const drop = document.getElementById('imgDrop');
+    const previewWrap = document.getElementById('imgPreviewWrap');
+    const previewImg = document.getElementById('imgPreview');
+    const imgNameEl = document.getElementById('imgName');
+    const scanBtn = document.getElementById('hsScan');
+    let selectedFile = null;
+
+    function resetImageState(){
+      if(imgInput) imgInput.value="";
+      previewWrap?.classList.add('hidden');
+      if(previewImg) previewImg.src="";
+      if(imgNameEl) imgNameEl.textContent="";
+      selectedFile=null;
+    }
+
+    drop.addEventListener('click', ()=> imgInput.click());
+    ['dragenter','dragover'].forEach(evt =>
+      drop.addEventListener(evt, e=>{ e.preventDefault(); drop.classList.add('drop-okay'); })
+    );
+    ['dragleave','drop'].forEach(evt =>
+      drop.addEventListener(evt, e=>{ e.preventDefault(); drop.classList.remove('drop-okay'); })
+    );
+    drop.addEventListener('drop', e=>{
+      const file = e.dataTransfer?.files?.[0]; handlePickedFile(file);
+    });
+    imgInput.addEventListener('change', e=> handlePickedFile(e.target.files?.[0]));
+
+    function handlePickedFile(file){
+      if(!file) return;
+      if(!file.type.startsWith('image/')) return alert('Please choose an image');
+      if(file.size>5*1024*1024) return alert('Image too large (>5MB)');
+      selectedFile=file;
+      previewImg.src=URL.createObjectURL(file);
+      imgNameEl.textContent=file.name;
+      previewWrap.classList.remove('hidden');
+      scanBtn.disabled=false;
+    }
+
+    scanBtn.addEventListener('click', async ()=>{
+      if(!selectedFile) return alert("No image selected");
+      scanBtn.disabled=true; const oldText=scanBtn.textContent;
+      scanBtn.textContent="Scanning…"; previewImg.classList.add("opacity-60");
+
+      try{
+        const result = await scanImage(selectedFile);
+        if(result.desc){
+          document.getElementById('hsDesc').value += " " + result.desc;
+        }
+        document.getElementById('hsRun').click();
+        alert(result.guessed ? "Scanned (demo guess)" : "Scanned successfully");
+      }catch(err){
+        console.error(err); alert("Scan failed");
+      }finally{
+        scanBtn.textContent=oldText; scanBtn.disabled=false; previewImg.classList.remove("opacity-60");
+      }
+    });
+
+    async function scanImage(file){
+      const base64 = await fileToBase64(file);
+      try{
+        const resp = await fetch('/api/hs-scan',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({image_base64:base64})});
+        if(resp.ok){
+          const data = await resp.json();
+          return {desc:data.desc||'', guessed:false};
+        }
+      }catch(e){console.warn("Backend scan unavailable, using demo",e);}
+      const name=(file.name||'').toLowerCase();
+      if(/earbud|headphone/.test(name)) return {desc:"Wireless earbuds with mic, Bluetooth, lithium battery", guessed:true};
+      if(/router|wifi/.test(name)) return {desc:"Wi-Fi router with ethernet ports", guessed:true};
+      if(/phone|smartphone/.test(name)) return {desc:"Smartphone with touchscreen, 5G, lithium battery", guessed:true};
+      return {desc:"General electronic device", guessed:true};
+    }
+
+    function fileToBase64(file){
+      return new Promise((resolve,reject)=>{
+        const reader=new FileReader();
+        reader.onload=()=>resolve(String(reader.result).split(',')[1]);
+        reader.onerror=reject; reader.readAsDataURL(file);
+      });
+    }
   </script>
 </body>
 </html>
