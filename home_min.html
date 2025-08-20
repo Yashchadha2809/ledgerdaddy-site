@@ -571,5 +571,13 @@
     // Newsletter toast
     $('#nlBtn').addEventListener('click',(e)=>{ e.preventDefault(); const t=document.createElement('div'); t.textContent='Subscribed'; t.className='fixed bottom-24 right-4 bg-brandPrimary text-white text-sm px-3 py-2 rounded-lg shadow'; document.body.appendChild(t); setTimeout(()=>t.remove(),1400); });
   </script>
+  <script>
+  if ('serviceWorker' in navigator) {
+    window.addEventListener('load', () => {
+      navigator.serviceWorker.register('/sw.js');
+    });
+  }
+</script>
+
 </body>
 </html>
