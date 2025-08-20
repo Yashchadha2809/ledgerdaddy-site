@@ -40,18 +40,10 @@
     .fade-in{animation:fade .14s ease-out}
     @keyframes fade{from{opacity:.5;transform:translateY(2px)}to{opacity:1;transform:none}}
     .progress{height:6px;border-radius:999px;background:linear-gradient(90deg,#2563EB,var(--end,#1e3a8a))}
-    .drop-okay{outline:2px dashed #2563EB; outline-offset:4px}
-    .sr-only-focusable:focus{position:static;width:auto;height:auto;clip:auto;clip-path:none;padding:.25rem .5rem;border-radius:6px;background:#ECFEFF}
     .tappable{min-height:44px; min-width:44px}
   </style>
 </head>
 <body class="bg-brandBg text-brandPrimary h-full">
-
-  <!-- Skip link -->
-  <a href="#hsForm"
-     class="sr-only sr-only-focusable absolute left-2 top-2 -translate-y-12 focus:translate-y-0">
-     Skip to finder form
-  </a>
 
   <!-- Topbar -->
   <header class="fixed top-0 inset-x-0 z-50 border-b border-brandBorder bg-white/90 backdrop-blur">
@@ -60,7 +52,7 @@
         <span class="grid h-9 w-9 place-items-center rounded-xl bg-soft-gradient text-brandPrimary font-extrabold shadow">◆</span>
         <span class="text-lg sm:text-xl font-bold">Chadaddy</span>
       </a>
-      <!-- User controls (session-based) -->
+      <!-- User controls -->
       <div id="userControls" class="flex items-center gap-3"></div>
     </div>
   </header>
@@ -80,16 +72,15 @@
   </section>
 
   <!-- Finder -->
-  <main class="max-w-6xl mx-auto px-2 sm:px-4 -mt-4 sm:-mt-8 pb-[6rem] sm:pb-16 grid gap-4 md:gap-6 lg:grid-cols-[1.05fr,0.95fr]">
+  <main class="max-w-6xl mx-auto px-2 sm:px-4 -mt-4 sm:-mt-8 pb-16 grid gap-4 md:gap-6 lg:grid-cols-[1.05fr,0.95fr]">
     <!-- Form -->
-    <section class="bg-white border border-brandBorder rounded-2xl shadow p-3 sm:p-5 md:p-8 card" id="formCard">
+    <section class="bg-white border border-brandBorder rounded-2xl shadow p-3 sm:p-5 md:p-8 card">
       <h2 class="text-lg sm:text-xl font-semibold">Describe your product</h2>
       <form id="hsForm" class="mt-3 sm:mt-4 grid gap-3 sm:gap-4">
         <label class="grid gap-1 text-sm">
           <span class="font-medium">Country</span>
           <select id="hsCountry" class="input border border-brandBorder rounded-lg px-3 py-2 tappable">
             <option>IN</option><option>US</option><option>EU</option><option>UK</option>
-            <option>AE</option><option>SG</option><option>AU</option><option>CA</option>
           </select>
         </label>
         <label class="grid gap-1 text-sm">
@@ -123,22 +114,28 @@
     document.getElementById('year').textContent = new Date().getFullYear();
     const API_BASE = "";
 
-    // Session check
+    // Session check (no redirect ever)
     async function checkSession(){
       try{
-        const res = await fetch(`${API_BASE}/auth/session`, {credentials:"include"});
-        if(res.ok){
-          const data = await res.json();
+        const res = await fetch(`${API_BASE}/auth/session`, {
+          credentials:"include",
+          redirect: "manual"   // 🚀 prevents browser auto-redirect
+        });
+
+        if(res.status === 200){
+          const data = await res.json().catch(()=>null);
           if(data?.user){
             document.getElementById('userControls').innerHTML =
               `<span class="text-sm">Hi, ${data.user.name || "User"}</span>
                <a href="https://www.ledgerdaddy.com/dashboard.html" class="bg-brandAccent text-white px-3 py-1.5 rounded-lg">Dashboard</a>
                <a href="/log-out" class="text-sm text-brandMuted">Log out</a>`;
-          } else {
-            window.location.href="/log-in";
           }
-        } else window.location.href="/log-in";
-      } catch{ window.location.href="/log-in"; }
+        } else {
+          console.log("Not logged in (staying on HS Finder)");
+        }
+      } catch(e){
+        console.warn("Session check failed", e);
+      }
     }
     checkSession();
 
@@ -155,7 +152,7 @@
         <div class="p-3 border border-brandBorder rounded-lg bg-white fade-in">
           <div class="flex justify-between items-center">
             <div><strong>${r.code}</strong> – ${r.title}</div>
-            <span class="text-xs text-brandMuted">${Math.round(r.conf*100) || (r.conf*100)}%</span>
+            <span class="text-xs text-brandMuted">${Math.round(r.conf*100)}%</span>
           </div>
           <a href="/calculator.html?hs=${r.code}&country=${country}" class="mt-2 inline-block bg-brandAccent text-white px-3 py-1.5 rounded text-xs">Open Calculator</a>
         </div>`).join('');
@@ -169,17 +166,15 @@
       e.preventDefault();
       const desc = document.getElementById('hsDesc').value.trim();
       const country = document.getElementById('hsCountry').value;
-      if(!desc){ // no input → just show demo
-        renderResults(demoResults, country);
-        return;
-      }
-      // TODO: Replace with real backend
+      if(!desc){ renderResults(demoResults, country); return; }
+      // Example dynamic results
       renderResults([
         {code:'847130', title:'Computers & laptops', conf:0.88},
         {code:'850760', title:'Lithium-ion batteries', conf:0.66}
       ], country);
     });
 
+    // Reset
     document.getElementById('hsReset').addEventListener('click', ()=>{
       document.getElementById('hsDesc').value="";
       renderResults(demoResults,"IN");
