@@ -1,0 +1,31 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <title>Auth Callback</title>
+  <style>
+    body { font-family: system-ui, sans-serif; text-align: center; margin-top: 3rem; }
+  </style>
+</head>
+<body>
+  <h2>Finishing sign-in…</h2>
+  <p>Please wait, redirecting you…</p>
+
+  <script type="module">
+    import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
+
+    // Use the same URL + ANON KEY as your signup page
+    const supabase = createClient(
+      "https://nkvrhaxpoehqcgoamjhq.supabase.co",
+      "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im5rdnJoYXhwb2VocWNnb2FtamhxIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTU3OTc5MDcsImV4cCI6MjA3MTM3MzkwN30.I6azwaIiEsQ_EjFRXtIZFTvpcc_g6NccsC3pJdWQPks",
+      { auth: { persistSession: true, autoRefreshToken: true, detectSessionInUrl: true } }
+    );
+
+    // Supabase automatically reads tokens in URL and saves the session
+    setTimeout(() => {
+      window.location.href = "/"; // redirect to homepage or dashboard
+    }, 1500);
+  </script>
+</body>
+</html>
