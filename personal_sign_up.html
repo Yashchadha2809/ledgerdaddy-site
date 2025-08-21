@@ -12,12 +12,12 @@
       theme: {
         extend: {
           colors:{
-            brandPrimary:"#111827",   /* headings / strong text */
-            brandAccent:"#2563EB",    /* primary action */
-            brandSoft:"#EFF6FF",      /* soft bg accents */
-            brandBorder:"#E5E7EB",    /* light borders */
-            brandMuted:"#6B7280",     /* secondary text */
-            brandBg:"#F9FAFB"         /* app background */
+            brandPrimary:"#111827",
+            brandAccent:"#2563EB",
+            brandSoft:"#EFF6FF",
+            brandBorder:"#E5E7EB",
+            brandMuted:"#6B7280",
+            brandBg:"#F9FAFB"
           },
           boxShadow:{ lift:"0 10px 25px rgba(17,24,39,.10)" }
         }
@@ -33,14 +33,18 @@
   <!-- Supabase JS v2 -->
   <script src="https://unpkg.com/@supabase/supabase-js@2"></script>
   <script>
-    // 🔧 Replace with your Supabase project values (Settings → API)
-    const PROJECT_URL = https://nkvrhaxpoehqcgoamjhq.supabase.co;
-    const ANON_KEY   = eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im5rdnJoYXhwb2VocWNnb2FtamhxIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTU3OTc5MDcsImV4cCI6MjA3MTM3MzkwN30.I6azwaIiEsQ_EjFRXtIZFTvpcc_g6NccsC3pJdWQPks;
+    // 🔧 Supabase config (VALUES MUST BE IN QUOTES)
+    const PROJECT_URL = "https://nkvrhaxpoehqcgoamjhq.supabase.co";
+    const ANON_KEY   = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im5rdnJoYXhwb2VocWNnb2FtamhxIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTU3OTc5MDcsImV4cCI6MjA3MTM3MzkwN30.I6azwaIiEsQ_EjFRXtIZFTvpcc_g6NccsC3pJdWQPks";
 
-    // Create a client (persists session in localStorage by default)
+    // Create client (sessions persist in localStorage)
     const supabase = window.supabase.createClient(PROJECT_URL, ANON_KEY, {
       auth: { persistSession: true, storage: window.localStorage }
     });
+
+    // Optional: quick console sanity check
+    console.log("Supabase URL:", PROJECT_URL);
+    console.log("Anon key starts with:", ANON_KEY.slice(0, 10));
   </script>
 </head>
 <body class="bg-brandBg text-brandPrimary">
@@ -198,8 +202,7 @@
         return;
       }
 
-      // Optional: create profile row (will succeed if session exists immediately,
-      // else it will be created later on first login/dashboard load).
+      // Optional profile row
       try {
         if (data.user) {
           await supabase.from('profiles').upsert({
@@ -210,19 +213,15 @@
             role
           }, { onConflict: 'id' });
         }
-      } catch (_) { /* ignore if not authenticated yet */ }
+      } catch (_) { /* ignore */ }
 
       setMsg("Account created. Check your email to verify.", true);
       submitBtn.disabled = false; submitBtn.textContent = "Create account";
 
-      // If email confirmation is disabled, you may already be logged in:
+      // If email confirmation is OFF, you may already be logged in:
       const { data: s } = await supabase.auth.getSession();
       if (s && s.session) {
-        // go straight to dashboard if session exists
         window.location.href = "/dashboard.html";
-      } else {
-        // otherwise prompt to verify email
-        // (optional: redirect to a "check your email" page)
       }
     });
   </script>
