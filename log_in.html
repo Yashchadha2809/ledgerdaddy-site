@@ -35,16 +35,6 @@
 </head>
 <body class="bg-brandBg text-brandPrimary">
 
-  <!-- If already logged in, go straight to dashboard -->
-  <script>
-    (function(){
-      try {
-        const u = JSON.parse(localStorage.getItem('chadaddy_user')||'null');
-        if(u && u.email){ window.location.href = 'dashboard.html'; }
-      } catch(e){}
-    })();
-  </script>
-
   <!-- Topbar -->
   <header class="fixed top-0 inset-x-0 z-50 border-b border-brandBorder bg-white/90 backdrop-blur">
     <div class="max-w-7xl mx-auto px-4 py-3 flex items-center justify-between">
@@ -71,8 +61,7 @@
   </header>
 
   <!-- Hero -->
-  <br>
-  <br>
+  <br><br>
   <section class="pt-24 md:pt-28">
     <div class="hero-img">
       <div class="backdrop-brightness-90 bg-gradient-to-r from-brandPrimary/70 to-brandAccent/60">
@@ -83,12 +72,13 @@
       </div>
     </div>
   </section>
-<br>
-  <br>
-  <br>
+  <br><br><br>
+
   <!-- Login card -->
   <main class="max-w-3xl mx-auto px-4 -mt-10">
     <div class="bg-white border border-brandBorder rounded-2xl shadow p-6 md:p-8">
+      <p id="status" class="text-sm text-brandMuted mb-3"></p>
+
       <form id="loginForm" class="grid gap-5" autocomplete="on">
         <div class="grid md:grid-cols-2 gap-4">
           <label class="grid gap-1 text-sm">
@@ -106,7 +96,7 @@
             <input id="remember" type="checkbox" class="h-4 w-4 border border-brandBorder rounded">
             <span>Remember me</span>
           </label>
-          <a href="#" class="text-brandAccent hover:underline">Forgot password?</a>
+          <a id="forgot" href="#" class="text-brandAccent hover:underline">Forgot password?</a>
         </div>
 
         <button class="bg-brandAccent text-white px-4 py-2 rounded-lg text-base font-semibold" type="submit">
@@ -130,46 +120,81 @@
     © <span id="year"></span> Chadaddy
   </footer>
 
-  <script>
-    document.getElementById('year').textContent = new Date().getFullYear();
+  <!-- Supabase auth wiring -->
+  <script type="module">
+    import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
 
-    // Helper to fake a user name from the email (before your real backend)
-    function nameFromEmail(email){
-      const base = (email || '').split('@')[0] || 'User';
-      return base.replace(/[^a-zA-Z0-9 ]/g,' ').trim().replace(/\s+/g,' ');
-    }
+    // 🔧 Replace with your project values
+    const SUPABASE_URL = "https://YOUR-PROJECT-ref.supabase.co";
+    const SUPABASE_ANON_KEY = "YOUR-ANON-KEY";
 
-    // Handle login and redirect to dashboard
-    document.getElementById('loginForm').addEventListener('submit', function(e){
-      e.preventDefault();
+    const supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY, {
+      auth: { persistSession: true, autoRefreshToken: true, detectSessionInUrl: true }
+    });
 
-      const email = document.getElementById('email').value.trim();
-      const password = document.getElementById('password').value; // not used in demo
-      const remember = document.getElementById('remember').checked;
+    const $ = (s) => document.querySelector(s);
+    const statusEl = $("#status");
+    const toast = (msg) => { statusEl.textContent = msg; };
 
-      if(!email || !password){
-        alert('Please enter email and password');
-        return;
+    // Show year
+    $("#year").textContent = new Date().getFullYear();
+
+    // If already logged in, go straight to dashboard
+    (async () => {
+      const { data: { session }, error } = await supabase.auth.getSession();
+      if (error) console.warn("getSession error:", error.message);
+      if (session?.user) {
+        // Optional: store a lightweight mirror for your existing dashboard logic
+        const user = session.user;
+        const name = (user.user_metadata?.full_name) || (user.email?.split("@")[0]) || "User";
+        localStorage.setItem("chadaddy_user", JSON.stringify({ email: user.email, name, ts: Date.now() }));
+        location.href = "dashboard.html";
       }
+    })();
 
-      // Demo session object — same key the dashboard expects
-      const user = {
-        email,
-        name: nameFromEmail(email),
-        remember,               // you can use this later for cookie/session length
-        ts: Date.now()
-      };
+    // Forgot password handler — sends reset email
+    $("#forgot").addEventListener("click", async (e) => {
+      e.preventDefault();
+      const email = $("#email").value.trim();
+      if (!email) return toast("Enter your email first, then click Forgot password.");
+      const { error } = await supabase.auth.resetPasswordForEmail(email, {
+        redirectTo: `${location.origin}/auth/callback.html`
+      });
+      if (error) return toast(error.message);
+      toast("Password reset email sent. Please check your inbox.");
+    });
 
-      localStorage.setItem('chadaddy_user', JSON.stringify(user));
+    // Login handler
+    $("#loginForm").addEventListener("submit", async (e) => {
+      e.preventDefault();
+      const fd = new FormData(e.currentTarget);
+      const email = (fd.get("email") || "").trim();
+      const password = (fd.get("password") || "").trim();
+      const remember = $("#remember").checked; // Supabase uses persistent sessions by default
 
-      // Tiny toast
-      const t=document.createElement('div');
-      t.textContent='Logged in!';
-      t.className='fixed bottom-6 right-6 bg-brandPrimary text-white text-sm px-3 py-2 rounded-lg shadow';
-      document.body.appendChild(t);
+      if (!email || !password) return toast("Please enter email and password.");
 
-      // Redirect to dashboard
-      setTimeout(()=>{ t.remove(); window.location.href = 'dashboard.html'; }, 600);
+      try {
+        toast("Signing in…");
+        const { error } = await supabase.auth.signInWithPassword({ email, password });
+        if (error) throw error;
+
+        // Optionally ensure a profile row exists (if you removed the trigger)
+        const { data: { user } } = await supabase.auth.getUser();
+        if (user) {
+          const full_name = user.user_metadata?.full_name || null;
+          await supabase.from("profiles").upsert({ user_id: user.id, full_name });
+          // Mirror to your legacy localStorage (for any existing code that reads it)
+          const name = full_name || (user.email?.split("@")[0]) || "User";
+          localStorage.setItem("chadaddy_user", JSON.stringify({ email: user.email, name, remember, ts: Date.now() }));
+        }
+
+        toast("Success! Redirecting…");
+        setTimeout(() => { location.href = "dashboard.html"; }, 600);
+      } catch (err) {
+        console.error(err);
+        toast(err?.message || "Login failed.");
+      }
     });
   </script>
 </body>
