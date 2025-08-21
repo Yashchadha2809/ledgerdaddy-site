@@ -75,7 +75,7 @@
     <div class="bg-white border border-brandBorder rounded-2xl shadow p-6 md:p-8">
       <p id="status" class="text-sm text-brandMuted mb-3"></p>
 
-      <form id="signupForm" class="grid gap-5">
+      <form id="signupForm" class="grid gap-5" autocomplete="on">
         <div class="grid md:grid-cols-2 gap-5">
           <label class="grid gap-2 text-sm">
             <span class="font-medium">Full name</span>
@@ -132,7 +132,7 @@
   <script type="module">
     import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
 
-    // 🔧 Replace with your project values
+    // ✅ Your project values
     const SUPABASE_URL = "https://nkvrhaxpoehqcgoamjhq.supabase.co";
     const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im5rdnJoYXhwb2VocWNnb2FtamhxIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTU3OTc5MDcsImV4cCI6MjA3MTM3MzkwN30.I6azwaIiEsQ_EjFRXtIZFTvpcc_g6NccsC3pJdWQPks";
 
@@ -147,7 +147,7 @@
       t.textContent = msg;
       t.className = 'fixed bottom-6 right-6 bg-black text-white text-sm px-3 py-2 rounded-lg shadow';
       document.body.appendChild(t);
-      setTimeout(()=> t.remove(), 1600);
+      setTimeout(()=> t.remove(), 1800);
     };
 
     document.getElementById('year').textContent = new Date().getFullYear();
@@ -172,8 +172,8 @@
       try {
         toast('Creating your account…');
 
-        // 1) Sign up (adds metadata; email confirm may be required)
-        const { error: signErr } = await supabase.auth.signUp({
+        // 👉 Try sign up
+        const { data, error } = await supabase.auth.signUp({
           email,
           password,
           options: {
@@ -181,25 +181,41 @@
             emailRedirectTo: `${location.origin}/auth/callback.html`
           }
         });
-        if (signErr) throw signErr;
 
-        // 2) If email confirm ON, there's no session yet
-        const { data: { session } } = await supabase.auth.getSession();
-        if (!session) {
-          toast('Check your email to confirm your account.');
+        if (error) {
+          // Case: already confirmed account exists
+          if (String(error.message).toLowerCase().includes("already") && String(error.message).toLowerCase().includes("registered")) {
+            toast("This email is already registered. Please log in instead.");
+            return;
+          }
+          // Other errors (policy, bad redirect, etc.)
+          toast(error.message || "Signup failed.");
           return;
         }
 
-        // 3) Upsert profile row
-        const user = session.user;
-        const { error: upErr } = await supabase.from('profiles').upsert({
-          user_id: user.id,
-          full_name
-        });
-        if (upErr) throw upErr;
+        // If no error and data.user is null → unconfirmed user existed; email re-sent
+        if (!data.user) {
+          toast("Check your email to confirm your account.");
+          return;
+        }
 
-        toast('Account created! Redirecting…');
-        setTimeout(()=> { window.location.href = "/"; }, 900);
+        // Brand new user created (if email confirmation OFF) — try creating profile
+        const { data: sess } = await supabase.auth.getSession();
+        if (sess?.session?.user) {
+          const user = sess.session.user;
+          const { error: upErr } = await supabase.from('profiles').upsert({
+            user_id: user.id,
+            full_name
+          });
+          if (upErr) {
+            console.warn("profiles.upsert:", upErr);
+          }
+          toast('Account created! Redirecting…');
+          setTimeout(()=> { window.location.href = "/"; }, 900);
+        } else {
+          // Most setups have email confirm ON → tell user to check inbox
+          toast("Account created! Please check your email to confirm.");
+        }
       } catch (err) {
         console.error(err);
         toast(err.message || 'Signup failed. Please try again.');
