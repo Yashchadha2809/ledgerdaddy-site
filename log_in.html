@@ -168,36 +168,42 @@
       try {
         const { error } = await supabase.auth.resetPasswordForEmail(email, { redirectTo });
         if (error) throw error;
-        toast("Password reset email sent. Please check your inbox.");
+        toast("Password reset email sent. Check your inbox (and spam).");
       } catch (err) {
         console.error("resetPasswordForEmail error:", err);
-        toast(err?.message || "Could not send reset email.");
+        const msg = (err?.message || "").toLowerCase();
+        if (msg.includes("url") || msg.includes("redirect")) {
+          toast("Auth config error: add this URL in Supabase → Auth → Redirect URLs:\n" + redirectTo);
+        } else {
+          toast(err?.message || "Could not send reset email.");
+        }
       }
     });
 
-    // ---------- Listen for recovery event & show reset modal ----------
+    // ---------- Listen for recovery & show reset modal ----------
     const resetModal = $("#resetModal");
     const resetForm = $("#resetForm");
     const resetStatus = $("#resetStatus");
     const btnCancelReset = $("#btnCancelReset");
-
     const showReset = () => resetModal.classList.remove("hidden");
     const hideReset = () => resetModal.classList.add("hidden");
 
-    // Supabase fires PASSWORD_RECOVERY when the reset link is opened
+    // Robust detection: hash may contain access_token & type=recovery
+    const hash = location.hash || "";
+    const params = new URLSearchParams(hash.replace(/^#/, ""));
+    const isRecovery = params.get("type") === "recovery" || params.has("access_token");
+    if (isRecovery) showReset();
+
+    // Also listen to Supabase event
     supabase.auth.onAuthStateChange((event) => {
-      if (event === "PASSWORD_RECOVERY") {
-        showReset();
-      }
+      if (event === "PASSWORD_RECOVERY") showReset();
     });
 
-    // Fallback: if the URL hash has type=recovery (some browsers), show modal
-    const hash = location.hash || "";
-    if (hash.includes("type=recovery")) {
-      showReset();
-    }
-
-    btnCancelReset.addEventListener("click", hideReset);
+    btnCancelReset.addEventListener("click", () => {
+      hideReset();
+      // Remove the hash so it doesn't keep reopening
+      history.replaceState(null, "", location.pathname + location.search);
+    });
 
     // ---------- Handle setting the new password ----------
     resetForm.addEventListener("submit", async (e) => {
@@ -213,22 +219,27 @@
       $("#btnReset").textContent = "Updating…";
 
       try {
-        // This updates the password for the user associated with the recovery token in the URL
+        // supabase-js uses the recovery token in URL hash (detectSessionInUrl:true)
         const { data, error } = await supabase.auth.updateUser({ password: p1 });
         if (error) throw error;
 
         resetStatus.textContent = "✅ Password updated. Please sign in.";
-        // Optional: sign out any existing session just in case
         await supabase.auth.signOut();
         setTimeout(() => {
           hideReset();
-          // Focus back to login form
           $("#password").focus();
           toast("Password updated. Please sign in.");
+          // Remove hash so modal won't re-open on refresh
+          history.replaceState(null, "", location.pathname + location.search);
         }, 600);
       } catch (err) {
         console.error("updateUser error:", err);
-        resetStatus.textContent = err?.message || "Could not update password.";
+        const msg = (err?.message || "").toLowerCase();
+        if (msg.includes("token") || msg.includes("invalid") || msg.includes("expired")) {
+          resetStatus.textContent = "The recovery link is invalid or expired. Click 'Forgot password?' again.";
+        } else {
+          resetStatus.textContent = err?.message || "Could not update password.";
+        }
       } finally {
         $("#btnReset").disabled = false;
         $("#btnReset").textContent = "Update password";
