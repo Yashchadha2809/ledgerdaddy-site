@@ -30,7 +30,6 @@
 
   "builds": [
     { "src": "index.py", "use": "@vercel/python" },
-
     { "src": "**/*.html", "use": "@vercel/static" },
     { "src": "assets/**", "use": "@vercel/static" },
     { "src": "manifest.webmanifest", "use": "@vercel/static" },
@@ -42,18 +41,17 @@
   "rewrites": [
     { "source": "/", "destination": "/home_min.html" },
 
-    // Map friendly hyphen URLs to actual filenames that use underscores
+    /* Map friendly hyphen URLs to actual underscore files */
     { "source": "/log-in", "destination": "/log_in.html" },
     { "source": "/personal-sign-up", "destination": "/personal_sign_up.html" },
     { "source": "/dashboard", "destination": "/dashboard.html" },
 
-    // Keep API traffic on Python
-    { "source": "/api/:path*", "destination": "/index.py" }
+    /* Send API traffic to Python (index.py routes within) */
+    { "source": "/api/:path*", "destination": "/index" }
   ],
 
   "redirects": [
-    // If someone hits the hyphenated filenames directly, send them to the real files
-    { "source": "/log-in.html", "destination": "/log_in.html", "statusCode": 308 },
-    { "source": "/personal-sign-up.html", "destination": "/personal_sign_up.html", "statusCode": 308 }
+    { "source": "/log-in.html", "destination": "/log_in.html", "permanent": true },
+    { "source": "/personal-sign-up.html", "destination": "/personal_sign_up.html", "permanent": true }
   ]
 }
