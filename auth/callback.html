@@ -1,31 +1,65 @@
 <!doctype html>
 <html lang="en">
 <head>
-  <meta charset="utf-8"/>
-  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <meta charset="utf-8"/><meta name="viewport" content="width=device-width, initial-scale=1"/>
   <title>Auth Callback</title>
   <style>
-    body { font-family: system-ui, sans-serif; text-align: center; margin-top: 3rem; }
+    body{font-family:system-ui,Segoe UI,Roboto,Arial;margin:24px;max-width:640px}
+    .card{border:1px solid #e5e7eb;border-radius:12px;padding:16px}
+    .muted{color:#6b7280}
+    code{background:#f3f4f6;padding:.2rem .35rem;border-radius:6px}
   </style>
 </head>
 <body>
   <h2>Finishing sign-in…</h2>
-  <p>Please wait, redirecting you…</p>
+  <div class="card">
+    <p id="msg" class="muted">Checking tokens from the link…</p>
+    <pre id="debug" class="muted" style="white-space:pre-wrap"></pre>
+  </div>
 
   <script type="module">
     import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
 
-    // Use the same URL + ANON KEY as your signup page
-    const supabase = createClient(
-      "https://nkvrhaxpoehqcgoamjhq.supabase.co",
-      "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im5rdnJoYXhwb2VocWNnb2FtamhxIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTU3OTc5MDcsImV4cCI6MjA3MTM3MzkwN30.I6azwaIiEsQ_EjFRXtIZFTvpcc_g6NccsC3pJdWQPks",
-      { auth: { persistSession: true, autoRefreshToken: true, detectSessionInUrl: true } }
-    );
+    // Use the SAME values as your signup page
+    const SUPABASE_URL = "https://nkvrhaxpoehqcgoamjhq.supabase.co";
+    const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im5rdnJoYXhwb2VocWNnb2FtamhxIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTU3OTc5MDcsImV4cCI6MjA3MTM3MzkwN30.I6azwaIiEsQ_EjFRXtIZFTvpcc_g6NccsC3pJdWQPks";
 
-    // Supabase automatically reads tokens in URL and saves the session
-    setTimeout(() => {
-      window.location.href = "/"; // redirect to homepage or dashboard
-    }, 1500);
+    const supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY, {
+      auth:{ persistSession:true, autoRefreshToken:true, detectSessionInUrl:true }
+    });
+
+    const msg = (t) => document.getElementById("msg").textContent = t;
+    const dbg = (o) => document.getElementById("debug").textContent = (o ? JSON.stringify(o,null,2) : "");
+
+    // Show any error params Supabase put in the URL
+    const params = new URLSearchParams(location.hash.replace(/^#/, ""));
+    const possibleError = params.get("error");
+    const errorDesc = params.get("error_description");
+    if (possibleError) {
+      msg("⚠️ Link opened, but Supabase reported an error.");
+      dbg({ error: possibleError, error_description: errorDesc });
+    }
+
+    // When tokens are parsed, Supabase fires a state change. Handle both:
+    supabase.auth.onAuthStateChange(async (event, session) => {
+      dbg({ event, user: session?.user?.email || null });
+      if (event === "SIGNED_IN") {
+        msg("✅ Email verified and you are signed in.");
+        setTimeout(() => location.replace("/signin.html?verified=1"), 1200);
+      }
+    });
+
+    // Fallback check in case event doesn’t fire in the client
+    setTimeout(async () => {
+      const { data: { session } } = await supabase.auth.getSession();
+      dbg({ fallbackSession: !!session, email: session?.user?.email || null });
+      if (session?.user) {
+        msg("✅ Email verified and you are signed in.");
+        setTimeout(() => location.replace("/signin.html?verified=1"), 1200);
+      } else if (!possibleError) {
+        msg("⚠️ Could not complete sign-in automatically. Try opening the link again, or sign in manually.");
+      }
+    }, 1200);
   </script>
 </body>
 </html>
