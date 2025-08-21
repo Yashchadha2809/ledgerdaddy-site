@@ -1,4 +1,5 @@
 {
+  "version": 2,
   "builds": [
     { "src": "index.py", "use": "@vercel/python" },
     { "src": "**/*.html", "use": "@vercel/static" },
@@ -8,37 +9,9 @@
     { "src": "icons/**", "use": "@vercel/static" },
     { "src": ".well-known/**", "use": "@vercel/static" }
   ],
-  "routes": [
-    { "src": "^/manifest\\.webmanifest$", "dest": "/manifest.webmanifest" },
-    { "src": "^/sw\\.js$", "dest": "/sw.js" },
-    { "src": "^/icons/(.*)$", "dest": "/icons/$1" },
-    { "src": "^/\\.well-known/(.*)$", "dest": "/.well-known/$1" },
-
-    { "src": "^/$", "dest": "/home_min.html" },
-
-    { "src": "^/log-in/?$", "dest": "/log_in.html" },
-    { "src": "^/personal-sign-up/?$", "dest": "/personal_sign_up.html" },
-    { "src": "^/dashboard/?$", "dest": "/dashboard.html" },
-    { "src": "^/marketplace/?$", "dest": "/marketplace.html" },
-
-    { "src": "^/privacy/?$", "dest": "/privacy.html" },
-    { "src": "^/terms/?$", "dest": "/terms.html" },
-    { "src": "^/license/?$", "dest": "/license.html" },
-    { "src": "^/cookie-policy/?$", "dest": "/cookie-policy.html" },
-    { "src": "^/acceptable-use/?$", "dest": "/acceptable-use.html" },
-    { "src": "^/security/?$", "dest": "/security.html" },
-    { "src": "^/dpa/?$", "dest": "/dpa.html" },
-    { "src": "^/sla/?$", "dest": "/sla.html" },
-    { "src": "^/subprocessors/?$", "dest": "/subprocessors.html" },
-
-    { "src": "^/assets/(.*)$", "dest": "/assets/$1" },
-    { "src": "^/(.*\\.html)$", "dest": "/$1" },
-
-    { "src": "^/api/(.*)$", "dest": "/index.py" }
-  ],
   "headers": [
     {
-      "source": "/\\.well-known/assetlinks.json",
+      "source": "/.well-known/assetlinks.json",
       "headers": [
         { "key": "Content-Type", "value": "application/json; charset=utf-8" }
       ]
@@ -75,5 +48,32 @@
       "destination": "https://ledgerdaddy.com/:path*",
       "permanent": true
     }
+  ],
+  "rewrites": [
+    { "source": "/.well-known/:path*", "destination": "/.well-known/:path*" },
+    { "source": "/icons/:path*", "destination": "/icons/:path*" },
+    { "source": "/assets/:path*", "destination": "/assets/:path*" },
+
+    { "source": "/", "destination": "/home_min.html" },
+
+    { "source": "/log-in", "destination": "/log_in.html" },
+    { "source": "/personal-sign-up", "destination": "/personal_sign_up.html" },
+    { "source": "/dashboard", "destination": "/dashboard.html" },
+    { "source": "/marketplace", "destination": "/marketplace.html" },
+
+    { "source": "/privacy", "destination": "/privacy.html" },
+    { "source": "/terms", "destination": "/terms.html" },
+    { "source": "/license", "destination": "/license.html" },
+    { "source": "/cookie-policy", "destination": "/cookie-policy.html" },
+    { "source": "/acceptable-use", "destination": "/acceptable-use.html" },
+    { "source": "/security", "destination": "/security.html" },
+    { "source": "/dpa", "destination": "/dpa.html" },
+    { "source": "/sla", "destination": "/sla.html" },
+    { "source": "/subprocessors", "destination": "/subprocessors.html" },
+
+    { "source": "/:name.html", "destination": "/:name.html" },
+    { "source": "/manifest.webmanifest", "destination": "/manifest.webmanifest" },
+    { "source": "/sw.js", "destination": "/sw.js" },
+    { "source": "/api/:path*", "destination": "/index.py" }
   ]
 }
