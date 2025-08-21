@@ -5,13 +5,14 @@
     { "src": "assets/**", "use": "@vercel/static" },
     { "src": "manifest.webmanifest", "use": "@vercel/static" },
     { "src": "sw.js", "use": "@vercel/static" },
-    { "src": "icons/**", "use": "@vercel/static" }
+    { "src": "icons/**", "use": "@vercel/static" },
+    { "src": ".well-known/**", "use": "@vercel/static" }
   ],
   "routes": [
     { "src": "^/manifest\\.webmanifest$", "dest": "/manifest.webmanifest" },
     { "src": "^/sw\\.js$", "dest": "/sw.js" },
     { "src": "^/icons/(.*)$", "dest": "/icons/$1" },
-
+    { "src": "^/\\.well-known/(.*)$", "dest": "/.well-known/$1" },
 
     { "src": "^/$", "dest": "/home_min.html" },
 
@@ -31,9 +32,48 @@
     { "src": "^/subprocessors/?$", "dest": "/subprocessors.html" },
 
     { "src": "^/assets/(.*)$", "dest": "/assets/$1" },
-
     { "src": "^/(.*\\.html)$", "dest": "/$1" },
 
     { "src": "^/api/(.*)$", "dest": "/index.py" }
+  ],
+  "headers": [
+    {
+      "source": "/\\.well-known/assetlinks.json",
+      "headers": [
+        { "key": "Content-Type", "value": "application/json; charset=utf-8" }
+      ]
+    },
+    {
+      "source": "/manifest.webmanifest",
+      "headers": [
+        { "key": "Content-Type", "value": "application/manifest+json; charset=utf-8" }
+      ]
+    },
+    {
+      "source": "/sw.js",
+      "headers": [
+        { "key": "Content-Type", "value": "application/javascript; charset=utf-8" }
+      ]
+    },
+    {
+      "source": "/icons/(.*)\\.png",
+      "headers": [
+        { "key": "Content-Type", "value": "image/png" }
+      ]
+    }
+  ],
+  "redirects": [
+    {
+      "source": "/.well-known/:path*",
+      "has": [{ "type": "host", "value": "www.ledgerdaddy.com" }],
+      "destination": "https://ledgerdaddy.com/.well-known/:path*",
+      "permanent": true
+    },
+    {
+      "source": "/:path*",
+      "has": [{ "type": "host", "value": "www.ledgerdaddy.com" }],
+      "destination": "https://ledgerdaddy.com/:path*",
+      "permanent": true
+    }
   ]
 }
