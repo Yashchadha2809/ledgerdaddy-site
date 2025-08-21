@@ -2,7 +2,7 @@
   "version": 2,
   "headers": [
     {
-      "source": "/icons/(.*)\\.png",
+      "source": "/icons/:path*.png",
       "headers": [
         { "key": "Content-Type", "value": "image/png" }
       ]
@@ -20,7 +20,7 @@
       ]
     },
     {
-      "source": "/\\.well-known/assetlinks.json",
+      "source": "/.well-known/assetlinks.json",
       "headers": [
         { "key": "Content-Type", "value": "application/json; charset=utf-8" }
       ]
@@ -36,15 +36,9 @@
     { "src": ".well-known/**", "use": "@vercel/static" }
   ],
   "rewrites": [
-    { "source": "/manifest.webmanifest", "destination": "/manifest.webmanifest" },
-    { "source": "/sw.js", "destination": "/sw.js" },
-    { "source": "/icons/:path*", "destination": "/icons/:path*" },
-    { "source": "/.well-known/:path*", "destination": "/.well-known/:path*" },
-
     { "source": "/", "destination": "/home_min.html" },
     { "source": "/assets/:path*", "destination": "/assets/:path*" },
     { "source": "/:name.html", "destination": "/:name.html" },
-
     { "source": "/api/:path*", "destination": "/index.py" }
   ]
 }
