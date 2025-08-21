@@ -4,7 +4,7 @@
     "namespace": "android_app",
     "package_name": "com.chadaddy.app",
     "sha256_cert_fingerprints": [
-      "A3:0E:BC:1D:6A:2B:1B:D2:C9:2E:6D:60:F2:EA:97:CC:CA:EB:56:D4:9F:BF:61:8D:44:16:D6:FD:60:D2:34:DD"  // <-- replace with your real SHA-256 from Bubblewrap
+      "A3:0E:BC:1D:6A:2B:1B:D2:C9:2E:6D:60:F2:EA:97:CC:CA:EB:56:D4:9F:BF:61:8D:44:16:D6:FD:60:D2:34:DD"
     ]
   }
 }]
