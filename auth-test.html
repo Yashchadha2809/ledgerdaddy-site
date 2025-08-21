@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html><head>
+<meta charset="utf-8"/><meta name="viewport" content="width=device-width,initial-scale=1"/>
+<title>Supabase Auth Test</title>
+<script src="https://unpkg.com/@supabase/supabase-js@2"></script>
+</head><body>
+<h3>Supabase Auth Test</h3>
+<p id="status"></p>
+<input id="email" placeholder="you@example.com" type="email"/>
+<input id="pass" placeholder="password" type="password"/>
+<button id="su">Sign up</button>
+<button id="li">Log in</button>
+<button id="me">Who am I?</button>
+<button id="lo">Log out</button>
+<pre id="out" style="white-space:pre-wrap;background:#f6f6f6;padding:8px;border:1px solid #ddd"></pre>
+<script>
+const PROJECT_URL = "https://nkvrhaxpoehqcgoamjhq.supabase.co";
+const ANON_KEY   = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im5rdnJoYXhwb2VocWNnb2FtamhxIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTU3OTc5MDcsImV4cCI6MjA3MTM3MzkwN30.I6azwaIiEsQ_EjFRXtIZFTvpcc_g6NccsC3pJdWQPks";
+const supabase = window.supabase.createClient(PROJECT_URL, ANON_KEY);
+
+const out = msg => document.getElementById('out').textContent = typeof msg === 'string' ? msg : JSON.stringify(msg,null,2);
+
+(async()=>{
+  const { data:{ session } } = await supabase.auth.getSession();
+  document.getElementById('status').textContent = session ? "Already logged in" : "Not logged in";
+})();
+
+document.getElementById('su').onclick = async () => {
+  const email = emailEl.value.trim(), password = passEl.value;
+  const { data, error } = await supabase.auth.signUp({ email, password, options:{ emailRedirectTo: `${location.origin}/dashboard.html` }});
+  out(error || data);
+};
+document.getElementById('li').onclick = async () => {
+  const email = emailEl.value.trim(), password = passEl.value;
+  const { data, error } = await supabase.auth.signInWithPassword({ email, password });
+  out(error || data);
+};
+document.getElementById('me').onclick = async () => {
+  const { data:{ session } } = await supabase.auth.getSession();
+  out(session || "No session");
+};
+document.getElementById('lo').onclick = async () => {
+  const { error } = await supabase.auth.signOut(); out(error || "Logged out");
+};
+const emailEl = document.getElementById('email'), passEl = document.getElementById('pass');
+</script>
+</body></html>
