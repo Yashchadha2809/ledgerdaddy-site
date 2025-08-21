@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+ <!DOCTYPE html>
 <html lang="en" class="scroll-smooth">
 <head>
   <meta charset="UTF-8" />
@@ -12,12 +12,12 @@
       theme: {
         extend: {
           colors:{
-            brandPrimary:"#111827",
-            brandAccent:"#2563EB",
-            brandSoft:"#EFF6FF",
-            brandBorder:"#E5E7EB",
-            brandMuted:"#6B7280",
-            brandBg:"#F9FAFB"
+            brandPrimary:"#111827",   // headings / strong text
+            brandAccent:"#2563EB",    // interactive blue
+            brandSoft:"#EFF6FF",      // soft blue bg
+            brandBorder:"#E5E7EB",    // light border
+            brandMuted:"#6B7280",     // muted text
+            brandBg:"#F9FAFB"         // app background
           },
           boxShadow:{ lift:"0 14px 34px rgba(17,24,39,.06)" },
           backgroundImage:{
@@ -32,31 +32,16 @@
     .card:hover{transform:translateY(-2px); box-shadow:0 14px 34px rgba(17,24,39,.10)}
     .hero-img{background:url('https://images.unsplash.com/photo-1586521995568-39ef16c6934d?q=80&w=1920&auto=format&fit=crop') center/cover no-repeat;}
   </style>
-
-  <!-- Supabase JS v2 -->
-  <script src="https://unpkg.com/@supabase/supabase-js@2"></script>
-  <script>
-    // 🔧 Replace these with your Supabase project values
-    const PROJECT_URL = "https://nkvrhaxpoehqcgoamjhq.supabase.co"
-    const ANON_KEY   = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im5rdnJoYXhwb2VocWNnb2FtamhxIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTU3OTc5MDcsImV4cCI6MjA3MTM3MzkwN30.I6azwaIiEsQ_EjFRXtIZFTvpcc_g6NccsC3pJdWQPks"
-
-    // Create a Supabase client (sessions persist in localStorage)
-    const supabase = window.supabase.createClient(PROJECT_URL, ANON_KEY, {
-      auth: { persistSession: true, storage: window.localStorage }
-    });
-  </script>
 </head>
 <body class="bg-brandBg text-brandPrimary">
 
-  <!-- If already logged in, go straight to dashboard (Supabase session check) -->
+  <!-- If already logged in, go straight to dashboard -->
   <script>
-    (async () => {
+    (function(){
       try {
-        const { data: { session } } = await supabase.auth.getSession();
-        if (session && session.user) {
-          window.location.href = 'dashboard.html';
-        }
-      } catch(e) { /* ignore */ }
+        const u = JSON.parse(localStorage.getItem('chadaddy_user')||'null');
+        if(u && u.email){ window.location.href = 'dashboard.html'; }
+      } catch(e){}
     })();
   </script>
 
@@ -86,7 +71,8 @@
   </header>
 
   <!-- Hero -->
-  <br><br>
+  <br>
+  <br>
   <section class="pt-24 md:pt-28">
     <div class="hero-img">
       <div class="backdrop-brightness-90 bg-gradient-to-r from-brandPrimary/70 to-brandAccent/60">
@@ -97,8 +83,9 @@
       </div>
     </div>
   </section>
-  <br><br><br>
-
+<br>
+  <br>
+  <br>
   <!-- Login card -->
   <main class="max-w-3xl mx-auto px-4 -mt-10">
     <div class="bg-white border border-brandBorder rounded-2xl shadow p-6 md:p-8">
@@ -119,10 +106,10 @@
             <input id="remember" type="checkbox" class="h-4 w-4 border border-brandBorder rounded">
             <span>Remember me</span>
           </label>
-          <a id="forgot" href="#" class="text-brandAccent hover:underline">Forgot password?</a>
+          <a href="#" class="text-brandAccent hover:underline">Forgot password?</a>
         </div>
 
-        <button id="submitBtn" class="bg-brandAccent text-white px-4 py-2 rounded-lg text-base font-semibold" type="submit">
+        <button class="bg-brandAccent text-white px-4 py-2 rounded-lg text-base font-semibold" type="submit">
           Log in
         </button>
 
@@ -130,9 +117,6 @@
           Don’t have an account?
           <a href="personal-sign-up.html" class="text-brandAccent hover:underline">Create one</a>.
         </p>
-
-        <!-- Inline error/success message -->
-        <p id="msg" class="text-sm mt-1"></p>
       </form>
 
       <div class="mt-6 text-sm">
@@ -149,42 +133,34 @@
   <script>
     document.getElementById('year').textContent = new Date().getFullYear();
 
-    const msgEl = document.getElementById('msg');
-    const submitBtn = document.getElementById('submitBtn');
-
-    function setMsg(text, ok=false){
-      msgEl.textContent = text || '';
-      msgEl.className = "text-sm mt-1 " + (ok ? "text-green-600" : "text-red-600");
+    // Helper to fake a user name from the email (before your real backend)
+    function nameFromEmail(email){
+      const base = (email || '').split('@')[0] || 'User';
+      return base.replace(/[^a-zA-Z0-9 ]/g,' ').trim().replace(/\s+/g,' ');
     }
 
-    // Handle Supabase login
-    document.getElementById('loginForm').addEventListener('submit', async (e)=>{
+    // Handle login and redirect to dashboard
+    document.getElementById('loginForm').addEventListener('submit', function(e){
       e.preventDefault();
-      setMsg("");
-      submitBtn.disabled = true; submitBtn.textContent = "Logging in...";
 
       const email = document.getElementById('email').value.trim();
-      const password = document.getElementById('password').value;
+      const password = document.getElementById('password').value; // not used in demo
+      const remember = document.getElementById('remember').checked;
 
       if(!email || !password){
-        setMsg('Please enter email and password');
-        submitBtn.disabled = false; submitBtn.textContent = "Log in";
+        alert('Please enter email and password');
         return;
       }
 
-      // Optional: adjust session persistence using the checkbox
-      const remember = document.getElementById('remember').checked;
-      // Supabase uses localStorage by default. If you wanted "session only", you could
-      // re-create the client with storage: sessionStorage. We'll keep default (remembered).
+      // Demo session object — same key the dashboard expects
+      const user = {
+        email,
+        name: nameFromEmail(email),
+        remember,               // you can use this later for cookie/session length
+        ts: Date.now()
+      };
 
-      const { error } = await supabase.auth.signInWithPassword({ email, password });
-
-      submitBtn.disabled = false; submitBtn.textContent = "Log in";
-
-      if (error) {
-        setMsg(error.message || "Login failed");
-        return;
-      }
+      localStorage.setItem('chadaddy_user', JSON.stringify(user));
 
       // Tiny toast
       const t=document.createElement('div');
@@ -192,20 +168,8 @@
       t.className='fixed bottom-6 right-6 bg-brandPrimary text-white text-sm px-3 py-2 rounded-lg shadow';
       document.body.appendChild(t);
 
+      // Redirect to dashboard
       setTimeout(()=>{ t.remove(); window.location.href = 'dashboard.html'; }, 600);
-    });
-
-    // Forgot password → send reset email
-    document.getElementById('forgot').addEventListener('click', async (e)=>{
-      e.preventDefault();
-      const email = document.getElementById('email').value.trim() || prompt('Enter your account email');
-      if(!email) return;
-
-      const { error } = await supabase.auth.resetPasswordForEmail(email, {
-        redirectTo: `${location.origin}/log-in.html` // after clicking email link, they come back here
-      });
-      if (error) setMsg(error.message);
-      else setMsg('Password reset mail sent. Check your inbox.', true);
     });
   </script>
 </body>
