@@ -1,11 +1,9 @@
 <!DOCTYPE html>
-<html lang="en" class="scroll-smooth">
+<html lang="en" class="h-full">
 <head>
-  <meta charset="UTF-8" />
+  <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Sign up – Chadaddy</title>
-  <meta name="theme-color" content="#2563EB" />
-  <link rel="preconnect" href="https://images.unsplash.com" />
+  <title>Resend Verification – Demo</title>
   <script src="https://cdn.tailwindcss.com"></script>
   <script>
     tailwind.config = {
@@ -14,282 +12,170 @@
           colors:{
             brandPrimary:"#111827",
             brandAccent:"#2563EB",
-            brandSoft:"#EFF6FF",
-            brandBorder:"#E5E7EB",
             brandMuted:"#6B7280",
+            brandBorder:"#E5E7EB",
             brandBg:"#F9FAFB"
-          },
-          boxShadow:{ lift:"0 10px 25px rgba(17,24,39,.10)" }
+          }
         }
       }
     }
   </script>
-  <style>
-    .card{transition:transform .12s ease, box-shadow .2s ease}
-    .card:hover{transform:translateY(-2px); box-shadow:0 14px 34px rgba(17,24,39,.12)}
-    .hero-img{background:url('https://images.unsplash.com/photo-1586521995568-39ef16c6934d?q=80&w=1920&auto=format&fit=crop') center/cover no-repeat;}
-  </style>
 </head>
-<body class="bg-brandBg text-brandPrimary">
+<body class="min-h-full bg-brandBg text-brandPrimary">
+  <main class="max-w-md mx-auto px-4 py-12">
+    <h1 class="text-2xl font-bold mb-4">Resend email verification</h1>
+    <p class="text-sm text-brandMuted mb-6">
+      Enter your email and click “Resend verification link”. You can resend once every 60 seconds.
+    </p>
 
-  <!-- Topbar -->
-  <header class="fixed top-0 inset-x-0 z-50 border-b border-brandBorder bg-white/90 backdrop-blur">
-    <div class="max-w-7xl mx-auto px-4 py-3 flex items-center justify-between">
-      <a href="/" class="flex items-center gap-2" aria-label="Home">
-        <span class="grid h-9 w-9 place-items-center rounded-xl bg-gradient-to-tr from-brandSoft to-white text-brandPrimary font-extrabold shadow">◆</span>
-        <span class="text-xl font-bold">Chadaddy</span>
-        <span class="ml-2 hidden sm:inline-flex text-[11px] px-2 py-0.5 rounded-full border border-brandBorder text-brandMuted">AI Customs</span>
-      </a>
-      <nav class="hidden md:flex items-center gap-6 text-sm font-medium" aria-label="Main">
-        <a href="/#marketplace" class="hover:text-brandAccent">Marketplace</a>
-        <a href="/#calculator" class="hover:text-brandAccent">Calculator</a>
-        <a href="/#hsfinder" class="hover:text-brandAccent">HS Finder</a>
-        <a href="/#chat" class="hover:text-brandAccent">Chat</a>
-        <a href="/#news" class="hover:text-brandAccent">News</a>
-        <a href="/#learn" class="hover:text-brandAccent">Academy</a>
-        <a href="/#pricing" class="hover:text-brandAccent">Pricing</a>
-      </nav>
-      <div class="flex items-center gap-3">
-        <a href="/log_in.html" class="text-brandAccent hover:underline">Sign in</a>
-        <a href="/personal_sign_up.html" class="bg-brandAccent text-white px-4 py-2 rounded-lg hover:opacity-95">Sign up</a>
-      </div>
-    </div>
-  </header>
+    <label for="email" class="block text-sm font-medium mb-1">Email</label>
+    <input id="email" type="email" required
+           class="w-full rounded-lg border border-brandBorder px-3 py-2 mb-4 outline-none focus:ring-2 focus:ring-brandAccent"
+           placeholder="you@example.com" />
 
-  <br><br><br>
+    <button id="resendBtn"
+            class="w-full rounded-lg bg-brandAccent text-white px-4 py-2 font-medium disabled:opacity-50 disabled:cursor-not-allowed">
+      Resend verification link
+    </button>
 
-  <!-- Hero -->
-  <section class="pt-28 md:pt-32">
-    <div class="hero-img">
-      <div class="backdrop-brightness-50 bg-gradient-to-r from-brandPrimary/50 to-brandAccent/50">
-        <div class="max-w-3xl mx-auto px-4 py-12 text-white text-center">
-          <h1 class="text-4xl md:text-5xl font-extrabold leading-tight">Create your free account</h1>
-          <p class="mt-3 text-white/95">Unlock calculator results, HS suggestions, and chat history.</p>
-        </div>
-      </div>
-    </div>
-  </section>
+    <p id="resendMsg" class="mt-3 text-sm"></p>
 
-  <!-- Card -->
-  <main class="max-w-2xl mx-auto px-4 -mt-12">
-    <div class="bg-white border border-brandBorder rounded-2xl shadow p-6 md:p-8">
-      <p id="status" class="text-sm text-brandMuted mb-3"></p>
-
-      <form id="signupForm" class="grid gap-5" autocomplete="on">
-        <div class="grid md:grid-cols-2 gap-5">
-          <label class="grid gap-2 text-sm">
-            <span class="font-medium">Full name</span>
-            <input name="name" class="border border-brandBorder rounded-lg px-3 py-2 w-full" placeholder="Your name" required>
-          </label>
-          <label class="grid gap-2 text-sm">
-            <span class="font-medium">Email</span>
-            <input name="email" type="email" class="border border-brandBorder rounded-lg px-3 py-2 w-full" placeholder="you@example.com" required>
-          </label>
-        </div>
-
-        <div class="grid md:grid-cols-2 gap-5">
-          <label class="grid gap-2 text-sm">
-            <span class="font-medium">Password</span>
-            <input name="password" type="password" class="border border-brandBorder rounded-lg px-3 py-2 w-full" placeholder="••••••••" required>
-          </label>
-          <label class="grid gap-2 text-sm">
-            <span class="font-medium">Phone / WhatsApp (optional)</span>
-            <input name="phone" class="border border-brandBorder rounded-lg px-3 py-2 w-full" placeholder="+91 9xxxx xxxxx">
-          </label>
-        </div>
-
-        <div class="grid md:grid-cols-2 gap-5">
-          <label class="grid gap-2 text-sm">
-            <span class="font-medium">Role</span>
-            <select name="role" class="border border-brandBorder rounded-lg px-3 py-2 w-full">
-              <option value="personal">Personal</option>
-              <option value="business">Business</option>
-              <option value="student">Student</option>
-            </select>
-          </label>
-        </div>
-
-        <!-- Honeypot -->
-        <input type="text" name="company" class="hidden" tabindex="-1" autocomplete="off">
-
-        <button class="bg-brandAccent text-white px-5 py-2.5 rounded-lg text-base font-semibold" type="submit">
-          Create account
-        </button>
-        <p class="text-xs text-brandMuted">Your account is created in Supabase (secure online DB).</p>
-      </form>
-
-      <div class="mt-6 text-sm text-center">
-        <a href="/" class="text-brandAccent">← Back to home</a>
-      </div>
+    <div id="toast"
+         class="hidden mt-4 rounded-lg border border-brandBorder bg-white px-4 py-3 text-sm shadow">
     </div>
   </main>
 
-  <footer class="text-center text-xs text-brandMuted mt-10 mb-8">
-    © <span id="year"></span> Chadaddy
-  </footer>
-
-  <!-- ✅ Verify Email Modal -->
-  <div id="verifyModal" class="hidden fixed inset-0 z-[999] flex items-center justify-center bg-black/50 p-4">
-    <div class="w-full max-w-md rounded-2xl bg-white shadow-xl border border-brandBorder">
-      <div class="p-5 border-b border-brandBorder">
-        <h3 class="text-lg font-bold">Check your email</h3>
-        <p class="text-sm text-brandMuted mt-1">
-          We sent a verification link to <span id="verifyEmail" class="font-medium"></span>.
-          Click the link to finish creating your account.
-        </p>
-      </div>
-      <div class="p-5 grid gap-3">
-        <button id="btn-open-gmail" class="w-full px-4 py-2 rounded-lg border border-brandBorder text-sm hover:bg-brandSoft">
-          Open Gmail
-        </button>
-        <button id="btn-resend" class="w-full px-4 py-2 rounded-lg bg-brandAccent text-white text-sm font-semibold hover:opacity-95">
-          Resend verification email
-        </button>
-        <button id="btn-close-verify" class="w-full px-4 py-2 rounded-lg border border-brandBorder text-sm hover:bg-brandSoft">
-          I’ll verify later
-        </button>
-      </div>
-    </div>
-  </div>
-
-  <!-- Supabase wiring -->
   <script type="module">
+    // ===== 1) Init Supabase client =====
     import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
-
-    // ✅ Your project values
     const SUPABASE_URL = "https://nkvrhaxpoehqcgoamjhq.supabase.co";
     const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im5rdnJoYXhwb2VocWNnb2FtamhxIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTU3OTc5MDcsImV4cCI6MjA3MTM3MzkwN30.I6azwaIiEsQ_EjFRXtIZFTvpcc_g6NccsC3pJdWQPks";
+    const supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
-    const supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY, {
-      auth: { persistSession: true, autoRefreshToken: true, detectSessionInUrl: true }
-    });
+    // ===== 2) Elements =====
+    const emailInput = document.getElementById('email');
+    const btn        = document.getElementById('resendBtn');
+    const msg        = document.getElementById('resendMsg');
+    const toast      = document.getElementById('toast');
 
-    const statusEl = document.getElementById('status');
-    const toast = (msg) => {
-      statusEl.textContent = msg;
-      const t = document.createElement('div');
-      t.textContent = msg;
-      t.className = 'fixed bottom-6 right-6 bg-black text-white text-sm px-3 py-2 rounded-lg shadow';
-      document.body.appendChild(t);
-      setTimeout(()=> t.remove(), 1800);
-    };
+    // ===== 3) Cooldown helpers (per-email) =====
+    const COOLDOWN_SECONDS = 60;
 
-    document.getElementById('year').textContent = new Date().getFullYear();
+    const key = (email) => `resendCooldown:${(email || '').trim().toLowerCase()}`;
 
-    // Modal helpers
-    const modal = document.getElementById("verifyModal");
-    const verifyEmailEl = document.getElementById("verifyEmail");
-    const btnResend = document.getElementById("btn-resend");
-    const btnClose = document.getElementById("btn-close-verify");
-    const btnGmail = document.getElementById("btn-open-gmail");
-    let pendingEmail = "";
+    function getRemainingMs(email) {
+      const until = Number(localStorage.getItem(key(email))) || 0;
+      return Math.max(0, until - Date.now());
+    }
 
-    const showVerifyModal = (email) => {
-      pendingEmail = email;
-      if (verifyEmailEl) verifyEmailEl.textContent = email;
-      modal?.classList.remove("hidden");
-    };
-    const hideVerifyModal = () => modal?.classList.add("hidden");
+    function startCooldown(email, seconds = COOLDOWN_SECONDS) {
+      localStorage.setItem(key(email), String(Date.now() + seconds * 1000));
+    }
 
-    // Optional: quick link to Gmail
-    btnGmail?.addEventListener("click", () => {
-      window.open("https://mail.google.com/mail/u/0/#inbox", "_blank", "noopener,noreferrer");
-    });
-    btnClose?.addEventListener("click", hideVerifyModal);
-
-    // Resend verification email
-    btnResend?.addEventListener("click", async () => {
-      if (!pendingEmail) return toast("No email to resend to.");
-      btnResend.disabled = true;
-      const old = btnResend.textContent;
-      btnResend.textContent = "Resending…";
-      try {
-        const { error } = await supabase.auth.resend({
-          type: "signup",
-          email: pendingEmail,
-          options: { emailRedirectTo: `${location.origin}/auth/callback.html` }
-        });
-        if (error) throw error;
-        toast("Verification email sent again. Check your inbox/spam.");
-      } catch (err) {
-        console.error(err);
-        toast(err.message || "Could not resend email.");
-      } finally {
-        btnResend.textContent = old;
-        btnResend.disabled = false;
+    let timerId = null;
+    function runCountdown(email) {
+      clearInterval(timerId);
+      function tick() {
+        const remaining = getRemainingMs(email);
+        if (remaining <= 0) {
+          btn.disabled = false;
+          msg.textContent = '';
+          msg.className = "mt-3 text-sm";
+          clearInterval(timerId);
+          return;
+        }
+        btn.disabled = true;
+        const s = Math.ceil(remaining / 1000);
+        msg.textContent = `Please wait ${s}s before requesting again.`;
+        msg.className = "mt-3 text-sm text-brandMuted";
       }
+      tick();
+      timerId = setInterval(tick, 500);
+    }
+
+    // Update countdown when the email field changes (so it respects per-email cooldown)
+    emailInput.addEventListener('input', () => {
+      const email = emailInput.value.trim().toLowerCase();
+      runCountdown(email);
     });
 
-    // SIGNUP
-    document.getElementById('signupForm').addEventListener('submit', async (e) => {
-      e.preventDefault();
-      const fd = new FormData(e.currentTarget);
+    // ===== 4) Toast helper =====
+    function showToast(text, type = 'info') {
+      toast.textContent = text;
+      toast.classList.remove('hidden');
+      toast.classList.remove('border-green-200', 'text-green-800');
+      toast.classList.remove('border-red-200', 'text-red-800');
+      toast.classList.remove('border-brandBorder', 'text-brandPrimary');
 
-      if ((fd.get('company') || '').trim() !== '') return; // honeypot
+      if (type === 'success') {
+        toast.classList.add('border-green-200', 'text-green-800');
+      } else if (type === 'error') {
+        toast.classList.add('border-red-200', 'text-red-800');
+      } else {
+        toast.classList.add('border-brandBorder', 'text-brandPrimary');
+      }
 
-      const full_name = (fd.get('name') || '').trim();
-      const email = (fd.get('email') || '').trim();
-      const password = (fd.get('password') || '').trim();
-      const phone = (fd.get('phone') || '').trim();
-      const role = (fd.get('role') || 'personal');
+      // Auto hide after 6s
+      setTimeout(() => toast.classList.add('hidden'), 6000);
+    }
 
-      if (!full_name || !email || !password) {
-        toast('Please fill name, email, and password');
+    // ===== 5) Resend handler =====
+    btn.addEventListener('click', async () => {
+      const email = emailInput.value.trim().toLowerCase();
+      if (!email) {
+        showToast('Please enter your email address.', 'error');
+        emailInput.focus();
         return;
       }
 
+      // Enforce cooldown
+      if (getRemainingMs(email) > 0) {
+        runCountdown(email);
+        showToast('Please wait for the cooldown to finish before resending.', 'error');
+        return;
+      }
+
+      btn.disabled = true;
+      btn.textContent = 'Sending...';
+      msg.textContent = '';
+
       try {
-        // Disable button to prevent double submit
-        const submitBtn = e.currentTarget.querySelector('button[type="submit"]');
-        submitBtn.disabled = true;
-
-        toast('Creating your account…');
-
-        // Sign up (Supabase may or may not return a session depending on email confirmation setting)
-        const { data, error } = await supabase.auth.signUp({
-          email,
-          password,
-          options: {
-            data: { full_name, phone, role },
-            emailRedirectTo: `${location.origin}/auth/callback.html`
-          }
+        // Supabase v2: resend verification for signups
+        // Docs: supabase.auth.resend({ type: 'signup', email })
+        const { data, error } = await supabase.auth.resend({
+          type: 'signup',
+          email
         });
 
         if (error) {
-          // Already-confirmed account exists
-          if (String(error.message).toLowerCase().includes("already") &&
-              String(error.message).toLowerCase().includes("registered")) {
-            toast("This email is already registered. Please log in instead.");
-            submitBtn.disabled = false;
-            return;
-          }
-          toast(error.message || "Signup failed.");
-          submitBtn.disabled = false;
+          // Common helpful hints
+          const hint =
+            error.message?.toLowerCase().includes('rate limit') ? ' (rate limited)' :
+            error.message?.toLowerCase().includes('not found')   ? ' (email not found—sign up first?)' :
+            '';
+
+          showToast(`Failed to resend: ${error.message}${hint}`, 'error');
+          btn.disabled = false;
+          btn.textContent = 'Resend verification link';
           return;
         }
 
-        // If no user object or no session -> email confirmation is ON / pending user
-        const { data: { session } } = await supabase.auth.getSession();
-        if (!data.user || !session) {
-          showVerifyModal(email);
-          toast("Check your email to confirm your account.");
-          submitBtn.disabled = false; // allow resend/use page
-          return;
-        }
-
-        // Session exists (email confirmation OFF) — create profile and redirect
-        const user = session.user;
-        const { error: upErr } = await supabase.from('profiles').upsert({
-          user_id: user.id, full_name
-        });
-        if (upErr) console.warn("profiles.upsert:", upErr);
-
-        toast('Account created! Redirecting…');
-        setTimeout(()=> { window.location.href = "/"; }, 900);
-      } catch (err) {
-        console.error(err);
-        toast(err.message || 'Signup failed. Please try again.');
+        // Success — start cooldown
+        startCooldown(email, COOLDOWN_SECONDS);
+        runCountdown(email);
+        showToast('Verification email sent. Please check your inbox.', 'success');
+      } catch (e) {
+        showToast(`Unexpected error: ${e?.message || e}`, 'error');
+        btn.disabled = false;
+      } finally {
+        btn.textContent = 'Resend verification link';
       }
+    });
+
+    // ===== 6) On load: if user already typed an email (autofill), respect cooldown =====
+    window.addEventListener('DOMContentLoaded', () => {
+      const email = emailInput.value.trim().toLowerCase();
+      if (email) runCountdown(email);
     });
   </script>
 </body>
