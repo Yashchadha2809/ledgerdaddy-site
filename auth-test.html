@@ -14,8 +14,8 @@
 <button id="lo">Log out</button>
 <pre id="out" style="white-space:pre-wrap;background:#f6f6f6;padding:8px;border:1px solid #ddd"></pre>
 <script>
-const PROJECT_URL = "https://nkvrhaxpoehqcgoamjhq.supabase.co";
-const ANON_KEY   = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im5rdnJoYXhwb2VocWNnb2FtamhxIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTU3OTc5MDcsImV4cCI6MjA3MTM3MzkwN30.I6azwaIiEsQ_EjFRXtIZFTvpcc_g6NccsC3pJdWQPks";
+const PROJECT_URL = https://nkvrhaxpoehqcgoamjhq.supabase.co;
+const ANON_KEY   = eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im5rdnJoYXhwb2VocWNnb2FtamhxIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTU3OTc5MDcsImV4cCI6MjA3MTM3MzkwN30.I6azwaIiEsQ_EjFRXtIZFTvpcc_g6NccsC3pJdWQPks;
 const supabase = window.supabase.createClient(PROJECT_URL, ANON_KEY);
 
 const out = msg => document.getElementById('out').textContent = typeof msg === 'string' ? msg : JSON.stringify(msg,null,2);
