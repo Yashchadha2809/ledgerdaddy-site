@@ -12,12 +12,12 @@
       theme: {
         extend: {
           colors:{
-            brandPrimary:"#111827",   // headings / strong text
-            brandAccent:"#2563EB",    // interactive blue
-            brandSoft:"#EFF6FF",      // soft blue bg
-            brandBorder:"#E5E7EB",    // light border
-            brandMuted:"#6B7280",     // muted text
-            brandBg:"#F9FAFB"         // app background
+            brandPrimary:"#111827",
+            brandAccent:"#2563EB",
+            brandSoft:"#EFF6FF",
+            brandBorder:"#E5E7EB",
+            brandMuted:"#6B7280",
+            brandBg:"#F9FAFB"
           },
           boxShadow:{ lift:"0 14px 34px rgba(17,24,39,.06)" },
           backgroundImage:{
@@ -120,11 +120,30 @@
     © <span id="year"></span> Chadaddy
   </footer>
 
+  <!-- 🔐 Reset Password Modal -->
+  <div id="resetModal" class="hidden fixed inset-0 z-[1000] flex items-center justify-center bg-black/50 p-4">
+    <div class="w-full max-w-md rounded-2xl bg-white shadow-xl border border-brandBorder">
+      <div class="p-5 border-b border-brandBorder">
+        <h3 class="text-lg font-bold">Set a new password</h3>
+        <p class="text-sm text-brandMuted mt-1">Enter your new password below.</p>
+      </div>
+      <form id="resetForm" class="p-5 grid gap-3">
+        <input id="newPass" type="password" class="border border-brandBorder rounded-lg px-3 py-2 w-full" placeholder="New password" required minlength="6">
+        <input id="newPass2" type="password" class="border border-brandBorder rounded-lg px-3 py-2 w-full" placeholder="Confirm new password" required minlength="6">
+        <div class="flex gap-2 mt-2">
+          <button id="btnReset" type="submit" class="flex-1 px-4 py-2 rounded-lg bg-brandAccent text-white font-semibold">Update password</button>
+          <button type="button" id="btnCancelReset" class="px-4 py-2 rounded-lg border border-brandBorder">Cancel</button>
+        </div>
+        <p id="resetStatus" class="text-xs text-brandMuted"></p>
+      </form>
+    </div>
+  </div>
+
   <!-- Supabase auth wiring -->
   <script type="module">
     import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
 
-    // 🔧 Replace with your project values
+    // ✅ Your project values
     const SUPABASE_URL = "https://nkvrhaxpoehqcgoamjhq.supabase.co";
     const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im5rdnJoYXhwb2VocWNnb2FtamhxIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTU3OTc5MDcsImV4cCI6MjA3MTM3MzkwN30.I6azwaIiEsQ_EjFRXtIZFTvpcc_g6NccsC3pJdWQPks";
 
@@ -136,15 +155,91 @@
     const statusEl = $("#status");
     const toast = (msg) => { statusEl.textContent = msg; };
 
-    // Show year
     $("#year").textContent = new Date().getFullYear();
 
-    // If already logged in, go straight to dashboard
+    // ---------- Forgot Password (send email) ----------
+    $("#forgot").addEventListener("click", async (e) => {
+      e.preventDefault();
+      const email = $("#email").value.trim();
+      if (!email) return toast("Enter your email first, then click Forgot password.");
+
+      // Redirect back to THIS page so we can show the reset modal when the link is opened
+      const redirectTo = `${location.origin}/log-in.html`;
+      try {
+        const { error } = await supabase.auth.resetPasswordForEmail(email, { redirectTo });
+        if (error) throw error;
+        toast("Password reset email sent. Please check your inbox.");
+      } catch (err) {
+        console.error("resetPasswordForEmail error:", err);
+        toast(err?.message || "Could not send reset email.");
+      }
+    });
+
+    // ---------- Listen for recovery event & show reset modal ----------
+    const resetModal = $("#resetModal");
+    const resetForm = $("#resetForm");
+    const resetStatus = $("#resetStatus");
+    const btnCancelReset = $("#btnCancelReset");
+
+    const showReset = () => resetModal.classList.remove("hidden");
+    const hideReset = () => resetModal.classList.add("hidden");
+
+    // Supabase fires PASSWORD_RECOVERY when the reset link is opened
+    supabase.auth.onAuthStateChange((event) => {
+      if (event === "PASSWORD_RECOVERY") {
+        showReset();
+      }
+    });
+
+    // Fallback: if the URL hash has type=recovery (some browsers), show modal
+    const hash = location.hash || "";
+    if (hash.includes("type=recovery")) {
+      showReset();
+    }
+
+    btnCancelReset.addEventListener("click", hideReset);
+
+    // ---------- Handle setting the new password ----------
+    resetForm.addEventListener("submit", async (e) => {
+      e.preventDefault();
+      resetStatus.textContent = "";
+
+      const p1 = $("#newPass").value.trim();
+      const p2 = $("#newPass2").value.trim();
+      if (!p1 || p1.length < 6) return resetStatus.textContent = "Password must be at least 6 characters.";
+      if (p1 !== p2) return resetStatus.textContent = "Passwords do not match.";
+
+      $("#btnReset").disabled = true;
+      $("#btnReset").textContent = "Updating…";
+
+      try {
+        // This updates the password for the user associated with the recovery token in the URL
+        const { data, error } = await supabase.auth.updateUser({ password: p1 });
+        if (error) throw error;
+
+        resetStatus.textContent = "✅ Password updated. Please sign in.";
+        // Optional: sign out any existing session just in case
+        await supabase.auth.signOut();
+        setTimeout(() => {
+          hideReset();
+          // Focus back to login form
+          $("#password").focus();
+          toast("Password updated. Please sign in.");
+        }, 600);
+      } catch (err) {
+        console.error("updateUser error:", err);
+        resetStatus.textContent = err?.message || "Could not update password.";
+      } finally {
+        $("#btnReset").disabled = false;
+        $("#btnReset").textContent = "Update password";
+      }
+    });
+
+    // ---------- If already logged in, go straight to dashboard ----------
     (async () => {
       const { data: { session }, error } = await supabase.auth.getSession();
       if (error) console.warn("getSession error:", error.message);
       if (session?.user) {
-        // Optional: store a lightweight mirror for your existing dashboard logic
         const user = session.user;
         const name = (user.user_metadata?.full_name) || (user.email?.split("@")[0]) || "User";
         localStorage.setItem("chadaddy_user", JSON.stringify({ email: user.email, name, ts: Date.now() }));
@@ -152,25 +247,13 @@
       }
     })();
 
-    // Forgot password handler — sends reset email
-    $("#forgot").addEventListener("click", async (e) => {
-      e.preventDefault();
-      const email = $("#email").value.trim();
-      if (!email) return toast("Enter your email first, then click Forgot password.");
-      const { error } = await supabase.auth.resetPasswordForEmail(email, {
-        redirectTo: `${location.origin}/auth/callback.html`
-      });
-      if (error) return toast(error.message);
-      toast("Password reset email sent. Please check your inbox.");
-    });
-
-    // Login handler
+    // ---------- Normal login ----------
     $("#loginForm").addEventListener("submit", async (e) => {
       e.preventDefault();
       const fd = new FormData(e.currentTarget);
       const email = (fd.get("email") || "").trim();
       const password = (fd.get("password") || "").trim();
-      const remember = $("#remember").checked; // Supabase uses persistent sessions by default
+      const remember = $("#remember").checked;
 
       if (!email || !password) return toast("Please enter email and password.");
 
@@ -179,12 +262,10 @@
         const { error } = await supabase.auth.signInWithPassword({ email, password });
         if (error) throw error;
 
-        // Optionally ensure a profile row exists (if you removed the trigger)
         const { data: { user } } = await supabase.auth.getUser();
         if (user) {
           const full_name = user.user_metadata?.full_name || null;
           await supabase.from("profiles").upsert({ user_id: user.id, full_name });
-          // Mirror to your legacy localStorage (for any existing code that reads it)
           const name = full_name || (user.email?.split("@")[0]) || "User";
           localStorage.setItem("chadaddy_user", JSON.stringify({ email: user.email, name, remember, ts: Date.now() }));
         }
