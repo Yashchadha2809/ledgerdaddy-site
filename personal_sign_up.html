@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+this is my sign up page code and make chnage <!DOCTYPE html>
 <html lang="en" class="scroll-smooth">
 <head>
   <meta charset="UTF-8" />
@@ -12,12 +12,12 @@
       theme: {
         extend: {
           colors:{
-            brandPrimary:"#111827",
-            brandAccent:"#2563EB",
-            brandSoft:"#EFF6FF",
-            brandBorder:"#E5E7EB",
-            brandMuted:"#6B7280",
-            brandBg:"#F9FAFB"
+            brandPrimary:"#111827",   /* headings / strong text */
+            brandAccent:"#2563EB",    /* primary action */
+            brandSoft:"#EFF6FF",      /* soft bg accents */
+            brandBorder:"#E5E7EB",    /* light borders */
+            brandMuted:"#6B7280",     /* secondary text */
+            brandBg:"#F9FAFB"         /* app background */
           },
           boxShadow:{ lift:"0 10px 25px rgba(17,24,39,.10)" }
         }
@@ -29,23 +29,6 @@
     .card:hover{transform:translateY(-2px); box-shadow:0 14px 34px rgba(17,24,39,.12)}
     .hero-img{background:url('https://images.unsplash.com/photo-1586521995568-39ef16c6934d?q=80&w=1920&auto=format&fit=crop') center/cover no-repeat;}
   </style>
-
-  <!-- Supabase JS v2 -->
-  <script src="https://unpkg.com/@supabase/supabase-js@2"></script>
-  <script>
-    // 🔧 Supabase config (VALUES MUST BE IN QUOTES)
-    const PROJECT_URL = "https://nkvrhaxpoehqcgoamjhq.supabase.co";
-    const ANON_KEY   = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im5rdnJoYXhwb2VocWNnb2FtamhxIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTU3OTc5MDcsImV4cCI6MjA3MTM3MzkwN30.I6azwaIiEsQ_EjFRXtIZFTvpcc_g6NccsC3pJdWQPks";
-
-    // Create client (sessions persist in localStorage)
-    const supabase = window.supabase.createClient(PROJECT_URL, ANON_KEY, {
-      auth: { persistSession: true, storage: window.localStorage }
-    });
-
-    // Optional: quick console sanity check
-    console.log("Supabase URL:", PROJECT_URL);
-    console.log("Anon key starts with:", ANON_KEY.slice(0, 10));
-  </script>
 </head>
 <body class="bg-brandBg text-brandPrimary">
 
@@ -66,12 +49,12 @@
         <a href="/#learn" class="hover:text-brandAccent">Academy</a>
         <a href="/#pricing" class="hover:text-brandAccent">Pricing</a>
       </nav>
-      <a href="/personal-sign-up.html" class="bg-brandAccent text-white px-4 py-2 rounded-lg hover:opacity-95">Sign up</a>
+      <a href="/personal-sign-up" class="bg-brandAccent text-white px-4 py-2 rounded-lg hover:opacity-95">Sign up</a>
     </div>
   </header>
-
-  <br><br><br>
-
+<br>
+  <br>
+  <br>
   <!-- Hero -->
   <section class="pt-28 md:pt-32">
     <div class="hero-img">
@@ -91,22 +74,22 @@
         <div class="grid md:grid-cols-2 gap-5">
           <label class="grid gap-2 text-sm">
             <span class="font-medium">Full name</span>
-            <input name="name" id="name" class="border border-brandBorder rounded-lg px-3 py-2 w-full" placeholder="Your name" required>
+            <input name="name" class="border border-brandBorder rounded-lg px-3 py-2 w-full" placeholder="Your name" required>
           </label>
           <label class="grid gap-2 text-sm">
             <span class="font-medium">Email</span>
-            <input name="email" id="email" type="email" class="border border-brandBorder rounded-lg px-3 py-2 w-full" placeholder="you@example.com" required>
+            <input name="email" type="email" class="border border-brandBorder rounded-lg px-3 py-2 w-full" placeholder="you@example.com" required>
           </label>
         </div>
 
         <div class="grid md:grid-cols-2 gap-5">
           <label class="grid gap-2 text-sm">
             <span class="font-medium">Phone / WhatsApp (optional)</span>
-            <input name="phone" id="phone" class="border border-brandBorder rounded-lg px-3 py-2 w-full" placeholder="+91 9xxxx xxxxx">
+            <input name="phone" class="border border-brandBorder rounded-lg px-3 py-2 w-full" placeholder="+91 9xxxx xxxxx">
           </label>
           <label class="grid gap-2 text-sm">
             <span class="font-medium">Role</span>
-            <select name="role" id="role" class="border border-brandBorder rounded-lg px-3 py-2 w-full">
+            <select name="role" class="border border-brandBorder rounded-lg px-3 py-2 w-full">
               <option value="personal">Personal</option>
               <option value="business">Business</option>
               <option value="student">Student</option>
@@ -114,27 +97,13 @@
           </label>
         </div>
 
-        <!-- Password fields for Supabase auth -->
-        <div class="grid md:grid-cols-2 gap-5">
-          <label class="grid gap-2 text-sm">
-            <span class="font-medium">Password</span>
-            <input name="password" id="password" type="password" minlength="8" class="border border-brandBorder rounded-lg px-3 py-2 w-full" placeholder="8+ characters" required>
-          </label>
-          <label class="grid gap-2 text-sm">
-            <span class="font-medium">Confirm password</span>
-            <input name="confirm" id="confirm" type="password" minlength="8" class="border border-brandBorder rounded-lg px-3 py-2 w-full" placeholder="Re-enter password" required>
-          </label>
-        </div>
-
         <!-- Honeypot (spam trap) -->
         <input type="text" name="company" class="hidden" tabindex="-1" autocomplete="off">
 
-        <button id="submitBtn" class="bg-brandAccent text-white px-5 py-2.5 rounded-lg text-base font-semibold" type="submit">
+        <button class="bg-brandAccent text-white px-5 py-2.5 rounded-lg text-base font-semibold" type="submit">
           Create account
         </button>
-
-        <p id="msg" class="text-sm"></p>
-        <p class="text-xs text-brandMuted">By signing up you agree to our Terms & Privacy.</p>
+        <p class="text-xs text-brandMuted">We’ll connect full backend later. For now, this saves to Google Sheets.</p>
       </form>
 
       <div class="mt-6 text-sm text-center">
@@ -150,80 +119,52 @@
   <script>
     document.getElementById('year').textContent = new Date().getFullYear();
 
+    // REPLACE THIS with your Apps Script Web App URL
+    const SHEET_WEBHOOK = "https://SCRIPT-WEB-APP-URL-HERE";
+
     const form = document.getElementById('signupForm');
-    const msgEl = document.getElementById('msg');
-    const submitBtn = document.getElementById('submitBtn');
-
-    function setMsg(text, ok=false){
-      msgEl.textContent = text || '';
-      msgEl.className = "text-sm " + (ok ? "text-green-600" : "text-red-600");
-    }
-
     form.addEventListener('submit', async (e) => {
       e.preventDefault();
-      setMsg(""); submitBtn.disabled = true; submitBtn.textContent = "Creating...";
 
       const fd = new FormData(form);
-      if ((fd.get('company') || '').trim() !== '') return; // bot trap
+      // simple bot check
+      if ((fd.get('company') || '').trim() !== '') return;
 
-      const name  = (fd.get('name')  || '').trim();
-      const email = (fd.get('email') || '').trim();
-      const phone = (fd.get('phone') || '').trim();
-      const role  = (fd.get('role')  || 'personal');
-      const pass  = (fd.get('password') || '');
-      const conf  = (fd.get('confirm')  || '');
+      const payload = {
+        name: (fd.get('name') || '').trim(),
+        email: (fd.get('email') || '').trim(),
+        phone: (fd.get('phone') || '').trim(),
+        role:  (fd.get('role')  || 'personal'),
+        ts: Date.now(),
+        ua: navigator.userAgent
+      };
 
-      if (!name || !email) {
-        setMsg("Please enter name and email");
-        submitBtn.disabled = false; submitBtn.textContent = "Create account";
-        return;
-      }
-      if (pass.length < 8) {
-        setMsg("Password must be at least 8 characters");
-        submitBtn.disabled = false; submitBtn.textContent = "Create account";
-        return;
-      }
-      if (pass !== conf) {
-        setMsg("Passwords do not match");
-        submitBtn.disabled = false; submitBtn.textContent = "Create account";
+      if (!payload.name || !payload.email) {
+        toast("Please enter name and email");
         return;
       }
 
-      // Create auth user
-      const { data, error } = await supabase.auth.signUp({
-        email,
-        password: pass,
-        options: { emailRedirectTo: `${location.origin}/dashboard.html` }
-      });
-
-      if (error) {
-        setMsg(error.message || "Signup failed");
-        submitBtn.disabled = false; submitBtn.textContent = "Create account";
-        return;
-      }
-
-      // Optional profile row
       try {
-        if (data.user) {
-          await supabase.from('profiles').upsert({
-            id: data.user.id,
-            email,
-            full_name: name,
-            phone,
-            role
-          }, { onConflict: 'id' });
-        }
-      } catch (_) { /* ignore */ }
-
-      setMsg("Account created. Check your email to verify.", true);
-      submitBtn.disabled = false; submitBtn.textContent = "Create account";
-
-      // If email confirmation is OFF, you may already be logged in:
-      const { data: s } = await supabase.auth.getSession();
-      if (s && s.session) {
-        window.location.href = "/dashboard.html";
+        await fetch(SHEET_WEBHOOK, {
+          method: "POST",
+          mode: "no-cors",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(payload)
+        });
+        toast("Account created (saved to sheet). Redirecting…");
+        setTimeout(() => { window.location.href = "/"; }, 1100);
+      } catch (err) {
+        toast("Network error. Please try again.");
       }
     });
+
+    function toast(msg){
+      const t = document.createElement('div');
+      t.textContent = msg;
+      t.className = 'fixed bottom-6 right-6 bg-black text-white text-sm px-3 py-2 rounded-lg shadow';
+      document.body.appendChild(t);
+      setTimeout(()=> t.remove(), 1400);
+    }
   </script>
 </body>
 </html>
