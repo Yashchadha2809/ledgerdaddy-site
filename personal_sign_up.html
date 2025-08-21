@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Resend Verification with Timer</title>
+  <title>Resend Verification – Demo</title>
   <script src="https://cdn.tailwindcss.com"></script>
   <script>
     tailwind.config = {
@@ -15,8 +15,7 @@
             brandMuted:"#6B7280",
             brandBorder:"#E5E7EB",
             brandBg:"#F9FAFB"
-          },
-          boxShadow:{ lift:"0 20px 50px rgba(17,24,39,.20)" }
+          }
         }
       }
     }
@@ -24,9 +23,9 @@
 </head>
 <body class="min-h-full bg-brandBg text-brandPrimary">
   <main class="max-w-md mx-auto px-4 py-12">
-    <h1 class="text-2xl font-bold mb-2">Resend email verification</h1>
+    <h1 class="text-2xl font-bold mb-4">Resend email verification</h1>
     <p class="text-sm text-brandMuted mb-6">
-      Enter your email. After sending, a popup shows a 60s timer. You can resend again when the timer finishes.
+      Enter your email and click “Resend verification link”. You can resend once every 60 seconds.
     </p>
 
     <label for="email" class="block text-sm font-medium mb-1">Email</label>
@@ -39,61 +38,12 @@
       Resend verification link
     </button>
 
-    <p id="inlineMsg" class="mt-3 text-sm"></p>
+    <p id="resendMsg" class="mt-3 text-sm"></p>
 
-    <!-- Toast -->
     <div id="toast"
          class="hidden mt-4 rounded-lg border border-brandBorder bg-white px-4 py-3 text-sm shadow">
     </div>
   </main>
-
-  <!-- Modal (Popup) -->
-  <div id="modalRoot"
-       class="hidden fixed inset-0 z-50 items-center justify-center">
-    <!-- Backdrop -->
-    <div class="absolute inset-0 bg-black/40" aria-hidden="true"></div>
-
-    <!-- Dialog -->
-    <div role="dialog" aria-modal="true" aria-labelledby="modalTitle"
-         class="relative mx-4 w-full max-w-md rounded-2xl bg-white p-6 shadow-2xl shadow-black/10">
-      <div class="flex items-start justify-between gap-4">
-        <div>
-          <h2 id="modalTitle" class="text-lg font-semibold">Verification email sent</h2>
-          <p id="modalSub" class="text-sm text-brandMuted mt-1">
-            You can request another link after the timer finishes.
-          </p>
-        </div>
-        <button id="modalClose"
-                class="rounded-lg border border-brandBorder px-2 py-1 text-sm hover:bg-brandBg"
-                aria-label="Close popup">
-          ✕
-        </button>
-      </div>
-
-      <div class="mt-5 grid gap-3">
-        <div class="flex items-baseline gap-2">
-          <span class="text-sm text-brandMuted">Next resend in</span>
-          <span id="countdown" class="text-2xl font-bold tabular-nums">60s</span>
-        </div>
-
-        <div class="h-2 w-full rounded-full bg-brandBg border border-brandBorder overflow-hidden">
-          <div id="progress" class="h-full bg-brandAccent" style="width:0%"></div>
-        </div>
-
-        <div id="modalHint" class="text-xs text-brandMuted">
-          Tip: Don’t see it? Check spam/promotions. The link may take a few seconds to arrive.
-        </div>
-      </div>
-
-      <div class="mt-6 flex items-center justify-end gap-3">
-        <button id="resendNow"
-                class="rounded-lg bg-brandAccent text-white px-4 py-2 font-medium disabled:opacity-50 disabled:cursor-not-allowed"
-                disabled>
-          Resend now
-        </button>
-      </div>
-    </div>
-  </div>
 
   <script type="module">
     // ===== 1) Init Supabase client =====
@@ -103,30 +53,51 @@
     const supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
     // ===== 2) Elements =====
-    const emailInput  = document.getElementById('email');
-    const resendBtn   = document.getElementById('resendBtn');
-    const inlineMsg   = document.getElementById('inlineMsg');
-    const toast       = document.getElementById('toast');
-
-    // Modal elements
-    const modalRoot   = document.getElementById('modalRoot');
-    const modalClose  = document.getElementById('modalClose');
-    const countdownEl = document.getElementById('countdown');
-    const progressEl  = document.getElementById('progress');
-    const resendNow   = document.getElementById('resendNow');
-    const modalSub    = document.getElementById('modalSub');
+    const emailInput = document.getElementById('email');
+    const btn        = document.getElementById('resendBtn');
+    const msg        = document.getElementById('resendMsg');
+    const toast      = document.getElementById('toast');
 
     // ===== 3) Cooldown helpers (per-email) =====
     const COOLDOWN_SECONDS = 60;
+
     const key = (email) => `resendCooldown:${(email || '').trim().toLowerCase()}`;
 
     function getRemainingMs(email) {
       const until = Number(localStorage.getItem(key(email))) || 0;
       return Math.max(0, until - Date.now());
     }
+
     function startCooldown(email, seconds = COOLDOWN_SECONDS) {
       localStorage.setItem(key(email), String(Date.now() + seconds * 1000));
     }
+
+    let timerId = null;
+    function runCountdown(email) {
+      clearInterval(timerId);
+      function tick() {
+        const remaining = getRemainingMs(email);
+        if (remaining <= 0) {
+          btn.disabled = false;
+          msg.textContent = '';
+          msg.className = "mt-3 text-sm";
+          clearInterval(timerId);
+          return;
+        }
+        btn.disabled = true;
+        const s = Math.ceil(remaining / 1000);
+        msg.textContent = `Please wait ${s}s before requesting again.`;
+        msg.className = "mt-3 text-sm text-brandMuted";
+      }
+      tick();
+      timerId = setInterval(tick, 500);
+    }
+
+    // Update countdown when the email field changes (so it respects per-email cooldown)
+    emailInput.addEventListener('input', () => {
+      const email = emailInput.value.trim().toLowerCase();
+      runCountdown(email);
+    });
 
     // ===== 4) Toast helper =====
     function showToast(text, type = 'info') {
@@ -143,145 +114,68 @@
       } else {
         toast.classList.add('border-brandBorder', 'text-brandPrimary');
       }
+
+      // Auto hide after 6s
       setTimeout(() => toast.classList.add('hidden'), 6000);
     }
 
-    // ===== 5) Modal helpers (open/close, countdown, progress) =====
-    let timerId = null;
-    let totalMs = COOLDOWN_SECONDS * 1000;
-
-    function openModal() {
-      modalRoot.classList.remove('hidden');
-      modalRoot.classList.add('flex');
-      // Trap focus to modal close for basic accessibility
-      modalClose.focus();
-      document.addEventListener('keydown', escToClose, { once: true });
-    }
-    function closeModal() {
-      modalRoot.classList.add('hidden');
-      modalRoot.classList.remove('flex');
-      clearInterval(timerId);
-      timerId = null;
-    }
-    function escToClose(e) {
-      if (e.key === 'Escape') closeModal();
-    }
-
-    function updateTimerUI(remainingMs) {
-      const s = Math.ceil(remainingMs / 1000);
-      countdownEl.textContent = `${s}s`;
-      const pct = Math.min(100, Math.max(0, ((totalMs - remainingMs) / totalMs) * 100));
-      progressEl.style.width = `${pct}%`;
-
-      if (remainingMs <= 0) {
-        countdownEl.textContent = `0s`;
-        progressEl.style.width = '100%';
-        resendNow.disabled = false;
-        modalSub.textContent = 'You can request another link now.';
-      } else {
-        resendNow.disabled = true;
-        modalSub.textContent = 'You can request another link after the timer finishes.';
+    // ===== 5) Resend handler =====
+    btn.addEventListener('click', async () => {
+      const email = emailInput.value.trim().toLowerCase();
+      if (!email) {
+        showToast('Please enter your email address.', 'error');
+        emailInput.focus();
+        return;
       }
-    }
 
-    function startCountdown(email) {
-      clearInterval(timerId);
-      totalMs = COOLDOWN_SECONDS * 1000;
-      function tick() {
-        const remaining = getRemainingMs(email);
-        updateTimerUI(remaining);
-        if (remaining <= 0) {
-          clearInterval(timerId);
-          timerId = null;
-        }
-      }
-      tick();
-      timerId = setInterval(tick, 250);
-    }
-
-    // ===== 6) Core resend action =====
-    async function doResend(email) {
-      // Prevent hitting Supabase if still cooling
+      // Enforce cooldown
       if (getRemainingMs(email) > 0) {
-        openModal();
-        startCountdown(email);
+        runCountdown(email);
         showToast('Please wait for the cooldown to finish before resending.', 'error');
         return;
       }
 
-      try {
-        resendBtn.disabled = true;
-        resendBtn.textContent = 'Sending...';
-        inlineMsg.textContent = '';
+      btn.disabled = true;
+      btn.textContent = 'Sending...';
+      msg.textContent = '';
 
+      try {
+        // Supabase v2: resend verification for signups
+        // Docs: supabase.auth.resend({ type: 'signup', email })
         const { data, error } = await supabase.auth.resend({
           type: 'signup',
           email
         });
 
         if (error) {
+          // Common helpful hints
           const hint =
             error.message?.toLowerCase().includes('rate limit') ? ' (rate limited)' :
             error.message?.toLowerCase().includes('not found')   ? ' (email not found—sign up first?)' :
             '';
+
           showToast(`Failed to resend: ${error.message}${hint}`, 'error');
+          btn.disabled = false;
+          btn.textContent = 'Resend verification link';
           return;
         }
 
-        // Success: start cooldown + open modal with timer
+        // Success — start cooldown
         startCooldown(email, COOLDOWN_SECONDS);
-        openModal();
-        startCountdown(email);
-        showToast('Verification email sent. Check your inbox.', 'success');
+        runCountdown(email);
+        showToast('Verification email sent. Please check your inbox.', 'success');
       } catch (e) {
         showToast(`Unexpected error: ${e?.message || e}`, 'error');
+        btn.disabled = false;
       } finally {
-        resendBtn.disabled = false;
-        resendBtn.textContent = 'Resend verification link';
+        btn.textContent = 'Resend verification link';
       }
-    }
-
-    // ===== 7) Wire up buttons =====
-    resendBtn.addEventListener('click', async () => {
-      const email = emailInput.value.trim().toLowerCase();
-      if (!email) {
-        showToast('Please enter your email address.', 'error');
-        emailInput.focus();
-        return;
-      }
-      await doResend(email);
     });
 
-    resendNow.addEventListener('click', async () => {
-      const email = emailInput.value.trim().toLowerCase();
-      if (!email) {
-        showToast('Please enter your email address.', 'error');
-        emailInput.focus();
-        return;
-      }
-      await doResend(email);
-    });
-
-    modalClose.addEventListener('click', closeModal);
-    modalRoot.addEventListener('click', (e) => {
-      // click on backdrop closes modal
-      if (e.target === modalRoot) closeModal();
-    });
-
-    // ===== 8) Respect existing cooldown on load (if email autofilled) =====
+    // ===== 6) On load: if user already typed an email (autofill), respect cooldown =====
     window.addEventListener('DOMContentLoaded', () => {
       const email = emailInput.value.trim().toLowerCase();
-      if (email && getRemainingMs(email) > 0) {
-        openModal();
-        startCountdown(email);
-      }
-    });
-
-    // Update modal timer when user types a different email (per-email cooldown)
-    emailInput.addEventListener('input', () => {
-      const email = emailInput.value.trim().toLowerCase();
-      if (modalRoot.classList.contains('hidden')) return;
-      startCountdown(email);
+      if (email) runCountdown(email);
     });
   </script>
 </body>
