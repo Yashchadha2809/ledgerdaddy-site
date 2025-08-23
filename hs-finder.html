@@ -142,10 +142,21 @@
   <script>
     // ========= SETTINGS =========
     document.getElementById('year').textContent = new Date().getFullYear();
-    const API_BASE  = "https://chadaddy.onrender.com";   // use the SAME host as chat.html
+    const API_BASE  = "https://chadaddy.onrender.com";   // same host as chat.html
     const CHAT_MODE = "business";                         // Business prompt
     const WANTS     = "hsn_only";                         // ask server to return only HSN
-    const API_ORDER = ["chat", "hs-find"];                // try /api/chat first; fallback to /api/hs-find if present
+    const API_ORDER = ["chat", "hs-find"];                // try /api/chat first; fallback to /api/hs-find
+
+    // ====== optional: read X-Bridge-Token if your server requires it ======
+    function getBridgeToken(){
+      let t = localStorage.getItem("bridge_token");
+      if(!t){
+        const m = location.search.match(/[?&]token=([^&]+)/);
+        if(m){ t = decodeURIComponent(m[1]); localStorage.setItem("bridge_token", t); }
+      }
+      return t || "";
+    }
+    const BRIDGE_TOKEN = getBridgeToken();
 
     // ====== session ======
     function getSessionId(){
@@ -169,6 +180,7 @@
     const previewImg = document.getElementById('imgPreview');
     const imgNameEl = document.getElementById('imgName');
     const clearImgBtn = document.getElementById('clearImg');
+
     let selectedFile = null;
     let debugOn = false;
 
@@ -206,14 +218,12 @@
       m = cleaned.match(/\b(\d{4,10})\b/);
       return m ? m[1].slice(0,8) : "";
     }
-
     function summarizeDesc(d, maxWords=20){
       if(!d) return "(no description provided)";
       const words = d.trim().split(/\s+/);
       if(words.length <= maxWords) return d.trim();
       return words.slice(0, maxWords).join(" ") + "…";
     }
-
     function renderChatResult({country, desc, hsn, reply}){
       // User bubble
       const userHTML = `
@@ -243,17 +253,32 @@
       addBubble("ai", aiHTML);
     }
 
-    // === uploader (same as chat.html) ===
+    // === upload helpers (robust) ===
+    async function fileToBase64(file){
+      return new Promise((resolve,reject)=>{
+        const rd=new FileReader();
+        rd.onload=()=>resolve(String(rd.result).split(',')[1]);
+        rd.onerror=reject; rd.readAsDataURL(file);
+      });
+    }
     async function uploadFiles(files){
       if(!files || !files.length) return [];
       const fd = new FormData();
       files.forEach(f => fd.append("files", f, f.name));
-      const res = await fetch(`${API_BASE}/api/upload`, { method:"POST", body: fd });
-      const text = await res.text();
-      let data = {};
-      try { data = JSON.parse(text); } catch { data = {}; }
-      if(!res.ok) throw new Error(`upload failed: ${res.status} ${text}`);
-      return (data.files || []).map(x => ({ url:x.url, name:x.name, type:x.type }));
+      const headers = {};
+      if (BRIDGE_TOKEN) headers["X-Bridge-Token"] = BRIDGE_TOKEN;
+
+      try{
+        const res = await fetch(`${API_BASE}/api/upload`, { method:"POST", body: fd, headers });
+        const text = await res.text();
+        let data = {};
+        try { data = JSON.parse(text); } catch { data = {}; }
+        if(!res.ok) throw new Error(`upload failed: ${res.status} ${text}`);
+        return (data.files || []).map(x => ({ url:x.url, name:x.name, type:x.type }));
+      }catch(e){
+        // Fallback: no server upload → return a pseudo-attachment so we can still send base64
+        return files.map(f=>({ url:"", name:f.name, type:f.type, _file:f }));
+      }
     }
 
     // ====== image pick & DnD ======
@@ -261,8 +286,8 @@
     ['dragenter','dragover'].forEach(evt =>
       drop.addEventListener(evt, e=>{ e.preventDefault(); drop.classList.add('drop-okay'); })
     );
-    ['dragleave','drop'].forEach evtName =>
-      drop.addEventListener(evtName, e=>{ e.preventDefault(); drop.classList.remove('drop-okay'); })
+    ['dragleave','drop'].forEach(evt =>
+      drop.addEventListener(evt, e=>{ e.preventDefault(); drop.classList.remove('drop-okay'); })
     );
     drop.addEventListener('drop', e=>{
       e.preventDefault();
@@ -290,11 +315,25 @@
 
     // ====== backend call (try /api/chat, then /api/hs-find) ======
     async function callBackend({country, desc, attachments}){
+      // Prepare headers
+      const headers = { "Content-Type":"application/json" };
+      if (BRIDGE_TOKEN) headers["X-Bridge-Token"] = BRIDGE_TOKEN;
+
+      // If upload returned pseudo-attachments (no URL), convert to base64
+      let images_base64 = [];
+      const cleanAttachments = [];
+      for(const a of (attachments || [])){
+        if(a && a._file){ images_base64.push(await fileToBase64(a._file)); }
+        else if(a && a.url){ cleanAttachments.push({url:a.url,name:a.name,type:a.type}); }
+      }
+
       const message = `Country: ${country}\nProduct: ${desc || "(image only)"}\nReturn only the single best HSN code (no text).`;
       const payloadChat = {
-        message, session_id: SESSION_ID, mode: CHAT_MODE, wants: WANTS, attachments
+        message, session_id: SESSION_ID, mode: CHAT_MODE, wants: WANTS,
+        attachments: cleanAttachments, images_base64
       };
-      const payloadHS = { country, desc, session_id: SESSION_ID, attachments };
+      const payloadHS = { country, desc, session_id: SESSION_ID,
+        attachments: cleanAttachments, images_base64 };
 
       let lastError = null;
 
@@ -303,11 +342,7 @@
           const url = which === "chat" ? `${API_BASE}/api/chat` : `${API_BASE}/api/hs-find`;
           const body = which === "chat" ? payloadChat : payloadHS;
 
-          const res = await fetch(url, {
-            method:"POST",
-            headers:{ "Content-Type":"application/json" },
-            body: JSON.stringify(body)
-          });
+          const res = await fetch(url, { method:"POST", headers, body: JSON.stringify(body) });
           const raw = await res.text();
           showDebug({endpoint: which, status: res.status, raw});
           let data = {};
