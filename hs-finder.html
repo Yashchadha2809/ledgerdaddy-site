@@ -33,7 +33,6 @@
     .card:hover{transform:translateY(-2px); box-shadow:0 16px 40px rgba(17,24,39,.12)}
     .hero-img{background:url('https://images.unsplash.com/photo-1586521995568-39ef16c6934d?q=80&w=1920&auto=format&fit=crop') center/cover no-repeat;}
     .input:focus{outline:none; box-shadow:0 0 0 3px rgba(37,99,235,.25)}
-    .badge{font-size:12px;padding:.25rem .5rem;border:1px solid rgba(37,99,235,.35);border-radius:999px;background:#fff;color:#2563EB}
     .fade-in{animation:fade .14s ease-out}
     @keyframes fade{from{opacity:.5;transform:translateY(2px)}to{opacity:1;transform:none}}
     .tappable{min-height:44px; min-width:44px}
@@ -66,7 +65,7 @@
         <div class="max-w-6xl mx-auto px-3 sm:px-4 py-6 sm:py-10 text-white">
           <h1 class="text-2xl sm:text-4xl md:text-5xl font-extrabold leading-tight">HS / HSN Finder</h1>
           <p class="mt-2 sm:mt-3 text-white/95 text-sm sm:text-base">
-            Describe your product or upload a photo. Get suggested HS/HSN codes with reasoning.
+            Describe your product or upload a photo. Get the best HSN only.
           </p>
         </div>
       </div>
@@ -106,14 +105,12 @@
           <div id="imgPreviewWrap" class="hidden items-center gap-3">
             <img id="imgPreview" alt="preview" class="h-16 w-16 rounded-lg object-cover border border-brandBorder" />
             <div class="text-xs text-brandMuted truncate flex-1" id="imgName"></div>
-            <button id="clearImg" type="button" class="border border-brandBorder px-3 py-2 rounded-lg tappable">
-              Remove
-            </button>
+            <button id="clearImg" type="button" class="border border-brandBorder px-3 py-2 rounded-lg tappable">Remove</button>
           </div>
         </div>
 
         <div class="flex gap-2">
-          <button id="hsRun" class="bg-brandAccent text-white px-4 py-2 rounded-lg tappable">Find HS codes</button>
+          <button id="hsRun" class="bg-brandAccent text-white px-4 py-2 rounded-lg tappable">Find HS code</button>
           <button id="hsReset" type="button" class="border border-brandBorder px-4 py-2 rounded-lg tappable">Reset</button>
         </div>
         <p class="text-xs text-brandMuted">Guidance only. Always confirm with your customs/broker.</p>
@@ -123,7 +120,7 @@
     <!-- Results -->
     <section class="grid gap-4 content-start">
       <div class="rounded-2xl border border-brandBorder bg-white p-3 sm:p-4 md:sticky md:top-24">
-        <strong>Results</strong>
+        <strong>Result</strong>
         <div id="hsResults" class="mt-2 grid gap-3 text-sm"></div>
       </div>
     </section>
@@ -135,12 +132,22 @@
   </footer>
 
   <script>
-    // --- Constants
+    // ========= SETTINGS (match chat.html wiring) =========
     document.getElementById('year').textContent = new Date().getFullYear();
-    const API_ENDPOINT = "/api/hs-find";
+    const API_BASE = "https://chadaddy.onrender.com"; // same host as chat.html
+    const CHAT_MODE = "business";                      // force BUSINESS prompt
+    const WANTS = "hsn_only";                          // tell backend: return only HSN
 
-    // --- DOM
-    const hsForm = document.getElementById('hsForm');
+    // ====== session (same style as chat.html) ======
+    function getSessionId(){
+      const key="chadaddy_session_id";
+      let v=localStorage.getItem(key);
+      if(!v){ v = (crypto.randomUUID?.() || ('sess_'+Date.now())); localStorage.setItem(key,v); }
+      return v;
+    }
+    const SESSION_ID = getSessionId();
+
+    // ====== DOM refs ======
     const btnRun = document.getElementById('hsRun');
     const btnReset = document.getElementById('hsReset');
     const resultsEl = document.getElementById('hsResults');
@@ -156,9 +163,35 @@
 
     let selectedFile = null;
 
-    // --- Helpers
-    const sleep = (ms)=> new Promise(r=>setTimeout(r, ms));
-
+    // ====== helpers ======
+    function renderLoading(){
+      resultsEl.innerHTML = `
+        <div class="p-3 border border-brandBorder rounded-lg bg-white fade-in">
+          <div class="flex items-center gap-2"><span class="animate-pulse">Finding best HSN…</span></div>
+        </div>`;
+    }
+    function renderError(msg="Lookup failed. Try again."){
+      resultsEl.innerHTML = `<div class="p-3 border border-red-200 rounded-lg bg-red-50 text-red-900 fade-in">${msg}</div>`;
+    }
+    function renderHSN(hsn, country){
+      if(!hsn){
+        resultsEl.innerHTML = `<div class="p-3 border border-brandBorder rounded-lg bg-white fade-in">No HSN found. Add more details or a clearer image.</div>`;
+        return;
+      }
+      const code = String(hsn).trim();
+      resultsEl.innerHTML = `
+        <div class="p-3 border border-brandBorder rounded-lg bg-white fade-in">
+          <div class="text-2xl font-bold tracking-wide">${code}</div>
+          <a href="/calculator.html?hs=${encodeURIComponent(code)}&country=${encodeURIComponent(country)}"
+             class="mt-2 inline-block bg-brandAccent text-white px-3 py-1.5 rounded text-xs">Open Calculator</a>
+        </div>`;
+    }
+    function extractHSNFromText(t){
+      if(!t) return "";
+      // prefer 8- or 6-digit HSNs; fallback any 4–10 digits
+      const m = t.match(/\b(\d{8}|\d{6})\b/) || t.match(/\b\d{4,10}\b/);
+      return m ? m[1] : "";
+    }
     async function fileToBase64(file){
       return new Promise((resolve,reject)=>{
         const reader=new FileReader();
@@ -166,48 +199,6 @@
         reader.onerror=reject; reader.readAsDataURL(file);
       });
     }
-
-    function renderLoading(){
-      resultsEl.innerHTML = `
-        <div class="p-3 border border-brandBorder rounded-lg bg-white fade-in">
-          <div class="flex items-center gap-2">
-            <span class="animate-pulse">Analyzing…</span>
-          </div>
-        </div>`;
-    }
-
-    function renderError(msg="Lookup failed. Try again."){
-      resultsEl.innerHTML = `
-        <div class="p-3 border border-red-200 rounded-lg bg-red-50 text-red-900 fade-in">
-          ${msg}
-        </div>`;
-    }
-
-    function renderResultsPayload(payload, country){
-      const items = Array.isArray(payload?.items) ? payload.items : [];
-      const note = payload?.note ? String(payload.note) : "";
-
-      if(!items.length){
-        resultsEl.innerHTML = `
-          <div class="p-3 border border-brandBorder rounded-lg bg-white fade-in">
-            No results. Try adding more details (material, function, battery/radio, etc.).
-          </div>`;
-        return;
-      }
-
-      resultsEl.innerHTML = items.map(r => `
-        <div class="p-3 border border-brandBorder rounded-lg bg-white fade-in">
-          <div class="flex justify-between items-center">
-            <div><strong>${r.code}</strong> – ${r.title || ""}</div>
-            <span class="text-xs text-brandMuted">${Math.round((r.conf||0)*100)}%</span>
-          </div>
-          ${r.reasons ? `<div class="mt-2 text-xs text-brandMuted">${r.reasons}</div>` : ``}
-          ${r.examples ? `<div class="mt-1 text-xs"><em>You can use this HSN for:</em> ${r.examples}</div>` : ``}
-          <a href="/calculator.html?hs=${encodeURIComponent(r.code)}&country=${encodeURIComponent(country)}"
-             class="mt-2 inline-block bg-brandAccent text-white px-3 py-1.5 rounded text-xs">Open Calculator</a>
-        </div>`).join('') + (note ? `<div class="text-xs text-brandMuted mt-2">${note}</div>` : '');
-    }
-
     function resetImageState(){
       if(imgInput) imgInput.value="";
       previewWrap?.classList.add('hidden');
@@ -216,9 +207,8 @@
       selectedFile=null;
     }
 
-    // --- Image picking & drag/drop
+    // ====== image pick & DnD ======
     drop.addEventListener('click', ()=> imgInput.click());
-
     ['dragenter','dragover'].forEach(evt =>
       drop.addEventListener(evt, e=>{ e.preventDefault(); drop.classList.add('drop-okay'); })
     );
@@ -243,7 +233,7 @@
       previewWrap.classList.remove('hidden');
     }
 
-    // --- Submit handler (LIVE MODE)
+    // ====== main: call your existing /api/chat like chat.html, but with mode=business + wants=hsn_only ======
     document.getElementById('hsRun').addEventListener('click', async (e)=>{
       e.preventDefault();
       const desc = descEl.value.trim();
@@ -253,21 +243,27 @@
         return renderError("Add a short description or upload an image.");
       }
 
-      // loading state
       btnRun.disabled = true;
       btnRun.textContent = "Analyzing…";
       renderLoading();
 
       try{
-        let image_base64 = null;
-        if(selectedFile){
-          image_base64 = await fileToBase64(selectedFile);
-        }
+        let image_b64 = null;
+        if(selectedFile){ image_b64 = await fileToBase64(selectedFile); }
 
-        const res = await fetch(API_ENDPOINT, {
-          method:'POST',
-          headers:{ 'Content-Type':'application/json' },
-          body: JSON.stringify({ country, desc, image_base64, prompt_name: 'business' })
+        // Build message like chat.html does, but tightly formatted for HSN
+        const userMessage = `Country: ${country}\nProduct: ${desc || "(image only)"}\nReturn only the single best HSN code.`;
+
+        const res = await fetch(`${API_BASE}/api/chat`, {
+          method:"POST",
+          headers:{ "Content-Type":"application/json" },
+          body: JSON.stringify({
+            message: userMessage,
+            session_id: SESSION_ID,
+            mode: CHAT_MODE,              // << BUSINESS prompt (your backend)
+            wants: WANTS,                  // << tell backend we only want HSN
+            images_base64: image_b64 ? [image_b64] : []  // << send image directly to AI
+          })
         });
 
         if(!res.ok){
@@ -275,19 +271,27 @@
           throw new Error(text || `HTTP ${res.status}`);
         }
 
-        const data = await res.json();
-        renderResultsPayload(data, country);
+        const data = await res.json().catch(()=> ({}));
+
+        // Backend may return {hsn:"..."} OR {reply:"..."} OR plain text; handle all
+        let hsn = data?.hsn || "";
+        if(!hsn){
+          const text = typeof data === "string" ? data : (data?.reply || "");
+          hsn = extractHSNFromText(text);
+        }
+
+        renderHSN(hsn, country);
 
       }catch(err){
         console.error(err);
         renderError("Server error. Please retry with more details.");
       }finally{
         btnRun.disabled = false;
-        btnRun.textContent = "Find HS codes";
+        btnRun.textContent = "Find HS code";
       }
     });
 
-    // --- Reset
+    // ====== reset ======
     btnReset.addEventListener('click', ()=>{
       descEl.value="";
       resetImageState();
