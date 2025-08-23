@@ -7,14 +7,14 @@
 
   <!-- Tailwind (CDN) -->
   <script src="https://cdn.tailwindcss.com"></script>
-  <!-- Supabase JS -->
+  <!-- Supabase JS v2 -->
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
   <script>
     tailwind.config = {
       theme: {
         extend: {
-          colors:{ brand:'#111827', accent:'#2563EB', soft:'#F3F4F6', border:'#E5E7EB' },
+          colors:{ brand:'#111827', accent:'#2563EB', soft:'#F3F4F6', border:'#E5E7EB', danger:'#DC2626' },
           boxShadow:{ lift:'0 14px 34px rgba(0,0,0,.08)'}
         }
       }
@@ -62,7 +62,7 @@
         <button class="btn w-full" type="submit">Sign in</button>
       </form>
       <p id="authError" class="text-sm mt-3 hidden" style="color:#DC2626"></p>
-      <p class="text-xs text-gray-500 mt-4">Tip: In Supabase Auth settings you can disable public signups and invite just your team.</p>
+      <p class="text-xs text-gray-500 mt-4">Tip: In Supabase Auth → Users, add your admin email and set <code>profiles.is_admin = true</code>.</p>
     </div>
 
     <!-- Non-admin -->
@@ -189,15 +189,15 @@
   </dialog>
 
   <script>
-    // ================= EDIT THESE TWO =================
-    const SUPABASE_URL = 'https://slgxcqjpnybnprsdnnqj.supabase.co';
-    const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InNsZ3hjcWpwbnlibnByc2RubnFqIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTU5NjQ1MTgsImV4cCI6MjA3MTU0MDUxOH0.YdT6nWNRKPifGb6DCqpQ6YYmGMOMwjJ0eAbeuqInfJ4';
-    // ================================================
+    /* ========= 1) EDIT THESE TWO, from Supabase Settings → API ========= */
+    const SUPABASE_URL = 'https://slgxcqjpnybnprsdnnqj.supabase.co';            // e.g. https://xxxxxx.supabase.co
+    const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InNsZ3hjcWpwbnlibnByc2RubnFqIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTU5NjQ1MTgsImV4cCI6MjA3MTU0MDUxOH0.YdT6nWNRKPifGb6DCqpQ6YYmGMOMwjJ0eAbeuqInfJ4';  // the "anon public" key
+    /* ================================================================== */
 
     const { createClient } = supabase;
     const sb = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
-    // UI elements
+    // Elements
     const authView = document.getElementById('authView');
     const appView = document.getElementById('app');
     const noAdmin = document.getElementById('noAdmin');
@@ -220,7 +220,7 @@
     const saveBtn = document.getElementById('saveBtn');
     const deleteBtn = document.getElementById('deleteBtn');
 
-    let editingId = null; // product id we are editing
+    let editingId = null;
 
     // Tabs
     document.querySelectorAll('.tab').forEach(btn => {
@@ -231,7 +231,7 @@
       });
     });
 
-    // Auth form
+    // Sign in
     document.getElementById('authForm').addEventListener('submit', async (e) => {
       e.preventDefault();
       const email = document.getElementById('email').value.trim();
@@ -247,39 +247,27 @@
       await postAuth();
     });
 
-    signOutBtn?.addEventListener('click', async () => {
-      await sb.auth.signOut();
-      location.reload();
-    });
-    goSignOut?.addEventListener('click', async () => {
-      await sb.auth.signOut();
-      location.reload();
-    });
+    signOutBtn?.addEventListener('click', async () => { await sb.auth.signOut(); location.reload(); });
+    goSignOut?.addEventListener('click', async () => { await sb.auth.signOut(); location.reload(); });
 
-    // After auth, check admin and load data (UPDATED: lookup profile by EMAIL)
+    // --------- UPDATED ADMIN CHECK: by EMAIL (not id) ---------
     async function postAuth(){
       const { data: { user } } = await sb.auth.getUser();
-      if(!user){
-        showOnly(authView);
-        return;
-      }
+      if(!user){ showOnly(authView); return; }
+
       userEmail.textContent = user.email || '';
       userBox.classList.remove('hidden');
 
-      // UPDATED ADMIN CHECK: by email (not id)
+      // Look up the profile by email (safer for first-load timing)
       const { data: profile, error } = await sb
         .from('profiles')
         .select('user_id,email,is_admin')
         .eq('email', user.email)
         .maybeSingle();
 
-      if (error) console.error(error);
-      if (!profile || !profile.is_admin) {
-        showOnly(noAdmin);
-        return;
-      }
+      if (error) { console.error('[profiles] select error:', error); showOnly(noAdmin); return; }
+      if (!profile || !profile.is_admin) { showOnly(noAdmin); return; }
 
-      // ok admin
       showOnly(appView);
       await loadProducts();
       await loadOrders();
@@ -290,18 +278,13 @@
       el.classList.remove('hidden');
     }
 
-    // Load products
+    // Products
     async function loadProducts(q=""){
       productsTbody.innerHTML = '<tr><td class="py-3" colspan="6">Loading…</td></tr>';
       let query = sb.from('products').select('*').order('created_at', { ascending:false });
-      if(q){
-        query = query.or(`name.ilike.%${q}%,sku.ilike.%${q}%`);
-      }
+      if(q){ query = query.or(`name.ilike.%${q}%,sku.ilike.%${q}%`); }
       const { data, error } = await query;
-      if(error){
-        productsTbody.innerHTML = `<tr><td class='py-3' style='color:#DC2626' colspan='6'>${error.message}</td></tr>`;
-        return;
-      }
+      if(error){ productsTbody.innerHTML = `<tr><td class='py-3' style='color:#DC2626' colspan='6'>${error.message}</td></tr>`; return; }
       productsTbody.innerHTML = data.map(row => renderProductRow(row)).join('');
       attachRowActions();
     }
