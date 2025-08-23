@@ -1,0 +1,231 @@
+<!DOCTYPE html>
+<html lang="en" class="scroll-smooth">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Terms & Conditions – CustomsDaddy</title>
+  <meta name="theme-color" content="#2563EB" />
+  <meta name="description" content="Terms & Conditions for CustomsDaddy, the AI-powered customs and duty estimation platform." />
+  <link rel="preconnect" href="https://images.unsplash.com" />
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors:{
+            brandPrimary:"#111827",
+            brandAccent:"#2563EB",
+            brandSoft:"#EFF6FF",
+            brandBorder:"#E5E7EB",
+            brandMuted:"#6B7280",
+            brandBg:"#F9FAFB"
+          },
+          boxShadow:{ lift:"0 10px 25px rgba(17,24,39,.10)" }
+        }
+      }
+    }
+  </script>
+  <style>
+    .hero-img{background:url('https://images.unsplash.com/photo-1586521995568-39ef16c6934d?q=80&w=1920&auto=format&fit=crop') center/cover no-repeat;}
+    .prose h2{scroll-margin-top:100px}
+  </style>
+</head>
+<body class="bg-brandBg text-brandPrimary">
+
+  <!-- Topbar -->
+  <header class="fixed top-0 inset-x-0 z-50 border-b border-brandBorder bg-white/90 backdrop-blur">
+    <div class="max-w-7xl mx-auto px-4 py-3 flex items-center justify-between">
+      <a href="/" class="flex items-center gap-2" aria-label="Home">
+        <span class="grid h-9 w-9 place-items-center rounded-xl bg-gradient-to-tr from-brandSoft to-white text-brandPrimary font-extrabold shadow">◆</span>
+        <span class="text-xl font-bold">CustomsDaddy</span>
+        <span class="ml-2 hidden sm:inline-flex text-[11px] px-2 py-0.5 rounded-full border border-brandBorder text-brandMuted">AI Customs</span>
+      </a>
+      <nav class="hidden md:flex items-center gap-6 text-sm font-medium" aria-label="Main">
+        <a href="/#marketplace" class="hover:text-brandAccent">Marketplace</a>
+        <a href="/#calculator" class="hover:text-brandAccent">Calculator</a>
+        <a href="/#hsfinder" class="hover:text-brandAccent">HS Finder</a>
+        <a href="/#chat" class="hover:text-brandAccent">Chat</a>
+        <a href="/#news" class="hover:text-brandAccent">News</a>
+        <a href="/#learn" class="hover:text-brandAccent">Academy</a>
+        <a href="/#pricing" class="hover:text-brandAccent">Pricing</a>
+      </nav>
+      <a href="/log_in.html" class="border border-brandBorder px-4 py-2 rounded-lg">Log in</a>
+    </div>
+  </header>
+
+  <!-- Hero -->
+  <section class="pt-28 md:pt-32">
+    <div class="hero-img">
+      <div class="backdrop-brightness-50 bg-gradient-to-r from-brandPrimary/50 to-brandAccent/50">
+        <div class="max-w-3xl mx-auto px-4 py-12 text-white">
+          <h1 class="text-4xl md:text-5xl font-extrabold leading-tight">Terms &amp; Conditions</h1>
+          <p class="mt-3 text-white/95">The rules for using CustomsDaddy.</p>
+          <p class="mt-2 text-white/90"><strong>Last Updated:</strong> <span id="lastUpdated">—</span></p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Content -->
+  <main class="max-w-3xl mx-auto px-4 -mt-10">
+    <article class="bg-white border border-brandBorder rounded-2xl shadow p-6 md:p-8 prose prose-slate">
+      <h2 id="intro">1. Introduction</h2>
+      <p>
+        Welcome to <strong>CustomsDaddy</strong> (“we”, “us”, “our”). By accessing or using our AI-powered customs
+        and duty estimation platform — including tools like the HS Finder, Calculator, and Chat (the “Service”) —
+        you (“you”, “your”, “User”) agree to these Terms & Conditions (“Terms”). If you do not agree, please do not use the Service.
+      </p>
+
+      <h2 id="eligibility">2. Eligibility</h2>
+      <ul>
+        <li>You must be at least <strong>18 years old</strong> and capable of forming a binding contract.</li>
+        <li>If you use the Service on behalf of a business, you represent you have authority to bind that business.</li>
+      </ul>
+
+      <h2 id="account">3. Accounts &amp; Registration</h2>
+      <ul>
+        <li>Provide accurate information and keep your account credentials secure.</li>
+        <li>You are responsible for all activity under your account.</li>
+        <li>We may suspend or terminate accounts for violations of these Terms or applicable law.</li>
+      </ul>
+
+      <h2 id="use">4. Permitted Use</h2>
+      <p>
+        You may use the Service to research HS codes, estimate duties/taxes, and manage import/export workflows.
+        You agree not to: (a) breach any customs/trade law; (b) upload malicious code; (c) attempt to bypass security;
+        (d) copy, scrape, or reverse-engineer the Service except as permitted by law; (e) use outputs to mislead authorities.
+      </p>
+
+      <h2 id="outputs">5. AI Outputs &amp; Important Disclaimer</h2>
+      <ul>
+        <li>AI outputs (e.g., HS suggestions, duty estimates, chat responses) are <strong>informational only</strong>.</li>
+        <li>They are <strong>not</strong> legal, tax, or professional advice and may be incomplete or inaccurate.</li>
+        <li>You remain responsible for independent verification and compliance with customs laws and regulations.</li>
+        <li>We are <strong>not a customs broker</strong>. Any brokerage introductions are separate third-party services.</li>
+      </ul>
+
+      <h2 id="content">6. Your Content &amp; Uploads</h2>
+      <ul>
+        <li>You retain ownership of the documents and data you upload.</li>
+        <li>You grant us a limited license to process that content solely to provide and improve the Service.</li>
+        <li>You confirm you have the rights and lawful basis to upload all material you submit.</li>
+      </ul>
+
+      <h2 id="ip">7. Intellectual Property</h2>
+      <ul>
+        <li>The Service, including software, UI, and branding, is our property or our licensors’ property.</li>
+        <li>We grant you a limited, non-exclusive, non-transferable license to use the Service per these Terms.</li>
+        <li>You may not remove proprietary notices or use our marks without permission.</li>
+      </ul>
+
+      <h2 id="fees">8. Pricing, Payments &amp; Taxes</h2>
+      <p>
+        If the Service includes paid plans, fees and billing terms are shown at checkout or on our pricing page.
+        You authorize us or our payment processor to charge your selected payment method. You are responsible for any
+        applicable taxes. Trials or promotional periods may be modified or ended at our discretion.
+      </p>
+
+      <h2 id="thirdparties">9. Third-Party Services</h2>
+      <p>
+        We may rely on third-party providers (e.g., hosting, authentication, analytics, LLM/AI infrastructure).
+        Their services are subject to their own terms and policies. We are not responsible for third-party acts or omissions.
+      </p>
+
+      <h2 id="privacy">10. Privacy</h2>
+      <p>
+        Our <a href="/privacy.html" class="text-brandAccent">Privacy Policy</a> explains how we collect and use personal data.
+        By using the Service, you consent to our data practices described there.
+      </p>
+
+      <h2 id="security">11. Security &amp; Availability</h2>
+      <p>
+        We implement reasonable safeguards to protect data; however, no system is perfectly secure. The Service may be
+        unavailable during maintenance, outages, or events beyond our control.
+      </p>
+
+      <h2 id="compliance">12. Compliance &amp; Export</h2>
+      <p>
+        You agree to comply with all applicable laws (including customs, sanctions, and export control rules).
+        You will not use the Service in or for the benefit of restricted jurisdictions, persons, or entities.
+      </p>
+
+      <h2 id="beta">13. Beta / Experimental Features</h2>
+      <p>
+        From time to time we may offer beta features. They are provided “as is”, may change without notice,
+        and may be discontinued at any time.
+      </p>
+
+      <h2 id="termination">14. Suspension &amp; Termination</h2>
+      <ul>
+        <li>We may suspend or terminate your access for violations, fraud, non-payment, or risk to the Service.</li>
+        <li>You may stop using the Service at any time. Paid plans end per the then-current billing terms.</li>
+      </ul>
+
+      <h2 id="liability">15. Disclaimers; Limitation of Liability</h2>
+      <ul>
+        <li>The Service and AI outputs are provided <strong>“as is”</strong> and <strong>“as available”</strong> without warranties.</li>
+        <li>To the fullest extent permitted by law, we disclaim implied warranties of merchantability, fitness for a particular purpose, and non-infringement.</li>
+        <li>We are not liable for indirect, incidental, special, exemplary, or consequential damages, or for lost profits, data, or goodwill.</li>
+        <li>Our aggregate liability for claims arising out of or related to the Service will not exceed the fees you paid in the <strong>12 months</strong> before the claim (or INR ₹0 for free use).</li>
+      </ul>
+
+      <h2 id="indemnity">16. Indemnity</h2>
+      <p>
+        You agree to defend, indemnify, and hold harmless CustomsDaddy from claims arising from your content, your use of the Service in violation of these Terms or law, or your infringement of third-party rights.
+      </p>
+
+      <h2 id="law">17. Governing Law &amp; Dispute Resolution</h2>
+      <p>
+        These Terms are governed by the laws of <strong>India</strong>. Courts located in <strong>New Delhi, India</strong> will have exclusive jurisdiction, except that we may seek injunctive relief in any court of competent jurisdiction.
+      </p>
+
+      <h2 id="changes">18. Changes to These Terms</h2>
+      <p>
+        We may update these Terms from time to time. If we make material changes, we will provide notice (e.g., in-product notice or email).
+        Your continued use after the effective date constitutes acceptance of the updated Terms.
+      </p>
+
+      <h2 id="misc">19. Miscellaneous</h2>
+      <ul>
+        <li><strong>Entire Agreement:</strong> These Terms plus any referenced policies (e.g., Privacy Policy) are the entire agreement.</li>
+        <li><strong>Severability:</strong> If any provision is unenforceable, the remainder stays in effect.</li>
+        <li><strong>No Waiver:</strong> Failure to enforce a provision is not a waiver.</li>
+        <li><strong>Assignment:</strong> You may not assign these Terms without our consent; we may assign to an affiliate or in connection with a merger/acquisition.</li>
+        <li><strong>Notices:</strong> We may contact you via email or in-product notices.</li>
+      </ul>
+
+      <h2 id="contact">20. Contact Us</h2>
+      <address class="not-italic">
+        <strong>Legal Team</strong><br />
+        CustomsDaddy<br />
+        <a class="text-brandAccent" href="mailto:legal@ledgerdaddy.com">legal@ledgerdaddy.com</a>
+      </address>
+
+      <p class="text-xs text-brandMuted mt-6">
+        This page is provided for general informational purposes and does not constitute legal advice. Please consult your counsel to adapt this template to your specific business and jurisdictional needs.
+      </p>
+    </article>
+
+    <div class="max-w-3xl mx-auto px-4 mt-6 mb-12 text-sm">
+      <a href="/" class="text-brandAccent">← Back to home</a>
+    </div>
+  </main>
+
+  <footer class="text-center text-xs text-brandMuted mb-8">
+    © <span id="year"></span> CustomsDaddy
+  </footer>
+
+  <script>
+    // Set "Last Updated" to today's date in Asia/Kolkata (IST)
+    (function(){
+      try {
+        const fmt = new Intl.DateTimeFormat('en-IN', { timeZone: 'Asia/Kolkata', year: 'numeric', month: 'long', day: 'numeric' });
+        document.getElementById('lastUpdated').textContent = fmt.format(new Date());
+      } catch(e){
+        document.getElementById('lastUpdated').textContent = new Date().toISOString().slice(0,10);
+      }
+      document.getElementById('year').textContent = new Date().getFullYear();
+    })();
+  </script>
+</body>
+</html>
