@@ -37,6 +37,12 @@
     @keyframes fade{from{opacity:.5;transform:translateY(2px)}to{opacity:1;transform:none}}
     .tappable{min-height:44px; min-width:44px}
     .drop-okay{outline:2px dashed #2563EB; outline-offset:4px}
+    /* chat-style bubbles */
+    .bubble{border:1px solid #E5E7EB;border-radius:16px;padding:12px}
+    .bubble-user{background:#F9FAFB}
+    .bubble-ai{background:#FFFFFF}
+    .mono{font-family:ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace}
+    pre.debug{background:#0f172a;color:#e5e7eb;padding:10px;border-radius:10px;white-space:pre-wrap;word-break:break-word}
   </style>
 </head>
 <body class="bg-brandBg text-brandPrimary h-full">
@@ -109,19 +115,21 @@
           </div>
         </div>
 
-        <div class="flex gap-2">
+        <div class="flex items-center gap-2">
           <button id="hsRun" class="bg-brandAccent text-white px-4 py-2 rounded-lg tappable">Find HS code</button>
           <button id="hsReset" type="button" class="border border-brandBorder px-4 py-2 rounded-lg tappable">Reset</button>
+          <span class="text-xs text-brandMuted">(Alt-click “Find HS code” to show debug)</span>
         </div>
         <p class="text-xs text-brandMuted">Guidance only. Always confirm with your customs/broker.</p>
       </form>
     </section>
 
-    <!-- Results -->
+    <!-- Results (chat-style) -->
     <section class="grid gap-4 content-start">
       <div class="rounded-2xl border border-brandBorder bg-white p-3 sm:p-4 md:sticky md:top-24">
-        <strong>Result</strong>
+        <strong>Results</strong>
         <div id="hsResults" class="mt-2 grid gap-3 text-sm"></div>
+        <pre id="hsDebug" class="debug mt-2 hidden"></pre>
       </div>
     </section>
   </main>
@@ -132,13 +140,14 @@
   </footer>
 
   <script>
-    // ========= SETTINGS (mirror chat.html) =========
+    // ========= SETTINGS =========
     document.getElementById('year').textContent = new Date().getFullYear();
-    const API_BASE  = "https://chadaddy.onrender.com";  // same host as chat.html
-    const CHAT_MODE = "business";                        // force Business prompt
-    const WANTS     = "hsn_only";                        // optional hint for backend
+    const API_BASE  = "https://chadaddy.onrender.com";   // use the SAME host as chat.html
+    const CHAT_MODE = "business";                         // Business prompt
+    const WANTS     = "hsn_only";                         // ask server to return only HSN
+    const API_ORDER = ["chat", "hs-find"];                // try /api/chat first; fallback to /api/hs-find if present
 
-    // ====== session (same as chat.html) ======
+    // ====== session ======
     function getSessionId(){
       const key="chadaddy_session_id";
       let v=localStorage.getItem(key);
@@ -151,64 +160,104 @@
     const btnRun = document.getElementById('hsRun');
     const btnReset = document.getElementById('hsReset');
     const resultsEl = document.getElementById('hsResults');
+    const dbgEl = document.getElementById('hsDebug');
     const countryEl = document.getElementById('hsCountry');
     const descEl = document.getElementById('hsDesc');
-
     const imgInput = document.getElementById('hsImage');
     const drop = document.getElementById('imgDrop');
     const previewWrap = document.getElementById('imgPreviewWrap');
     const previewImg = document.getElementById('imgPreview');
     const imgNameEl = document.getElementById('imgName');
     const clearImgBtn = document.getElementById('clearImg');
-
     let selectedFile = null;
+    let debugOn = false;
 
-    // ====== helpers ======
+    // ====== UI helpers (chat bubbles) ======
+    function clearResults(){
+      resultsEl.innerHTML = "";
+      dbgEl.classList.add("hidden");
+      dbgEl.textContent = "";
+    }
+    function addBubble(role, html){
+      const wrap = document.createElement("div");
+      wrap.className = `bubble ${role==='user'?'bubble-user':'bubble-ai'} fade-in`;
+      wrap.innerHTML = html;
+      resultsEl.appendChild(wrap);
+      resultsEl.scrollTop = resultsEl.scrollHeight;
+    }
+    function showDebug(obj){
+      try{ dbgEl.textContent = typeof obj === "string" ? obj : JSON.stringify(obj,null,2); }
+      catch{ dbgEl.textContent = String(obj); }
+      if (debugOn) dbgEl.classList.remove("hidden");
+    }
+
     function renderLoading(){
-      resultsEl.innerHTML = `
-        <div class="p-3 border border-brandBorder rounded-lg bg-white fade-in">
-          <div class="flex items-center gap-2"><span class="animate-pulse">Finding best HSN…</span></div>
-        </div>`;
+      clearResults();
+      addBubble("ai", `<div class="flex items-center gap-2"><span class="animate-pulse">Analyzing…</span></div>`);
     }
     function renderError(msg="Lookup failed. Try again."){
-      resultsEl.innerHTML = `<div class="p-3 border border-red-200 rounded-lg bg-red-50 text-red-900 fade-in">${msg}</div>`;
-    }
-    function renderHSN(hsn, country){
-      if(!hsn){
-        resultsEl.innerHTML = `<div class="p-3 border border-brandBorder rounded-lg bg-white fade-in">No HSN found. Add more details or a clearer image.</div>`;
-        return;
-      }
-      const code = String(hsn).trim();
-      resultsEl.innerHTML = `
-        <div class="p-3 border border-brandBorder rounded-lg bg-white fade-in">
-          <div class="text-2xl font-bold tracking-wide">${code}</div>
-          <a href="/calculator.html?hs=${encodeURIComponent(code)}&country=${encodeURIComponent(country)}"
-             class="mt-2 inline-block bg-brandAccent text-white px-3 py-1.5 rounded text-xs">Open Calculator</a>
-        </div>`;
-    }
-    function extractHSNFromText(t){
-      if(!t) return "";
-      const m = t.match(/\b(\d{8}|\d{6})\b/) || t.match(/\b\d{4,10}\b/);
-      return m ? m[1] : "";
+      addBubble("ai", `<div class="text-red-700">${msg}</div>`);
     }
 
-    // === uploader identical to chat.html (uploads then passes URLs) ===
+    // ====== Extract/format helpers ======
+    function extractHSNFromText(t){
+      if(!t) return "";
+      const cleaned = t.replace(/(\d)[\s\-.](?=\d)/g,"$1"); // collapse 85 18 30 / 85-18-30 / 85.18.30
+      let m = cleaned.match(/\b(\d{8})\b/);
+      if(m) return m[1];
+      m = cleaned.match(/\b(\d{6})\b/);
+      if(m) return m[1];
+      m = cleaned.match(/\b(\d{4,10})\b/);
+      return m ? m[1].slice(0,8) : "";
+    }
+
+    function summarizeDesc(d, maxWords=20){
+      if(!d) return "(no description provided)";
+      const words = d.trim().split(/\s+/);
+      if(words.length <= maxWords) return d.trim();
+      return words.slice(0, maxWords).join(" ") + "…";
+    }
+
+    function renderChatResult({country, desc, hsn, reply}){
+      // User bubble
+      const userHTML = `
+        <div class="text-xs text-brandMuted mb-1">You</div>
+        <div><strong>Country:</strong> ${country}</div>
+        <div><strong>Product:</strong> ${desc || "(image only)"}${selectedFile ? ' <span class="mono text-[11px]">+ image</span>' : ''}</div>`;
+      addBubble("user", userHTML);
+
+      // Assistant bubble with sections
+      const suggestLine = summarizeDesc(desc || reply || "", 20);
+      const codeLine = hsn ? `<div class="text-xl font-bold mono">${hsn}</div>` : `<div class="text-red-700">No HSN found.</div>`;
+      const dutyLine = hsn
+        ? `<a class="inline-block mt-2 text-xs underline text-brandAccent" href="/calculator.html?hs=${encodeURIComponent(hsn)}&country=${encodeURIComponent(country)}">Open Duty Calculator</a>`
+        : `<span class="text-xs text-brandMuted">Enter more detail or attach a clearer image.</span>`;
+
+      const aiHTML = `
+        <div class="text-xs text-brandMuted mb-1">Assistant</div>
+        <div class="mb-3"><strong>HSN CODE</strong></div>
+        ${codeLine}
+        <hr class="my-3 border-brandBorder">
+        <div class="mb-1"><strong>Suggestions</strong> <span class="text-xs text-brandMuted">(10–20 words)</span></div>
+        <div>${suggestLine}</div>
+        <hr class="my-3 border-brandBorder">
+        <div class="mb-1"><strong>Results / Duty-only suggestions</strong></div>
+        <div class="text-[13px] text-brandMuted">For the exact duty %, use the Duty Calculator below. Online rates vary by country, exemptions and notifications.</div>
+        ${dutyLine}`;
+      addBubble("ai", aiHTML);
+    }
+
+    // === uploader (same as chat.html) ===
     async function uploadFiles(files){
       if(!files || !files.length) return [];
       const fd = new FormData();
       files.forEach(f => fd.append("files", f, f.name));
       const res = await fetch(`${API_BASE}/api/upload`, { method:"POST", body: fd });
-      if(!res.ok) throw new Error("upload failed");
-      const data = await res.json().catch(()=>({files:[]}));
+      const text = await res.text();
+      let data = {};
+      try { data = JSON.parse(text); } catch { data = {}; }
+      if(!res.ok) throw new Error(`upload failed: ${res.status} ${text}`);
       return (data.files || []).map(x => ({ url:x.url, name:x.name, type:x.type }));
-    }
-
-    function resetImageState(){
-      if(imgInput) imgInput.value="";
-      previewWrap?.classList.add('hidden');
-      if(previewImg) previewImg.src="";
-      if(imgNameEl) imgNameEl.textContent="";
-      selectedFile=null;
     }
 
     // ====== image pick & DnD ======
@@ -221,8 +270,7 @@
     );
     drop.addEventListener('drop', e=>{
       e.preventDefault();
-      const file = e.dataTransfer?.files?.[0];
-      handlePickedFile(file);
+      const file = e.dataTransfer?.files?.[0]; handlePickedFile(file);
     });
     imgInput.addEventListener('change', e=> handlePickedFile(e.target.files?.[0]));
     clearImgBtn.addEventListener('click', resetImageState);
@@ -236,62 +284,87 @@
       imgNameEl.textContent=file.name;
       previewWrap.classList.remove('hidden');
     }
+    function resetImageState(){
+      if(imgInput) imgInput.value="";
+      previewWrap?.classList.add('hidden');
+      if(previewImg) previewImg.src="";
+      if(imgNameEl) imgNameEl.textContent="";
+      selectedFile=null;
+    }
 
-    // ====== main: call /api/chat with mode=business + attachments (URLs) ======
-    document.getElementById('hsRun').addEventListener('click', async (e)=>{
-      e.preventDefault();
-      const desc    = descEl.value.trim();
+    // ====== backend call (try /api/chat, then /api/hs-find) ======
+    async function callBackend({country, desc, attachments}){
+      const message = `Country: ${country}\nProduct: ${desc || "(image only)"}\nReturn only the single best HSN code (no text).`;
+      const payloadChat = {
+        message, session_id: SESSION_ID, mode: CHAT_MODE, wants: WANTS, attachments
+      };
+      const payloadHS = { country, desc, session_id: SESSION_ID, attachments };
+
+      let lastError = null;
+
+      for(const which of API_ORDER){
+        try{
+          const url = which === "chat" ? `${API_BASE}/api/chat` : `${API_BASE}/api/hs-find`;
+          const body = which === "chat" ? payloadChat : payloadHS;
+
+          const res = await fetch(url, {
+            method:"POST",
+            headers:{ "Content-Type":"application/json" },
+            body: JSON.stringify(body)
+          });
+          const raw = await res.text();
+          showDebug({endpoint: which, status: res.status, raw});
+          let data = {};
+          try { data = JSON.parse(raw); } catch { data = { reply: raw }; }
+          if(!res.ok) throw new Error(`HTTP ${res.status}: ${raw}`);
+
+          // Normalise output
+          const reply = (typeof data === "string") ? data : (data.reply ?? "");
+          const hsn   = data.hsn || extractHSNFromText(reply);
+
+          return { hsn, reply };
+        }catch(err){
+          lastError = err;
+          // try next endpoint in order
+        }
+      }
+      throw lastError || new Error("All endpoints failed");
+    }
+
+    // ====== main handler ======
+    btnRun.addEventListener('click', async (e)=>{
+      debugOn = e.altKey; // Alt+click to show debug panel
+      clearResults();
+
+      const desc    = (descEl.value || "").trim();
       const country = countryEl.value;
 
+      // echo user bubble immediately
+      addBubble("user", `
+        <div class="text-xs text-brandMuted mb-1">You</div>
+        <div><strong>Country:</strong> ${country}</div>
+        <div><strong>Product:</strong> ${desc || "(image only)"}${selectedFile ? ' <span class="mono text-[11px]">+ image</span>' : ''}</div>
+      `);
+
       if(!desc && !selectedFile){
-        return renderError("Add a short description or upload an image.");
+        renderError("Add a short description or upload an image.");
+        return;
       }
 
-      btnRun.disabled = true;
-      btnRun.textContent = "Analyzing…";
-      renderLoading();
+      btnRun.disabled = true; btnRun.textContent = "Analyzing…";
+      addBubble("ai", `<div class="flex items-center gap-2"><span class="animate-pulse">Working…</span></div>`);
 
       try{
-        // 1) upload optional image first → attachments array like chat.html
         const attachments = selectedFile ? await uploadFiles([selectedFile]) : [];
-
-        // 2) ask for only one best HSN
-        const message = `Country: ${country}\nProduct: ${desc || "(image only)"}\nReturn only the single best HSN code (no text).`;
-
-        const res = await fetch(`${API_BASE}/api/chat`, {
-          method:"POST",
-          headers:{ "Content-Type":"application/json" },
-          body: JSON.stringify({
-            message,
-            session_id: SESSION_ID,
-            mode: CHAT_MODE,     // uses your Business prompt server-side
-            wants: WANTS,        // hint to return only the code
-            attachments          // [{url,name,type}]
-          })
-        });
-
-        if(!res.ok){
-          const text = await res.text().catch(()=> "");
-          throw new Error(text || `HTTP ${res.status}`);
-        }
-
-        const data = await res.json().catch(()=> ({}));
-
-        // backend may return {hsn} or {reply} string; handle both
-        let hsn = data?.hsn || "";
-        if(!hsn){
-          const text = typeof data === "string" ? data : (data?.reply || "");
-          hsn = extractHSNFromText(text);
-        }
-
-        renderHSN(hsn, country);
-
+        const { hsn, reply } = await callBackend({country, desc, attachments});
+        clearResults(); // clear loading bubbles
+        renderChatResult({country, desc, hsn, reply});
       }catch(err){
-        console.error(err);
-        renderError("Server error. Please retry.");
+        showDebug({error: String(err)});
+        clearResults();
+        renderError("Server error. See debug (Alt-click).");
       }finally{
-        btnRun.disabled = false;
-        btnRun.textContent = "Find HS code";
+        btnRun.disabled = false; btnRun.textContent = "Find HS code";
       }
     });
 
@@ -299,7 +372,7 @@
     btnReset.addEventListener('click', ()=>{
       descEl.value="";
       resetImageState();
-      resultsEl.innerHTML = "";
+      clearResults();
     });
   </script>
 </body>
