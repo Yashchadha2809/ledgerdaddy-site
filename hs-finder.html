@@ -8,8 +8,6 @@
   <meta name="theme-color" content="#111827" />
   <link rel="preconnect" href="https://images.unsplash.com" />
   <script src="https://cdn.tailwindcss.com"></script>
-  <!-- Tesseract.js for OCR (lazy-loaded in code, but you can also keep this static include) -->
-  <script defer src="https://cdn.jsdelivr.net/npm/tesseract.js@5/dist/tesseract.min.js"></script>
   <script>
     tailwind.config = {
       theme: {
@@ -113,12 +111,8 @@
           <div id="imgPreviewWrap" class="hidden items-center gap-3">
             <img id="imgPreview" alt="preview" class="h-16 w-16 rounded-lg object-cover border border-brandBorder" />
             <div class="text-xs text-brandMuted truncate flex-1" id="imgName"></div>
-            <div class="flex items-center gap-2">
-              <button id="scanOCR" type="button" class="bg-brandAccent text-white px-3 py-2 rounded-lg tappable">Scan (OCR)</button>
-              <button id="clearImg" type="button" class="border border-brandBorder px-3 py-2 rounded-lg tappable">Remove</button>
-            </div>
+            <button id="clearImg" type="button" class="border border-brandBorder px-3 py-2 rounded-lg tappable">Remove</button>
           </div>
-          <div id="ocrStatus" class="text-xs text-brandMuted mt-1 hidden"></div>
         </div>
 
         <div class="flex items-center gap-2">
@@ -148,10 +142,10 @@
   <script>
     // ========= SETTINGS =========
     document.getElementById('year').textContent = new Date().getFullYear();
-    const API_BASE  = "https://chadaddy.onrender.com";   // SAME host as chat.html
+    const API_BASE  = "https://chadaddy.onrender.com";   // use the SAME host as chat.html
     const CHAT_MODE = "business";                         // Business prompt
     const WANTS     = "hsn_only";                         // ask server to return only HSN
-    const API_ORDER = ["chat", "hs-find"];                // try /api/chat first; fallback to /api/hs-find if added
+    const API_ORDER = ["chat", "hs-find"];                // try /api/chat first; fallback to /api/hs-find if present
 
     // ====== session ======
     function getSessionId(){
@@ -174,9 +168,7 @@
     const previewWrap = document.getElementById('imgPreviewWrap');
     const previewImg = document.getElementById('imgPreview');
     const imgNameEl = document.getElementById('imgName');
-    const scanBtn = document.getElementById('scanOCR');
     const clearImgBtn = document.getElementById('clearImg');
-    const ocrStatus = document.getElementById('ocrStatus');
     let selectedFile = null;
     let debugOn = false;
 
@@ -199,6 +191,14 @@
       if (debugOn) dbgEl.classList.remove("hidden");
     }
 
+    function renderLoading(){
+      clearResults();
+      addBubble("ai", `<div class="flex items-center gap-2"><span class="animate-pulse">Analyzing…</span></div>`);
+    }
+    function renderError(msg="Lookup failed. Try again."){
+      addBubble("ai", `<div class="text-red-700">${msg}</div>`);
+    }
+
     // ====== Extract/format helpers ======
     function extractHSNFromText(t){
       if(!t) return "";
@@ -211,15 +211,6 @@
       return m ? m[1].slice(0,8) : "";
     }
 
-    const STOP = new Set(["the","and","for","with","from","this","that","your","made","model","brand","size","color","new","original","pack","box","set","pcs","piece","by","of","in","to"]);
-    function cleanOCRText(raw){
-      if(!raw) return "";
-      let t = raw.replace(/\s+/g," ").replace(/[^\w\s\/\-\.\+&]/g," ").trim();
-      const words = t.split(/\s+/).filter(w => w.length>2 && !STOP.has(w.toLowerCase()));
-      // cap to 10–20 words
-      return words.slice(0, 18).join(" ");
-    }
-
     function summarizeDesc(d, maxWords=20){
       if(!d) return "(no description provided)";
       const words = d.trim().split(/\s+/);
@@ -228,12 +219,14 @@
     }
 
     function renderChatResult({country, desc, hsn, reply}){
+      // User bubble
       const userHTML = `
         <div class="text-xs text-brandMuted mb-1">You</div>
         <div><strong>Country:</strong> ${country}</div>
         <div><strong>Product:</strong> ${desc || "(image only)"}${selectedFile ? ' <span class="mono text-[11px]">+ image</span>' : ''}</div>`;
       addBubble("user", userHTML);
 
+      // Assistant bubble with sections
       const suggestLine = summarizeDesc(desc || reply || "", 20);
       const codeLine = hsn ? `<div class="text-xl font-bold mono">${hsn}</div>` : `<div class="text-red-700">No HSN found.</div>`;
       const dutyLine = hsn
@@ -242,14 +235,14 @@
 
       const aiHTML = `
         <div class="text-xs text-brandMuted mb-1">Assistant</div>
-        <div class="mb-3"><strong>HSN CODES</strong></div>
+        <div class="mb-3"><strong>HSN CODE</strong></div>
         ${codeLine}
         <hr class="my-3 border-brandBorder">
         <div class="mb-1"><strong>Suggestions</strong> <span class="text-xs text-brandMuted">(10–20 words)</span></div>
         <div>${suggestLine}</div>
         <hr class="my-3 border-brandBorder">
-        <div class="mb-1"><strong>Results or Duty-only suggestions (online)</strong></div>
-        <div class="text-[13px] text-brandMuted">Go to duty calculator to check correct duty percentage.</div>
+        <div class="mb-1"><strong>Results / Duty-only suggestions</strong></div>
+        <div class="text-[13px] text-brandMuted">For the exact duty %, use the Duty Calculator below. Online rates vary by country, exemptions and notifications.</div>
         ${dutyLine}`;
       addBubble("ai", aiHTML);
     }
@@ -281,7 +274,6 @@
     });
     imgInput.addEventListener('change', e=> handlePickedFile(e.target.files?.[0]));
     clearImgBtn.addEventListener('click', resetImageState);
-    scanBtn.addEventListener('click', handleScanClick);
 
     function handlePickedFile(file){
       if(!file) return;
@@ -291,68 +283,13 @@
       previewImg.src=URL.createObjectURL(file);
       imgNameEl.textContent=file.name;
       previewWrap.classList.remove('hidden');
-      ocrStatus.classList.add("hidden");
-      ocrStatus.textContent = "";
     }
     function resetImageState(){
       if(imgInput) imgInput.value="";
       previewWrap?.classList.add('hidden');
       if(previewImg) previewImg.src="";
       if(imgNameEl) imgNameEl.textContent="";
-      ocrStatus.classList.add("hidden"); ocrStatus.textContent="";
       selectedFile=null;
-    }
-
-    // ====== OCR (client-side, using Tesseract.js) ======
-    async function ensureTesseract(){
-      if(window.Tesseract) return;
-      // (we already included via <script defer>, but keep an extra guard)
-      return new Promise((resolve, reject)=>{
-        const s=document.createElement("script");
-        s.src="https://cdn.jsdelivr.net/npm/tesseract.js@5/dist/tesseract.min.js";
-        s.onload=resolve; s.onerror=()=>reject(new Error("Failed to load OCR"));
-        document.head.appendChild(s);
-      });
-    }
-
-    async function runOCR(file){
-      await ensureTesseract();
-      // progress UI
-      ocrStatus.classList.remove("hidden");
-      ocrStatus.textContent="OCR: starting…";
-      const logger = (m)=>{
-        if(m.status && typeof m.progress === "number"){
-          ocrStatus.textContent = `OCR: ${m.status} ${(m.progress*100|0)}%`;
-        }
-      };
-      const { data:{ text } } = await Tesseract.recognize(file, 'eng', { logger });
-      ocrStatus.textContent = "OCR: done";
-      return cleanOCRText(text);
-    }
-
-    async function handleScanClick(){
-      if(!selectedFile) { alert("No image selected"); return; }
-      try{
-        scanBtn.disabled=true; scanBtn.textContent="Scanning…";
-        const ocr = await runOCR(selectedFile);
-        if(ocr){
-          // prepend OCR into description so the Business prompt sees it
-          const current = (descEl.value || "").trim();
-          if(current){
-            descEl.value = `${current}\n[OCR: ${ocr}]`;
-          }else{
-            descEl.value = `[OCR: ${ocr}]`;
-          }
-        }else{
-          ocrStatus.textContent = "OCR: no text found";
-        }
-      }catch(err){
-        ocrStatus.textContent = "OCR failed";
-        console.error(err);
-      }finally{
-        scanBtn.disabled=false; scanBtn.textContent="Scan (OCR)";
-        setTimeout(()=> ocrStatus.classList.add("hidden"), 1500);
-      }
     }
 
     // ====== backend call (try /api/chat, then /api/hs-find) ======
@@ -399,18 +336,18 @@
       debugOn = e.altKey; // Alt+click to show debug panel
       clearResults();
 
-      const desc0   = (descEl.value || "").trim();
+      const desc    = (descEl.value || "").trim();
       const country = countryEl.value;
 
       // echo user bubble immediately
       addBubble("user", `
         <div class="text-xs text-brandMuted mb-1">You</div>
         <div><strong>Country:</strong> ${country}</div>
-        <div><strong>Product:</strong> ${desc0 || "(image only)"}${selectedFile ? ' <span class="mono text-[11px]">+ image</span>' : ''}</div>
+        <div><strong>Product:</strong> ${desc || "(image only)"}${selectedFile ? ' <span class="mono text-[11px]">+ image</span>' : ''}</div>
       `);
 
-      if(!desc0 && !selectedFile){
-        addBubble("ai", `<div class="text-red-700">Add a short description or upload an image.</div>`);
+      if(!desc && !selectedFile){
+        renderError("Add a short description or upload an image.");
         return;
       }
 
@@ -418,24 +355,14 @@
       addBubble("ai", `<div class="flex items-center gap-2"><span class="animate-pulse">Working…</span></div>`);
 
       try{
-        // 1) upload image → attachments (URLs)
         const attachments = selectedFile ? await uploadFiles([selectedFile]) : [];
-
-        // 2) If no description but we have an image, try OCR automatically
-        let desc = desc0;
-        if(!desc && selectedFile){
-          const ocr = await runOCR(selectedFile);
-          if(ocr) desc = `[OCR: ${ocr}]`;
-        }
-
-        // 3) call backend
         const { hsn, reply } = await callBackend({country, desc, attachments});
-        clearResults(); // remove loaders
+        clearResults(); // clear loading bubbles
         renderChatResult({country, desc, hsn, reply});
       }catch(err){
         showDebug({error: String(err)});
         clearResults();
-        addBubble("ai", `<div class="text-red-700">Server error. See debug (Alt-click).</div>`);
+        renderError("Server error. See debug (Alt-click).");
       }finally{
         btnRun.disabled = false; btnRun.textContent = "Find HS code";
       }
