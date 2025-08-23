@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8" />
+  <title>Admin – Marketplace cPanel</title>
+  <script src="https://unpkg.com/@supabase/supabase-js@2"></script>
+  <style>
+    body{font-family:system-ui,Arial;margin:20px}
+    .card{border:1px solid #ddd;border-radius:12px;padding:16px;margin:12px 0}
+    .row{display:flex;gap:12px;flex-wrap:wrap}
+    .stat{flex:1;min-width:160px;border:1px solid #eee;border-radius:12px;padding:16px}
+    button,input,select{padding:8px}
+  </style>
+</head>
+<body>
+  <h1>Admin cPanel</h1>
+  <div id="gate" class="card">Checking access…</div>
+  <div id="content" style="display:none">
+    <div class="row">
+      <div class="stat"><div>Products</div><b id="stat-products">0</b></div>
+      <div class="stat"><div>Vendors</div><b id="stat-vendors">0</b></div>
+      <div class="stat"><div>Orders</div><b id="stat-orders">0</b></div>
+    </div>
+
+    <div class="card">
+      <h3>Quick Actions</h3>
+      <button id="btn-refresh">Refresh Stats</button>
+      <button id="btn-logout">Log out</button>
+    </div>
+
+    <div class="card">
+      <h3>Products (last 10)</h3>
+      <div id="products"></div>
+    </div>
+  </div>
+
+  <script>
+    // >>> REPLACE with your project details
+    const SUPABASE_URL = "https://nkvrhaxpoehqcgoamjhq.supabase.co";
+    const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im5rdnJoYXhwb2VocWNnb2FtamhxIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTU3OTc5MDcsImV4cCI6MjA3MTM3MzkwN30.I6azwaIiEsQ_EjFRXtIZFTvpcc_g6NccsC3pJdWQPks";
+    // <<<
+
+    const { createClient } = supabase;
+    const sb = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+    const gate = document.getElementById('gate');
+    const content = document.getElementById('content');
+
+    async function requireAuth() {
+      const { data: { user } } = await sb.auth.getUser();
+      if (!user) {
+        // Send to your existing login with redirect back to /admin
+        window.location.href = `/login?redirect=${encodeURIComponent('/admin')}`;
+        return null;
+      }
+      return user;
+    }
+
+    async function requireAdmin(user) {
+      // IMPORTANT: your profiles table uses user_id (not id)
+      const { data, error } = await sb
+        .from('profiles')
+        .select('role,email')
+        .eq('user_id', user.id)
+        .single();
+
+      if (error) { gate.textContent = error.message; return false; }
+      if (data?.role !== 'admin') {
+        gate.innerHTML = `
+          <b>Access denied</b><br/>
+          Your account (<code>${data?.email ?? 'unknown'}</code>) is not an admin.
+        `;
+        return false;
+      }
+      gate.innerHTML = `Welcome, admin: <code>${data.email}</code>`;
+      return true;
+    }
+
+    async function loadStats() {
+      // These assume you have tables: products, vendors, orders
+      const [p,v,o] = await Promise.all([
+        sb.from('products').select('*', { count: 'exact', head: true }),
+        sb.from('vendors').select('*', { count: 'exact', head: true }),
+        sb.from('orders').select('*', { count: 'exact', head: true }),
+      ]);
+      document.getElementById('stat-products').textContent = p.count ?? 0;
+      document.getElementById('stat-vendors').textContent  = v.count ?? 0;
+      document.getElementById('stat-orders').textContent   = o.count ?? 0;
+    }
+
+    async function loadProducts() {
+      const { data, error } = await sb
+        .from('products')
+        .select('id,title,price_cents,active,created_at')
+        .order('created_at', { ascending: false })
+        .limit(10);
+
+      const el = document.getElementById('products');
+      if (error) { el.textContent = error.message; return; }
+      if (!data?.length) { el.textContent = 'No products yet.'; return; }
+
+      el.innerHTML = data.map(p => `
+        <div style="display:flex;gap:8px;align-items:center;border-bottom:1px solid #eee;padding:8px 0">
+          <div style="flex:1">
+            <b>${p.title}</b><br/>
+            ₹ ${(p.price_cents/100).toFixed(2)} · ${p.active ? 'Active' : 'Inactive'}
+          </div>
+          <button onclick="toggleActive('${p.id}', ${p.active})">${p.active ? 'Disable' : 'Enable'}</button>
+        </div>
+      `).join('');
+    }
+
+    async function toggleActive(id, active) {
+      const { error } = await sb.from('products').update({ active: !active }).eq('id', id);
+      if (error) { alert(error.message); return; }
+      await loadStats();
+      await loadProducts();
+    }
+
+    async function main() {
+      const user = await requireAuth();
+      if (!user) return;
+
+      const ok = await requireAdmin(user);
+      if (!ok) return;
+
+      content.style.display = 'block';
+      await loadStats();
+      await loadProducts();
+
+      document.getElementById('btn-refresh').onclick = async () => {
+        await loadStats(); await loadProducts();
+      };
+      document.getElementById('btn-logout').onclick = async () => {
+        await sb.auth.signOut(); window.location.href = '/';
+      };
+    }
+
+    main();
+    window.toggleActive = toggleActive;
+  </script>
+</body>
+</html>
