@@ -238,7 +238,7 @@
       const password = document.getElementById('password').value;
       document.getElementById('authError').classList.add('hidden');
 
-      const { data, error } = await sb.auth.signInWithPassword({ email, password });
+      const { error } = await sb.auth.signInWithPassword({ email, password });
       if (error) {
         document.getElementById('authError').textContent = error.message;
         document.getElementById('authError').classList.remove('hidden');
@@ -256,7 +256,7 @@
       location.reload();
     });
 
-    // After auth, check admin and load data
+    // After auth, check admin and load data (UPDATED: lookup profile by EMAIL)
     async function postAuth(){
       const { data: { user } } = await sb.auth.getUser();
       if(!user){
@@ -266,11 +266,11 @@
       userEmail.textContent = user.email || '';
       userBox.classList.remove('hidden');
 
-      // fetch profile
+      // UPDATED ADMIN CHECK: by email (not id)
       const { data: profile, error } = await sb
         .from('profiles')
-        .select('*')
-        .eq('user_id', user.id)
+        .select('user_id,email,is_admin')
+        .eq('email', user.email)
         .maybeSingle();
 
       if (error) console.error(error);
