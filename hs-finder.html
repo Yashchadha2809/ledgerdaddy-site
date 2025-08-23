@@ -145,7 +145,7 @@
     const API_BASE  = "https://chadaddy.onrender.com";   // same host as chat.html
     const CHAT_MODE = "business";                         // Business prompt
     const WANTS     = "hsn_only";                         // ask server to return only HSN
-    const API_ORDER = ["chat", "hs-find"];                // try /api/chat first; fallback to /api/hs-find
+    const API_ORDER = ["hs-find", "chat"];                // ← changed: try /api/hs-find first, then /api/chat
 
     // ====== optional: read X-Bridge-Token if your server requires it ======
     function getBridgeToken(){
@@ -286,7 +286,7 @@
     ['dragenter','dragover'].forEach(evt =>
       drop.addEventListener(evt, e=>{ e.preventDefault(); drop.classList.add('drop-okay'); })
     );
-    ['dragleave','drop'].forEach(evt =>
+    ['dragleave','drop'].forEach evt =>
       drop.addEventListener(evt, e=>{ e.preventDefault(); drop.classList.remove('drop-okay'); })
     );
     drop.addEventListener('drop', e=>{
