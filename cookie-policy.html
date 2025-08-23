@@ -1,54 +1,324 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" class="scroll-smooth">
 <head>
-  <meta charset="utf-8" />
-  <title>Cookie Policy — LedgerDaddy</title>
+  <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <meta name="robots" content="noindex" />
+  <title>Cookie Policy – CustomsDaddy</title>
+  <meta name="theme-color" content="#2563EB" />
+  <meta name="description" content="Cookie Policy for CustomsDaddy (AI HS Finder, Calculator, Chat)." />
+  <link rel="preconnect" href="https://images.unsplash.com" />
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors:{
+            brandPrimary:"#111827",
+            brandAccent:"#2563EB",
+            brandSoft:"#EFF6FF",
+            brandBorder:"#E5E7EB",
+            brandMuted:"#6B7280",
+            brandBg:"#F9FAFB"
+          },
+          boxShadow:{ lift:"0 10px 25px rgba(17,24,39,.10)" }
+        }
+      }
+    }
+  </script>
   <style>
-    body{font-family:Inter,system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif;margin:0;background:#0B0B12;color:#E6E6F0}
-    main{max-width:900px;margin:0 auto;padding:48px 20px}
-    a{color:#22D3EE} h1{font-size:32px;margin:0 0 6px} h2{font-size:20px;margin:28px 0 8px}
-    p,li{line-height:1.6;color:#C9CBD3} .muted{color:#9CA3AF;font-size:14px}
-    header,footer{max-width:900px;margin:0 auto;padding:16px 20px;color:#9CA3AF}
-    table{width:100%;border-collapse:collapse} th,td{border:1px solid #2a2a36;padding:8px;text-align:left}
+    .hero-img{background:url('https://images.unsplash.com/photo-1586521995568-39ef16c6934d?q=80&w=1920&auto=format&fit=crop') center/cover no-repeat;}
+    .prose h2{scroll-margin-top:100px}
   </style>
 </head>
-<body>
-<header><a href="index.html">← Back to site</a></header>
-<main>
-  <h1>Cookie Policy</h1>
-  <p class="muted">Review with legal counsel before publishing. This is a template.</p>
-  <p class="muted">Last updated: <span id="d"></span></p>
+<body class="bg-brandBg text-brandPrimary">
 
-  <h2>What are cookies?</h2>
-  <p>Small text files stored on your device to remember settings and help the site function.</p>
+  <!-- Topbar -->
+  <header class="fixed top-0 inset-x-0 z-50 border-b border-brandBorder bg-white/90 backdrop-blur">
+    <div class="max-w-7xl mx-auto px-4 py-3 flex items-center justify-between">
+      <a href="/" class="flex items-center gap-2" aria-label="Home">
+        <span class="grid h-9 w-9 place-items-center rounded-xl bg-gradient-to-tr from-brandSoft to-white text-brandPrimary font-extrabold shadow">◆</span>
+        <span class="text-xl font-bold">CustomsDaddy</span>
+        <span class="ml-2 hidden sm:inline-flex text-[11px] px-2 py-0.5 rounded-full border border-brandBorder text-brandMuted">AI Customs</span>
+      </a>
+      <nav class="hidden md:flex items-center gap-6 text-sm font-medium" aria-label="Main">
+        <a href="/#marketplace" class="hover:text-brandAccent">Marketplace</a>
+        <a href="/#calculator" class="hover:text-brandAccent">Calculator</a>
+        <a href="/#hsfinder" class="hover:text-brandAccent">HS Finder</a>
+        <a href="/#chat" class="hover:text-brandAccent">Chat</a>
+        <a href="/#news" class="hover:text-brandAccent">News</a>
+        <a href="/#learn" class="hover:text-brandAccent">Academy</a>
+        <a href="/#pricing" class="hover:text-brandAccent">Pricing</a>
+      </nav>
+      <a href="/log_in.html" class="border border-brandBorder px-4 py-2 rounded-lg">Log in</a>
+    </div>
+  </header>
 
-  <h2>How we use cookies</h2>
-  <ul>
-    <li>Necessary: session management, security.</li>
-    <li>Preferences: remember choices such as dismissed banners.</li>
-    <li>Analytics: understand how features are used (where enabled).</li>
-  </ul>
+  <!-- Hero -->
+  <section class="pt-28 md:pt-32">
+    <div class="hero-img">
+      <div class="backdrop-brightness-50 bg-gradient-to-r from-brandPrimary/50 to-brandAccent/50">
+        <div class="max-w-3xl mx-auto px-4 py-12 text-white">
+          <h1 class="text-4xl md:text-5xl font-extrabold leading-tight">Cookie Policy</h1>
+          <p class="mt-3 text-white/95">How we use cookies and similar technologies.</p>
+          <p class="mt-2 text-white/90"><strong>Last Updated:</strong> <span id="lastUpdated">—</span></p>
+        </div>
+      </div>
+    </div>
+  </section>
 
-  <h2>Cookies we set</h2>
-  <table>
-    <thead><tr><th>Name</th><th>Type</th><th>Purpose</th><th>Duration</th></tr></thead>
-    <tbody>
-      <tr><td>ld_session</td><td>Necessary</td><td>Maintains session</td><td>Session</td></tr>
-      <tr><td>ld_cookie_ok</td><td>Preferences</td><td>Hides cookie banner</td><td>12 months</td></tr>
-    </tbody>
-  </table>
+  <!-- Content -->
+  <main class="max-w-3xl mx-auto px-4 -mt-10">
+    <article class="bg-white border border-brandBorder rounded-2xl shadow p-6 md:p-8 prose prose-slate">
 
-  <h2>Your choices</h2>
-  <p>You can set your browser to block or delete cookies. Some features may not work without necessary cookies.</p>
+      <h2 id="intro">1. What are cookies?</h2>
+      <p>
+        Cookies are small text files stored on your device by websites you visit. Similar technologies include localStorage,
+        sessionStorage, and pixels. They help websites function, remember preferences, and understand how services are used.
+      </p>
 
-  <h2>Contact</h2>
-  <p>Email: <a href="mailto:hello@ledgerdaddy.com">hello@ledgerdaddy.com</a></p>
-</main>
-<footer>© <span id="y"></span> LedgerDaddy</footer>
-<script>
-  const n=new Date();document.getElementById('y').textContent=n.getFullYear();document.getElementById('d').textContent=n.toISOString().slice(0,10);
-</script>
+      <h2 id="how-we-use">2. How CustomsDaddy uses cookies/local storage</h2>
+      <ul>
+        <li><strong>Strictly Necessary</strong> (essential for site features and security).</li>
+        <li><strong>Performance/Analytics</strong> (to understand usage and improve features).</li>
+        <li><strong>Functional</strong> (to remember preferences such as cookie consent choices).</li>
+        <li><strong>Advertising</strong> (only if we enable third-party ad/retargeting services; <em>off by default</em>).</li>
+      </ul>
+      <p>
+        Note: Our web app typically keeps your authentication session in <code>localStorage</code> via our auth provider;
+        we avoid setting tracking cookies by default. If we later add analytics/ads, we’ll honor your consent choices.
+      </p>
+
+      <h2 id="types">3. Categories</h2>
+      <ul>
+        <li><strong>Strictly necessary:</strong> Required for core functionality (security, page navigation). Cannot be disabled.</li>
+        <li><strong>Performance/Analytics:</strong> Aggregated usage metrics to improve the Service.</li>
+        <li><strong>Functional:</strong> Saves your preferences (e.g., cookie consent).</li>
+        <li><strong>Advertising:</strong> Personalization/retargeting by third parties (disabled unless you opt in).</li>
+      </ul>
+
+      <h2 id="examples">4. Examples (illustrative)</h2>
+      <p class="text-sm text-brandMuted">
+        Exact names/expiries may vary by vendor and deployment. We keep this table updated when services change.
+      </p>
+      <div class="overflow-x-auto border border-brandBorder rounded-xl">
+        <table class="w-full text-sm">
+          <thead class="bg-brandBg">
+            <tr>
+              <th class="text-left p-3">Category</th>
+              <th class="text-left p-3">Purpose</th>
+              <th class="text-left p-3">Storage</th>
+              <th class="text-left p-3">Example Key/Name</th>
+              <th class="text-left p-3">Typical Expiry</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr class="border-t">
+              <td class="p-3">Strictly necessary</td>
+              <td class="p-3">Security, routing, availability</td>
+              <td class="p-3">Cookie / localStorage</td>
+              <td class="p-3">route/session flags</td>
+              <td class="p-3">Session</td>
+            </tr>
+            <tr class="border-t">
+              <td class="p-3">Functional</td>
+              <td class="p-3">Saves consent choices</td>
+              <td class="p-3">localStorage</td>
+              <td class="p-3">cd_cookie_prefs</td>
+              <td class="p-3">1 year</td>
+            </tr>
+            <tr class="border-t">
+              <td class="p-3">Performance/Analytics</td>
+              <td class="p-3">Anonymous usage metrics</td>
+              <td class="p-3">Cookie / localStorage</td>
+              <td class="p-3">analytics_client_id</td>
+              <td class="p-3">6–24 months</td>
+            </tr>
+            <tr class="border-t">
+              <td class="p-3">Advertising (optional)</td>
+              <td class="p-3">Personalization/retargeting</td>
+              <td class="p-3">Third-party cookie</td>
+              <td class="p-3">ad_* ids</td>
+              <td class="p-3">Varies by provider</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <h2 id="consent">5. Your choices &amp; consent</h2>
+      <p>
+        You can manage your cookie preferences at any time using the controls below. We only activate non-essential
+        categories (Analytics, Advertising) if you choose to allow them.
+      </p>
+      <button id="openPrefs" class="mt-2 inline-flex items-center gap-2 px-4 py-2 rounded-lg border border-brandBorder hover:bg-brandBg">
+        Open Cookie Preferences
+      </button>
+
+      <h2 id="browser">6. Managing cookies in your browser</h2>
+      <p>
+        You can block or delete cookies in your browser settings. Blocking strictly necessary cookies may affect site functionality.
+      </p>
+
+      <h2 id="updates">7. Updates to this policy</h2>
+      <p>
+        We may update this policy as we add or change services. We’ll update the “Last Updated” date and, where required,
+        prompt you to review your preferences again.
+      </p>
+
+      <h2 id="contact">8. Contact</h2>
+      <address class="not-italic">
+        <strong>Privacy Team</strong><br />
+        CustomsDaddy<br />
+        <a class="text-brandAccent" href="mailto:privacy@ledgerdaddy.com">privacy@ledgerdaddy.com</a>
+      </address>
+    </article>
+
+    <div class="max-w-3xl mx-auto px-4 mt-6 mb-12 text-sm">
+      <a href="/" class="text-brandAccent">← Back to home</a>
+      <span class="mx-2 text-brandMuted">•</span>
+      <a href="/privacy.html" class="text-brandAccent">Privacy Policy</a>
+      <span class="mx-2 text-brandMuted">•</span>
+      <a href="/terms.html" class="text-brandAccent">Terms</a>
+      <span class="mx-2 text-brandMuted">•</span>
+      <a href="/refund.html" class="text-brandAccent">Refund Policy</a>
+    </div>
+  </main>
+
+  <footer class="text-center text-xs text-brandMuted mb-8">
+    © <span id="year"></span> CustomsDaddy
+  </footer>
+
+  <!-- Consent Banner -->
+  <div id="cookieBanner" class="hidden fixed inset-x-0 bottom-0 z-50">
+    <div class="max-w-4xl mx-auto m-4 p-4 md:p-5 rounded-xl shadow-lg bg-white border border-brandBorder">
+      <p class="text-sm text-brandPrimary">
+        We use cookies and similar technologies to run the site and improve your experience. You can accept all cookies,
+        reject non-essential cookies, or manage preferences.
+      </p>
+      <div class="mt-3 flex flex-col sm:flex-row gap-2">
+        <button id="acceptAll" class="bg-brandAccent text-white px-4 py-2 rounded-lg font-medium">Accept all</button>
+        <button id="rejectAll" class="border border-brandBorder px-4 py-2 rounded-lg font-medium">Reject non-essential</button>
+        <button id="managePrefs" class="border border-brandBorder px-4 py-2 rounded-lg font-medium">Manage preferences</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Preferences Modal -->
+  <div id="prefsModal" class="hidden fixed inset-0 z-50 bg-black/50">
+    <div class="bg-white rounded-2xl shadow-xl max-w-lg mx-auto my-16 p-6 border border-brandBorder">
+      <h3 class="text-lg font-semibold">Cookie Preferences</h3>
+      <p class="text-sm text-brandMuted mt-1">Enable/disable categories below. Strictly necessary are always on.</p>
+
+      <div class="mt-4 space-y-3">
+        <label class="flex items-center justify-between gap-4 p-3 border rounded-xl">
+          <span>
+            <span class="font-medium">Strictly necessary</span>
+            <span class="block text-sm text-brandMuted">Required for core features</span>
+          </span>
+          <input type="checkbox" checked disabled class="h-5 w-5">
+        </label>
+
+        <label class="flex items-center justify-between gap-4 p-3 border rounded-xl">
+          <span>
+            <span class="font-medium">Performance / Analytics</span>
+            <span class="block text-sm text-brandMuted">Anonymous usage metrics</span>
+          </span>
+          <input id="toggleAnalytics" type="checkbox" class="h-5 w-5">
+        </label>
+
+        <label class="flex items-center justify-between gap-4 p-3 border rounded-xl">
+          <span>
+            <span class="font-medium">Advertising</span>
+            <span class="block text-sm text-brandMuted">Personalization/retargeting</span>
+          </span>
+          <input id="toggleAds" type="checkbox" class="h-5 w-5">
+        </label>
+      </div>
+
+      <div class="mt-5 flex gap-2">
+        <button id="savePrefs" class="bg-brandAccent text-white px-4 py-2 rounded-lg">Save preferences</button>
+        <button id="closePrefs" class="border border-brandBorder px-4 py-2 rounded-lg">Close</button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // Last Updated + footer year (Asia/Kolkata)
+    (function(){
+      try {
+        const fmt = new Intl.DateTimeFormat('en-IN', { timeZone: 'Asia/Kolkata', year: 'numeric', month: 'long', day: 'numeric' });
+        document.getElementById('lastUpdated').textContent = fmt.format(new Date());
+      } catch(e){
+        document.getElementById('lastUpdated').textContent = new Date().toISOString().slice(0,10);
+      }
+      document.getElementById('year').textContent = new Date().getFullYear();
+    })();
+
+    // ---- Simple Consent Controller (no trackers loaded by default) ----
+    const LS_KEY = 'cd_cookie_prefs';
+    const $ = (id)=>document.getElementById(id);
+    const banner = $('cookieBanner');
+    const modal  = $('prefsModal');
+    const openPrefsBtn = $('openPrefs');
+
+    function getPrefs(){
+      try { return JSON.parse(localStorage.getItem(LS_KEY)) || null; } catch(_) { return null; }
+    }
+    function setPrefs(p){
+      localStorage.setItem(LS_KEY, JSON.stringify(p));
+      // Example hooks: conditionally load analytics/ads if enabled
+      if (p.analytics) loadAnalytics();
+      if (p.ads) loadAds();
+    }
+    // Placeholder loaders — connect your tools here
+    function loadAnalytics(){ console.info('[cookies] analytics enabled'); /* load your analytics script here */ }
+    function loadAds(){ console.info('[cookies] ads enabled'); /* load your ad/retargeting scripts here */ }
+
+    function showBanner(){ banner.classList.remove('hidden'); }
+    function hideBanner(){ banner.classList.add('hidden'); }
+    function showModal(){ modal.classList.remove('hidden'); }
+    function hideModal(){ modal.classList.add('hidden'); }
+
+    // Initialize UI based on prefs
+    (function init(){
+      const p = getPrefs();
+      if (!p) showBanner();
+      else {
+        // Apply on load
+        if (p.analytics) loadAnalytics();
+        if (p.ads) loadAds();
+      }
+    })();
+
+    // Banner actions
+    $('acceptAll').onclick = () => {
+      setPrefs({ necessary: true, analytics: true, ads: true, ts: Date.now() });
+      hideBanner();
+    };
+    $('rejectAll').onclick = () => {
+      setPrefs({ necessary: true, analytics: false, ads: false, ts: Date.now() });
+      hideBanner();
+    };
+    $('managePrefs').onclick = () => { hideBanner(); showModal(); };
+
+    // Modal actions
+    $('savePrefs').onclick = () => {
+      const analytics = $('toggleAnalytics').checked;
+      const ads = $('toggleAds').checked;
+      setPrefs({ necessary: true, analytics, ads, ts: Date.now() });
+      hideModal();
+    };
+    $('closePrefs').onclick = hideModal;
+
+    // Open from page section button
+    if (openPrefsBtn) openPrefsBtn.onclick = showModal;
+
+    // When opening modal, sync current values
+    modal.addEventListener('transitionstart', syncToggles);
+    function syncToggles(){
+      const p = getPrefs() || { necessary: true, analytics: false, ads: false };
+      $('toggleAnalytics').checked = !!p.analytics;
+      $('toggleAds').checked = !!p.ads;
+    }
+  </script>
 </body>
 </html>
