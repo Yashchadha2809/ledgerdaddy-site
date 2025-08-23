@@ -145,7 +145,7 @@
     const API_BASE  = "https://chadaddy.onrender.com";   // same host as chat.html
     const CHAT_MODE = "business";                         // Business prompt
     const WANTS     = "hsn_only";                         // ask server to return only HSN
-    const API_ORDER = ["hs-find", "chat"];                // ← changed: try /api/hs-find first, then /api/chat
+    const API_ORDER = ["chat", "hs-find"];                // keep your original order
 
     // ====== optional: read X-Bridge-Token if your server requires it ======
     function getBridgeToken(){
@@ -210,7 +210,7 @@
     // ====== Extract/format helpers ======
     function extractHSNFromText(t){
       if(!t) return "";
-      const cleaned = t.replace(/(\d)[\s\-.](?=\d)/g,"$1"); // collapse 85 18 30 / 85-18-30 / 85.18.30
+      const cleaned = t.replace(/(\d)[\s\-.](?=\d)/g,"$1");
       let m = cleaned.match(/\b(\d{8})\b/);
       if(m) return m[1];
       m = cleaned.match(/\b(\d{6})\b/);
@@ -225,14 +225,12 @@
       return words.slice(0, maxWords).join(" ") + "…";
     }
     function renderChatResult({country, desc, hsn, reply}){
-      // User bubble
       const userHTML = `
         <div class="text-xs text-brandMuted mb-1">You</div>
         <div><strong>Country:</strong> ${country}</div>
         <div><strong>Product:</strong> ${desc || "(image only)"}${selectedFile ? ' <span class="mono text-[11px]">+ image</span>' : ''}</div>`;
       addBubble("user", userHTML);
 
-      // Assistant bubble with sections
       const suggestLine = summarizeDesc(desc || reply || "", 20);
       const codeLine = hsn ? `<div class="text-xl font-bold mono">${hsn}</div>` : `<div class="text-red-700">No HSN found.</div>`;
       const dutyLine = hsn
@@ -276,7 +274,6 @@
         if(!res.ok) throw new Error(`upload failed: ${res.status} ${text}`);
         return (data.files || []).map(x => ({ url:x.url, name:x.name, type:x.type }));
       }catch(e){
-        // Fallback: no server upload → return a pseudo-attachment so we can still send base64
         return files.map(f=>({ url:"", name:f.name, type:f.type, _file:f }));
       }
     }
@@ -286,7 +283,7 @@
     ['dragenter','dragover'].forEach(evt =>
       drop.addEventListener(evt, e=>{ e.preventDefault(); drop.classList.add('drop-okay'); })
     );
-    ['dragleave','drop'].forEach evt =>
+    ['dragleave','drop'].forEach(evt =>
       drop.addEventListener(evt, e=>{ e.preventDefault(); drop.classList.remove('drop-okay'); })
     );
     drop.addEventListener('drop', e=>{
@@ -315,11 +312,9 @@
 
     // ====== backend call (try /api/chat, then /api/hs-find) ======
     async function callBackend({country, desc, attachments}){
-      // Prepare headers
       const headers = { "Content-Type":"application/json" };
       if (BRIDGE_TOKEN) headers["X-Bridge-Token"] = BRIDGE_TOKEN;
 
-      // If upload returned pseudo-attachments (no URL), convert to base64
       let images_base64 = [];
       const cleanAttachments = [];
       for(const a of (attachments || [])){
@@ -336,11 +331,12 @@
         attachments: cleanAttachments, images_base64 };
 
       let lastError = null;
+      let lastReply = "";
 
       for(const which of API_ORDER){
         try{
-          const url = which === "chat" ? `${API_BASE}/api/chat` : `${API_BASE}/api/hs-find`;
-          const body = which === "chat" ? payloadChat : payloadHS;
+          const url  = which === "chat" ? `${API_BASE}/api/chat`    : `${API_BASE}/api/hs-find`;
+          const body = which === "chat" ? payloadChat               : payloadHS;
 
           const res = await fetch(url, { method:"POST", headers, body: JSON.stringify(body) });
           const raw = await res.text();
@@ -349,28 +345,33 @@
           try { data = JSON.parse(raw); } catch { data = { reply: raw }; }
           if(!res.ok) throw new Error(`HTTP ${res.status}: ${raw}`);
 
-          // Normalise output
           const reply = (typeof data === "string") ? data : (data.reply ?? "");
           const hsn   = data.hsn || extractHSNFromText(reply);
 
+          lastReply = reply || lastReply;
+
+          // *** KEY FIX: if no HSN from this endpoint, automatically try the next one ***
+          if (!hsn) {
+            continue;
+          }
           return { hsn, reply };
         }catch(err){
           lastError = err;
-          // try next endpoint in order
         }
       }
+      // nothing produced a code; surface the last textual reply for the UI to show
+      if (lastReply) return { hsn:"", reply:lastReply };
       throw lastError || new Error("All endpoints failed");
     }
 
     // ====== main handler ======
     btnRun.addEventListener('click', async (e)=>{
-      debugOn = e.altKey; // Alt+click to show debug panel
+      debugOn = e.altKey;
       clearResults();
 
       const desc    = (descEl.value || "").trim();
       const country = countryEl.value;
 
-      // echo user bubble immediately
       addBubble("user", `
         <div class="text-xs text-brandMuted mb-1">You</div>
         <div><strong>Country:</strong> ${country}</div>
@@ -388,7 +389,7 @@
       try{
         const attachments = selectedFile ? await uploadFiles([selectedFile]) : [];
         const { hsn, reply } = await callBackend({country, desc, attachments});
-        clearResults(); // clear loading bubbles
+        clearResults();
         renderChatResult({country, desc, hsn, reply});
       }catch(err){
         showDebug({error: String(err)});
