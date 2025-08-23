@@ -108,12 +108,13 @@
   <script>
     document.getElementById('year').textContent = new Date().getFullYear();
     const API_BASE = "https://chadaddy.onrender.com";
+    const CHAT_MODE = "learn"; // ← force LEARN prompt for this page
 
     // ===== Session ID =====
     function getSessionId(){
       const key="chadaddy_session_id";
       let v=localStorage.getItem(key);
-      if(!v){ v = crypto.randomUUID?.() || 'sess_'+Date.now(); localStorage.setItem(key,v); }
+      if(!v){ v = (crypto.randomUUID?.() || ('sess_'+Date.now())); localStorage.setItem(key,v); }
       return v;
     }
     const SESSION_ID = getSessionId();
@@ -169,22 +170,26 @@
 
     async function uploadFiles(files){
       if(!files.length) return [];
-      const form=new FormData();
-      files.forEach(f=>form.append("files",f,f.name));
+      const fd=new FormData();
+      files.forEach(f=>fd.append("files",f,f.name));
       try{
-        const res=await fetch(`${API_BASE}/api/upload`,{method:"POST",body:form});
+        const res=await fetch(`${API_BASE}/api/upload`,{method:"POST",body:fd});
         const data=await res.json();
         return (data.files||[]).map(x=>({url:x.url,name:x.name,type:x.type}));
       }catch(e){
+        // fallback preview if upload API is unavailable
         return files.map(f=>({url:URL.createObjectURL(f),name:f.name,type:f.type}));
       }
     }
 
     async function sendMessage(text){
-      if(!text.trim() && !pendingFiles.length) return;
+      const trimmed=(text||"").trim();
+      if(!trimmed && !pendingFiles.length) return;
+
       const uploads=await uploadFiles(pendingFiles);
-      addMessage("user",text,uploads);
-      chatInput.value=""; pendingFiles=[]; renderPending();
+      addMessage("user",trimmed,uploads);
+      chatInput.value="";
+      pendingFiles=[]; renderPending();
 
       const typing=document.createElement("div");
       typing.className="fade-in rounded-xl bg-brandSoft p-4 bubble w-full";
@@ -202,14 +207,19 @@
         const res=await fetch(`${API_BASE}/api/chat`,{
           method:"POST",
           headers:{"Content-Type":"application/json"},
-          body:JSON.stringify({message:text,session_id:SESSION_ID,attachments:uploads})
+          body:JSON.stringify({
+            message: trimmed,
+            session_id: SESSION_ID,
+            mode: CHAT_MODE,        // ← force LEARN prompt
+            attachments: uploads    // (backend currently ignores attachments)
+          })
         });
         const data=await res.json().catch(()=>({reply:"⚠️ Invalid response"}));
         typing.remove();
-        addMessage("assistant",data.reply||"⚠️ No reply");
+        addMessage("assistant", (data && data.reply) || "⚠️ No reply");
       }catch(err){
         typing.remove();
-        addMessage("assistant","⚠️ Network error: "+err.message);
+        addMessage("assistant","⚠️ Network error: "+(err && err.message ? err.message : String(err)));
       }
     }
 
