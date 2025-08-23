@@ -314,41 +314,207 @@
   </section>
 
   <!-- ===== Chat (lead-gated responses) ===== -->
-  <section id="chat" class="py-16 bg-brandBg">
-    <div class="max-w-7xl mx-auto px-6">
-      <div class="flex items-center justify-between">
-        <h2 class="text-3xl font-bold">Chat with Chadaddy</h2>
-        <span class="text-xs text-brandMuted hidden md:inline">Type “/hsfinder …” • Responses unlock after quick access form</span>
-      </div>
-      <div class="mt-6 grid lg:grid-cols-[260px,1fr,280px] gap-6">
-        <aside class="bg-white border border-brandBorder rounded-xl p-3">
-          <div class="flex items-center justify-between"><strong>History</strong><button id="newThread" class="text-xs border border-brandBorder rounded px-2 py-1">New</button></div>
-          <ul id="threads" class="mt-3 grid gap-2 text-sm"></ul>
-        </aside>
-
-        <section class="bg-white border border-brandBorder rounded-xl p-3">
-          <div class="flex flex-wrap gap-2 text-xs">
-            <button class="quick border border-brandBorder rounded px-2 py-1" data-q="/hsfinder AirPods in IN">/hsfinder</button>
-            <button class="quick border border-brandBorder rounded px-2 py-1" data-q="/duty IN 8517 CIF 100000">/duty</button>
-            <button class="quick border border-brandBorder rounded px-2 py-1" data-q="/marketplace IN JNPT electronics">/marketplace</button>
-            <button class="quick border border-brandBorder rounded px-2 py-1" data-q="/news IN ports">/news</button>
-            <button class="quick border border-brandBorder rounded px-2 py-1" data-q="/products trending electronics">/products</button>
-          </div>
-          <div id="thread" class="mt-3 h-[52vh] overflow-auto grid gap-2 pr-1" aria-live="polite"></div>
-          <form id="chatForm" class="mt-3 flex gap-2" autocomplete="off">
-            <input id="chatInput" class="flex-1 border border-brandBorder rounded-lg px-3 py-2" placeholder="Ask anything… (try: 'HS for LED bulbs in EU')" />
-            <button class="bg-brandAccent text-white px-4 py-2 rounded-lg">Send</button>
-          </form>
-          <p class="text-xs text-brandMuted mt-2">We keep the last 30 messages per chat in your browser.</p>
-        </section>
-
-        <aside class="bg-white border border-brandBorder rounded-xl p-3">
-          <strong>Saved calcs & docs</strong>
-          <ul id="rightRail" class="mt-3 grid gap-2 text-sm"></ul>
-        </aside>
-      </div>
+  <!-- ===== Chat (lead-gated responses) ===== -->
+<section id="chat" class="py-16 bg-brandBg">
+  <div class="max-w-7xl mx-auto px-6">
+    <div class="flex items-center justify-between">
+      <h2 class="text-3xl font-bold">Chat with Chadaddy</h2>
+      <span class="text-xs text-brandMuted hidden md:inline">Type “/hsfinder …” • Responses unlock after quick access form</span>
     </div>
-  </section>
+    <div class="mt-6 grid lg:grid-cols-[260px,1fr,280px] gap-6">
+      <aside class="bg-white border border-brandBorder rounded-xl p-3">
+        <div class="flex items-center justify-between">
+          <strong>History</strong>
+          <button id="newThread" class="text-xs border border-brandBorder rounded px-2 py-1">New</button>
+        </div>
+        <ul id="threads" class="mt-3 grid gap-2 text-sm"></ul>
+      </aside>
+
+      <section class="bg-white border border-brandBorder rounded-xl p-3">
+        <div class="flex flex-wrap gap-2 text-xs">
+          <button class="quick border border-brandBorder rounded px-2 py-1" data-q="/hsfinder AirPods in IN">/hsfinder</button>
+          <button class="quick border border-brandBorder rounded px-2 py-1" data-q="/duty IN 8517 CIF 100000">/duty</button>
+          <button class="quick border border-brandBorder rounded px-2 py-1" data-q="/marketplace IN JNPT electronics">/marketplace</button>
+          <button class="quick border border-brandBorder rounded px-2 py-1" data-q="/news IN ports">/news</button>
+          <button class="quick border border-brandBorder rounded px-2 py-1" data-q="/products trending electronics">/products</button>
+        </div>
+        <div id="thread" class="mt-3 h-[52vh] overflow-auto grid gap-2 pr-1" aria-live="polite"></div>
+        <form id="chatForm" class="mt-3 flex gap-2" autocomplete="off">
+          <input id="chatInput" class="flex-1 border border-brandBorder rounded-lg px-3 py-2" placeholder="Ask anything… (try: 'HS for LED bulbs in EU')" />
+          <button class="bg-brandAccent text-white px-4 py-2 rounded-lg">Send</button>
+        </form>
+        <p class="text-xs text-brandMuted mt-2">We keep the last 30 messages per chat in your browser.</p>
+      </section>
+
+      <aside class="bg-white border border-brandBorder rounded-xl p-3">
+        <strong>Saved calcs & docs</strong>
+        <ul id="rightRail" class="mt-3 grid gap-2 text-sm"></ul>
+      </aside>
+    </div>
+  </div>
+</section>
+
+<script>
+(() => {
+  const API_BASE = "https://chadaddy.onrender.com";
+
+  const root = document.querySelector("#chat");
+  if (!root) return;
+
+  const threadEl   = root.querySelector("#thread");
+  const threadsEl  = root.querySelector("#threads");
+  const chatForm   = root.querySelector("#chatForm");
+  const chatInput  = root.querySelector("#chatInput");
+  const newBtn     = root.querySelector("#newThread");
+  const quickBtns  = [...root.querySelectorAll(".quick")];
+  const rightRail  = root.querySelector("#rightRail");
+
+  const SESSION_KEY = "chadaddy_session_id";
+  const THREADS_KEY = "chadaddy_threads";
+  const THREAD_NS   = id => `chadaddy_thread_${id}`;
+
+  function getSessionId() {
+    let v = localStorage.getItem(SESSION_KEY);
+    if (!v) { v = (crypto.randomUUID && crypto.randomUUID()) || ("sess_" + Date.now()); localStorage.setItem(SESSION_KEY, v); }
+    return v;
+  }
+  const SESSION_ID = getSessionId();
+
+  function loadThreads(){ try { return JSON.parse(localStorage.getItem(THREADS_KEY) || "[]"); } catch { return []; } }
+  function saveThreads(list){ localStorage.setItem(THREADS_KEY, JSON.stringify(list)); }
+  function loadMessages(id){ try { return JSON.parse(localStorage.getItem(THREAD_NS(id)) || "[]"); } catch { return []; } }
+  function saveMessages(id,msgs){ localStorage.setItem(THREAD_NS(id), JSON.stringify(msgs.slice(-30))); }
+
+  let threads = loadThreads();
+  let currentThreadId = (threads[0] && threads[0].id) || null;
+
+  function el(html){ const d=document.createElement("div"); d.innerHTML=html.trim(); return d.firstElementChild; }
+  function escapeHtml(s){ return s.replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#039;"}[c])); }
+  function linkify(t){ return t.replace(/(https?:\/\/[^\s)]+)|(\bwww\.[^\s)]+)/gi,m=>`<a href="${m.startsWith("http")?m:"http://"+m}" target="_blank" rel="noopener" class="text-brandAccent underline">${m}</a>`); }
+
+  function renderThreads(){
+    threadsEl.innerHTML="";
+    if(!threads.length){ threadsEl.appendChild(el(`<li class="text-brandMuted">No threads yet</li>`)); return; }
+    threads.sort((a,b)=>b.ts-a.ts).forEach(t=>{
+      const active = t.id===currentThreadId;
+      const li = el(`<li><button data-id="${t.id}" class="w-full text-left px-2 py-2 rounded border border-brandBorder ${active?'bg-brandBg':'bg-white'} hover:bg-brandBg/60">${escapeHtml(t.title||"New chat")}</button></li>`);
+      li.querySelector("button").addEventListener("click",()=>switchThread(t.id));
+      threadsEl.appendChild(li);
+    });
+  }
+
+  function renderMsgBubble(role,text){
+    const isUser = role==="user";
+    return el(`
+      <div class="rounded-xl p-3 border ${isUser?'bg-white border-brandBorder':'bg-brandSoft border-brandBorder'}">
+        <div class="flex items-center gap-2 text-[11px] text-brandMuted">
+          <span class="w-5 h-5 grid place-items-center rounded-full ${isUser?'bg-brandBg':'bg-brandPrimary text-white'}">${isUser?'👤':'◆'}</span>
+          ${isUser?'You':'Assistant'}
+        </div>
+        <div class="mt-1 whitespace-pre-wrap text-sm leading-relaxed">${linkify(escapeHtml(text))}</div>
+      </div>
+    `);
+  }
+
+  function renderThread(messages){
+    threadEl.innerHTML="";
+    if(!messages.length){ threadEl.appendChild(el(`<div class="text-sm text-brandMuted">Start a conversation…</div>`)); return; }
+    messages.forEach(m=>threadEl.appendChild(renderMsgBubble(m.role,m.text)));
+    threadEl.scrollTop=threadEl.scrollHeight;
+  }
+
+  function showTyping(){
+    const node = el(`
+      <div class="rounded-xl p-3 bg-brandSoft border border-brandBorder" data-typing="1">
+        <div class="flex items-center gap-2 text-[11px] text-brandMuted">
+          <span class="w-5 h-5 grid place-items-center rounded-full bg-brandPrimary text-white">◆</span> Assistant
+        </div>
+        <div class="mt-1 flex gap-1 items-center">
+          <span class="w-2 h-2 rounded-full bg-brandMuted typing-dot"></span>
+          <span class="w-2 h-2 rounded-full bg-brandMuted typing-dot" style="animation-delay:.15s"></span>
+          <span class="w-2 h-2 rounded-full bg-brandMuted typing-dot" style="animation-delay:.3s"></span>
+        </div>
+      </div>`);
+    threadEl.appendChild(node); threadEl.scrollTop=threadEl.scrollHeight; return node;
+  }
+  function removeTyping(n){ if(n&&n.parentNode) n.parentNode.removeChild(n); }
+
+  function setThreadTitleFromFirstMessage(id,msgs){
+    const firstUser = msgs.find(m=>m.role==="user");
+    const title = firstUser ? (firstUser.text||"").slice(0,42)||"New chat" : "New chat";
+    const t = threads.find(x=>x.id===id);
+    if(t){ t.title=title; t.ts=Date.now(); saveThreads(threads); renderThreads(); }
+  }
+
+  function createThread(){
+    const id = (crypto.randomUUID&&crypto.randomUUID()) || ("t_"+Date.now());
+    const t = { id, title:"New chat", ts:Date.now() };
+    threads.unshift(t); saveThreads(threads); saveMessages(id,[]);
+    currentThreadId=id; renderThreads(); renderThread([]);
+  }
+  function switchThread(id){ currentThreadId=id; renderThreads(); renderThread(loadMessages(id)); }
+
+  async function sendMessage(text){
+    text=(text||"").trim(); if(!text) return;
+    if(!currentThreadId) createThread();
+
+    let msgs = loadMessages(currentThreadId);
+    msgs.push({role:"user", text, ts:Date.now()}); saveMessages(currentThreadId,msgs); renderThread(msgs);
+    if(msgs.length===1) setThreadTitleFromFirstMessage(currentThreadId,msgs);
+
+    const typingNode=showTyping();
+    try{
+      const res = await fetch(`${API_BASE}/api/chat`, {
+        method:"POST",
+        headers:{ "Content-Type":"application/json" },
+        body: JSON.stringify({ message:text, session_id:SESSION_ID })
+      });
+      let data={}; try{ data=await res.json(); }catch{}
+      const reply = (data && data.reply) || "⚠️ No reply";
+
+      msgs = loadMessages(currentThreadId);
+      msgs.push({role:"assistant", text:reply, ts:Date.now()}); saveMessages(currentThreadId,msgs);
+
+      removeTyping(typingNode);
+      threadEl.appendChild(renderMsgBubble("assistant", reply));
+      threadEl.scrollTop=threadEl.scrollHeight;
+
+      const t=threads.find(x=>x.id===currentThreadId);
+      if(t){ t.ts=Date.now(); saveThreads(threads); renderThreads(); }
+    }catch(err){
+      removeTyping(typingNode);
+      const errorText = `⚠️ Network error: ${err.message||err}`;
+      const msgsNow = loadMessages(currentThreadId).concat({role:"assistant", text:errorText, ts:Date.now()});
+      saveMessages(currentThreadId,msgsNow);
+      threadEl.appendChild(renderMsgBubble("assistant", errorText));
+      threadEl.scrollTop=threadEl.scrollHeight;
+    }
+  }
+
+  chatForm.addEventListener("submit", e=>{
+    e.preventDefault();
+    const q=chatInput.value; chatInput.value=""; sendMessage(q);
+  });
+  newBtn.addEventListener("click", ()=>createThread());
+  quickBtns.forEach(btn=>btn.addEventListener("click", ()=>{
+    const q=btn.getAttribute("data-q"); if(!q) return;
+    chatInput.value=q; chatForm.dispatchEvent(new Event("submit",{bubbles:true,cancelable:true}));
+  }));
+
+  if(!threads.length) createThread(); else switchThread(currentThreadId);
+  rightRail.innerHTML = `<li class="text-brandMuted">Nothing saved yet</li>`;
+
+  const style=document.createElement("style");
+  style.textContent = `
+    #chat .typing-dot{animation:chat-pulse 1s infinite ease-in-out;opacity:.25}
+    #chat .typing-dot:nth-child(2){animation-delay:.15s}
+    #chat .typing-dot:nth-child(3){animation-delay:.3s}
+    @keyframes chat-pulse{0%,80%,100%{opacity:.25}40%{opacity:1}}
+  `;
+  document.head.appendChild(style);
+})();
+</script>
+
 
   <!-- ===== News ===== -->
   <section id="news" class="py-16 bg-white">
