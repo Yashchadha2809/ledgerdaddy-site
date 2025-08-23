@@ -23,9 +23,7 @@
           boxShadow:{ lift:"0 16px 40px rgba(17,24,39,.10)" },
           borderRadius:{ xl2:"16px" },
           spacing:{ safe:"env(safe-area-inset-bottom)" },
-          backgroundImage:{
-            "soft-gradient":"linear-gradient(135deg, #EFF6FF 0%, #FFFFFF 100%)"
-          }
+          backgroundImage:{ "soft-gradient":"linear-gradient(135deg, #EFF6FF 0%, #FFFFFF 100%)" }
         }
       }
     }
@@ -38,19 +36,15 @@
     .badge{font-size:12px;padding:.25rem .5rem;border:1px solid rgba(37,99,235,.35);border-radius:999px;background:#fff;color:#2563EB}
     .fade-in{animation:fade .14s ease-out}
     @keyframes fade{from{opacity:.5;transform:translateY(2px)}to{opacity:1;transform:none}}
-    .progress{height:6px;border-radius:999px;background:linear-gradient(90deg,#2563EB,var(--end,#1e3a8a))}
     .tappable{min-height:44px; min-width:44px}
     .drop-okay{outline:2px dashed #2563EB; outline-offset:4px}
   </style>
 </head>
 <body class="bg-brandBg text-brandPrimary h-full">
 
- <!-- Topbar -->
+  <!-- Topbar -->
   <header class="fixed top-0 inset-x-0 z-50 border-b border-brandBorder bg-white/90 backdrop-blur">
     <div class="max-w-7xl mx-auto px-4 py-3 flex items-center justify-between">
-      <button id="openDrawer" class="md:hidden inline-flex items-center justify-center h-9 w-9 rounded-lg border border-brandBorder" aria-label="Open conversations">
-        ☰
-      </button>
       <a href="./dashboard.html" class="flex items-center gap-2" aria-label="Home">
         <span class="grid h-9 w-9 place-items-center rounded-xl bg-soft-gradient text-brandPrimary font-extrabold shadow">◆</span>
         <span class="text-lg md:text-xl font-bold">Chadaddy</span>
@@ -62,22 +56,17 @@
         <a href="./hs-finder.html" class="hover:text-brandAccent">HS Finder</a>
         <a href="./chat.html" class="hover:text-brandAccent">Chat</a>
       </nav>
-      <div class="hidden md:flex items-center gap-2">
-      </div>
-   
     </div>
   </header>
-<br>
-  <br>
-  <br>
+
   <!-- Hero -->
-  <section class="pt-20 sm:pt-24">
+  <section class="pt-24">
     <div class="hero-img">
       <div class="backdrop-brightness-95 bg-gradient-to-r from-brandPrimary/70 to-brandAccent/60">
         <div class="max-w-6xl mx-auto px-3 sm:px-4 py-6 sm:py-10 text-white">
           <h1 class="text-2xl sm:text-4xl md:text-5xl font-extrabold leading-tight">HS / HSN Finder</h1>
           <p class="mt-2 sm:mt-3 text-white/95 text-sm sm:text-base">
-            Describe your product. Get suggested HS codes with confidence. Test instantly without sign-up.
+            Describe your product or upload a photo. Get suggested HS/HSN codes with reasoning.
           </p>
         </div>
       </div>
@@ -100,10 +89,10 @@
         <label class="grid gap-1 text-sm">
           <span class="font-medium">Product description</span>
           <textarea id="hsDesc" rows="4" class="input border border-brandBorder rounded-lg px-3 py-2 tappable"
-            placeholder="Try: Wireless earbuds with mic, Bluetooth, lithium battery"></textarea>
+            placeholder="e.g., Wireless earbuds with mic, Bluetooth, lithium battery"></textarea>
         </label>
 
-        <!-- Image upload -->
+        <!-- Image upload (optional) -->
         <div class="grid gap-2 text-sm">
           <span class="font-medium">Upload product image (optional)</span>
           <label id="imgDrop"
@@ -117,9 +106,8 @@
           <div id="imgPreviewWrap" class="hidden items-center gap-3">
             <img id="imgPreview" alt="preview" class="h-16 w-16 rounded-lg object-cover border border-brandBorder" />
             <div class="text-xs text-brandMuted truncate flex-1" id="imgName"></div>
-            <button id="hsScan" type="button"
-                    class="ml-auto bg-brandAccent text-white px-3 py-2 rounded-lg disabled:opacity-60 tappable">
-              Scan image
+            <button id="clearImg" type="button" class="border border-brandBorder px-3 py-2 rounded-lg tappable">
+              Remove
             </button>
           </div>
         </div>
@@ -128,7 +116,7 @@
           <button id="hsRun" class="bg-brandAccent text-white px-4 py-2 rounded-lg tappable">Find HS codes</button>
           <button id="hsReset" type="button" class="border border-brandBorder px-4 py-2 rounded-lg tappable">Reset</button>
         </div>
-        <p class="text-xs text-brandMuted">Demo mode: shows example HS codes even without input. Confirm with customs.</p>
+        <p class="text-xs text-brandMuted">Guidance only. Always confirm with your customs/broker.</p>
       </form>
     </section>
 
@@ -147,75 +135,78 @@
   </footer>
 
   <script>
+    // --- Constants
     document.getElementById('year').textContent = new Date().getFullYear();
-    const API_BASE = "";
+    const API_ENDPOINT = "/api/hs-find";
 
-    // Session check (never redirects)
-    async function checkSession(){
-      try{
-        const res = await fetch(`${API_BASE}/auth/session`, {
-          credentials:"include",
-          redirect: "manual"
-        });
-        if(res.status === 200){
-          const data = await res.json().catch(()=>null);
-          if(data?.user){
-            document.getElementById('userControls').innerHTML =
-              `<span class="text-sm">Hi, ${data.user.name || "User"}</span>
-               <a href="https://www.ledgerdaddy.com/dashboard.html" class="bg-brandAccent text-white px-3 py-1.5 rounded-lg">Dashboard</a>
-               <a href="/log-out" class="text-sm text-brandMuted">Log out</a>`;
-          }
-        }
-      } catch(e){ console.warn("Session check failed", e); }
-    }
-    checkSession();
+    // --- DOM
+    const hsForm = document.getElementById('hsForm');
+    const btnRun = document.getElementById('hsRun');
+    const btnReset = document.getElementById('hsReset');
+    const resultsEl = document.getElementById('hsResults');
+    const countryEl = document.getElementById('hsCountry');
+    const descEl = document.getElementById('hsDesc');
 
-    // Demo HS suggestions
-    const demoResults = [
-      {code:'851713', title:'Smartphones', conf:0.91},
-      {code:'851830', title:'Headphones & Earphones', conf:0.85},
-      {code:'851762', title:'Communication equipment', conf:0.72}
-    ];
-
-    function renderResults(list, country){
-      const resEl = document.getElementById('hsResults');
-      resEl.innerHTML = list.map(r => `
-        <div class="p-3 border border-brandBorder rounded-lg bg-white fade-in">
-          <div class="flex justify-between items-center">
-            <div><strong>${r.code}</strong> – ${r.title}</div>
-            <span class="text-xs text-brandMuted">${Math.round(r.conf*100)}%</span>
-          </div>
-          <a href="/calculator.html?hs=${r.code}&country=${country}" class="mt-2 inline-block bg-brandAccent text-white px-3 py-1.5 rounded text-xs">Open Calculator</a>
-        </div>`).join('');
-    }
-
-    renderResults(demoResults, "IN");
-
-    document.getElementById('hsRun').addEventListener('click', e=>{
-      e.preventDefault();
-      const desc = document.getElementById('hsDesc').value.trim();
-      const country = document.getElementById('hsCountry').value;
-      if(!desc){ renderResults(demoResults, country); return; }
-      renderResults([
-        {code:'847130', title:'Computers & laptops', conf:0.88},
-        {code:'850760', title:'Lithium-ion batteries', conf:0.66}
-      ], country);
-    });
-
-    document.getElementById('hsReset').addEventListener('click', ()=>{
-      document.getElementById('hsDesc').value="";
-      resetImageState();
-      renderResults(demoResults,"IN");
-    });
-
-    // Image upload logic
     const imgInput = document.getElementById('hsImage');
     const drop = document.getElementById('imgDrop');
     const previewWrap = document.getElementById('imgPreviewWrap');
     const previewImg = document.getElementById('imgPreview');
     const imgNameEl = document.getElementById('imgName');
-    const scanBtn = document.getElementById('hsScan');
+    const clearImgBtn = document.getElementById('clearImg');
+
     let selectedFile = null;
+
+    // --- Helpers
+    const sleep = (ms)=> new Promise(r=>setTimeout(r, ms));
+
+    async function fileToBase64(file){
+      return new Promise((resolve,reject)=>{
+        const reader=new FileReader();
+        reader.onload=()=>resolve(String(reader.result).split(',')[1]);
+        reader.onerror=reject; reader.readAsDataURL(file);
+      });
+    }
+
+    function renderLoading(){
+      resultsEl.innerHTML = `
+        <div class="p-3 border border-brandBorder rounded-lg bg-white fade-in">
+          <div class="flex items-center gap-2">
+            <span class="animate-pulse">Analyzing…</span>
+          </div>
+        </div>`;
+    }
+
+    function renderError(msg="Lookup failed. Try again."){
+      resultsEl.innerHTML = `
+        <div class="p-3 border border-red-200 rounded-lg bg-red-50 text-red-900 fade-in">
+          ${msg}
+        </div>`;
+    }
+
+    function renderResultsPayload(payload, country){
+      const items = Array.isArray(payload?.items) ? payload.items : [];
+      const note = payload?.note ? String(payload.note) : "";
+
+      if(!items.length){
+        resultsEl.innerHTML = `
+          <div class="p-3 border border-brandBorder rounded-lg bg-white fade-in">
+            No results. Try adding more details (material, function, battery/radio, etc.).
+          </div>`;
+        return;
+      }
+
+      resultsEl.innerHTML = items.map(r => `
+        <div class="p-3 border border-brandBorder rounded-lg bg-white fade-in">
+          <div class="flex justify-between items-center">
+            <div><strong>${r.code}</strong> – ${r.title || ""}</div>
+            <span class="text-xs text-brandMuted">${Math.round((r.conf||0)*100)}%</span>
+          </div>
+          ${r.reasons ? `<div class="mt-2 text-xs text-brandMuted">${r.reasons}</div>` : ``}
+          ${r.examples ? `<div class="mt-1 text-xs"><em>You can use this HSN for:</em> ${r.examples}</div>` : ``}
+          <a href="/calculator.html?hs=${encodeURIComponent(r.code)}&country=${encodeURIComponent(country)}"
+             class="mt-2 inline-block bg-brandAccent text-white px-3 py-1.5 rounded text-xs">Open Calculator</a>
+        </div>`).join('') + (note ? `<div class="text-xs text-brandMuted mt-2">${note}</div>` : '');
+    }
 
     function resetImageState(){
       if(imgInput) imgInput.value="";
@@ -225,7 +216,9 @@
       selectedFile=null;
     }
 
+    // --- Image picking & drag/drop
     drop.addEventListener('click', ()=> imgInput.click());
+
     ['dragenter','dragover'].forEach(evt =>
       drop.addEventListener(evt, e=>{ e.preventDefault(); drop.classList.add('drop-okay'); })
     );
@@ -233,9 +226,12 @@
       drop.addEventListener(evt, e=>{ e.preventDefault(); drop.classList.remove('drop-okay'); })
     );
     drop.addEventListener('drop', e=>{
-      const file = e.dataTransfer?.files?.[0]; handlePickedFile(file);
+      e.preventDefault();
+      const file = e.dataTransfer?.files?.[0];
+      handlePickedFile(file);
     });
     imgInput.addEventListener('change', e=> handlePickedFile(e.target.files?.[0]));
+    clearImgBtn.addEventListener('click', resetImageState);
 
     function handlePickedFile(file){
       if(!file) return;
@@ -245,51 +241,58 @@
       previewImg.src=URL.createObjectURL(file);
       imgNameEl.textContent=file.name;
       previewWrap.classList.remove('hidden');
-      scanBtn.disabled=false;
     }
 
-    scanBtn.addEventListener('click', async ()=>{
-      if(!selectedFile) return alert("No image selected");
-      scanBtn.disabled=true; const oldText=scanBtn.textContent;
-      scanBtn.textContent="Scanning…"; previewImg.classList.add("opacity-60");
+    // --- Submit handler (LIVE MODE)
+    document.getElementById('hsRun').addEventListener('click', async (e)=>{
+      e.preventDefault();
+      const desc = descEl.value.trim();
+      const country = countryEl.value;
+
+      if(!desc && !selectedFile){
+        return renderError("Add a short description or upload an image.");
+      }
+
+      // loading state
+      btnRun.disabled = true;
+      btnRun.textContent = "Analyzing…";
+      renderLoading();
 
       try{
-        const result = await scanImage(selectedFile);
-        if(result.desc){
-          document.getElementById('hsDesc').value += " " + result.desc;
+        let image_base64 = null;
+        if(selectedFile){
+          image_base64 = await fileToBase64(selectedFile);
         }
-        document.getElementById('hsRun').click();
-        alert(result.guessed ? "Scanned (demo guess)" : "Scanned successfully");
+
+        const res = await fetch(API_ENDPOINT, {
+          method:'POST',
+          headers:{ 'Content-Type':'application/json' },
+          body: JSON.stringify({ country, desc, image_base64, prompt_name: 'business' })
+        });
+
+        if(!res.ok){
+          const text = await res.text().catch(()=> "");
+          throw new Error(text || `HTTP ${res.status}`);
+        }
+
+        const data = await res.json();
+        renderResultsPayload(data, country);
+
       }catch(err){
-        console.error(err); alert("Scan failed");
+        console.error(err);
+        renderError("Server error. Please retry with more details.");
       }finally{
-        scanBtn.textContent=oldText; scanBtn.disabled=false; previewImg.classList.remove("opacity-60");
+        btnRun.disabled = false;
+        btnRun.textContent = "Find HS codes";
       }
     });
 
-    async function scanImage(file){
-      const base64 = await fileToBase64(file);
-      try{
-        const resp = await fetch('/api/hs-scan',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({image_base64:base64})});
-        if(resp.ok){
-          const data = await resp.json();
-          return {desc:data.desc||'', guessed:false};
-        }
-      }catch(e){console.warn("Backend scan unavailable, using demo",e);}
-      const name=(file.name||'').toLowerCase();
-      if(/earbud|headphone/.test(name)) return {desc:"Wireless earbuds with mic, Bluetooth, lithium battery", guessed:true};
-      if(/router|wifi/.test(name)) return {desc:"Wi-Fi router with ethernet ports", guessed:true};
-      if(/phone|smartphone/.test(name)) return {desc:"Smartphone with touchscreen, 5G, lithium battery", guessed:true};
-      return {desc:"General electronic device", guessed:true};
-    }
-
-    function fileToBase64(file){
-      return new Promise((resolve,reject)=>{
-        const reader=new FileReader();
-        reader.onload=()=>resolve(String(reader.result).split(',')[1]);
-        reader.onerror=reject; reader.readAsDataURL(file);
-      });
-    }
+    // --- Reset
+    btnReset.addEventListener('click', ()=>{
+      descEl.value="";
+      resetImageState();
+      resultsEl.innerHTML = "";
+    });
   </script>
 </body>
 </html>
