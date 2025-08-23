@@ -55,21 +55,17 @@
     <!-- Auth view -->
     <div id="authView" class="max-w-md mx-auto mt-16 card bg-white p-6 rounded-2xl border border-border shadow-lift">
       <h1 class="text-2xl font-bold mb-1">Sign in</h1>
-      <p class="text-sm text-gray-600 mb-4">Admins only. Use your email & password.</p>
+      <p class="text-sm text-gray-600 mb-4">Use your email & password. (No admin required.)</p>
       <form id="authForm" class="space-y-3">
         <input id="email" type="email" placeholder="you@example.com" class="input" required />
         <input id="password" type="password" placeholder="••••••••" class="input" required />
-        <button class="btn w-full" type="submit">Sign in</button>
+        <div class="flex gap-2">
+          <button class="btn w-full" type="submit">Sign in</button>
+          <button class="btn-outline w-full" id="signUpBtn" type="button">Create account</button>
+        </div>
       </form>
       <p id="authError" class="text-sm mt-3 hidden" style="color:#DC2626"></p>
-      <p class="text-xs text-gray-500 mt-4">Tip: In Supabase Auth → Users, add your admin email and set <code>profiles.is_admin = true</code>.</p>
-    </div>
-
-    <!-- Non-admin -->
-    <div id="noAdmin" class="hidden max-w-md mx-auto mt-16 card bg-white p-6 rounded-2xl border border-border">
-      <h2 class="text-xl font-bold mb-1">Access denied</h2>
-      <p class="text-sm text-gray-600">Your account is not marked as admin. Set <code>profiles.is_admin = true</code> for your user.</p>
-      <button class="btn-outline mt-4" id="goSignOut">Back to sign in</button>
+      <p class="text-xs text-gray-500 mt-4">Tip: To allow self-signups, keep Email/Password signups enabled in Supabase Auth.</p>
     </div>
 
     <!-- App -->
@@ -200,11 +196,9 @@
     // Elements
     const authView = document.getElementById('authView');
     const appView = document.getElementById('app');
-    const noAdmin = document.getElementById('noAdmin');
     const userBox = document.getElementById('userBox');
     const userEmail = document.getElementById('userEmail');
     const signOutBtn = document.getElementById('signOutBtn');
-    const goSignOut = document.getElementById('goSignOut');
 
     const productsTbody = document.getElementById('productsTbody');
     const ordersTbody = document.getElementById('ordersTbody');
@@ -231,6 +225,16 @@
       });
     });
 
+    // Sign up (self-service)
+    document.getElementById('signUpBtn').addEventListener('click', async () => {
+      const email = document.getElementById('email').value.trim();
+      const password = document.getElementById('password').value;
+      if (!email || !password) return alert('Enter email and password first.');
+      const { error } = await sb.auth.signUp({ email, password });
+      if (error) return alert(error.message);
+      alert('Account created. Please check your email to confirm (if confirmation is enabled), then Sign in.');
+    });
+
     // Sign in
     document.getElementById('authForm').addEventListener('submit', async (e) => {
       e.preventDefault();
@@ -244,13 +248,12 @@
         document.getElementById('authError').classList.remove('hidden');
         return;
       }
-      await postAuth();
+      await postAuth();   // ← NO admin check
     });
 
     signOutBtn?.addEventListener('click', async () => { await sb.auth.signOut(); location.reload(); });
-    goSignOut?.addEventListener('click', async () => { await sb.auth.signOut(); location.reload(); });
 
-    // --------- UPDATED ADMIN CHECK: by EMAIL (not id) ---------
+    // --------- Anyone who is signed in can access (NO admin gate) ---------
     async function postAuth(){
       const { data: { user } } = await sb.auth.getUser();
       if(!user){ showOnly(authView); return; }
@@ -258,23 +261,13 @@
       userEmail.textContent = user.email || '';
       userBox.classList.remove('hidden');
 
-      // Look up the profile by email (safer for first-load timing)
-      const { data: profile, error } = await sb
-        .from('profiles')
-        .select('user_id,email,is_admin')
-        .eq('email', user.email)
-        .maybeSingle();
-
-      if (error) { console.error('[profiles] select error:', error); showOnly(noAdmin); return; }
-      if (!profile || !profile.is_admin) { showOnly(noAdmin); return; }
-
       showOnly(appView);
       await loadProducts();
       await loadOrders();
     }
 
     function showOnly(el){
-      [authView, appView, noAdmin].forEach(x=>x.classList.add('hidden'));
+      [authView, appView].forEach(x=>x.classList.add('hidden'));
       el.classList.remove('hidden');
     }
 
