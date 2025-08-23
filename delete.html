@@ -1,0 +1,183 @@
+<!DOCTYPE html>
+<html lang="en" class="scroll-smooth">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Delete Account – ChaDaddy</title>
+  <meta name="description" content="Delete your ChaDaddy account and request deletion of associated data. Learn what is deleted, what may be retained, and timelines." />
+  <meta name="theme-color" content="#111827" />
+  <link rel="preconnect" href="https://images.unsplash.com" />
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors:{
+            brandPrimary:"#111827",
+            brandAccent:"#2563EB",
+            brandSoft:"#EFF6FF",
+            brandBorder:"#E5E7EB",
+            brandMuted:"#6B7280",
+            brandBg:"#F9FAFB"
+          },
+          boxShadow:{ lift:"0 14px 34px rgba(17,24,39,.06)" }
+        }
+      }
+    }
+  </script>
+  <style>
+    .card{transition:transform .12s ease, box-shadow .2s ease}
+    .card:hover{transform:translateY(-2px); box-shadow:0 14px 34px rgba(17,24,39,.12)}
+  </style>
+</head>
+<body class="bg-brandBg text-brandPrimary">
+  <!-- Topbar (optional) -->
+  <header class="sticky top-0 inset-x-0 z-40 border-b border-brandBorder bg-white/90 backdrop-blur">
+    <div class="max-w-5xl mx-auto px-4 py-3 flex items-center justify-between">
+      <a href="/" class="flex items-center gap-2" aria-label="Home">
+        <span class="grid h-9 w-9 place-items-center rounded-xl bg-gradient-to-br from-brandSoft to-white text-brandPrimary font-extrabold shadow">◆</span>
+        <span class="text-lg font-bold">ChaDaddy</span>
+        <span class="ml-2 hidden sm:inline-flex text-[11px] px-2 py-0.5 rounded-full border border-brandAccent/40 text-brandAccent">Account & Data Deletion</span>
+      </a>
+      <nav class="hidden md:flex items-center gap-6 text-sm">
+        <a href="/privacy" class="hover:text-brandAccent">Privacy</a>
+        <a href="/terms" class="hover:text-brandAccent">Terms</a>
+        <a href="/contact" class="hover:text-brandAccent">Contact</a>
+      </nav>
+    </div>
+  </header>
+
+  <main class="max-w-3xl mx-auto px-4 py-10">
+    <h1 class="text-3xl md:text-4xl font-bold mb-3">Delete Your ChaDaddy Account & Data</h1>
+    <p class="text-brandMuted mb-6">Last updated: 23 Aug 2025</p>
+
+    <div class="bg-white border border-brandBorder rounded-2xl p-5 md:p-7 card mb-8">
+      <p class="mb-4">
+        You can request deletion of your <strong>ChaDaddy</strong> account and associated personal data at any time. This page explains the steps, what data is deleted, what may be retained, and the timeline.
+      </p>
+
+      <!-- Steps -->
+      <ol class="list-decimal pl-5 space-y-3 mb-6">
+        <li><strong>Verify your email</strong> — make sure you are signed in or have access to the email address registered to your ChaDaddy account.</li>
+        <li><strong>Submit a deletion request</strong> — use the form below or email <a href="mailto:support@chadaddy.com" class="text-brandAccent underline">support@chadaddy.com</a> from your registered email with the subject “Delete My Account”.</li>
+        <li><strong>We confirm & process</strong> — you’ll receive a confirmation email. Eligible data is permanently deleted within <strong>30 days</strong> of verification.</li>
+      </ol>
+
+      <!-- What we delete / keep -->
+      <div class="grid md:grid-cols-2 gap-5 mb-6">
+        <div class="border border-brandBorder rounded-xl p-4">
+          <h2 class="font-semibold mb-2">Data that will be deleted</h2>
+          <ul class="list-disc pl-5 space-y-1 text-sm">
+            <li>Account profile (email, display name, Supabase user ID)</li>
+            <li>AI chat history associated with your account</li>
+            <li>Marketplace interactions (inquiries, bids) created by you</li>
+            <li>App activity logs linked to your user ID (non-essential)</li>
+          </ul>
+        </div>
+        <div class="border border-brandBorder rounded-xl p-4">
+          <h2 class="font-semibold mb-2">Data that may be retained</h2>
+          <ul class="list-disc pl-5 space-y-1 text-sm">
+            <li>Minimal records required for fraud prevention or legal, tax, or audit obligations</li>
+            <li>Such records are kept for up to <strong>90 days</strong> unless a longer period is required by law</li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="bg-brandSoft/60 border border-brandBorder rounded-xl p-4 mb-6 text-sm">
+        <p><strong>Note:</strong> If you need a copy of your data before deletion, please mention “<em>Data Export</em>” in your request and we’ll guide you through the process.</p>
+      </div>
+
+      <!-- Simple Request Form (mailto-based) -->
+      <h2 class="font-semibold mb-3">Request deletion</h2>
+      <form id="deleteForm" class="space-y-4" onsubmit="return handleSubmit(event)">
+        <div>
+          <label for="email" class="block text-sm font-medium mb-1">Your registered email</label>
+          <input id="email" type="email" required placeholder="you@company.com"
+                 class="w-full border border-brandBorder rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-brandAccent" />
+        </div>
+        <div>
+          <label for="reason" class="block text-sm font-medium mb-1">Optional message</label>
+          <textarea id="reason" rows="3" placeholder="Anything you'd like us to know..."
+                    class="w-full border border-brandBorder rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-brandAccent"></textarea>
+        </div>
+        <div class="flex items-center gap-3">
+          <button type="submit"
+                  class="inline-flex items-center justify-center rounded-lg bg-brandAccent text-white px-4 py-2 font-medium hover:opacity-95">
+            Send deletion request
+          </button>
+          <a href="mailto:support@chadaddy.com?subject=Delete%20My%20Account&body=Please%20delete%20my%20ChaDaddy%20account%20and%20associated%20data."
+             class="text-sm text-brandAccent underline">
+            Or email support@chadaddy.com
+          </a>
+        </div>
+        <p id="status" class="text-sm text-brandMuted mt-2"></p>
+      </form>
+
+      <hr class="my-6 border-brandBorder">
+
+      <!-- Timeline & Contact -->
+      <div class="grid md:grid-cols-2 gap-5">
+        <div class="border border-brandBorder rounded-xl p-4">
+          <h3 class="font-semibold mb-2">Timeline</h3>
+          <ul class="list-disc pl-5 space-y-1 text-sm">
+            <li>Acknowledgement email: within <strong>72 hours</strong></li>
+            <li>Deletion completion: within <strong>30 days</strong> of verifying your request</li>
+          </ul>
+        </div>
+        <div class="border border-brandBorder rounded-xl p-4">
+          <h3 class="font-semibold mb-2">Need help?</h3>
+          <p class="text-sm">Email <a class="text-brandAccent underline" href="mailto:support@chadaddy.com">support@chadaddy.com</a></p>
+          <p class="text-sm">Please write from your registered email to help us verify ownership.</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- FAQ (optional but helpful for Play review) -->
+    <section class="bg-white border border-brandBorder rounded-2xl p-5 md:p-7 card">
+      <h2 class="text-xl font-semibold mb-4">Frequently Asked Questions</h2>
+      <details class="border border-brandBorder rounded-lg p-4 mb-3">
+        <summary class="font-medium cursor-pointer">Can I delete just some of my data?</summary>
+        <p class="mt-2 text-sm text-brandMuted">Currently we offer full account deletion. If you need specific data removed (e.g., chat history), mention it in your request and we’ll assist where feasible.</p>
+      </details>
+      <details class="border border-brandBorder rounded-lg p-4 mb-3">
+        <summary class="font-medium cursor-pointer">Is my data encrypted?</summary>
+        <p class="mt-2 text-sm text-brandMuted">Yes. Data is encrypted in transit via HTTPS/TLS. See our <a href="/privacy" class="text-brandAccent underline">Privacy Policy</a> for details.</p>
+      </details>
+      <details class="border border-brandBorder rounded-lg p-4">
+        <summary class="font-medium cursor-pointer">What if I change my mind?</summary>
+        <p class="mt-2 text-sm text-brandMuted">You can withdraw your deletion request before it’s completed by replying to the confirmation email.</p>
+      </details>
+    </section>
+  </main>
+
+  <footer class="mt-10 border-t border-brandBorder">
+    <div class="max-w-5xl mx-auto px-4 py-8 text-sm text-brandMuted">
+      © <span id="year"></span> ChaDaddy. All rights reserved. • <a href="/privacy" class="underline">Privacy</a> • <a href="/terms" class="underline">Terms</a>
+    </div>
+  </footer>
+
+  <script>
+    // Year
+    document.getElementById('year').textContent = new Date().getFullYear();
+
+    // Mailto-based submit (opens the user's email client with prefilled message)
+    function handleSubmit(e){
+      e.preventDefault();
+      const email = document.getElementById('email').value.trim();
+      const reason = document.getElementById('reason').value.trim();
+      if(!email){ return false; }
+
+      const subject = encodeURIComponent('Delete My Account');
+      const body = encodeURIComponent(
+        `Please delete my ChaDaddy account and associated data.\n\nRegistered Email: ${email}\n\nOptional message:\n${reason || '(none)'}\n\nI confirm I am the owner of this account.`
+      );
+      const mailto = `mailto:support@chadaddy.com?subject=${subject}&body=${body}`;
+      window.location.href = mailto;
+
+      const status = document.getElementById('status');
+      status.textContent = 'Opening your email client… If it did not open, please send an email to support@chadaddy.com with subject “Delete My Account”.';
+      return false;
+    }
+  </script>
+</body>
+</html>
