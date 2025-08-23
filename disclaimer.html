@@ -1,51 +1,183 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" class="scroll-smooth">
 <head>
-  <meta charset="utf-8" />
-  <title>Disclaimer — LedgerDaddy</title>
+  <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <meta name="robots" content="noindex" />
+  <title>Disclaimer – CustomsDaddy</title>
+  <meta name="theme-color" content="#2563EB" />
+  <meta name="description" content="Disclaimer for CustomsDaddy, the AI-powered customs and duty estimation platform." />
+  <link rel="preconnect" href="https://images.unsplash.com" />
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors:{
+            brandPrimary:"#111827",
+            brandAccent:"#2563EB",
+            brandSoft:"#EFF6FF",
+            brandBorder:"#E5E7EB",
+            brandMuted:"#6B7280",
+            brandBg:"#F9FAFB"
+          },
+          boxShadow:{ lift:"0 10px 25px rgba(17,24,39,.10)" }
+        }
+      }
+    }
+  </script>
   <style>
-    body{font-family:Inter,system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif;margin:0;background:#0B0B12;color:#E6E6F0}
-    main{max-width:900px;margin:0 auto;padding:48px 20px}
-    a{color:#22D3EE} h1{font-size:32px;margin:0 0 6px} h2{font-size:20px;margin:28px 0 8px}
-    p,li{line-height:1.6;color:#C9CBD3} .muted{color:#9CA3AF;font-size:14px}
-    header,footer{max-width:900px;margin:0 auto;padding:16px 20px;color:#9CA3AF}
-    .card{background:#14141d;border:1px solid #2a2a36;border-radius:14px;padding:16px}
+    .hero-img{background:url('https://images.unsplash.com/photo-1586521995568-39ef16c6934d?q=80&w=1920&auto=format&fit=crop') center/cover no-repeat;}
+    .prose h2{scroll-margin-top:100px}
   </style>
 </head>
-<body>
-<header><a href="index.html">← Back to site</a></header>
-<main>
-  <h1>Disclaimer</h1>
-  <p class="muted">Review with legal counsel before publishing. This is a template.</p>
-  <div class="card"><strong>Company:</strong> RUn leadgerdaddy Epicfash Global LLC, 293 Whitehead ROad, NJ 08619 USA</div>
-  <p class="muted">Last updated: <span id="d"></span></p>
+<body class="bg-brandBg text-brandPrimary">
 
-  <h2>AI-powered service</h2>
-  <p>LedgerDaddy uses artificial intelligence to assist with accounting-related tasks. While we strive for accuracy, the service may produce incorrect, incomplete, or outdated information. AI-generated outputs should not be solely relied upon for decision-making.</p>
+  <!-- Topbar -->
+  <header class="fixed top-0 inset-x-0 z-50 border-b border-brandBorder bg-white/90 backdrop-blur">
+    <div class="max-w-7xl mx-auto px-4 py-3 flex items-center justify-between">
+      <a href="/" class="flex items-center gap-2" aria-label="Home">
+        <span class="grid h-9 w-9 place-items-center rounded-xl bg-gradient-to-tr from-brandSoft to-white text-brandPrimary font-extrabold shadow">◆</span>
+        <span class="text-xl font-bold">CustomsDaddy</span>
+        <span class="ml-2 hidden sm:inline-flex text-[11px] px-2 py-0.5 rounded-full border border-brandBorder text-brandMuted">AI Customs</span>
+      </a>
+      <nav class="hidden md:flex items-center gap-6 text-sm font-medium" aria-label="Main">
+        <a href="/#marketplace" class="hover:text-brandAccent">Marketplace</a>
+        <a href="/#calculator" class="hover:text-brandAccent">Calculator</a>
+        <a href="/#hsfinder" class="hover:text-brandAccent">HS Finder</a>
+        <a href="/#chat" class="hover:text-brandAccent">Chat</a>
+        <a href="/#news" class="hover:text-brandAccent">News</a>
+        <a href="/#learn" class="hover:text-brandAccent">Academy</a>
+        <a href="/#pricing" class="hover:text-brandAccent">Pricing</a>
+      </nav>
+      <a href="/log_in.html" class="border border-brandBorder px-4 py-2 rounded-lg">Log in</a>
+    </div>
+  </header>
 
-  <h2>No professional advice</h2>
-  <p>The service does not provide legal, tax, or accounting advice. For specific guidance, consult a qualified professional who understands your situation and applicable laws.</p>
+  <!-- Hero -->
+  <section class="pt-28 md:pt-32">
+    <div class="hero-img">
+      <div class="backdrop-brightness-50 bg-gradient-to-r from-brandPrimary/50 to-brandAccent/50">
+        <div class="max-w-3xl mx-auto px-4 py-12 text-white">
+          <h1 class="text-4xl md:text-5xl font-extrabold leading-tight">Disclaimer</h1>
+          <p class="mt-3 text-white/95">Important information about using CustomsDaddy.</p>
+          <p class="mt-2 text-white/90"><strong>Last Updated:</strong> <span id="lastUpdated">—</span></p>
+        </div>
+      </div>
+    </div>
+  </section>
 
-  <h2>User responsibility</h2>
-  <ul>
-    <li>You are responsible for reviewing outputs before using them in your business records.</li>
-    <li>You must ensure compliance with all applicable tax, accounting, and legal requirements.</li>
-    <li>You should keep original source documents for audit and compliance purposes.</li>
-  </ul>
+  <!-- Content -->
+  <main class="max-w-3xl mx-auto px-4 -mt-10">
+    <article class="bg-white border border-brandBorder rounded-2xl shadow p-6 md:p-8 prose prose-slate">
+      <h2 id="purpose">1. Purpose of the Service</h2>
+      <p>
+        <strong>CustomsDaddy</strong> provides AI-assisted tools (including HS Finder, Calculator, and Chat) to help
+        users explore HS codes, estimate customs duties/taxes, and understand documentation needs. The platform is intended
+        for <em>informational and productivity</em> purposes only.
+      </p>
 
-  <h2>Liability</h2>
-  <p>To the fullest extent permitted by law, we are not liable for any losses or damages resulting from reliance on AI-generated outputs.</p>
+      <h2 id="no-advice">2. No Legal, Tax, or Professional Advice</h2>
+      <p>
+        Outputs generated by the Service do <strong>not</strong> constitute legal, tax, accounting, or professional advice.
+        You should obtain advice from qualified professionals or licensed customs brokers before making compliance decisions.
+      </p>
 
-  <h2>Contact</h2>
-  <p>Email: <a href="mailto:hello@ledgerdaddy.com">hello@ledgerdaddy.com</a></p>
-</main>
-<footer>© <span id="y"></span> LedgerDaddy</footer>
-<script>
-  const n=new Date();
-  document.getElementById('y').textContent=n.getFullYear();
-  document.getElementById('d').textContent=n.toISOString().slice(0,10);
-</script>
+      <h2 id="ai-limits">3. AI Output Limitations</h2>
+      <ul>
+        <li>AI responses may be incomplete, outdated, or inaccurate and can vary with inputs/context.</li>
+        <li>Classifications and duty estimates depend on facts supplied by you; inaccurate inputs lead to unreliable results.</li>
+        <li>You are responsible for independently verifying any AI-generated result before relying on it.</li>
+      </ul>
+
+      <h2 id="compliance">4. Compliance Responsibility</h2>
+      <p>
+        You are solely responsible for compliance with applicable import/export, customs, sanctions, and trade laws.
+        CustomsDaddy is <strong>not a customs broker</strong> and does not file declarations on your behalf.
+      </p>
+
+      <h2 id="data-sources">5. External Data &amp; Regulatory Changes</h2>
+      <p>
+        Duty rates, HS codes, and regulatory content may reference third-party sources or public databases.
+        Such information can change without notice. We do not warrant that external data is current or complete in your jurisdiction.
+      </p>
+
+      <h2 id="third-party">6. Third-Party Links &amp; Services</h2>
+      <p>
+        The Service may link to or integrate third-party websites, APIs, or providers (hosting, authentication, analytics, LLMs).
+        We do not control and are not responsible for third-party content, terms, or privacy practices.
+      </p>
+
+      <h2 id="warranties">7. No Warranties</h2>
+      <p>
+        The Service and all outputs are provided on an <strong>“as is” and “as available”</strong> basis without warranties of any kind,
+        whether express or implied, including merchantability, fitness for a particular purpose, and non-infringement.
+      </p>
+
+      <h2 id="liability">8. Limitation of Liability</h2>
+      <p>
+        To the maximum extent permitted by law, CustomsDaddy is not liable for any indirect, incidental, special, consequential,
+        or exemplary damages, or for lost profits, data, or goodwill arising from use of, or reliance on, the Service or its outputs.
+        Where liability cannot be excluded, it is limited as described in our
+        <a href="/terms.html" class="text-brandAccent">Terms &amp; Conditions</a>.
+      </p>
+
+      <h2 id="testimonials">9. Examples &amp; Testimonials</h2>
+      <p>
+        Any examples, case studies, or testimonials are illustrative only and do not guarantee similar outcomes.
+      </p>
+
+      <h2 id="jurisdiction">10. Jurisdiction</h2>
+      <p>
+        This Disclaimer is governed by the laws of <strong>India</strong>. Any disputes are subject to the exclusive
+        jurisdiction of courts in <strong>New Delhi, India</strong>, as further described in our
+        <a href="/terms.html" class="text-brandAccent">Terms &amp; Conditions</a>.
+      </p>
+
+      <h2 id="changes">11. Changes</h2>
+      <p>
+        We may update this Disclaimer from time to time. The <strong>Last Updated</strong> date reflects the effective date.
+        Continued use of the Service after updates constitutes acceptance.
+      </p>
+
+      <h2 id="contact">12. Contact</h2>
+      <address class="not-italic">
+        <strong>Legal Team</strong><br />
+        CustomsDaddy<br />
+        <a class="text-brandAccent" href="mailto:legal@ledgerdaddy.com">legal@ledgerdaddy.com</a>
+      </address>
+
+      <p class="text-xs text-brandMuted mt-6">
+        This page is for general information and does not constitute legal advice. Please consult your counsel to tailor
+        this Disclaimer to your business and applicable jurisdictions.
+      </p>
+    </article>
+
+    <div class="max-w-3xl mx-auto px-4 mt-6 mb-12 text-sm">
+      <a href="/" class="text-brandAccent">← Back to home</a>
+      <span class="mx-2 text-brandMuted">•</span>
+      <a href="/privacy.html" class="text-brandAccent">Privacy Policy</a>
+      <span class="mx-2 text-brandMuted">•</span>
+      <a href="/terms.html" class="text-brandAccent">Terms</a>
+      <span class="mx-2 text-brandMuted">•</span>
+      <a href="/refund.html" class="text-brandAccent">Refund Policy</a>
+    </div>
+  </main>
+
+  <footer class="text-center text-xs text-brandMuted mb-8">
+    © <span id="year"></span> CustomsDaddy
+  </footer>
+
+  <script>
+    // Auto-set "Last Updated" (Asia/Kolkata) and footer year
+    (function(){
+      try {
+        const fmt = new Intl.DateTimeFormat('en-IN', { timeZone: 'Asia/Kolkata', year: 'numeric', month: 'long', day: 'numeric' });
+        document.getElementById('lastUpdated').textContent = fmt.format(new Date());
+      } catch(e){
+        document.getElementById('lastUpdated').textContent = new Date().toISOString().slice(0,10);
+      }
+      document.getElementById('year').textContent = new Date().getFullYear();
+    })();
+  </script>
 </body>
 </html>
