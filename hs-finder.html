@@ -132,13 +132,13 @@
   </footer>
 
   <script>
-    // ========= SETTINGS (match chat.html wiring) =========
+    // ========= SETTINGS (mirror chat.html) =========
     document.getElementById('year').textContent = new Date().getFullYear();
-    const API_BASE = "https://chadaddy.onrender.com"; // same host as chat.html
-    const CHAT_MODE = "business";                      // force BUSINESS prompt
-    const WANTS = "hsn_only";                          // tell backend: return only HSN
+    const API_BASE  = "https://chadaddy.onrender.com";  // same host as chat.html
+    const CHAT_MODE = "business";                        // force Business prompt
+    const WANTS     = "hsn_only";                        // optional hint for backend
 
-    // ====== session (same style as chat.html) ======
+    // ====== session (same as chat.html) ======
     function getSessionId(){
       const key="chadaddy_session_id";
       let v=localStorage.getItem(key);
@@ -188,17 +188,21 @@
     }
     function extractHSNFromText(t){
       if(!t) return "";
-      // prefer 8- or 6-digit HSNs; fallback any 4–10 digits
       const m = t.match(/\b(\d{8}|\d{6})\b/) || t.match(/\b\d{4,10}\b/);
       return m ? m[1] : "";
     }
-    async function fileToBase64(file){
-      return new Promise((resolve,reject)=>{
-        const reader=new FileReader();
-        reader.onload=()=>resolve(String(reader.result).split(',')[1]);
-        reader.onerror=reject; reader.readAsDataURL(file);
-      });
+
+    // === uploader identical to chat.html (uploads then passes URLs) ===
+    async function uploadFiles(files){
+      if(!files || !files.length) return [];
+      const fd = new FormData();
+      files.forEach(f => fd.append("files", f, f.name));
+      const res = await fetch(`${API_BASE}/api/upload`, { method:"POST", body: fd });
+      if(!res.ok) throw new Error("upload failed");
+      const data = await res.json().catch(()=>({files:[]}));
+      return (data.files || []).map(x => ({ url:x.url, name:x.name, type:x.type }));
     }
+
     function resetImageState(){
       if(imgInput) imgInput.value="";
       previewWrap?.classList.add('hidden');
@@ -233,10 +237,10 @@
       previewWrap.classList.remove('hidden');
     }
 
-    // ====== main: call your existing /api/chat like chat.html, but with mode=business + wants=hsn_only ======
+    // ====== main: call /api/chat with mode=business + attachments (URLs) ======
     document.getElementById('hsRun').addEventListener('click', async (e)=>{
       e.preventDefault();
-      const desc = descEl.value.trim();
+      const desc    = descEl.value.trim();
       const country = countryEl.value;
 
       if(!desc && !selectedFile){
@@ -248,21 +252,21 @@
       renderLoading();
 
       try{
-        let image_b64 = null;
-        if(selectedFile){ image_b64 = await fileToBase64(selectedFile); }
+        // 1) upload optional image first → attachments array like chat.html
+        const attachments = selectedFile ? await uploadFiles([selectedFile]) : [];
 
-        // Build message like chat.html does, but tightly formatted for HSN
-        const userMessage = `Country: ${country}\nProduct: ${desc || "(image only)"}\nReturn only the single best HSN code.`;
+        // 2) ask for only one best HSN
+        const message = `Country: ${country}\nProduct: ${desc || "(image only)"}\nReturn only the single best HSN code (no text).`;
 
         const res = await fetch(`${API_BASE}/api/chat`, {
           method:"POST",
           headers:{ "Content-Type":"application/json" },
           body: JSON.stringify({
-            message: userMessage,
+            message,
             session_id: SESSION_ID,
-            mode: CHAT_MODE,              // << BUSINESS prompt (your backend)
-            wants: WANTS,                  // << tell backend we only want HSN
-            images_base64: image_b64 ? [image_b64] : []  // << send image directly to AI
+            mode: CHAT_MODE,     // uses your Business prompt server-side
+            wants: WANTS,        // hint to return only the code
+            attachments          // [{url,name,type}]
           })
         });
 
@@ -273,7 +277,7 @@
 
         const data = await res.json().catch(()=> ({}));
 
-        // Backend may return {hsn:"..."} OR {reply:"..."} OR plain text; handle all
+        // backend may return {hsn} or {reply} string; handle both
         let hsn = data?.hsn || "";
         if(!hsn){
           const text = typeof data === "string" ? data : (data?.reply || "");
@@ -284,7 +288,7 @@
 
       }catch(err){
         console.error(err);
-        renderError("Server error. Please retry with more details.");
+        renderError("Server error. Please retry.");
       }finally{
         btnRun.disabled = false;
         btnRun.textContent = "Find HS code";
