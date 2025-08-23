@@ -1,143 +1,440 @@
 <!DOCTYPE html>
-<html>
+<html lang="en" class="h-full">
 <head>
-  <meta charset="utf-8" />
-  <title>Admin – Marketplace cPanel</title>
-  <script src="https://unpkg.com/@supabase/supabase-js@2"></script>
-  <style>
-    body{font-family:system-ui,Arial;margin:20px}
-    .card{border:1px solid #ddd;border-radius:12px;padding:16px;margin:12px 0}
-    .row{display:flex;gap:12px;flex-wrap:wrap}
-    .stat{flex:1;min-width:160px;border:1px solid #eee;border-radius:12px;padding:16px}
-    button,input,select{padding:8px}
-  </style>
-</head>
-<body>
-  <h1>Admin cPanel</h1>
-  <div id="gate" class="card">Checking access…</div>
-  <div id="content" style="display:none">
-    <div class="row">
-      <div class="stat"><div>Products</div><b id="stat-products">0</b></div>
-      <div class="stat"><div>Vendors</div><b id="stat-vendors">0</b></div>
-      <div class="stat"><div>Orders</div><b id="stat-orders">0</b></div>
-    </div>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Marketplace Admin</title>
 
-    <div class="card">
-      <h3>Quick Actions</h3>
-      <button id="btn-refresh">Refresh Stats</button>
-      <button id="btn-logout">Log out</button>
-    </div>
-
-    <div class="card">
-      <h3>Products (last 10)</h3>
-      <div id="products"></div>
-    </div>
-  </div>
+  <!-- Tailwind (CDN) -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <!-- Supabase JS -->
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
   <script>
-    // >>> REPLACE with your project details
-    const SUPABASE_URL = "https://nkvrhaxpoehqcgoamjhq.supabase.co";
-    const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im5rdnJoYXhwb2VocWNnb2FtamhxIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTU3OTc5MDcsImV4cCI6MjA3MTM3MzkwN30.I6azwaIiEsQ_EjFRXtIZFTvpcc_g6NccsC3pJdWQPks";
-    // <<<
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors:{ brand:'#111827', accent:'#2563EB', soft:'#F3F4F6', border:'#E5E7EB' },
+          boxShadow:{ lift:'0 14px 34px rgba(0,0,0,.08)'}
+        }
+      }
+    }
+  </script>
+  <style>
+    .card{transition:transform .12s ease, box-shadow .2s ease}
+    .card:hover{transform:translateY(-2px); box-shadow:0 14px 34px rgba(0,0,0,.08)}
+    .btn{display:inline-flex;align-items:center;justify-content:center;padding:.5rem 1rem;border-radius:.75rem;border:1px solid transparent;background:#2563EB;color:#fff;font-weight:600}
+    .btn:hover{opacity:.9}
+    .btn-outline{display:inline-flex;align-items:center;justify-content:center;padding:.5rem 1rem;border-radius:.75rem;border:1px solid #E5E7EB;background:#fff;color:#111827;font-weight:600}
+    .btn-outline:hover{background:#F3F4F6}
+    .input{width:100%;border-radius:.75rem;border:1px solid #E5E7EB;padding:.5rem .75rem;outline:none}
+    .input:focus{box-shadow:0 0 0 3px rgba(37,99,235,.3)}
+    .badge{font-size:11px;padding:2px 8px;border-radius:9999px;border:1px solid rgba(37,99,235,.4);color:#2563EB}
+  </style>
+</head>
+<body class="h-full bg-soft">
+  <!-- Header -->
+  <header class="sticky top-0 z-40 bg-white/90 backdrop-blur border-b border-border">
+    <div class="max-w-7xl mx-auto px-4 py-3 flex items-center justify-between">
+      <div class="flex items-center gap-3">
+        <span class="grid h-9 w-9 place-items-center rounded-xl bg-soft text-brand font-extrabold shadow">◆</span>
+        <div>
+          <div class="font-bold">Marketplace Admin</div>
+          <div class="text-[12px] text-gray-500">Cpanel • Products & Orders</div>
+        </div>
+      </div>
+      <div id="userBox" class="hidden items-center gap-3">
+        <span id="userEmail" class="text-sm text-gray-600"></span>
+        <button id="signOutBtn" class="btn-outline">Sign out</button>
+      </div>
+    </div>
+  </header>
+
+  <!-- Main -->
+  <main class="max-w-7xl mx-auto p-4">
+    <!-- Auth view -->
+    <div id="authView" class="max-w-md mx-auto mt-16 card bg-white p-6 rounded-2xl border border-border shadow-lift">
+      <h1 class="text-2xl font-bold mb-1">Sign in</h1>
+      <p class="text-sm text-gray-600 mb-4">Admins only. Use your email & password.</p>
+      <form id="authForm" class="space-y-3">
+        <input id="email" type="email" placeholder="you@example.com" class="input" required />
+        <input id="password" type="password" placeholder="••••••••" class="input" required />
+        <button class="btn w-full" type="submit">Sign in</button>
+      </form>
+      <p id="authError" class="text-sm mt-3 hidden" style="color:#DC2626"></p>
+      <p class="text-xs text-gray-500 mt-4">Tip: In Supabase Auth settings you can disable public signups and invite just your team.</p>
+    </div>
+
+    <!-- Non-admin -->
+    <div id="noAdmin" class="hidden max-w-md mx-auto mt-16 card bg-white p-6 rounded-2xl border border-border">
+      <h2 class="text-xl font-bold mb-1">Access denied</h2>
+      <p class="text-sm text-gray-600">Your account is not marked as admin. Set <code>profiles.is_admin = true</code> for your user.</p>
+      <button class="btn-outline mt-4" id="goSignOut">Back to sign in</button>
+    </div>
+
+    <!-- App -->
+    <section id="app" class="hidden mt-6 grid grid-cols-1 lg:grid-cols-4 gap-4">
+      <!-- Sidebar -->
+      <aside class="lg:col-span-1">
+        <div class="card bg-white p-4 rounded-2xl border border-border">
+          <div class="font-semibold text-gray-700 mb-2">Navigation</div>
+          <nav class="flex flex-col gap-2">
+            <button data-tab="products" class="tab btn-outline text-left">📦 Products</button>
+            <button data-tab="orders" class="tab btn-outline text-left">🧾 Orders</button>
+          </nav>
+        </div>
+        <div class="card bg-white p-4 rounded-2xl border border-border mt-4">
+          <div class="font-semibold text-gray-700 mb-2">Quick actions</div>
+          <div class="flex gap-2">
+            <button id="addSample" class="btn-outline">Add sample data</button>
+            <button id="refreshAll" class="btn-outline">Refresh</button>
+          </div>
+        </div>
+      </aside>
+
+      <!-- Content -->
+      <div class="lg:col-span-3 space-y-4">
+        <!-- Products -->
+        <div id="panel-products" class="card bg-white p-4 rounded-2xl border border-border">
+          <div class="flex items-center justify-between gap-3 mb-4">
+            <div>
+              <h2 class="text-xl font-bold">Products</h2>
+              <p class="text-sm text-gray-600">Create, edit, search and delete products.</p>
+            </div>
+            <div class="flex gap-2">
+              <input id="searchInput" class="input" placeholder="Search name or SKU" />
+              <button id="newProductBtn" class="btn">New product</button>
+            </div>
+          </div>
+          <div class="overflow-auto">
+            <table class="min-w-full text-sm">
+              <thead>
+                <tr class="text-left border-b border-border">
+                  <th class="py-2 pr-3">SKU</th>
+                  <th class="py-2 pr-3">Name</th>
+                  <th class="py-2 pr-3">Price</th>
+                  <th class="py-2 pr-3">Stock</th>
+                  <th class="py-2 pr-3">Active</th>
+                  <th class="py-2 pr-3 w-40">Actions</th>
+                </tr>
+              </thead>
+              <tbody id="productsTbody"></tbody>
+            </table>
+          </div>
+        </div>
+
+        <!-- Orders (read-only demo) -->
+        <div id="panel-orders" class="hidden card bg-white p-4 rounded-2xl border border-border">
+          <div class="flex items-center justify-between gap-3 mb-4">
+            <div>
+              <h2 class="text-xl font-bold">Orders</h2>
+              <p class="text-sm text-gray-600">Read-only sample to get you started.</p>
+            </div>
+            <span class="badge">Coming soon: status updates</span>
+          </div>
+          <div class="overflow-auto">
+            <table class="min-w-full text-sm">
+              <thead>
+                <tr class="text-left border-b border-border">
+                  <th class="py-2 pr-3">Order #</th>
+                  <th class="py-2 pr-3">Customer</th>
+                  <th class="py-2 pr-3">Total</th>
+                  <th class="py-2 pr-3">Status</th>
+                  <th class="py-2 pr-3">Created</th>
+                </tr>
+              </thead>
+              <tbody id="ordersTbody"></tbody>
+            </table>
+          </div>
+        </div>
+
+      </div>
+    </section>
+  </main>
+
+  <!-- Modal -->
+  <dialog id="productDialog" class="rounded-2xl p-0 w-full max-w-xl">
+    <form method="dialog" class="bg-white rounded-2xl border border-border p-4">
+      <div class="flex items-center justify-between mb-3">
+        <h3 id="dialogTitle" class="text-lg font-semibold">New product</h3>
+        <button id="closeDialog" class="btn-outline">Close</button>
+      </div>
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
+        <div>
+          <label class="text-xs text-gray-500">SKU</label>
+          <input id="f_sku" class="input" placeholder="SKU-001" required />
+        </div>
+        <div>
+          <label class="text-xs text-gray-500">Name</label>
+          <input id="f_name" class="input" placeholder="Product name" required />
+        </div>
+        <div>
+          <label class="text-xs text-gray-500">Price</label>
+          <input id="f_price" type="number" step="0.01" class="input" placeholder="0.00" required />
+        </div>
+        <div>
+          <label class="text-xs text-gray-500">Stock</label>
+          <input id="f_stock" type="number" class="input" placeholder="0" required />
+        </div>
+        <div>
+          <label class="text-xs text-gray-500">Active</label>
+          <select id="f_active" class="input"><option value="true">Yes</option><option value="false">No</option></select>
+        </div>
+      </div>
+      <div class="flex justify-end gap-2 mt-4">
+        <button id="deleteBtn" class="hidden btn-outline" style="color:#DC2626;border-color:#DC2626">Delete</button>
+        <button id="saveBtn" class="btn">Save</button>
+      </div>
+    </form>
+  </dialog>
+
+  <script>
+    // ================= EDIT THESE TWO =================
+    const SUPABASE_URL = 'https://slgxcqjpnybnprsdnnqj.supabase.co';
+    const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InNsZ3hjcWpwbnlibnByc2RubnFqIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTU5NjQ1MTgsImV4cCI6MjA3MTU0MDUxOH0.YdT6nWNRKPifGb6DCqpQ6YYmGMOMwjJ0eAbeuqInfJ4';
+    // ================================================
 
     const { createClient } = supabase;
     const sb = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
-    const gate = document.getElementById('gate');
-    const content = document.getElementById('content');
+    // UI elements
+    const authView = document.getElementById('authView');
+    const appView = document.getElementById('app');
+    const noAdmin = document.getElementById('noAdmin');
+    const userBox = document.getElementById('userBox');
+    const userEmail = document.getElementById('userEmail');
+    const signOutBtn = document.getElementById('signOutBtn');
+    const goSignOut = document.getElementById('goSignOut');
 
-    async function requireAuth() {
+    const productsTbody = document.getElementById('productsTbody');
+    const ordersTbody = document.getElementById('ordersTbody');
+    const searchInput = document.getElementById('searchInput');
+
+    const productDialog = document.getElementById('productDialog');
+    const dialogTitle = document.getElementById('dialogTitle');
+    const f_sku = document.getElementById('f_sku');
+    const f_name = document.getElementById('f_name');
+    const f_price = document.getElementById('f_price');
+    const f_stock = document.getElementById('f_stock');
+    const f_active = document.getElementById('f_active');
+    const saveBtn = document.getElementById('saveBtn');
+    const deleteBtn = document.getElementById('deleteBtn');
+
+    let editingId = null; // product id we are editing
+
+    // Tabs
+    document.querySelectorAll('.tab').forEach(btn => {
+      btn.addEventListener('click', () => {
+        const tab = btn.dataset.tab;
+        document.getElementById('panel-products').classList.toggle('hidden', tab !== 'products');
+        document.getElementById('panel-orders').classList.toggle('hidden', tab !== 'orders');
+      });
+    });
+
+    // Auth form
+    document.getElementById('authForm').addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const email = document.getElementById('email').value.trim();
+      const password = document.getElementById('password').value;
+      document.getElementById('authError').classList.add('hidden');
+
+      const { data, error } = await sb.auth.signInWithPassword({ email, password });
+      if (error) {
+        document.getElementById('authError').textContent = error.message;
+        document.getElementById('authError').classList.remove('hidden');
+        return;
+      }
+      await postAuth();
+    });
+
+    signOutBtn?.addEventListener('click', async () => {
+      await sb.auth.signOut();
+      location.reload();
+    });
+    goSignOut?.addEventListener('click', async () => {
+      await sb.auth.signOut();
+      location.reload();
+    });
+
+    // After auth, check admin and load data
+    async function postAuth(){
       const { data: { user } } = await sb.auth.getUser();
-      if (!user) {
-        // Send to your existing login with redirect back to /admin
-        window.location.href = `/login?redirect=${encodeURIComponent('/admin')}`;
-        return null;
+      if(!user){
+        showOnly(authView);
+        return;
       }
-      return user;
-    }
+      userEmail.textContent = user.email || '';
+      userBox.classList.remove('hidden');
 
-    async function requireAdmin(user) {
-      // IMPORTANT: your profiles table uses user_id (not id)
-      const { data, error } = await sb
+      // fetch profile
+      const { data: profile, error } = await sb
         .from('profiles')
-        .select('role,email')
+        .select('*')
         .eq('user_id', user.id)
-        .single();
+        .maybeSingle();
 
-      if (error) { gate.textContent = error.message; return false; }
-      if (data?.role !== 'admin') {
-        gate.innerHTML = `
-          <b>Access denied</b><br/>
-          Your account (<code>${data?.email ?? 'unknown'}</code>) is not an admin.
-        `;
-        return false;
+      if (error) console.error(error);
+      if (!profile || !profile.is_admin) {
+        showOnly(noAdmin);
+        return;
       }
-      gate.innerHTML = `Welcome, admin: <code>${data.email}</code>`;
-      return true;
+
+      // ok admin
+      showOnly(appView);
+      await loadProducts();
+      await loadOrders();
     }
 
-    async function loadStats() {
-      // These assume you have tables: products, vendors, orders
-      const [p,v,o] = await Promise.all([
-        sb.from('products').select('*', { count: 'exact', head: true }),
-        sb.from('vendors').select('*', { count: 'exact', head: true }),
-        sb.from('orders').select('*', { count: 'exact', head: true }),
-      ]);
-      document.getElementById('stat-products').textContent = p.count ?? 0;
-      document.getElementById('stat-vendors').textContent  = v.count ?? 0;
-      document.getElementById('stat-orders').textContent   = o.count ?? 0;
+    function showOnly(el){
+      [authView, appView, noAdmin].forEach(x=>x.classList.add('hidden'));
+      el.classList.remove('hidden');
     }
 
-    async function loadProducts() {
-      const { data, error } = await sb
-        .from('products')
-        .select('id,title,price_cents,active,created_at')
-        .order('created_at', { ascending: false })
-        .limit(10);
+    // Load products
+    async function loadProducts(q=""){
+      productsTbody.innerHTML = '<tr><td class="py-3" colspan="6">Loading…</td></tr>';
+      let query = sb.from('products').select('*').order('created_at', { ascending:false });
+      if(q){
+        query = query.or(`name.ilike.%${q}%,sku.ilike.%${q}%`);
+      }
+      const { data, error } = await query;
+      if(error){
+        productsTbody.innerHTML = `<tr><td class='py-3' style='color:#DC2626' colspan='6'>${error.message}</td></tr>`;
+        return;
+      }
+      productsTbody.innerHTML = data.map(row => renderProductRow(row)).join('');
+      attachRowActions();
+    }
 
-      const el = document.getElementById('products');
-      if (error) { el.textContent = error.message; return; }
-      if (!data?.length) { el.textContent = 'No products yet.'; return; }
-
-      el.innerHTML = data.map(p => `
-        <div style="display:flex;gap:8px;align-items:center;border-bottom:1px solid #eee;padding:8px 0">
-          <div style="flex:1">
-            <b>${p.title}</b><br/>
-            ₹ ${(p.price_cents/100).toFixed(2)} · ${p.active ? 'Active' : 'Inactive'}
+    function renderProductRow(p){
+      return `<tr class="border-b border-border hover:bg-soft/50">
+        <td class="py-2 pr-3">${escapeHtml(p.sku)}</td>
+        <td class="py-2 pr-3">${escapeHtml(p.name)}</td>
+        <td class="py-2 pr-3">₹${Number(p.price).toFixed(2)}</td>
+        <td class="py-2 pr-3">${p.stock}</td>
+        <td class="py-2 pr-3">${p.active ? 'Yes' : 'No'}</td>
+        <td class="py-2 pr-3">
+          <div class="flex gap-2">
+            <button class="btn-outline btn-edit" data-id="${p.id}">Edit</button>
+            <button class="btn-outline btn-delete" data-id="${p.id}">Delete</button>
           </div>
-          <button onclick="toggleActive('${p.id}', ${p.active})">${p.active ? 'Disable' : 'Enable'}</button>
-        </div>
-      `).join('');
+        </td>
+      </tr>`;
     }
 
-    async function toggleActive(id, active) {
-      const { error } = await sb.from('products').update({ active: !active }).eq('id', id);
-      if (error) { alert(error.message); return; }
-      await loadStats();
-      await loadProducts();
+    function attachRowActions(){
+      document.querySelectorAll('.btn-edit').forEach(b=>{
+        b.addEventListener('click', async ()=>{
+          const id = b.dataset.id;
+          const { data, error } = await sb.from('products').select('*').eq('id', id).maybeSingle();
+          if(error) return alert(error.message);
+          editingId = id;
+          dialogTitle.textContent = 'Edit product';
+          f_sku.value = data.sku || '';
+          f_name.value = data.name || '';
+          f_price.value = data.price || 0;
+          f_stock.value = data.stock || 0;
+          f_active.value = data.active ? 'true' : 'false';
+          deleteBtn.classList.remove('hidden');
+          productDialog.showModal();
+        });
+      });
+      document.querySelectorAll('.btn-delete').forEach(b=>{
+        b.addEventListener('click', async ()=>{
+          if(!confirm('Delete this product?')) return;
+          const id = b.dataset.id;
+          const { error } = await sb.from('products').delete().eq('id', id);
+          if(error) return alert(error.message);
+          await loadProducts(searchInput.value.trim());
+        });
+      });
     }
 
-    async function main() {
-      const user = await requireAuth();
-      if (!user) return;
+    // New product
+    document.getElementById('newProductBtn').addEventListener('click', ()=>{
+      editingId = null;
+      dialogTitle.textContent = 'New product';
+      f_sku.value = '';
+      f_name.value = '';
+      f_price.value = '';
+      f_stock.value = '0';
+      f_active.value = 'true';
+      deleteBtn.classList.add('hidden');
+      productDialog.showModal();
+    });
 
-      const ok = await requireAdmin(user);
-      if (!ok) return;
+    // Close modal
+    document.getElementById('closeDialog').addEventListener('click', (e)=>{
+      e.preventDefault();
+      productDialog.close();
+    });
 
-      content.style.display = 'block';
-      await loadStats();
-      await loadProducts();
-
-      document.getElementById('btn-refresh').onclick = async () => {
-        await loadStats(); await loadProducts();
+    // Save product
+    saveBtn.addEventListener('click', async (e)=>{
+      e.preventDefault();
+      const payload = {
+        sku: f_sku.value.trim(),
+        name: f_name.value.trim(),
+        price: Number(f_price.value || 0),
+        stock: parseInt(f_stock.value || '0', 10),
+        active: f_active.value === 'true'
       };
-      document.getElementById('btn-logout').onclick = async () => {
-        await sb.auth.signOut(); window.location.href = '/';
-      };
+      if(!payload.sku || !payload.name){ alert('SKU and Name are required'); return; }
+      let resp;
+      if(editingId){
+        resp = await sb.from('products').update(payload).eq('id', editingId).select().single();
+      } else {
+        resp = await sb.from('products').insert(payload).select().single();
+      }
+      if(resp.error){ alert(resp.error.message); return; }
+      productDialog.close();
+      await loadProducts(searchInput.value.trim());
+    });
+
+    // Delete via modal
+    deleteBtn.addEventListener('click', async (e)=>{
+      e.preventDefault();
+      if(!editingId) return;
+      if(!confirm('Delete this product?')) return;
+      const { error } = await sb.from('products').delete().eq('id', editingId);
+      if(error){ alert(error.message); return; }
+      productDialog.close();
+      await loadProducts(searchInput.value.trim());
+    });
+
+    // Search
+    let searchTimer = null;
+    searchInput.addEventListener('input', ()=>{
+      clearTimeout(searchTimer);
+      searchTimer = setTimeout(()=> loadProducts(searchInput.value.trim()), 300);
+    });
+
+    // Orders (demo)
+    async function loadOrders(){
+      const { data, error } = await sb.from('orders').select('*').order('created_at', { ascending:false }).limit(50);
+      if(error){
+        ordersTbody.innerHTML = `<tr><td class='py-3' style='color:#DC2626' colspan='5'>${error.message}</td></tr>`;
+        return;
+      }
+      ordersTbody.innerHTML = data.map(o => `<tr class='border-b border-border'>
+        <td class='py-2 pr-3'>${escapeHtml(o.order_no)}</td>
+        <td class='py-2 pr-3'>${escapeHtml(o.customer_name||'')}</td>
+        <td class='py-2 pr-3'>₹${Number(o.total||0).toFixed(2)}</td>
+        <td class='py-2 pr-3'>${escapeHtml(o.status||'')}</td>
+        <td class='py-2 pr-3'>${new Date(o.created_at).toLocaleString()}</td>
+      </tr>`).join('');
     }
 
-    main();
-    window.toggleActive = toggleActive;
+    // Init session
+    (async function(){
+      const { data: { session } } = await sb.auth.getSession();
+      if(session){ await postAuth(); } else { showOnly(authView); }
+    })();
+
+    // Helpers
+    function escapeHtml(str){
+      return String(str||'').replace(/[&<>"]/g, s=>({ '&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;' }[s]));
+    }
   </script>
 </body>
 </html>
