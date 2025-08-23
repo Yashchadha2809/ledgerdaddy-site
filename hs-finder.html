@@ -191,10 +191,6 @@
       if (debugOn) dbgEl.classList.remove("hidden");
     }
 
-    function renderLoading(){
-      clearResults();
-      addBubble("ai", `<div class="flex items-center gap-2"><span class="animate-pulse">Analyzing…</span></div>`);
-    }
     function renderError(msg="Lookup failed. Try again."){
       addBubble("ai", `<div class="text-red-700">${msg}</div>`);
     }
@@ -265,8 +261,8 @@
     ['dragenter','dragover'].forEach(evt =>
       drop.addEventListener(evt, e=>{ e.preventDefault(); drop.classList.add('drop-okay'); })
     );
-    ['dragleave','drop'].forEach(evt =>
-      drop.addEventListener(evt, e=>{ e.preventDefault(); drop.classList.remove('drop-okay'); })
+    ['dragleave','drop'].forEach evtName =>
+      drop.addEventListener(evtName, e=>{ e.preventDefault(); drop.classList.remove('drop-okay'); })
     );
     drop.addEventListener('drop', e=>{
       e.preventDefault();
