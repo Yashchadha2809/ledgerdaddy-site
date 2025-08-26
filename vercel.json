@@ -1,5 +1,14 @@
 {
   "version": 2,
+  "builds": [
+    { "src": "index.py", "use": "@vercel/python" },
+    { "src": "**/*.html", "use": "@vercel/static" },
+    { "src": "assets/**", "use": "@vercel/static" },
+    { "src": "manifest.webmanifest", "use": "@vercel/static" },
+    { "src": "sw.js", "use": "@vercel/static" },
+    { "src": "icons/**", "use": "@vercel/static" },
+    { "src": ".well-known/**", "use": "@vercel/static" }
+  ],
   "headers": [
     {
       "source": "/.well-known/assetlinks.json",
@@ -45,6 +54,8 @@
     { "source": "/icons/:path*", "destination": "/icons/:path*" },
     { "source": "/assets/:path*", "destination": "/assets/:path*" },
 
+    { "source": "/", "destination": "/home_min.html" },
+
     { "source": "/log-in", "destination": "/log_in.html" },
     { "source": "/personal-sign-up", "destination": "/personal_sign_up.html" },
     { "source": "/dashboard", "destination": "/dashboard.html" },
@@ -62,6 +73,7 @@
 
     { "source": "/:name.html", "destination": "/:name.html" },
     { "source": "/manifest.webmanifest", "destination": "/manifest.webmanifest" },
-    { "source": "/sw.js", "destination": "/sw.js" }
+    { "source": "/sw.js", "destination": "/sw.js" },
+    { "source": "/api/:path*", "destination": "/index.py" }
   ]
 }
