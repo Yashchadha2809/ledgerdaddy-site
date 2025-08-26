@@ -1,14 +1,6 @@
 {
   "version": 2,
-  "builds": [
-    { "src": "index.py", "use": "@vercel/python" },
-    { "src": "**/*.html", "use": "@vercel/static" },
-    { "src": "assets/**", "use": "@vercel/static" },
-    { "src": "manifest.webmanifest", "use": "@vercel/static" },
-    { "src": "sw.js", "use": "@vercel/static" },
-    { "src": "icons/**", "use": "@vercel/static" },
-    { "src": ".well-known/**", "use": "@vercel/static" }
-  ],
+
   "headers": [
     {
       "source": "/.well-known/assetlinks.json",
@@ -35,6 +27,7 @@
       ]
     }
   ],
+
   "redirects": [
     {
       "source": "/.well-known/:path*",
@@ -49,13 +42,16 @@
       "permanent": true
     }
   ],
+
   "rewrites": [
     { "source": "/.well-known/:path*", "destination": "/.well-known/:path*" },
     { "source": "/icons/:path*", "destination": "/icons/:path*" },
     { "source": "/assets/:path*", "destination": "/assets/:path*" },
 
-    { "source": "/", "destination": "/home_min.html" },
+    /* DO NOT rewrite "/" — let Next.js handle your homepage */
+    /* { "source": "/", "destination": "/home_min.html" },  <-- removed */
 
+    /* Keep your legacy static pages mapped 1:1 */
     { "source": "/log-in", "destination": "/log_in.html" },
     { "source": "/personal-sign-up", "destination": "/personal_sign_up.html" },
     { "source": "/dashboard", "destination": "/dashboard.html" },
@@ -73,7 +69,9 @@
 
     { "source": "/:name.html", "destination": "/:name.html" },
     { "source": "/manifest.webmanifest", "destination": "/manifest.webmanifest" },
-    { "source": "/sw.js", "destination": "/sw.js" },
-    { "source": "/api/:path*", "destination": "/index.py" }
+    { "source": "/sw.js", "destination": "/sw.js" }
+
+    /* DO NOT rewrite /api/* to Python — this would break Next.js API routes */
+    /* { "source": "/api/:path*", "destination": "/index.py" } <-- removed */
   ]
 }
