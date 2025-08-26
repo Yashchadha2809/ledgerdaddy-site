@@ -1,0 +1,636 @@
+import React, { useMemo, useState } from "react";
+
+// ChaDaddy — International Shipping Panel (Frontend-Only Scaffold)
+// Focus: Export/Import shipments, no COD. Pure React + TailwindCSS UI.
+// Drop this into a Next.js/React project (e.g., app/page.tsx) and wire real APIs later.
+// All data is kept in component state for now. Replace TODOs with your backend calls.
+
+export default function ShippingPanel() {
+  const [tab, setTab] = useState<TabKey>("create");
+  const [form, setForm] = useState<ShipmentForm>(defaultForm);
+  const [shipments, setShipments] = useState<ShipmentSummary[]>([]);
+  const [quoteResults, setQuoteResults] = useState<RateQuote[]>([]);
+  const [trackingNo, setTrackingNo] = useState("");
+  const [trackResult, setTrackResult] = useState<TrackResult | null>(null);
+  const [settings, setSettings] = useState<SettingsState>(defaultSettings);
+
+  const isFormValid = useMemo(() => validateForm(form), [form]);
+
+  // --- Actions (Frontend-only mocks) ---
+  const handleGetQuotes = () => {
+    if (!isFormValid) return;
+    // Mock quotes; in prod call carrier APIs (UPS/FedEx/DHL/Aramex/USPS intl, etc.)
+    const base = Math.max(1, Number(form.totalWeightKg) || 1);
+    const dimFactor = Math.max(1, volumetricWeightKg(form.dimensions));
+    const billable = Math.max(base, dimFactor);
+
+    const quotes: RateQuote[] = [
+      {
+        id: rid(), carrier: "DHL Express", service: "EXP Worldwide",
+        etaDays: 3, price: +(28 * billable).toFixed(2),
+        ddpSupported: true, fuelSurchargePct: 14.5,
+      },
+      {
+        id: rid(), carrier: "UPS", service: "Worldwide Saver",
+        etaDays: 4, price: +(24 * billable).toFixed(2),
+        ddpSupported: true, fuelSurchargePct: 13.2,
+      },
+      {
+        id: rid(), carrier: "FedEx", service: "International Priority",
+        etaDays: 3, price: +(26 * billable).toFixed(2),
+        ddpSupported: false, fuelSurchargePct: 12.0,
+      },
+      {
+        id: rid(), carrier: "Aramex", service: "Priority Parcel Express",
+        etaDays: 5, price: +(21 * billable).toFixed(2),
+        ddpSupported: false, fuelSurchargePct: 11.3,
+      },
+    ].map((q) => ({ ...q, total: +(q.price * (1 + q.fuelSurchargePct / 100)).toFixed(2) }));
+
+    setQuoteResults(quotes.sort((a, b) => a.total - b.total));
+    setTab("rates");
+  };
+
+  const handleCreateShipment = (q?: RateQuote) => {
+    if (!isFormValid) return;
+    const tracking = `CD${Date.now().toString().slice(-8)}`;
+    const s: ShipmentSummary = {
+      id: rid(),
+      createdAt: new Date().toISOString(),
+      tracking,
+      carrier: q?.carrier || "Pending",
+      service: q?.service || "—",
+      pieces: Number(form.pieces) || 1,
+      weightKg: Number(form.totalWeightKg) || 1,
+      from: `${form.shipper.country} (${form.shipper.city})`,
+      to: `${form.consignee.country} (${form.consignee.city})`,
+      status: "Label Pending",
+      incoterm: form.incoterm as any,
+      ddp: form.ddp,
+    };
+    setShipments([s, ...shipments]);
+    setTab("shipments");
+  };
+
+  const handleTrack = () => {
+    if (!trackingNo.trim()) return;
+    // Mock tracking timeline
+    const now = new Date();
+    const steps: TrackEvent[] = [
+      { ts: daysAgo(now, 3), location: form.shipper.city || "Origin Hub", note: "Shipment created" },
+      { ts: daysAgo(now, 2), location: "Export Facility", note: "Customs export cleared" },
+      { ts: daysAgo(now, 1), location: "Transit Hub", note: "In transit" },
+      { ts: now.toISOString(), location: form.consignee.city || "Destination Hub", note: "Arrived at destination facility" },
+    ];
+    setTrackResult({ tracking: trackingNo, carrier: "DHL Express", service: "EXP Worldwide", events: steps });
+  };
+
+  // --- Render ---
+  return (
+    <div className="min-h-screen bg-gray-50">
+      <Header />
+
+      <main className="mx-auto max-w-7xl p-4 sm:p-6 lg:p-8">
+        <Tabs tab={tab} setTab={setTab} />
+
+        {tab === "create" && (
+          <section className="mt-6 grid gap-6 lg:grid-cols-3">
+            <Card className="lg:col-span-2">
+              <h2 className="text-xl font-semibold text-gray-900">Create International Shipment</h2>
+              <p className="text-sm text-gray-500 mt-1">Export/Import only • No COD • Incoterms • Documents ready</p>
+
+              <Divider />
+              <SectionTitle>Shipment Basics</SectionTitle>
+              <div className="grid gap-4 md:grid-cols-3">
+                <Select label="Direction" value={form.direction} onChange={(v) => updateForm(setForm, { direction: v as any })} options={["Export", "Import"]} />
+                <Input label="Reference #" placeholder="(optional)" value={form.reference || ""} onChange={(v) => updateForm(setForm, { reference: v })} />
+                <Select label="Incoterm" value={form.incoterm} onChange={(v) => updateForm(setForm, { incoterm: v as any })} options={INCOTERMS} />
+              </div>
+
+              <Divider />
+              <SectionTitle>Shipper</SectionTitle>
+              <AddressForm value={form.shipper} onChange={(v) => updateForm(setForm, { shipper: v })} />
+
+              <Divider />
+              <SectionTitle>Consignee</SectionTitle>
+              <AddressForm value={form.consignee} onChange={(v) => updateForm(setForm, { consignee: v })} />
+
+              <Divider />
+              <SectionTitle>Cargo Details</SectionTitle>
+              <div className="grid gap-4 md:grid-cols-4">
+                <Input label="Pieces" type="number" min={1} value={form.pieces} onChange={(v) => updateForm(setForm, { pieces: v })} />
+                <Input label="Total Weight (kg)" type="number" step="0.01" value={form.totalWeightKg} onChange={(v) => updateForm(setForm, { totalWeightKg: v })} />
+                <Input label="Goods Value" type="number" step="0.01" value={form.goodsValue} onChange={(v) => updateForm(setForm, { goodsValue: v })} />
+                <Select label="Currency" value={form.currency} onChange={(v) => updateForm(setForm, { currency: v })} options={["USD","EUR","GBP","INR","AED","AUD","CAD","JPY"]} />
+              </div>
+              <div className="grid gap-4 md:grid-cols-3">
+                <Input label="Commodity Description" value={form.description} onChange={(v) => updateForm(setForm, { description: v })} />
+                <Input label="HS Code" placeholder="e.g., 851762" value={form.hsCode || ""} onChange={(v) => updateForm(setForm, { hsCode: v })} />
+                <Input label="Country of Origin" placeholder="e.g., CN/IN/US" value={form.originCountry || ""} onChange={(v) => updateForm(setForm, { originCountry: v })} />
+              </div>
+              <div className="grid gap-4 md:grid-cols-4">
+                <Input label="Length (cm)" type="number" value={form.dimensions.l} onChange={(v) => updateForm(setForm, { dimensions: { ...form.dimensions, l: Number(v) || 0 } })} />
+                <Input label="Width (cm)" type="number" value={form.dimensions.w} onChange={(v) => updateForm(setForm, { dimensions: { ...form.dimensions, w: Number(v) || 0 } })} />
+                <Input label="Height (cm)" type="number" value={form.dimensions.h} onChange={(v) => updateForm(setForm, { dimensions: { ...form.dimensions, h: Number(v) || 0 } })} />
+                <Input label="No. of Boxes" type="number" value={form.boxes} onChange={(v) => updateForm(setForm, { boxes: v })} />
+              </div>
+
+              <div className="grid gap-4 md:grid-cols-3 mt-4">
+                <Toggle label="Dangerous Goods" value={form.dg} onChange={(v) => updateForm(setForm, { dg: v })} />
+                <Toggle label="DDP (Duties & Taxes Prepaid)" value={form.ddp} onChange={(v) => updateForm(setForm, { ddp: v })} />
+                <Toggle label="Insurance" value={form.insurance} onChange={(v) => updateForm(setForm, { insurance: v })} />
+              </div>
+
+              <Divider />
+              <div className="flex flex-wrap items-center gap-3">
+                <button
+                  onClick={handleGetQuotes}
+                  disabled={!isFormValid}
+                  className={btnPrimary(!isFormValid)}
+                >
+                  Get Rates
+                </button>
+                <button onClick={() => handleCreateShipment()} disabled={!isFormValid} className={btnGhost(!isFormValid)}>
+                  Create Shipment (no rate)
+                </button>
+                <span className="text-xs text-gray-500">Volumetric: {volumetricWeightKg(form.dimensions).toFixed(2)} kg</span>
+              </div>
+            </Card>
+
+            <Card>
+              <h3 className="text-lg font-semibold text-gray-900">Docs Summary</h3>
+              <p className="text-sm text-gray-500">Auto-generate after label purchase (mocked).</p>
+              <ul className="mt-3 space-y-2 text-sm">
+                <li>• Commercial Invoice</li>
+                <li>• Packing List</li>
+                <li>• Export Declaration (if required)</li>
+                <li>• AWB / Label</li>
+              </ul>
+              <Divider />
+              <button disabled className={btnDisabled()}>Generate Documents</button>
+              <p className="text-[11px] text-gray-500 mt-2">Connect backend to enable.</p>
+            </Card>
+          </section>
+        )}
+
+        {tab === "rates" && (
+          <section className="mt-6">
+            <h2 className="text-xl font-semibold text-gray-900">Best Rates</h2>
+            <p className="text-sm text-gray-500">Sorted by total cost (incl. fuel). Choose one to create shipment.</p>
+            <div className="mt-4 grid gap-4 md:grid-cols-2 lg:grid-cols-3">
+              {quoteResults.map((q) => (
+                <Card key={q.id}>
+                  <div className="flex items-start justify-between">
+                    <div>
+                      <div className="text-gray-900 font-medium">{q.carrier}</div>
+                      <div className="text-sm text-gray-600">{q.service}</div>
+                    </div>
+                    <div className="text-right">
+                      <div className="text-xl font-semibold">{formatMoney(q.total, form.currency)}</div>
+                      <div className="text-xs text-gray-500">ETA {q.etaDays} days</div>
+                    </div>
+                  </div>
+                  <div className="mt-3 flex items-center justify-between text-xs text-gray-600">
+                    <span>Fuel {q.fuelSurchargePct}%</span>
+                    <span>{q.ddpSupported ? "DDP Supported" : "DDU only"}</span>
+                  </div>
+                  <div className="mt-4 flex gap-2">
+                    <button className={btnPrimary(false)} onClick={() => handleCreateShipment(q)}>Select & Create</button>
+                    <button className={btnGhost(false)} onClick={() => alert("Breakdown coming soon")}>Cost Breakdown</button>
+                  </div>
+                </Card>
+              ))}
+              {quoteResults.length === 0 && (
+                <EmptyState title="No quotes yet" subtitle="Fill the shipment form and click Get Rates." />
+              )}
+            </div>
+          </section>
+        )}
+
+        {tab === "shipments" && (
+          <section className="mt-6">
+            <h2 className="text-xl font-semibold text-gray-900">Shipments</h2>
+            <div className="mt-4 overflow-x-auto rounded-xl border border-gray-200 bg-white">
+              <table className="min-w-full text-sm">
+                <thead>
+                  <tr className="bg-gray-50 text-gray-600">
+                    {[
+                      "Created", "Tracking", "Carrier", "Service", "From", "To", "Pieces", "Wt (kg)", "Incoterm", "DDP", "Status",
+                    ].map((h) => (
+                      <th key={h} className="px-3 py-2 text-left font-medium">{h}</th>
+                    ))}
+                  </tr>
+                </thead>
+                <tbody>
+                  {shipments.map((s) => (
+                    <tr key={s.id} className="border-t">
+                      <td className="px-3 py-2">{new Date(s.createdAt).toLocaleString()}</td>
+                      <td className="px-3 py-2 font-mono">{s.tracking}</td>
+                      <td className="px-3 py-2">{s.carrier}</td>
+                      <td className="px-3 py-2">{s.service}</td>
+                      <td className="px-3 py-2">{s.from}</td>
+                      <td className="px-3 py-2">{s.to}</td>
+                      <td className="px-3 py-2">{s.pieces}</td>
+                      <td className="px-3 py-2">{s.weightKg}</td>
+                      <td className="px-3 py-2">{s.incoterm}</td>
+                      <td className="px-3 py-2">{s.ddp ? "Yes" : "No"}</td>
+                      <td className="px-3 py-2">
+                        <span className="inline-flex items-center rounded-full bg-amber-50 px-2 py-0.5 text-amber-700">{s.status}</span>
+                      </td>
+                    </tr>
+                  ))}
+
+                  {shipments.length === 0 && (
+                    <tr>
+                      <td className="px-3 py-10 text-center text-gray-500" colSpan={11}>No shipments yet. Create one from the Rates or Create tab.</td>
+                    </tr>
+                  )}
+                </tbody>
+              </table>
+            </div>
+          </section>
+        )}
+
+        {tab === "tracking" && (
+          <section className="mt-6 max-w-2xl">
+            <h2 className="text-xl font-semibold text-gray-900">Track Shipment</h2>
+            <div className="mt-4 flex gap-2">
+              <input className={ip()} placeholder="Enter tracking number" value={trackingNo} onChange={(e) => setTrackingNo(e.target.value)} />
+              <button className={btnPrimary(false)} onClick={handleTrack}>Track</button>
+            </div>
+
+            {trackResult && (
+              <Card className="mt-4">
+                <div className="flex items-center justify-between">
+                  <div>
+                    <div className="font-medium text-gray-900">{trackResult.carrier} • {trackResult.service}</div>
+                    <div className="text-xs text-gray-500">Tracking: {trackResult.tracking}</div>
+                  </div>
+                  <span className="text-xs rounded-full bg-emerald-50 px-2 py-1 text-emerald-700">In Transit</span>
+                </div>
+                <ol className="mt-4 space-y-3">
+                  {trackResult.events.map((e, i) => (
+                    <li key={i} className="flex items-start gap-3">
+                      <div className="mt-1 h-2 w-2 rounded-full bg-gray-800"></div>
+                      <div>
+                        <div className="text-sm text-gray-900">{new Date(e.ts).toLocaleString()} – {e.location}</div>
+                        <div className="text-xs text-gray-600">{e.note}</div>
+                      </div>
+                    </li>
+                  ))}
+                </ol>
+              </Card>
+            )}
+          </section>
+        )}
+
+        {tab === "settings" && (
+          <section className="mt-6 grid gap-6 lg:grid-cols-2">
+            <Card>
+              <h3 className="text-lg font-semibold text-gray-900">Carrier Accounts</h3>
+              <p className="text-sm text-gray-500">Store API keys for direct label buying. Aggregators optional.</p>
+              <div className="mt-4 grid gap-4">
+                {settings.carriers.map((c, idx) => (
+                  <div key={c.name} className="rounded-xl border p-4">
+                    <div className="flex items-center justify-between">
+                      <div>
+                        <div className="font-medium text-gray-900">{c.name}</div>
+                        <div className="text-xs text-gray-500">{c.enabled ? "Enabled" : "Disabled"}</div>
+                      </div>
+                      <Toggle label="Enabled" value={c.enabled} onChange={(v) => updateCarrier(idx, { enabled: v }, settings, setSettings)} />
+                    </div>
+                    <div className="mt-3 grid gap-3 md:grid-cols-2">
+                      <Input label="API Key" value={c.apiKey || ""} onChange={(v) => updateCarrier(idx, { apiKey: v }, settings, setSettings)} />
+                      <Input label="Account #" value={c.accountNo || ""} onChange={(v) => updateCarrier(idx, { accountNo: v }, settings, setSettings)} />
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </Card>
+
+            <Card>
+              <h3 className="text-lg font-semibold text-gray-900">Integrations</h3>
+              <p className="text-sm text-gray-500">Connect stores to import orders automatically (no COD).</p>
+              <div className="mt-4 grid gap-4">
+                <IntegrationRow name="Shopify" connected={settings.integrations.shopify} onToggle={(v) => setSettings({ ...settings, integrations: { ...settings.integrations, shopify: v } })} />
+                <IntegrationRow name="WooCommerce" connected={settings.integrations.woocom} onToggle={(v) => setSettings({ ...settings, integrations: { ...settings.integrations, woocom: v } })} />
+                <IntegrationRow name="Amazon Seller" connected={settings.integrations.amazon} onToggle={(v) => setSettings({ ...settings, integrations: { ...settings.integrations, amazon: v } })} />
+              </div>
+            </Card>
+          </section>
+        )}
+      </main>
+
+      <Footer />
+    </div>
+  );
+}
+
+// --- UI Building Blocks ---
+function Header() {
+  return (
+    <header className="bg-white border-b">
+      <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
+        <div className="flex items-center gap-3">
+          <div className="h-9 w-9 rounded-2xl bg-indigo-600" />
+          <div>
+            <div className="font-semibold text-gray-900">ChaDaddy Shipping</div>
+            <div className="text-xs text-gray-500">International • No COD</div>
+          </div>
+        </div>
+        <div className="hidden md:flex items-center gap-6 text-sm text-gray-600">
+          <a href="#" className="hover:text-gray-900">Docs</a>
+          <a href="#" className="hover:text-gray-900">Support</a>
+        </div>
+      </div>
+    </header>
+  );
+}
+
+function Footer() {
+  return (
+    <footer className="mt-12 border-t bg-white">
+      <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-6 text-xs text-gray-500 flex flex-wrap items-center justify-between gap-3">
+        <span>© {new Date().getFullYear()} ChaDaddy • Intl Shipping</span>
+        <span>INCOTERMS, DDP/DDU, HS codes, Documents</span>
+      </div>
+    </footer>
+  );
+}
+
+function Tabs({ tab, setTab }: { tab: TabKey; setTab: (t: TabKey) => void }) {
+  const tabs: { key: TabKey; label: string }[] = [
+    { key: "create", label: "Create" },
+    { key: "rates", label: "Rates" },
+    { key: "shipments", label: "Shipments" },
+    { key: "tracking", label: "Tracking" },
+    { key: "settings", label: "Settings" },
+  ];
+  return (
+    <div className="flex gap-2 overflow-x-auto">
+      {tabs.map((t) => (
+        <button
+          key={t.key}
+          onClick={() => setTab(t.key)}
+          className={`px-4 py-2 rounded-full text-sm border ${tab === t.key ? "bg-indigo-600 text-white border-indigo-600" : "bg-white text-gray-700 hover:bg-gray-50"}`}
+        >
+          {t.label}
+        </button>
+      ))}
+    </div>
+  );
+}
+
+function Card({ children, className = "" }: { children: React.ReactNode; className?: string }) {
+  return <div className={`rounded-2xl border border-gray-200 bg-white p-5 shadow-sm ${className}`}>{children}</div>;
+}
+
+function Divider() {
+  return <div className="my-5 h-px bg-gray-100" />;
+}
+
+function SectionTitle({ children }: { children: React.ReactNode }) {
+  return <h4 className="mb-3 font-medium text-gray-900">{children}</h4>;
+}
+
+function Input({ label, value, onChange, type = "text", placeholder, min, step }: {
+  label: string;
+  value: any;
+  onChange: (v: any) => void;
+  type?: string;
+  placeholder?: string;
+  min?: number;
+  step?: string;
+}) {
+  return (
+    <label className="grid gap-1 text-sm">
+      <span className="text-gray-700">{label}</span>
+      <input
+        type={type}
+        min={min}
+        step={step}
+        className={ip()}
+        value={value as any}
+        placeholder={placeholder}
+        onChange={(e) => onChange(type === "number" ? Number(e.target.value) : e.target.value)}
+      />
+    </label>
+  );
+}
+
+function Select({ label, value, onChange, options }: {
+  label: string;
+  value: string;
+  onChange: (v: string) => void;
+  options: string[];
+}) {
+  return (
+    <label className="grid gap-1 text-sm">
+      <span className="text-gray-700">{label}</span>
+      <select className={ip()} value={value} onChange={(e) => onChange(e.target.value)}>
+        {options.map((o) => (
+          <option key={o} value={o}>{o}</option>
+        ))}
+      </select>
+    </label>
+  );
+}
+
+function Toggle({ label, value, onChange }: { label: string; value: boolean; onChange: (v: boolean) => void }) {
+  return (
+    <label className="flex items-center justify-between rounded-xl border border-gray-200 bg-white p-3">
+      <span className="text-sm text-gray-700">{label}</span>
+      <button
+        type="button"
+        onClick={() => onChange(!value)}
+        className={`h-6 w-11 rounded-full border ${value ? "bg-indigo-600 border-indigo-600" : "bg-gray-200"}`}
+      >
+        <span className={`block h-5 w-5 rounded-full bg-white transition ${value ? "translate-x-5" : "translate-x-0"}`} />
+      </button>
+    </label>
+  );
+}
+
+function EmptyState({ title, subtitle }: { title: string; subtitle?: string }) {
+  return (
+    <div className="col-span-full flex flex-col items-center justify-center rounded-2xl border border-dashed border-gray-300 bg-white p-8 text-center">
+      <div className="h-12 w-12 rounded-full bg-gray-100" />
+      <div className="mt-3 text-gray-900 font-medium">{title}</div>
+      {subtitle && <div className="text-sm text-gray-600">{subtitle}</div>}
+    </div>
+  );
+}
+
+function AddressForm({ value, onChange }: { value: Address; onChange: (v: Address) => void }) {
+  return (
+    <div className="grid gap-4">
+      <div className="grid gap-4 md:grid-cols-2">
+        <Input label="Company" value={value.company} onChange={(v) => onChange({ ...value, company: v })} />
+        <Input label="Contact Name" value={value.name} onChange={(v) => onChange({ ...value, name: v })} />
+      </div>
+      <div className="grid gap-4 md:grid-cols-3">
+        <Input label="Email" value={value.email} onChange={(v) => onChange({ ...value, email: v })} />
+        <Input label="Phone" value={value.phone} onChange={(v) => onChange({ ...value, phone: v })} />
+        <Input label="Tax ID / IEC / EORI" value={value.taxId || ""} onChange={(v) => onChange({ ...value, taxId: v })} />
+      </div>
+      <Input label="Address Line 1" value={value.line1} onChange={(v) => onChange({ ...value, line1: v })} />
+      <Input label="Address Line 2" value={value.line2 || ""} onChange={(v) => onChange({ ...value, line2: v })} />
+      <div className="grid gap-4 md:grid-cols-4">
+        <Input label="City" value={value.city} onChange={(v) => onChange({ ...value, city: v })} />
+        <Input label="State/Province" value={value.state} onChange={(v) => onChange({ ...value, state: v })} />
+        <Input label="Postal Code" value={value.postal} onChange={(v) => onChange({ ...value, postal: v })} />
+        <Input label="Country (ISO)" placeholder="IN/US/AE/CN" value={value.country} onChange={(v) => onChange({ ...value, country: v.toUpperCase() })} />
+      </div>
+    </div>
+  );
+}
+
+function IntegrationRow({ name, connected, onToggle }: { name: string; connected: boolean; onToggle: (v: boolean) => void }) {
+  return (
+    <div className="flex items-center justify-between rounded-xl border p-4">
+      <div>
+        <div className="font-medium text-gray-900">{name}</div>
+        <div className="text-xs text-gray-500">{connected ? "Connected" : "Not connected"}</div>
+      </div>
+      <Toggle label="Enable" value={connected} onChange={onToggle} />
+    </div>
+  );
+}
+
+// --- Styles helpers ---
+function ip() {
+  return "w-full rounded-xl border border-gray-200 bg-white px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-indigo-500";
+}
+function btnPrimary(disabled: boolean) {
+  return `rounded-xl px-4 py-2 text-sm font-medium text-white ${disabled ? "bg-indigo-300 cursor-not-allowed" : "bg-indigo-600 hover:bg-indigo-700"}`;
+}
+function btnGhost(disabled: boolean) {
+  return `rounded-xl px-4 py-2 text-sm font-medium border ${disabled ? "text-gray-400 border-gray-200 cursor-not-allowed" : "text-gray-700 border-gray-300 hover:bg-gray-50"}`;
+}
+function btnDisabled() {
+  return "rounded-xl px-4 py-2 text-sm font-medium border text-gray-400 border-gray-200 cursor-not-allowed";
+}
+
+// --- Types & Utils ---
+const INCOTERMS = [
+  "EXW", "FCA", "CPT", "CIP", "DAP", "DPU", "DDP", // 2020 terms
+];
+
+const defaultForm: ShipmentForm = {
+  direction: "Export",
+  reference: "",
+  incoterm: "DAP",
+  shipper: emptyAddress("IN"),
+  consignee: emptyAddress("US"),
+  pieces: 1,
+  boxes: 1,
+  dimensions: { l: 40, w: 30, h: 20 },
+  totalWeightKg: 5,
+  description: "Electronics accessories",
+  hsCode: "851762",
+  originCountry: "IN",
+  goodsValue: 200,
+  currency: "USD",
+  dg: false,
+  ddp: false,
+  insurance: true,
+};
+
+function emptyAddress(country = ""): Address {
+  return { company: "", name: "", email: "", phone: "", taxId: "", line1: "", line2: "", city: "", state: "", postal: "", country };
+}
+
+function validateForm(f: ShipmentForm) {
+  const must = [f.shipper.company, f.shipper.line1, f.shipper.city, f.shipper.country, f.consignee.company, f.consignee.line1, f.consignee.city, f.consignee.country, f.description];
+  if (must.some((x) => !String(x || "").trim())) return false;
+  if (!f.totalWeightKg || f.totalWeightKg <= 0) return false;
+  if (!f.pieces || f.pieces <= 0) return false;
+  if (!/^([A-Z]{2})$/i.test(f.shipper.country)) return false;
+  if (!/^([A-Z]{2})$/i.test(f.consignee.country)) return false;
+  return true;
+}
+
+function volumetricWeightKg(d: Dimensions) {
+  // IATA volumetric divisor for cm: 5000
+  return (d.l * d.w * d.h) / 5000;
+}
+
+function formatMoney(v: number, ccy: string) {
+  try { return new Intl.NumberFormat(undefined, { style: "currency", currency: ccy }).format(v); } catch {
+    return `${ccy} ${v.toFixed(2)}`;
+  }
+}
+
+function rid() {
+  return Math.random().toString(36).slice(2, 9);
+}
+
+function daysAgo(now: Date, days: number) {
+  const d = new Date(now);
+  d.setDate(d.getDate() - days);
+  return d.toISOString();
+}
+
+function updateForm(setForm: (u: any) => void, patch: Partial<ShipmentForm>) {
+  setForm((prev: ShipmentForm) => ({ ...prev, ...patch }));
+}
+
+function updateCarrier(idx: number, patch: Partial<CarrierAccount>, s: SettingsState, setS: (v: SettingsState) => void) {
+  const carriers = [...s.carriers];
+  carriers[idx] = { ...carriers[idx], ...patch } as CarrierAccount;
+  setS({ ...s, carriers });
+}
+
+// --- Types ---
+ type TabKey = "create" | "rates" | "shipments" | "tracking" | "settings";
+
+ type Dimensions = { l: number; w: number; h: number };
+
+ type Address = {
+  company: string; name: string; email: string; phone: string; taxId?: string;
+  line1: string; line2?: string; city: string; state: string; postal: string; country: string;
+ };
+
+ type ShipmentForm = {
+  direction: "Export" | "Import";
+  reference?: string;
+  incoterm: string;
+  shipper: Address;
+  consignee: Address;
+  pieces: number;
+  boxes: number;
+  dimensions: Dimensions;
+  totalWeightKg: number;
+  description: string;
+  hsCode?: string;
+  originCountry?: string;
+  goodsValue: number;
+  currency: string;
+  dg: boolean; // dangerous goods
+  ddp: boolean; // duties prepaid
+  insurance: boolean;
+ };
+
+ type RateQuote = {
+  id: string; carrier: string; service: string; etaDays: number; price: number; fuelSurchargePct: number; total?: number; ddpSupported: boolean;
+ };
+
+ type ShipmentSummary = {
+  id: string; createdAt: string; tracking: string; carrier: string; service: string; from: string; to: string; pieces: number; weightKg: number; status: string; incoterm: string; ddp: boolean;
+ };
+
+ type TrackEvent = { ts: string; location: string; note: string };
+ type TrackResult = { tracking: string; carrier: string; service: string; events: TrackEvent[] };
+
+ type CarrierAccount = { name: string; enabled: boolean; apiKey?: string; accountNo?: string };
+ type SettingsState = { carriers: CarrierAccount[]; integrations: { shopify: boolean; woocom: boolean; amazon: boolean } };
+
+ const defaultSettings: SettingsState = {
+  carriers: [
+    { name: "DHL Express", enabled: true },
+    { name: "UPS", enabled: true },
+    { name: "FedEx", enabled: false },
+    { name: "Aramex", enabled: false },
+  ],
+  integrations: { shopify: false, woocom: false, amazon: false },
+ };
